@@ -15,17 +15,24 @@ import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaFreezeRenderer
 import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -34,6 +41,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
@@ -209,6 +217,27 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
+    public void onItemDescription(ItemTooltipEvent event)
+    {
+        if(event.getItemStack().hasTag())
+        {
+            CompoundNBT tag = NBTTagHelper.getToolElementTable(event.getItemStack());
+            if(tag.keySet().size() > 0) {
+                event.getToolTip().add((new StringTextComponent("")));
+                event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_DESCRIPTION)));
+            }
+            Iterator<String> keys = tag.keySet().iterator();
+
+            while (keys.hasNext())
+            {
+                String element = keys.next();
+                int duration = tag.getInt(element);
+                event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_ATTRIBUTE + element)).appendString(" ").append((new TranslationTextComponent(LibElementTool.TOOL_DURATION).appendString(" " + Integer.toString(duration)))));
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if(Minecraft.getInstance().isGamePaused() || Minecraft.getInstance().world == null || event.phase == TickEvent.Phase.START)
             return;
@@ -246,28 +275,36 @@ public class RenderEvent {
             if(state != null && !state.getBuffList().isEmpty())
             {
                 if(state.getBuffList().containsKey(LibBuff.PARALYSIS))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.ARC), Minecraft.getInstance().world);
+                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.ARC), Minecraft.getInstance().world);
 
-                if(state.getBuffList().containsKey(LibBuff.WITHER))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
+                if(state.getBuffList().containsKey(LibBuff.WITHER) || state.getBuffList().containsKey(LibBuff.CRIPPLE))
+                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
 
-                if(state.getBuffList().containsKey(LibBuff.FREEZE))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
+                if(state.getBuffList().containsKey(LibBuff.FREEZE) || state.getBuffList().containsKey(LibBuff.SLOW))
+                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
 
-                if(state.getBuffList().containsKey(LibBuff.SLOW))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.CRIPPLE))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.FRAGILE))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.WEAKEN))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
+                if(state.getBuffList().containsKey(LibBuff.FRAGILE) || state.getBuffList().containsKey(LibBuff.WEAKEN))
+                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
 
                 if(state.getBuffList().containsKey(LibBuff.TAKEN))
-                    applyBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.TAKEN), Minecraft.getInstance().world);
+                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.TAKEN), Minecraft.getInstance().world);
+
+                /////////////////////////////BUFF//////////////////////////////////////
+
+                if(state.getBuffList().containsKey(LibBuff.STASIS))
+                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
+
+                if(state.getBuffList().containsKey(LibBuff.LIGHT))
+                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
+
+                if(state.getBuffList().containsKey(LibBuff.RADIANCE_WELL))
+                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.SOLAR), Minecraft.getInstance().world);
+
+                if(state.getBuffList().containsKey(LibBuff.DECAY))
+                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
+
+                if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
+                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.ORIGIN), Minecraft.getInstance().world);
             }
 
             IElementAnimalState animalState = entity.getCapability(MagickCore.elementAnimal).orElse(null);
@@ -278,6 +315,22 @@ public class RenderEvent {
         }
     }
 
+    public static void applybuffParticle(Entity entity, ElementRenderer render, World world)
+    {
+        for(int i = 0; i < 3; ++i) {
+            LitParticle litPar = new LitParticle(world, render.getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 2 + entity.getPosX()
+                    , MagickCore.getNegativeToOne() * entity.getHeight() * 2 + entity.getPosY() + entity.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * entity.getWidth()  * 2 + entity.getPosZ())
+                    , entity.getWidth() / 8f * MagickCore.rand.nextFloat(), entity.getWidth() / 8f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 40, render);
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+            litPar.setTraceTarget(entity);
+            MagickCore.addMagickParticle(litPar);
+        }
+    }
+
     public static void applyAnimalParticle(Entity entity, ElementRenderer render, World world)
     {
         for(int i = 0; i < 2; ++i) {
@@ -285,14 +338,15 @@ public class RenderEvent {
                     , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()
                     , MagickCore.getNegativeToOne() * entity.getHeight() / 2f + entity.getPosY() + entity.getHeight() / 2
                     , MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosZ())
-                    , entity.getWidth() / 10f * MagickCore.rand.nextFloat(), entity.getWidth() / 10f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 20, render);
+                    , entity.getWidth() / 8f * MagickCore.rand.nextFloat(), entity.getWidth() / 8f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 20, render);
             litPar.setGlow();
             litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+            litPar.setTraceTarget(entity);
             MagickCore.addMagickParticle(litPar);
         }
     }
 
-    public static void applyBuffParticle(Entity entity, ElementRenderer render, World world)
+    public static void applydeBuffParticle(Entity entity, ElementRenderer render, World world)
     {
         LitParticle par = new LitParticle(world, render.getMistTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()

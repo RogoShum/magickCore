@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -65,13 +66,14 @@ public class OrbBottleItem extends BaseItem{
 
     @Override
     public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
-        CompoundNBT tag = NBTTagHelper.getStackTag(stack);
-        if(tag.contains("ELEMENT") && ElementOrbEvent.containAnimalType(target.getType()))
-        {
-            IElementAnimalState state = target.getCapability(MagickCore.elementAnimal).orElse(null);
-            state.setElement(ModElements.getElement(tag.getString("ELEMENT")));
-            tag.remove("ELEMENT");
-            stack.setTag(tag);
+        if(!playerIn.world.isRemote) {
+            CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+            if (tag.contains("ELEMENT") && (ElementOrbEvent.containAnimalType(target.getType()) || target instanceof AnimalEntity)) {
+                IElementAnimalState state = target.getCapability(MagickCore.elementAnimal).orElse(null);
+                state.setElement(ModElements.getElement(tag.getString("ELEMENT")));
+                tag.remove("ELEMENT");
+                stack.setTag(tag);
+            }
         }
         return super.itemInteractionForEntity(stack, playerIn, target, hand);
     }

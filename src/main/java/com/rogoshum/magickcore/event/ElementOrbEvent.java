@@ -22,6 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.*;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.item.Food;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -49,17 +50,18 @@ public class ElementOrbEvent {
     {
         spawnElementMap.put(EndermanEntity.class, new LivingElementTable(3, LibElements.VOID));
         spawnElementMap.put(BlazeEntity.class, new LivingElementTable(3, LibElements.SOLAR));
-        spawnElementMap.put(CaveSpiderEntity.class, new LivingElementTable(2, LibElements.WITHER));
+        spawnElementMap.put(CaveSpiderEntity.class, new LivingElementTable(1, LibElements.WITHER));
+        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(3, LibElements.WITHER));
         spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(3, LibElements.VOID));
         spawnElementMap.put(MagmaCubeEntity.class, new LivingElementTable(2, LibElements.SOLAR));
 
         spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(7, LibElements.VOID));
         spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(10, LibElements.SOLAR));
 
-        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(5, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(2, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(3, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(2, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(4, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(3, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(4, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(3, LibElements.STASIS));
 
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
@@ -132,6 +134,17 @@ public class ElementOrbEvent {
                 {
                     int count = e.getItem().getCount();
                     ItemStack stack = new ItemStack(ModItems.element_meat.get());
+                    CompoundNBT tag = new CompoundNBT();
+                    tag.putString("ELEMENT", animalState.getElement().getType());
+                    stack.setCount(count);
+                    stack.setTag(tag);
+                    e.setItem(stack);
+                }
+
+                if(e.getItem().getItem().getRegistryName().toString().contains("wool"))
+                {
+                    int count = e.getItem().getCount();
+                    ItemStack stack = new ItemStack(ModItems.element_wool.get());
                     CompoundNBT tag = new CompoundNBT();
                     tag.putString("ELEMENT", animalState.getElement().getType());
                     stack.setCount(count);

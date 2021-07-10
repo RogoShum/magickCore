@@ -3,6 +3,8 @@ package com.rogoshum.magickcore.item;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,8 +32,10 @@ public class ElementMeatItem extends ElementContainerItem{
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        IEntityState state = entityLiving.getCapability(MagickCore.entityState).orElse(null);
-        state.getElement().getAbility().applyBuff(entityLiving, 200, 2);
+        CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+        if (tag.contains("ELEMENT")) {
+            ModElements.getElement(tag.getString("ELEMENT")).getAbility().applyBuff(entityLiving, 300, 2);
+        }
         return super.onItemUseFinish(stack, worldIn, entityLiving);
     }
 }

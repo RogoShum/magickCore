@@ -31,6 +31,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -510,7 +511,7 @@ public class MagickLogicEvent {
 		if(entity instanceof IMagickElementObject && !event.getCapabilities().containsKey(new ResourceLocation(MagickCore.MOD_ID, "capability_mana_data")))
 			event.addCapability(new ResourceLocation(MagickCore.MOD_ID, "capability_mana_data"), new CapabilityManaData.ManaDataProvider());
 
-		if(ElementOrbEvent.containAnimalType(entity.getType()))
+		if(ElementOrbEvent.containAnimalType(entity.getType()) || entity instanceof AnimalEntity)
 		{
 			if(!event.getCapabilities().containsKey(new ResourceLocation(MagickCore.MOD_ID, "capability_element_animal")));
 			event.addCapability(new ResourceLocation(MagickCore.MOD_ID, "capability_element_animal"), new CapabilityElementAnimalState.ElementAnimalStateProvider());

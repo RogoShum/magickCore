@@ -5,10 +5,7 @@ import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.item.OrbBottleItem;
 import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.recipes.CopyNBTTagRecipe;
-import com.rogoshum.magickcore.recipes.ItemTagMatchContainer;
-import com.rogoshum.magickcore.recipes.NBTRecipe;
-import com.rogoshum.magickcore.recipes.NBTRecipeContainer;
+import com.rogoshum.magickcore.recipes.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
@@ -145,7 +142,9 @@ public class ModRecipes {
                 wither_element_recipe,
                 taken_element_recipe,
                 element_wool_recipe,
-                element_string_recipe
+                element_string_recipe,
+                ElementToolRecipe.element_helmet_recipe,
+                ElementToolRecipe.element_sword_recipe
         );
     }
 

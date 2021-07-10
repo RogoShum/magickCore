@@ -80,7 +80,7 @@
     "magickcore.description.mana_type": "§d类型§7: %s",
     "magickcore.description.tick": "§d存在时间§7: %s",
     "magickcore.description.trace": "§d追踪",
-    "magickcore.description.rogue_tick": "剩余时间",
+    "magickcore.description.rogue_tick": "消散时间",
     "magickcore.description.origin": "§f原生",
     "magickcore.description.stasis": "§3冰影",
     "magickcore.description.solar": "§6烈焰",
@@ -102,5 +102,14 @@
     "magickcore.description.mana_redstone": "§9施加效果： 延长存在时间",
     "magickcore.description.mana_gunpowder": "§9施加效果： 将ATTACK转换类型为BUFF",
     "magickcore.description.mana_spider_eye": "§9施加效果： 将BUFF转换类型为DEBUFF",
-    "magickcore.description.mana_nether_wart": "§9施加效果： 将DEBUFF转换类型为ATTACK"
+    "magickcore.description.mana_nether_wart": "§9施加效果： 将DEBUFF转换类型为ATTACK",
+
+    "magickcore.tool_description": "§9元素属性：",
+    "magickcore.tool_attribute.arc": "§b加速自己的时间",
+    "magickcore.tool_attribute.solar": "§6击杀后短时增加攻击力",
+    "magickcore.tool_attribute.void": "§5减少攻击冷却",
+    "magickcore.tool_attribute.stasis": "§3小范围实体减速",
+    "magickcore.tool_attribute.wither": "§2随机触发耐久回复",
+    "magickcore.tool_attribute.taken": "§0伤害生物几率夺魂",
+    "magickcore.tool_duration": "§7磨损："
 }

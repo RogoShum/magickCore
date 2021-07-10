@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
@@ -22,22 +23,17 @@ public class ElementContainerItem extends BaseItem implements IItemColor {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if(tag.contains("ELEMENT"))
-                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+        if(NBTTagHelper.hasElement(stack)) {
+                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + NBTTagHelper.getElement(stack)))));
         }
     }
 
     @Override
     public int getColor(ItemStack stack, int p_getColor_2_) {
-        if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains("ELEMENT")) {
-                float[] color = MagickCore.proxy.getElementRender(tag.getString("ELEMENT")).getColor();
-                float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
-                return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
-            }
+        if(NBTTagHelper.hasElement(stack)) {
+            float[] color = MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor();
+            float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
+            return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
         }
         return 	16777215;
     }
