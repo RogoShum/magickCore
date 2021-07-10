@@ -2,11 +2,13 @@ package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
+import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -24,5 +26,12 @@ import java.util.List;
 public class ElementMeatItem extends ElementContainerItem{
     public ElementMeatItem(Properties builder) {
         super(builder);
+    }
+
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        IEntityState state = entityLiving.getCapability(MagickCore.entityState).orElse(null);
+        state.getElement().getAbility().applyBuff(entityLiving, 200, 2);
+        return super.onItemUseFinish(stack, worldIn, entityLiving);
     }
 }

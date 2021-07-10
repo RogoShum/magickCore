@@ -23,45 +23,47 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
         IManaElement element = ModElements.getElement(tileEntityIn.eType);
         if(element != null)
             color = element.getRenderer().getColor();
-
+        float alpha = 1.0f;
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
-        matrixStackIn.translate(0.0, 0.0, 1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        matrixStackIn.translate(1.0, 0.0, 0.0);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270));
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
-        matrixStackIn.translate(0.0, 0.0, 1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(270));
+        matrixStackIn.translate(0.0, 0.0, -1.0);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrb(wool)), 1.0f, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
         ////////////////////////////////////////////////////////////////////////////////
 
-        float alpha = 0.2f;
+        alpha = 1.0f;
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 1.0);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
         RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
         matrixStackIn.pop();
 
@@ -77,14 +79,14 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
         matrixStackIn.pop();
 
         matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
-        matrixStackIn.translate(0.0, 0.0, 1.0);
+        matrixStackIn.translate(1.0, 0.0, 0.0);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270));
         RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
-        matrixStackIn.translate(0.0, 0.0, 1.0);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(270));
+        matrixStackIn.translate(0.0, 0.0, -1.0);
         RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
         matrixStackIn.pop();
 

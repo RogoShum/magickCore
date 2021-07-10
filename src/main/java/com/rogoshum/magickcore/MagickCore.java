@@ -95,10 +95,10 @@ public class MagickCore
         MinecraftForge.EVENT_BUS.register(new ElementOrbEvent());
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.BLOCKS.register(eventBus);
-        ModItems.ITEMS.register(eventBus);
-        ModTileEntities.TILE_ENTITY.register(eventBus);
         ModEffects.EFFECTS.register(eventBus);
         ModEffects.POTIONS.register(eventBus);
+        ModItems.ITEMS.register(eventBus);
+        ModTileEntities.TILE_ENTITY.register(eventBus);
         ModEnchantments.ENCHANTMENTS.register(eventBus);
         //ModEntites.ENTITY_TYPES.register(eventBus);
         ModBuff.initBuff();

@@ -43,6 +43,7 @@ public class RiftItem extends BaseItem{
                         , Math.min(state.getManaValue() / 200f, 1f), (int) Math.min(state.getManaValue(), 900)
                         , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 list.get(0).remove();
+                playerIn.getHeldItem(handIn).shrink(1);
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

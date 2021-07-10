@@ -7,10 +7,14 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.Effect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+
+import java.util.Iterator;
 
 public class WitherElement extends MagickElement{
     public WitherElement(String name, ElementAbility ability) {
@@ -53,7 +57,7 @@ public class WitherElement extends MagickElement{
 
         @Override
         public boolean applyBuff(Entity victim, int tick, float force) {
-            return false;
+            return ModBuff.applyBuff(victim, LibBuff.DECAY, tick, force, true);
         }
 
         @Override

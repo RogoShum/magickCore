@@ -60,6 +60,6 @@ public class ElementSeedsItem extends BlockItem implements IItemColor {
                 return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
             }
         }
-        return 0;
+        return 16777215;
     }
 }

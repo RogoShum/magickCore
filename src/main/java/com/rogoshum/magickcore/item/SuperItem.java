@@ -65,6 +65,7 @@ public class SuperItem extends BaseItem {
                     MagickReleaseHelper.releasePointEntity(ModEntites.ascendant_realm, playerIn, position.add(0, 0, 0), ModElements.getElement(LibElements.TAKEN), null, 0, (int) state.getManaValue()
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 }
+                playerIn.getHeldItem(handIn).shrink(1);
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);

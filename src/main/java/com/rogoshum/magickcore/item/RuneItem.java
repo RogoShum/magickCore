@@ -38,6 +38,7 @@ public class RuneItem extends BaseItem{
             orb.setTickTime(10000);
             orb.setOwner(context.getPlayer());
             context.getWorld().addEntity(orb);
+            context.getItem().shrink(1);
         }
         return super.onItemUse(context);
     }

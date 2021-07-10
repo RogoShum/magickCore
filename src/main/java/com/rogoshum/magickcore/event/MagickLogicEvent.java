@@ -30,6 +30,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -178,6 +179,9 @@ public class MagickLogicEvent {
 		int mana = 0;
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.MANA_REGEN.orElse(null)))
 			mana = (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_REGEN.orElse(null)).getAmplifier() + 1);
+
+		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.MANA_STASIS.orElse(null)))
+			mana -= (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_STASIS.orElse(null)).getAmplifier() + 1);
 
 		event.setMana(event.getMana() + mana);
 	}
@@ -328,6 +332,14 @@ public class MagickLogicEvent {
 
 		if(state != null && state.getBuffList().containsKey(LibBuff.WEAKEN))
 			event.setAmount(event.getAmount() * 1.3f);
+
+		Entity entity = event.getSource().getTrueSource();
+		if(entity instanceof LivingEntity && entity instanceof IMob)
+		{
+			IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
+			if(attacker.getElement().getType() != LibElements.ORIGIN && MagickCore.rand.nextInt(2) == 0)
+				attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) (event.getAmount() * 2), event.getAmount() / 3);
+		}
 	}
 
 	@SubscribeEvent

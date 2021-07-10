@@ -7,11 +7,13 @@ import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 public class ModBuff{
@@ -75,6 +77,13 @@ public class ModBuff{
                 living.addPotionEffect(new EffectInstance(Effects.ABSORPTION, state.getBuffList().get(LibBuff.RADIANCE_WELL).getTick(), (int) state.getBuffList().get(LibBuff.RADIANCE_WELL).getForce()));
                 living.heal(living.getMaxHealth() * 0.1f);
                 living.hurtTime = 0;
+            }
+        }, true);
+
+        putBuff(LibBuff.DECAY, (e) ->{
+            IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
+            if(e instanceof LivingEntity) {
+                ((LivingEntity) e).getActivePotionMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActivePotionMap().get(effect).getAmplifier() <= (int) state.getBuffList().get(LibBuff.DECAY).getForce());
             }
         }, true);
 

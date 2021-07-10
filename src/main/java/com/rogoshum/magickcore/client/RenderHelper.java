@@ -75,6 +75,14 @@ public class RenderHelper {
         RenderSystem.defaultBlendFunc();
     });
 
+    protected static final RenderState.TransparencyState solid = new RenderState.TransparencyState("solid", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
+
     protected static final RenderState.TransparencyState CRUMBLING_TRANSPARENCY = new RenderState.TransparencyState("crumbling_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -222,6 +230,12 @@ public class RenderHelper {
     protected static final RenderState.DepthTestState DEPTH_LEQUAL = new RenderState.DepthTestState("<=", 515);
     protected static final RenderState.ShadeModelState SHADE_ENABLED = new RenderState.ShadeModelState(true);
     protected static final RenderState.LineState DEFAULT_LINE = new RenderState.LineState(OptionalDouble.of(6.0D));
+
+    public static RenderType getTexedOrbSolid(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(solid).build(false);
+        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        return type;
+    }
 
     public static RenderType getTexedOrb(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(normal_transparency).build(false);

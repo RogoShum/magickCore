@@ -29,6 +29,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Dimension;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -41,6 +42,7 @@ import java.util.*;
 public class ElementOrbEvent {
     private static final HashMap<Class, LivingElementTable> spawnElementMap = new HashMap<Class, LivingElementTable>();
     private static final HashMap<String, LivingElementTable> spawnElementMap_dimension = new HashMap<String, LivingElementTable>();
+    private static final HashMap<String, LivingElementTable> spawnElementMap_biome = new HashMap<String, LivingElementTable>();
     private static final List<EntityType<?>> element_animal = new ArrayList<>();
 
     public static void initElementMap()
@@ -54,6 +56,11 @@ public class ElementOrbEvent {
         spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(7, LibElements.VOID));
         spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(10, LibElements.SOLAR));
 
+        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(5, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(2, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(3, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(2, LibElements.STASIS));
+
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
         element_animal.add(EntityType.CHICKEN);
@@ -65,7 +72,25 @@ public class ElementOrbEvent {
         return element_animal.contains(type);
     }
 
-    public static boolean putLivingElementTable(String s, LivingElementTable table)
+    public static boolean putAnimalTypeElementTable(EntityType<?> type)
+    {
+        if(element_animal.contains(type))
+            return false;
+
+        element_animal.add(type);
+        return true;
+    }
+
+    public static boolean putBiomeElementTable(String s, LivingElementTable table)
+    {
+        if(spawnElementMap_biome.containsKey(s))
+            return false;
+
+        spawnElementMap_biome.put(s, table);
+        return true;
+    }
+
+    public static boolean putDimensionElementTable(String s, LivingElementTable table)
     {
         if(spawnElementMap_dimension.containsKey(s))
             return false;
@@ -87,13 +112,13 @@ public class ElementOrbEvent {
     public void onDrops(LivingDropsEvent event)
     {
         IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-        if(state.getIsDeprived() && !state.getElement().getType().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote)
+        if(state != null && state.getIsDeprived() && !state.getElement().getType().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote)
         {
             ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, event.getEntityLiving().world);
             Vector3d vec = event.getEntityLiving().getPositionVec();
             orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
             orb.setElement(state.getElement());
-            orb.setTickTime(2000);
+            orb.setTickTime(200);
             orb.setShooter(event.getEntityLiving());
             event.getEntityLiving().world.addEntity(orb);
         }
@@ -132,21 +157,6 @@ public class ElementOrbEvent {
     }
 
     @SubscribeEvent
-    public void onInteract(PlayerInteractEvent.EntityInteract event)
-    {
-        if(event.getTarget() instanceof ManaElementOrbEntity)
-        {
-            if (event.getPlayer().getHeldItemMainhand().getItem() == Items.GLASS_BOTTLE) {
-                ItemStack stack = new ItemStack(ModItems.orb_bottle.get());
-                ManaItem item = (ManaItem) stack.getItem();
-                item.setElement(stack, ((ManaElementOrbEntity)event.getTarget()).getElement());
-                event.getPlayer().setHeldItem(Hand.MAIN_HAND, stack);
-                event.getTarget().remove();
-            }
-        }
-    }
-
-    @SubscribeEvent
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event)
     {
         IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
@@ -169,13 +179,27 @@ public class ElementOrbEvent {
         }
 
         String dimension_name = event.getEntityLiving().world.getDimensionKey().getLocation().toString();
-        if(ElementOrbEvent.spawnElementMap_dimension.containsKey(dimension_name))
+        if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_dimension.containsKey(dimension_name))
         {
             LivingElementTable table = ElementOrbEvent.spawnElementMap_dimension.get(dimension_name);
 
             if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
             {
                 state.setFinalMaxElementShield(MagickCore.rand.nextInt(41) + 10);
+                state.setElement(ModElements.getElement(table.element));
+            }
+
+            state.setElemented();
+        }
+
+        String biome_type = event.getEntityLiving().world.getBiome(event.getEntityLiving().getPosition()).getCategory().getString();
+        if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_biome.containsKey(biome_type))
+        {
+            LivingElementTable table = ElementOrbEvent.spawnElementMap_biome.get(biome_type);
+
+            if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+            {
+                state.setFinalMaxElementShield(MagickCore.rand.nextInt(91) + 50);
                 state.setElement(ModElements.getElement(table.element));
             }
 

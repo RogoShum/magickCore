@@ -11,4 +11,5 @@ public class LibEffect {
     public static final String MANA_CONSUM_REDUCE = "mana_consum_reduce";
     public static final String MANA_CONSUM_REDUCE_II = "mana_consum_reduce_ii";
     public static final String MANA_FORCE = "mana_force";
+    public static final String MANA_STASIS = "mana_stasis";
 }

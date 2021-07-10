@@ -72,6 +72,7 @@ public class ClientProxy extends CommonProxy
 		event.getItemColors().register((IItemColor) ModItems.element_crystal_seeds.get().getItem(), ModItems.element_crystal_seeds.get());
 		event.getItemColors().register((IItemColor) ModItems.element_meat.get().getItem(), ModItems.element_meat.get());
 		event.getItemColors().register((IItemColor) ModItems.element_crystal.get().getItem(), ModItems.element_crystal.get());
+		event.getItemColors().register((IItemColor) ModItems.element_string.get().getItem(), ModItems.element_string.get());
 	}
 
 	public void onModelBaked(ModelBakeEvent event) {

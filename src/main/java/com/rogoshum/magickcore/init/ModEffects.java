@@ -23,6 +23,7 @@ public class ModEffects {
     public static RegistryObject<Effect> MANA_REGEN = EFFECTS.register(LibEffect.MANA_REGEN, () -> new ModEffect(EffectType.BENEFICIAL, 11291317));
     public static RegistryObject<Effect> TRACE = EFFECTS.register(LibEffect.TRACE, () -> new ModEffect(EffectType.BENEFICIAL, 14568046));
     public static RegistryObject<Effect> MANA_FORCE = EFFECTS.register(LibEffect.MANA_FORCE, () -> new ModEffect(EffectType.BENEFICIAL, 14585018));
+    public static RegistryObject<Effect> MANA_STASIS = EFFECTS.register(LibEffect.MANA_STASIS, () -> new ModEffect(EffectType.HARMFUL, 	6619040));
 
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, MagickCore.MOD_ID);
     public static RegistryObject<Potion> SHIELD_REGEN_P = POTIONS.register(LibEffect.SHIELD_REGEN, () -> new Potion(new EffectInstance(SHIELD_REGEN.get(), 3000, 0)));

@@ -39,6 +39,6 @@ public class ElementContainerItem extends BaseItem implements IItemColor {
                 return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
             }
         }
-        return 0;
+        return 	16777215;
     }
 }

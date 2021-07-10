@@ -13,6 +13,7 @@ public class LibBuff {
     public static final String STASIS = "stasis";
     public static final String LIGHT = "light";
     public static final String HYPERMUTEKI = "hyper_muteki";
+    public static final String DECAY = "decay";
     public static final String RADIANCE_WELL = "radiance_wall";
 
 }

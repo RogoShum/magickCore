@@ -19,9 +19,13 @@ import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.registry.Registry;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -33,8 +37,18 @@ public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.push();
         matrixStackIn.translate(0.5F, 0.5F, 0.5F);
-        //matrixStackIn.translate(xOffset, 0, zOffset);
 
+        float xOffset = -1 / 32f;
+        float zOffset = 0;
+        matrixStackIn.translate(-xOffset, 0, -zOffset);
+        matrixStackIn.translate(xOffset, 0, zOffset);
+        if(transformType == ItemCameraTransforms.TransformType.GUI) {
+            matrixStackIn.scale(0.8f, 0.8f, 0.8f);
+        }
+        else if(transformType == ItemCameraTransforms.TransformType.GROUND)
+            matrixStackIn.scale(0.4f, 0.4f, 0.4f);
+        else
+            matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         CompoundNBT nbt = stack.getTag();
         if(stack.hasTag() && nbt.contains("ELEMENT") && nbt.getString("ELEMENT") != LibElements.ORIGIN) {
             ItemStack potion = new ItemStack(Items.POTION);
@@ -45,13 +59,21 @@ public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
             potion.setTag(tag);
             matrixStackIn.push();
             IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(potion, null, null);
-            Minecraft.getInstance().getItemRenderer().renderItem(potion, transformType, false, matrixStackIn, bufferIn, combinedLight, combinedOverlay, ibakedmodel);
+            Minecraft.getInstance().getItemRenderer().renderItem(potion, transformType, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
             matrixStackIn.pop();
         }
         else {
             ItemStack glass = new ItemStack(Items.GLASS_BOTTLE);
+            CompoundNBT tag = NBTTagHelper.getStackTag(glass);
+            ListNBT listnbt = new ListNBT();
+            CompoundNBT compoundnbt = new CompoundNBT();
+            compoundnbt.putString("id", String.valueOf((Object) ""));
+            compoundnbt.putShort("lvl", (short)((byte)0));
+            listnbt.add(compoundnbt);
+            tag.put("Enchantments", listnbt);
+            glass.setTag(tag);
             IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(glass, null, null);
-            Minecraft.getInstance().getItemRenderer().renderItem(glass, transformType, false, matrixStackIn, bufferIn, combinedLight, combinedOverlay, ibakedmodel_);
+            Minecraft.getInstance().getItemRenderer().renderItem(glass, transformType, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
         }
         matrixStackIn.pop();
     }
