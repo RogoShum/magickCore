@@ -1,0 +1,106 @@
+{
+    "itemGroup.magickcore_group": "魔法核心",
+
+    //物品
+    "item.magickcore.star_staff": "零星法杖",
+    "item.magickcore.laser_staff": "激光法杖",
+    "item.magickcore.orb_staff": "涡流法杖",
+    "item.magickcore.rune": "符文",
+    "item.magickcore.rift": "裂痕生成符",
+    "item.magickcore.super_spawner": "超能生成符",
+    "item.magickcore.eye": "魔眼生成符",
+    "item.magickcore.orb_bottle": "元素容器",
+
+    "item.magickcore.arc": "§b电弧发生器",
+    "item.magickcore.solar": "§6烈焰点燃仪",
+    "item.magickcore.void": "§5虚空吞噬点",
+    "item.magickcore.stasis": "§3冰影零点守则",
+    "item.magickcore.wither": "§2腐蚀邪魔剑法",
+    "item.magickcore.taken": "§0夺魂之王才具",
+
+    "item.magickcore.mana_spider_eye": "魔力蜘蛛眼",
+    "item.magickcore.mana_glowstone": "魔力萤石粉",
+    "item.magickcore.mana_gunpowder": "魔力火药",
+    "item.magickcore.mana_redstone": "魔力红石粉",
+    "item.magickcore.mana_dragon_breath": "魔力龙息",
+    "item.magickcore.mana_nether_wart": "魔力地狱疣",
+
+    //药水
+    "effect.magickcore.shield_regen": "护盾恢复",
+    "effect.magickcore.shield_value": "盾容增加",
+    "effect.magickcore.mana_regen": "魔力恢复",
+    "effect.magickcore.trace": "魔力追踪",
+    "effect.magickcore.mana_consum_reduce": "耗魔减少",
+    "effect.magickcore.mana_force": "魔法威力增加",
+
+    "item.minecraft.splash_potion.effect.shield_regen": "护盾恢复药水",
+    "item.minecraft.splash_potion.effect.shield_value": "盾容药水",
+    "item.minecraft.splash_potion.effect.mana_regen": "魔力恢复药水",
+    "item.minecraft.splash_potion.effect.shield_regen_ii": "强力护盾恢复药水",
+    "item.minecraft.splash_potion.effect.shield_value_ii": "强力盾容药水",
+    "item.minecraft.splash_potion.effect.mana_regen_ii": "强力魔力恢复药水",
+    "item.minecraft.splash_potion.effect.trace": "追踪药水",
+    "item.minecraft.splash_potion.effect.mana_consum_reduce": "减耗药水",
+    "item.minecraft.splash_potion.effect.mana_consum_reduce_ii": "强力减耗药水",
+    "item.minecraft.splash_potion.effect.mana_force": "威力药水",
+
+    "item.minecraft.lingering_potion.effect.shield_regen": "护盾恢复药水",
+    "item.minecraft.lingering_potion.effect.shield_value": "盾容药水",
+    "item.minecraft.lingering_potion.effect.mana_regen": "魔力恢复药水",
+    "item.minecraft.lingering_potion.effect.shield_regen_ii": "强力护盾恢复药水",
+    "item.minecraft.lingering_potion.effect.shield_value_ii": "强力盾容药水",
+    "item.minecraft.lingering_potion.effect.mana_regen_ii": "强力魔力恢复药水",
+    "item.minecraft.lingering_potion.effect.trace": "追踪药水",
+    "item.minecraft.lingering_potion.effect.mana_consum_reduce": "减耗药水",
+    "item.minecraft.lingering_potion.effect.mana_consum_reduce_ii": "强力减耗药水",
+    "item.minecraft.lingering_potion.effect.mana_force": "威力药水",
+
+    "item.minecraft.potion.effect.shield_regen": "护盾恢复药水",
+    "item.minecraft.potion.effect.shield_value": "盾容药水",
+    "item.minecraft.potion.effect.mana_regen": "魔力恢复药水",
+    "item.minecraft.potion.effect.shield_regen_ii": "强力护盾恢复药水",
+    "item.minecraft.potion.effect.shield_value_ii": "强力盾容药水",
+    "item.minecraft.potion.effect.mana_regen_ii": "强力魔力恢复药水",
+    "item.minecraft.potion.effect.trace": "追踪药水",
+    "item.minecraft.potion.effect.mana_consum_reduce": "减耗药水",
+    "item.minecraft.potion.effect.mana_consum_reduce_ii": "强力减耗药水",
+    "item.minecraft.potion.effect.mana_force": "威力药水",
+
+    //附魔
+    "enchantment.magickcore.element_deprivation": "元素剥夺",
+
+    //方块
+    "block.magickcore.magick_crafting": "魔法工作台",
+    "block.magickcore.magick_container": "魔法容器",
+
+    //描述
+    "magickcore.description.element": "§d元素§7: %s",
+    "magickcore.description.force": "§d魔素§7: %s",
+    "magickcore.description.mana": "§d魔素量§7: %s",
+    "magickcore.description.mana_type": "§d类型§7: %s",
+    "magickcore.description.tick": "§d存在时间§7: %s",
+    "magickcore.description.trace": "§d追踪",
+    "magickcore.description.rogue_tick": "剩余时间",
+    "magickcore.description.origin": "§f原生",
+    "magickcore.description.stasis": "§3冰影",
+    "magickcore.description.solar": "§6烈焰",
+    "magickcore.description.void": "§5虚空",
+    "magickcore.description.arc": "§b电弧",
+    "magickcore.description.wither": "§2腐蚀",
+    "magickcore.description.taken": "§0夺魂",
+
+    "magickcore.description.orb_staff": "§9能够生成球型涡流的法杖",
+    "magickcore.description.star_staff": "§9能够生成星辰的法杖",
+    "magickcore.description.laser_staff": "§9能够生成激光的法杖",
+    "magickcore.description.super_spawner": "§9能够在符文上产生超能的生成符",
+    "magickcore.description.rune": "§9生成魔法物件的载体",
+    "magickcore.description.rift": "§9能够在符文上产生裂痕的生成符",
+    "magickcore.description.eye": "§9能够在符文上产生魔眼的生成符",
+
+    "magickcore.description.mana_dragon_breath": "§9施加效果： 追踪",
+    "magickcore.description.mana_glowstone": "§9施加效果： 增加强度",
+    "magickcore.description.mana_redstone": "§9施加效果： 延长存在时间",
+    "magickcore.description.mana_gunpowder": "§9施加效果： 将ATTACK转换类型为BUFF",
+    "magickcore.description.mana_spider_eye": "§9施加效果： 将BUFF转换类型为DEBUFF",
+    "magickcore.description.mana_nether_wart": "§9施加效果： 将DEBUFF转换类型为ATTACK"
+}
