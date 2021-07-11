@@ -6,16 +6,14 @@ import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.element.MagickElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Pose;
+import net.minecraft.entity.*;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
@@ -121,10 +119,10 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     public void applyEntityCollision(Entity entityIn) {
-        if(entityIn instanceof PlayerEntity)
+        if(MagickReleaseHelper.sameLikeOwner(this.getOwner(), entityIn) && entityIn instanceof LivingEntity)
         {
             ModBuff.applyBuff(entityIn, LibBuff.LIGHT, 300, 1, true);
-            ((PlayerEntity)entityIn).addPotionEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
+            ((LivingEntity)entityIn).addPotionEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
             return;
         }
 

@@ -3,12 +3,14 @@ package com.rogoshum.magickcore.magick.element;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.capability.IElementOnTool;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaStarEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.init.ModElements;
@@ -22,6 +24,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
@@ -132,6 +135,25 @@ public class ArcElement extends MagickElement{
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return ModBuff.applyBuff(victim, LibBuff.PARALYSIS, tick, force, false);
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+            for(int i = 0; i < level; ++i) {
+                entity.tick();
+            }
+
+            if(entity.ticksExisted % 20 == 0) {
+                IElementOnTool tool = entity.getCapability(MagickCore.elementOnTool).orElse(null);
+                if (tool != null) {
+                    tool.consumeElementOnTool(entity, LibElements.ARC);
+                }
+            }
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+
         }
     }
 }

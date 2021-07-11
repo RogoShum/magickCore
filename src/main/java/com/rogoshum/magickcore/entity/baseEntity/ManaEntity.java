@@ -5,15 +5,10 @@ import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.EnumTargetType;
 import com.rogoshum.magickcore.api.IMagickElementObject;
 import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
-import com.rogoshum.magickcore.init.ModBuff;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.magick.element.MagickElement;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,16 +17,15 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ManaEntity extends Entity implements IMagickElementObject {
     protected HashMap<Integer, VectorHitReaction> hitReactions = new HashMap<Integer, VectorHitReaction>();
@@ -41,6 +35,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
 
     private UUID owner_uuid;
     private int owner_id;
+    private static final DataParameter<CompoundNBT> dataUUID = EntityDataManager.createKey(ManaEntity.class, DataSerializers.COMPOUND_NBT);
 
     public ManaEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -52,6 +47,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
         if (entityIn != null) {
             this.owner_uuid = entityIn.getUniqueID();
             this.owner_id = entityIn.getEntityId();
+            this.setOwnerUUID(entityIn.getUniqueID());
         }
     }
 
@@ -59,8 +55,20 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
     public Entity getOwner() {
         if (this.owner_uuid != null && this.world instanceof ServerWorld) {
             return ((ServerWorld)this.world).getEntityByUuid(this.owner_uuid);
-        } else {
+        } else if(this.world instanceof ServerWorld){
             return this.owner_id != 0 ? this.world.getEntityByID(this.owner_id) : null;
+        }
+        else{
+            ArrayList<Entity> list = new ArrayList<>();
+            ((ClientWorld)this.world).getAllEntities().forEach((list::add));
+
+            for (Entity entity : list)
+            {
+                if(entity.getUniqueID().equals(getOwnerUUID()))
+                    return entity;
+            }
+
+            return null;
         }
     }
 
@@ -126,7 +134,20 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
 
     @Override
     protected void registerData() {
+        this.dataManager.register(dataUUID, new CompoundNBT());
+    }
 
+    public void setOwnerUUID(UUID uuid) {
+        CompoundNBT tag = new CompoundNBT();
+        tag.putUniqueId("UUID", uuid);
+        this.getDataManager().set(dataUUID, tag);
+    }
+
+    public UUID getOwnerUUID() {
+        CompoundNBT tag = this.getDataManager().get(dataUUID);
+        if(tag.hasUniqueId("UUID"))
+            return tag.getUniqueId("UUID");
+        return MagickCore.emptyUUID;
     }
 
     public ManaEntity(EntityType<?> entityTypeIn, World worldIn, IManaElement manaElement) {
@@ -172,6 +193,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
     protected void readAdditional(CompoundNBT compound) {
         if (compound.hasUniqueId("Owner")) {
             this.owner_uuid = compound.getUniqueId("Owner");
+            this.setOwnerUUID(this.owner_uuid);
         }
     }
 

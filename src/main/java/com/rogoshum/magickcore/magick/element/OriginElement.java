@@ -4,6 +4,8 @@ import com.rogoshum.magickcore.init.ModDamage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.IndirectEntityDamageSource;
@@ -51,6 +53,16 @@ public class OriginElement extends MagickElement{
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return false;
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+
         }
     }
 }

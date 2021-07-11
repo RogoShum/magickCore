@@ -3,6 +3,8 @@ package com.rogoshum.magickcore.magick.element;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -41,6 +43,16 @@ public class TakenElement extends MagickElement{
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return false;
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+
         }
     }
 }

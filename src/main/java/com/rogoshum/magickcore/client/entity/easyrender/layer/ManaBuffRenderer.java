@@ -67,8 +67,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
                 //matrixStackIn.translate(0, -0.02f, 0);
                 helper.setColor(color);
                 helper.setAlpha(1.0f);
-                helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png"), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
 
             if(state.getBuffList().containsKey(LibBuff.LIGHT)) {
@@ -78,8 +78,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
                 //matrixStackIn.translate(0, -0.01f, 0);
                 helper.setColor(color);
                 helper.setAlpha(1.0f);
-                helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png"), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
 
             if(state.getBuffList().containsKey(LibBuff.RADIANCE_WELL)) {
@@ -90,8 +90,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
                 color = getColorBlender(time++, color, gold);
                 helper.setColor(color);
                 helper.setAlpha(1.0f);
-                helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png"), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
 
             if(state.getBuffList().containsKey(LibBuff.DECAY)) {
@@ -101,8 +101,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.WITHER).getColor());
                 helper.setColor(color);
                 helper.setAlpha(1.0f);
-                helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png"), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
 
             if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI)) {
@@ -112,8 +112,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
                 float[] gold = {1f, 0.8f, 0};
                 helper.setColor(gold);
                 helper.setAlpha(1.0f);
-                helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png"), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
         }
     }

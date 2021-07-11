@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
@@ -68,6 +69,16 @@ public class SolarElement extends MagickElement{
             if(entity.getFireTimer() > 0)
                 return true;
             return false;
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+
         }
     }
 }

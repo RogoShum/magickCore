@@ -1,13 +1,16 @@
 package com.rogoshum.magickcore.magick.element;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Iterator;
+import java.util.Random;
 
 public class WitherElement extends MagickElement{
     public WitherElement(String name, ElementAbility ability) {
@@ -63,6 +67,17 @@ public class WitherElement extends MagickElement{
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return ModBuff.applyBuff(victim, LibBuff.CRIPPLE, tick, force, false);
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {}
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+            if(stack.getDamage() > 0 && MagickCore.rand.nextInt(200) == 0) {
+                stack.setDamage(stack.getDamage() - 1);
+                NBTTagHelper.consumeElementOnTool(stack, LibElements.WITHER);
+            }
         }
     }
 }

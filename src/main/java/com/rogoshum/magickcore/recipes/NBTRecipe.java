@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.INBTRecipe;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModRecipes;
@@ -15,9 +16,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 
 public class NBTRecipe extends SpecialRecipe {
-    private final NBTRecipeContainer container;
+    private final INBTRecipe container;
 
-    public NBTRecipe(NBTRecipeContainer container, ResourceLocation idIn) {
+    public NBTRecipe(INBTRecipe container, ResourceLocation idIn) {
         super(idIn);
         this.container = container;
     }

@@ -3,12 +3,15 @@ package com.rogoshum.magickcore.recipes;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
 public class ElementOnToolRecipe extends NBTRecipeContainer{
     private final String item;
     private final int count;
+    private boolean equip;
 
     public static ElementOnToolRecipe create(String item, ItemContainer... containers)
     {
@@ -18,6 +21,12 @@ public class ElementOnToolRecipe extends NBTRecipeContainer{
     public static ElementOnToolRecipe create(String item, int count, ItemContainer... containers)
     {
         return new ElementOnToolRecipe(item, count, containers);
+    }
+
+    public ElementOnToolRecipe equip()
+    {
+        equip = true;
+        return this;
     }
 
     protected ElementOnToolRecipe(String item, int count, ItemContainer... containers)
@@ -36,7 +45,7 @@ public class ElementOnToolRecipe extends NBTRecipeContainer{
         {
             ItemStack itemStack = inv.getStackInSlot(i);
 
-            if(itemStack.getItem().getRegistryName().toString().contains(this.item))
+            if(itemStack.getItem().getRegistryName().toString().contains(this.item) && (!equip || MobEntity.getSlotForItemStack(itemStack).getSlotType().equals(EquipmentSlotType.Group.ARMOR)))
                 stack = itemStack.copy();
             else if(NBTTagHelper.hasElement(itemStack)) {
                 element = NBTTagHelper.getElement(itemStack);

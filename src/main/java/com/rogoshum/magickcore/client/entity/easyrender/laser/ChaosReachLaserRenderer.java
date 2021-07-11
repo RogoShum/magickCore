@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
 import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,7 @@ public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
             while (ite.hasNext()) {
                 int id = ite.next();
                 Entity entity = entityIn.world.getEntityByID(id);
-                if(entity != null && !(entity instanceof PlayerEntity)) {
+                if(entity != null && !MagickReleaseHelper.sameLikeOwner(entityIn.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(entityIn, entity)) {
                     Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight() / 2, 0).subtract(entity.getPositionVec().add(0, entityIn.getHeight() / 2, 0));
                     float distance = (float) dirc.length();
                     dirc = dirc.normalize();

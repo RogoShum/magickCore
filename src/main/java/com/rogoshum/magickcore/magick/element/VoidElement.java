@@ -1,16 +1,32 @@
 package com.rogoshum.magickcore.magick.element;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.capability.IElementOnTool;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+
+import java.util.Iterator;
+import java.util.UUID;
 
 public class VoidElement extends MagickElement{
     public VoidElement(String name, ElementAbility ability) {
@@ -62,5 +78,19 @@ public class VoidElement extends MagickElement{
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return ModBuff.applyBuff(victim, LibBuff.FRAGILE, tick, force, false);
         }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+            ItemStack stack = entity.getHeldItemMainhand();
+            if(NBTTagHelper.hasElementOnTool(stack, LibElements.VOID))
+            {
+                CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+                tag.putInt("VOID_LEVEL", level);
+                stack.setTag(tag);
+            }
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {}
     }
 }

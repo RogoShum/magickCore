@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.INBTRecipe;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.item.OrbBottleItem;
@@ -47,7 +48,7 @@ public class ModRecipes {
     public static final String wither = MagickCore.MOD_ID + ":wither";
     public static final String taken = MagickCore.MOD_ID + ":taken";
 
-    public static final CopyNBTTagRecipe elementOrbTag = (CopyNBTTagRecipe) CopyNBTTagRecipe.create(element_crystal_seeds, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("seeds")).shapeless();
+    public static final INBTRecipe elementOrbTag = CopyNBTTagRecipe.create(element_crystal_seeds, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("seeds")).shapeless();
     public static final SpecialRecipeSerializer<?> element_orb_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementOrbTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -55,7 +56,7 @@ public class ModRecipes {
         }
     }).setRegistryName("element_orb_recipe");
 
-    public static final CopyNBTTagRecipe elementWoolTag = (CopyNBTTagRecipe) CopyNBTTagRecipe.create(element_wool, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("wool")).shapeless();
+    public static final INBTRecipe elementWoolTag = CopyNBTTagRecipe.create(element_wool, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("wool")).shapeless();
     public static final SpecialRecipeSerializer<?> element_wool_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementWoolTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -63,7 +64,7 @@ public class ModRecipes {
         }
     }).setRegistryName("element_wool_recipe");
 
-    public static final CopyNBTTagRecipe elementStringTag = (CopyNBTTagRecipe) CopyNBTTagRecipe.create(element_string, 4, NBTRecipeContainer.ItemContainer.create("element_wool", "ELEMENT")).shapeless();
+    public static final INBTRecipe elementStringTag = CopyNBTTagRecipe.create(element_string, 4, NBTRecipeContainer.ItemContainer.create("element_wool", "ELEMENT")).shapeless();
     public static final SpecialRecipeSerializer<?> element_string_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementStringTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -143,8 +144,12 @@ public class ModRecipes {
                 taken_element_recipe,
                 element_wool_recipe,
                 element_string_recipe,
+                ElementToolRecipe.element_sword_recipe,
+                ElementToolRecipe.element_axe_recipe,
                 ElementToolRecipe.element_helmet_recipe,
-                ElementToolRecipe.element_sword_recipe
+                ElementToolRecipe.element_chest_recipe,
+                ElementToolRecipe.element_leg_recipe,
+                ElementToolRecipe.element_boots_recipe
         );
     }
 

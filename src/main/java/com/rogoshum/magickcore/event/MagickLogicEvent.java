@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.event;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IMagickElementObject;
@@ -15,6 +13,7 @@ import com.rogoshum.magickcore.entity.ManaEyeEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModEffects;
@@ -29,10 +28,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -42,8 +44,10 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -67,6 +71,25 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void onKnockBack(LivingKnockBackEvent event)
 	{
+	}
+
+	@SubscribeEvent
+	public void onLiftClick(LivingAttackEvent event)
+	{
+		if(event.getSource().getTrueSource() instanceof LivingEntity)
+			event.getSource().getTrueSource().getEquipmentAndArmor().forEach((s) -> NBTTagHelper.consumeElementOnTool(s, LibElements.VOID));
+	}
+
+	@SubscribeEvent
+	public void voidElement(ItemAttributeModifierEvent event)
+	{
+		if(event.getSlotType() == EquipmentSlotType.MAINHAND)
+		{
+			if(NBTTagHelper.hasElementOnTool(event.getItemStack(), LibElements.VOID)) {
+				CompoundNBT tag = NBTTagHelper.getStackTag(event.getItemStack());
+				event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785CCCC"), () -> "Weapon modifier", Math.pow(1.1, tag.getInt("VOID_LEVEL") * 6), AttributeModifier.Operation.ADDITION));
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -281,6 +304,14 @@ public class MagickLogicEvent {
 			while(it.hasNext())
 				it.remove();
 		}
+
+		if(event.getSource().getTrueSource() instanceof LivingEntity) {
+			IElementOnTool tool = event.getSource().getTrueSource().getCapability(MagickCore.elementOnTool).orElse(null);
+			if (tool != null) {
+				tool.setAdditionDamage(200);
+				tool.consumeElementOnTool((LivingEntity) event.getSource().getTrueSource(), LibElements.SOLAR);
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -295,7 +326,6 @@ public class MagickLogicEvent {
 	public void onWeakenBuff(LivingHurtEvent event)
 	{
 		IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-
 		Entity entity = event.getSource().getTrueSource();
 		if(entity instanceof LivingEntity)
 		{
@@ -335,11 +365,20 @@ public class MagickLogicEvent {
 			event.setAmount(event.getAmount() * 1.3f);
 
 		Entity entity = event.getSource().getTrueSource();
-		if(entity instanceof LivingEntity && entity instanceof IMob)
+
+		if(entity instanceof LivingEntity || entity instanceof IMob)
 		{
-			IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
-			if(attacker.getElement().getType() != LibElements.ORIGIN && MagickCore.rand.nextInt(2) == 0)
-				attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) (event.getAmount() * 2), event.getAmount() / 3);
+			IElementOnTool tool = entity.getCapability(MagickCore.elementOnTool).orElse(null);
+
+			if (tool != null) {
+				event.setAmount(tool.applyAdditionDamage(event.getAmount()));
+			}
+
+			if(!(entity instanceof PlayerEntity)) {
+				IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
+				if (attacker.getElement().getType() != LibElements.ORIGIN && MagickCore.rand.nextInt(2) == 0)
+					attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) (event.getAmount() * 2), event.getAmount() / 3);
+			}
 		}
 	}
 
@@ -421,6 +460,13 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
 			((LivingEntity)event.getEntity()).setHealth(0.0f);
 
+		if(event.getEntity() instanceof LivingEntity) {
+			IElementOnTool tool = event.getEntity().getCapability(MagickCore.elementOnTool).orElse(null);
+			if (tool != null) {
+				tool.tick((LivingEntity) event.getEntity());
+			}
+		}
+
 		IEntityState state = event.getEntity().getCapability(MagickCore.entityState).orElse(null);
 		if(state != null)
 		{
@@ -448,11 +494,28 @@ public class MagickLogicEvent {
 			}
 
 			state.tick(event.getEntity());
+
+			HashMap<String, Integer> map = new HashMap<>();
+
+			for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
+				if(stack != null && NBTTagHelper.hasElementOnTool(stack, LibElements.ARC))
+					state.tick(event.getEntity());
+			}
+
 			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
-			Networking.INSTANCE.send(
-					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-					new EntityStatePack(event.getEntity().getEntityId(), state.getElement().getType(), state.getElementShieldMana(), state.getManaValue()
-							, state.getMaxElementShieldMana(), state.getMaxManaValue(), effect_tick, effect_force));
+				Networking.INSTANCE.send(
+						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						new EntityStatePack(event.getEntity().getEntityId(), state.getElement().getType(), state.getElementShieldMana(), state.getManaValue()
+								, state.getMaxElementShieldMana(), state.getMaxManaValue(), effect_tick, effect_force));
+		}
+
+		IElementAnimalState animalState = event.getEntity().getCapability(MagickCore.elementAnimal).orElse(null);
+		if(animalState != null)
+		{
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
+				Networking.INSTANCE.send(
+						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						new ElementAnimalPack(event.getEntity().getEntityId(), animalState.getElement().getType()));
 		}
 
 		IManaData data = event.getEntity().getCapability(MagickCore.manaData).orElse(null);
@@ -464,15 +527,6 @@ public class MagickLogicEvent {
 					new ManaDataPack(event.getEntity().getEntityId(), data.getElement().getType(), data.getTargetType().getLabel()
 							, data.getManaType().getLabel(), data.getRange(), data.getForce()
 							, data.getTraceTarget(), data.getTickTime()));
-		}
-
-		IElementAnimalState animalState = event.getEntity().getCapability(MagickCore.elementAnimal).orElse(null);
-		if(animalState != null)
-		{
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
-				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new ElementAnimalPack(event.getEntity().getEntityId(), animalState.getElement().getType()));
 		}
 	}
 
@@ -506,6 +560,8 @@ public class MagickLogicEvent {
 		{
 			if(!event.getCapabilities().containsKey(new ResourceLocation(MagickCore.MOD_ID, "capability_entity_state")));
 				event.addCapability(new ResourceLocation(MagickCore.MOD_ID, "capability_entity_state"), new CapabilityEntityState.EntityStateProvider());
+			if(!event.getCapabilities().containsKey(new ResourceLocation(MagickCore.MOD_ID, "capability_element_on_tool")));
+				event.addCapability(new ResourceLocation(MagickCore.MOD_ID, "capability_element_on_tool"), new CapabilityElementOnTool.ElementOnToolProvider());
 		}
 
 		if(entity instanceof IMagickElementObject && !event.getCapabilities().containsKey(new ResourceLocation(MagickCore.MOD_ID, "capability_mana_data")))

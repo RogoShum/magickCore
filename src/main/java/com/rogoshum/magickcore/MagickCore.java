@@ -69,6 +69,9 @@ public class MagickCore
 
     @CapabilityInject(IElementAnimalState.class)
     public static Capability<IElementAnimalState> elementAnimal;
+
+    @CapabilityInject(IElementOnTool.class)
+    public static Capability<IElementOnTool> elementOnTool;
 	
 	public static Random rand = new Random();
     public static CommonProxy proxy = new CommonProxy() {};
@@ -121,6 +124,7 @@ public class MagickCore
             CapabilityManager.INSTANCE.register(IManaData.class, new CapabilityManaData.Storage<>(), () -> new CapabilityManaData.Implementation(ModElements.getElement(LibElements.ORIGIN)));
             CapabilityManager.INSTANCE.register(IManaItemData.class, new CapabilityManaItemData.Storage<>(), () -> new CapabilityManaItemData.Implementation(ModElements.getElement(LibElements.ORIGIN)));
             CapabilityManager.INSTANCE.register(IElementAnimalState.class, new CapabilityElementAnimalState.Storage<>(), () -> new CapabilityElementAnimalState.Implementation(ModElements.getElement(LibElements.ORIGIN)));
+            CapabilityManager.INSTANCE.register(IElementOnTool.class, new CapabilityElementOnTool.Storage<>(), CapabilityElementOnTool.Implementation::new);
             Networking.registerMessage();
         });
     }

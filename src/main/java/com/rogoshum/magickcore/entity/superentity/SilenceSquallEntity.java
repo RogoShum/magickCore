@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
@@ -36,7 +37,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                 Entity entity = this.world.getEntityByID(id);
                 if(entity == null)
                     return;
-                if(!(entity instanceof PlayerEntity)) {
+                if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
                     if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
                         cloest = entity;
                     if(this.getDistance(entity) <= 9.5)

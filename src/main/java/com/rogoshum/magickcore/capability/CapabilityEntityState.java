@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -224,6 +225,7 @@ public class CapabilityEntityState{
 
 		 @Override
 		 public void tick(Entity entity) {
+
 			 EntityEvents.StateCooldownEvent cEvent = new EntityEvents.StateCooldownEvent((LivingEntity) entity, shieldCooldown, false, true);
 			 MinecraftForge.EVENT_BUS.post(cEvent);
 			 if(shieldCooldown > cEvent.getCooldown())
@@ -261,6 +263,7 @@ public class CapabilityEntityState{
 
 			 if(manaCooldown <= 0)
 				 this.setManaValue(Math.min(this.getMaxManaValue(), this.getManaValue() + manaRegen));
+
 			 Iterator<String> i = buffList.keySet().iterator();
 			 while(i.hasNext())
 			 {

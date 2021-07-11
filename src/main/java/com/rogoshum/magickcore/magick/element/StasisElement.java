@@ -1,16 +1,25 @@
 package com.rogoshum.magickcore.magick.element;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.capability.IElementOnTool;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElementTool;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+
+import java.util.List;
 
 public class StasisElement extends MagickElement{
     public StasisElement(String name, ElementAbility ability) {
@@ -66,6 +75,31 @@ public class StasisElement extends MagickElement{
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
             return ModBuff.applyBuff(victim, LibBuff.FREEZE, tick, force, false);
+        }
+
+        @Override
+        public void applyToolElement(LivingEntity entity, int level) {
+            boolean worked = false;
+            List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getBoundingBox().grow(level * 1.5));
+            for (Entity entity1 : list)
+            {
+                if(!MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
+                    entity1.setMotion(entity1.getMotion().scale(Math.pow(0.85, level)));
+                    worked = true;
+                }
+            }
+
+            if(worked && entity.ticksExisted % 15 == 0) {
+                IElementOnTool tool = entity.getCapability(MagickCore.elementOnTool).orElse(null);
+                if (tool != null) {
+                    tool.consumeElementOnTool(entity, LibElements.STASIS);
+                }
+            }
+        }
+
+        @Override
+        public void applyToolElement(ItemStack stack, int level) {
+
         }
     }
 }

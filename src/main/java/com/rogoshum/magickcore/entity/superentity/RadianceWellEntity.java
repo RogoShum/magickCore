@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
@@ -45,7 +46,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         while (it.hasNext()) {
             Integer id = it.next();
             LivingEntity living = (LivingEntity) this.world.getEntityByID(id);
-            if(living != null && !living.removed && living instanceof PlayerEntity)
+            if(living != null && MagickReleaseHelper.sameLikeOwner(this.getOwner(), living))
             {
                 ModBuff.applyBuff(living, LibBuff.RADIANCE_WELL, 20, 3, true);
             }

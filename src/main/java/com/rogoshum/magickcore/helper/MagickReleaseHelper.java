@@ -14,7 +14,9 @@ import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -134,9 +136,21 @@ public class MagickReleaseHelper {
     }
 
     public static Entity getEntityLookedAt(Entity e) {
+        return getEntityRayTrace(e, new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ()), e.getLookVec(), 64);
+    }
+
+    public static boolean canEntityTraceAnother(Entity e, Entity another) {
+        return another == getEntityRayTrace(e, e.getPositionVec().add(0, e.getHeight() / 2, 0), another.getPositionVec().add(0, another.getHeight() / 2, 0), 64);
+    }
+
+    public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction) {
+        return getEntityRayTrace(e, vec, diraction, 64);
+    }
+
+    public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction, float finalD) {
         Entity foundEntity = null;
 
-        final double finalDistance = 64;
+        final double finalDistance = finalD;
         double distance = finalDistance;
         RayTraceResult pos = raycast(e, finalDistance);
         Vector3d positionVector = e.getPositionVec();
@@ -197,14 +211,27 @@ public class MagickReleaseHelper {
 
     public static boolean sameLikeOwner(Entity owner, Entity other)
     {
-        boolean flag = false;
+        boolean isOwnerPlayer = owner instanceof PlayerEntity;
+        boolean isOtherPlayer = other instanceof PlayerEntity;
 
-        if(owner instanceof PlayerEntity && other instanceof PlayerEntity)
-            flag = true;
+        if(isOwnerPlayer && isOtherPlayer)
+            return true;
 
-        if(!(owner instanceof PlayerEntity) && !(other instanceof PlayerEntity))
-            flag = true;
+        if(!isOwnerPlayer && !isOtherPlayer)
+            return true;
 
-        return flag;
+        if(isOwnerPlayer && other instanceof ProjectileEntity && ((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity)
+            return true;
+
+        if(!isOwnerPlayer && other instanceof ProjectileEntity && !(((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity))
+            return true;
+
+        if(isOwnerPlayer && other instanceof TameableEntity && ((TameableEntity)other).getOwner() instanceof PlayerEntity)
+            return true;
+
+        if(!isOwnerPlayer && other instanceof TameableEntity && !(((TameableEntity)other).getOwner() instanceof PlayerEntity))
+            return true;
+
+        return false;
     }
 }

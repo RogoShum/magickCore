@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
@@ -47,7 +48,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 Entity entity = this.world.getEntityByID(id);
                 if(entity == null)
                     return;
-                if(!(entity instanceof PlayerEntity)) {
+                if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
                     ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 5, false);
                     //this.getElement().getAbility().damageEntity(this, null, entity, 10, 10);
                     TrailParticle trail = trace.get(id);
@@ -92,7 +93,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                         , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                         , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
                         , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                        , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick() / 2, this.getElement().getRenderer());
+                        , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick() / 4, this.getElement().getRenderer());
                 litPar.setGlow();
                 litPar.setParticleGravity(0f);
                 litPar.setShakeLimit(35.0f);

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.INBTRecipe;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class NBTRecipeContainer {
+public abstract class NBTRecipeContainer implements INBTRecipe {
     private boolean shapeless;
     private final List<ItemContainer> containers = new ArrayList<>();
 
@@ -77,7 +78,7 @@ public abstract class NBTRecipeContainer {
         }
     }
 
-    public NBTRecipeContainer shapeless()
+    public INBTRecipe shapeless()
     {
         shapeless = true;
         return this;
