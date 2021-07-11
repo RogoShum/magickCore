@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -112,20 +113,17 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
 	@Override
 	protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
-		if(this.func_234616_v_() == null ||
-				p_213868_1_.getEntity().getEntityId() != this.func_234616_v_().getEntityId())
-		{
 			if(this.getManaData() != null) {
-				if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()))
+				if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
 				{
 					EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
 					MinecraftForge.EVENT_BUS.post(event);
 					this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
 				}
 
-				if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()))
+				if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
 					this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
-				if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
+				if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()) && MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
 					this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
 			}
 
@@ -133,7 +131,6 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 				this.world.setEntityState(this, (byte)3);
 				this.remove();
 			}
-		}
 		super.onEntityHit(p_213868_1_);
 	}
 

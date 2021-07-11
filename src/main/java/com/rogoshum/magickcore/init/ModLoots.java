@@ -38,7 +38,7 @@ public class ModLoots {
 
         @Override
         public RandomLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] ailootcondition) {
-            return new RandomLootModifier(ailootcondition);
+            return new RandomLootModifier(location, ailootcondition);
         }
 
         @Override
@@ -49,15 +49,28 @@ public class ModLoots {
 
     public static class RandomLootModifier implements IGlobalLootModifier {
         private ILootCondition[] ailootcondition;
-        public RandomLootModifier(ILootCondition[] ailootcondition)
+        private ResourceLocation location;
+        public RandomLootModifier(ResourceLocation location, ILootCondition[] ailootcondition)
         {
             this.ailootcondition = ailootcondition;
+            this.location = location;
         }
 
         @Nonnull
         @Override
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
-            generatedLoot.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomManaItem(ModItems.star_staff), 600));
+
+            while (context.getRandom().nextBoolean())
+            {
+                int lucky = 1;
+                while (context.getRandom().nextBoolean())
+                    lucky++;
+
+                int tick = context.getRandom().nextInt(lucky + 1) * context.getRandom().nextInt(lucky * 2) * context.getRandom().nextInt(lucky + 2) * 10;
+                if(context.getRandom().nextInt(lucky + 1) + context.getRandom().nextInt(lucky + 1) > 10)
+                    tick = Integer.MAX_VALUE;
+                generatedLoot.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomItemWithLucky(lucky), tick));
+            }
             return generatedLoot;
         }
     }

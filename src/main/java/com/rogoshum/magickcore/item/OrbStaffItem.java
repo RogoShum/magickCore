@@ -37,14 +37,4 @@ public class OrbStaffItem extends ManaItem {
 
         return false;
     }
-
-    @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
-            items.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomManaItem(ModItems.orb_staff), 6000));
-            items.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomManaItem(ModItems.orb_staff), 1000));
-            items.add(RoguelikeHelper.createRandomManaItem(ModItems.orb_staff));
-            items.add(RoguelikeHelper.createRandomManaItem(ModItems.orb_staff));
-        }
-    }
 }

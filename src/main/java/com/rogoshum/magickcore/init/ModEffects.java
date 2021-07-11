@@ -14,6 +14,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModEffects {
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MagickCore.MOD_ID);
@@ -37,10 +39,13 @@ public class ModEffects {
     public static RegistryObject<Potion> TRACE_P = POTIONS.register(LibEffect.TRACE, () -> new Potion(new EffectInstance(TRACE.get(), 4800, 0)));
     public static RegistryObject<Potion> MANA_FORCE_P = POTIONS.register(LibEffect.MANA_FORCE, () -> new Potion(new EffectInstance(MANA_FORCE.get(), 4800, 0)));
 
+    public static final List<Effect> effectList = new ArrayList<>();
+
     public static class ModEffect extends Effect
     {
         protected ModEffect(EffectType typeIn, int liquidColorIn) {
             super(typeIn, liquidColorIn);
+            effectList.add(this);
         }
 
         @Override

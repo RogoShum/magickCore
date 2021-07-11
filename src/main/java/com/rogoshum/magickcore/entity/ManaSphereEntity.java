@@ -57,22 +57,19 @@ public class ManaSphereEntity extends ManaPointEntity {
             Entity entity = this.world.getEntityByID(id);
             if (entity == null)
                 return;
-            if (!(entity instanceof PlayerEntity)) {
                 if(this.getManaData() != null) {
-                    if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()))
+                    if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
                     {
                         EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this.getOwner(), entity);
                         MinecraftForge.EVENT_BUS.post(event);
                         this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, this.getTickTime(), this.getForce() / 5);
                     }
-                    if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()))
+                    if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
                         this.getElement().getAbility().applyDebuff(entity, this.getTickTime(), this.getForce() / 5);
-                    if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
+                    if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()) && MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
                         this.getElement().getAbility().applyBuff(entity, this.getTickTime(), this.getForce() / 5);
                 }
-
             }
-        }
         applyParticle();
     }
 

@@ -25,7 +25,7 @@ public class ModItems {
     public static final RegistryObject<Item> super_spawner = ITEMS.register("super_spawner", SuperItem::new);
     public static final RegistryObject<Item> rune = ITEMS.register("rune", RuneItem::new);
     public static final RegistryObject<Item> rift = ITEMS.register("rift", RiftItem::new);
-    public static final RegistryObject<Item> eye = ITEMS.register("eye", EyeItem::new);
+    public static final RegistryObject<ManaItem> eye = ITEMS.register("eye", EyeItem::new);
 
     //public static final RegistryObject<ManaItem> buff = ITEMS.register("buff", BuffItem::new);
 

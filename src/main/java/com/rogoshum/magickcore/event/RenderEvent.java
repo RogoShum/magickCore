@@ -322,7 +322,7 @@ public class RenderEvent {
                     , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 2 + entity.getPosX()
                     , MagickCore.getNegativeToOne() * entity.getHeight() * 2 + entity.getPosY() + entity.getHeight() / 2
                     , MagickCore.getNegativeToOne() * entity.getWidth()  * 2 + entity.getPosZ())
-                    , entity.getWidth() / 8f * MagickCore.rand.nextFloat(), entity.getWidth() / 8f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 40, render);
+                    , entity.getWidth() / 5f * MagickCore.rand.nextFloat(), entity.getWidth() / 5f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 40, render);
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
