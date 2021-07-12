@@ -18,6 +18,9 @@ import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -29,12 +32,14 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.core.jmx.Server;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
 public abstract class ManaProjectileEntity extends ThrowableEntity implements IMagickElementObject {
 	public boolean cansee;
 	protected TrailParticle trail;
+	private static final DataParameter<CompoundNBT> dataUUID = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.COMPOUND_NBT);
 	public ManaProjectileEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
 	    super(type, worldIn);
 	    if(worldIn.isRemote)
@@ -45,10 +50,51 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	public void setTrail(TrailParticle trail) {this.trail = trail;}
 
 	@Override
+	public void setShooter(@Nullable Entity entityIn) {
+		super.setShooter(entityIn);
+		this.setOwnerUUID(entityIn.getUniqueID());
+	}
+
+	@Nullable
+	@Override
+	public Entity func_234616_v_() {
+		Entity entity = super.func_234616_v_();
+
+		if(entity == null && this.world instanceof ClientWorld) {
+			ArrayList<Entity> list = new ArrayList<>();
+			((ClientWorld) this.world).getAllEntities().forEach((list::add));
+
+			for (Entity e : list) {
+				if (e.getUniqueID().equals(getOwnerUUID()))
+					return e;
+			}
+		}
+		return entity;
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		applyParticle();
 		traceTarget();
+	}
+
+	@Override
+	protected void registerData() {
+		this.dataManager.register(dataUUID, new CompoundNBT());
+	}
+
+	public void setOwnerUUID(UUID uuid) {
+		CompoundNBT tag = new CompoundNBT();
+		tag.putUniqueId("UUID", uuid);
+		this.getDataManager().set(dataUUID, tag);
+	}
+
+	public UUID getOwnerUUID() {
+		CompoundNBT tag = this.getDataManager().get(dataUUID);
+		if(tag.hasUniqueId("UUID"))
+			return tag.getUniqueId("UUID");
+		return MagickCore.emptyUUID;
 	}
 
 	protected void traceTarget()
@@ -99,16 +145,13 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	}
 
 	@Override
-	protected void registerData() {
-
-	}
-
-	@Override
 	protected void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
 	}
 
 	@Override
 	protected void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
 	}
 
 	@Override
@@ -123,7 +166,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
 				if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
 					this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
-				if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()) && MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
+				if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
 					this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
 			}
 

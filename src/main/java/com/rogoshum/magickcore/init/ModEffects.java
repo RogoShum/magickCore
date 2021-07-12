@@ -28,13 +28,17 @@ public class ModEffects {
     public static RegistryObject<Effect> MANA_STASIS = EFFECTS.register(LibEffect.MANA_STASIS, () -> new ModEffect(EffectType.HARMFUL, 	6619040));
 
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, MagickCore.MOD_ID);
-    public static RegistryObject<Potion> SHIELD_REGEN_P = POTIONS.register(LibEffect.SHIELD_REGEN, () -> new Potion(new EffectInstance(SHIELD_REGEN.get(), 3000, 0)));
+    public static RegistryObject<Potion> SHIELD_REGEN_P = POTIONS.register(LibEffect.SHIELD_REGEN, () -> new Potion(new EffectInstance(SHIELD_REGEN.get(), 1200, 0)));
+    public static RegistryObject<Potion> SHIELD_REGEN_P_I = POTIONS.register(LibEffect.SHIELD_REGEN_I, () -> new Potion(new EffectInstance(SHIELD_REGEN.get(), 3000, 0)));
     public static RegistryObject<Potion> SHIELD_REGEN_P_II = POTIONS.register(LibEffect.SHIELD_REGEN_II, () -> new Potion(new EffectInstance(SHIELD_REGEN.get(), 1200, 1)));
-    public static RegistryObject<Potion> SHIELD_VALUE_P = POTIONS.register(LibEffect.SHIELD_VALUE, () -> new Potion(new EffectInstance(SHIELD_VALUE.get(), 7200, 0)));
+    public static RegistryObject<Potion> SHIELD_VALUE_P = POTIONS.register(LibEffect.SHIELD_VALUE, () -> new Potion(new EffectInstance(SHIELD_VALUE.get(), 3000, 0)));
+    public static RegistryObject<Potion> SHIELD_VALUE_P_I = POTIONS.register(LibEffect.SHIELD_VALUE_I, () -> new Potion(new EffectInstance(SHIELD_VALUE.get(), 7200, 0)));
     public static RegistryObject<Potion> SHIELD_VALUE_P_II = POTIONS.register(LibEffect.SHIELD_VALUE_II, () -> new Potion(new EffectInstance(SHIELD_VALUE.get(), 3000, 1)));
-    public static RegistryObject<Potion> MANA_CONSUM_REDUCE_P = POTIONS.register(LibEffect.MANA_CONSUM_REDUCE, () -> new Potion(new EffectInstance(MANA_CONSUM_REDUCE.get(), 3000, 0)));
+    public static RegistryObject<Potion> MANA_CONSUM_REDUCE_P = POTIONS.register(LibEffect.MANA_CONSUM_REDUCE, () -> new Potion(new EffectInstance(MANA_CONSUM_REDUCE.get(), 1200, 0)));
+    public static RegistryObject<Potion> MANA_CONSUM_REDUCE_P_I = POTIONS.register(LibEffect.MANA_CONSUM_REDUCE_I, () -> new Potion(new EffectInstance(MANA_CONSUM_REDUCE.get(), 3000, 0)));
     public static RegistryObject<Potion> MANA_CONSUM_REDUCE_P_II = POTIONS.register(LibEffect.MANA_CONSUM_REDUCE_II, () -> new Potion(new EffectInstance(MANA_CONSUM_REDUCE.get(), 1200, 1)));
-    public static RegistryObject<Potion> MANA_REGEN_P = POTIONS.register(LibEffect.MANA_REGEN, () -> new Potion(new EffectInstance(MANA_REGEN.get(), 4800, 0)));
+    public static RegistryObject<Potion> MANA_REGEN_P = POTIONS.register(LibEffect.MANA_REGEN, () -> new Potion(new EffectInstance(MANA_REGEN.get(), 1500, 0)));
+    public static RegistryObject<Potion> MANA_REGEN_P_I = POTIONS.register(LibEffect.MANA_REGEN_I, () -> new Potion(new EffectInstance(MANA_REGEN.get(), 4800, 0)));
     public static RegistryObject<Potion> MANA_REGEN_P_II = POTIONS.register(LibEffect.MANA_REGEN_II, () -> new Potion(new EffectInstance(MANA_REGEN.get(), 1500, 1)));
     public static RegistryObject<Potion> TRACE_P = POTIONS.register(LibEffect.TRACE, () -> new Potion(new EffectInstance(TRACE.get(), 4800, 0)));
     public static RegistryObject<Potion> MANA_FORCE_P = POTIONS.register(LibEffect.MANA_FORCE, () -> new Potion(new EffectInstance(MANA_FORCE.get(), 4800, 0)));

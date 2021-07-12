@@ -26,7 +26,7 @@ import java.util.List;
 
 public class RoguelikeHelper {
     public static final float MAX_FORCE = 8;
-    public static final float MAX_MANA = 50001;
+    public static final float MAX_MANA = 20001;
     public static final float MAX_TICK = 1800;
 
     public static void HandleTickItem(ItemStack stack)

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.EnumTargetType;
 import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -57,7 +58,7 @@ public class CapabilityManaItemData {
 
 	 public static class Implementation implements IManaItemData
 	 {
-		 private final float maxMana = 50000;
+		 private final float maxMana = RoguelikeHelper.MAX_MANA - 1;
 		 private float range;
 		 private float force;
 		 private float mana;

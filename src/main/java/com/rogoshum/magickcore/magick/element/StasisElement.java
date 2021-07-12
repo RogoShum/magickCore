@@ -40,7 +40,7 @@ public class StasisElement extends MagickElement{
         @Override
         public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
             if(ModBuff.hasBuff(victim, LibBuff.SLOW))
-                force *= 2;
+                force *= 1.5;
 
             boolean flag = false;
             if(entity != null && projectile != null)
@@ -74,7 +74,9 @@ public class StasisElement extends MagickElement{
 
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.FREEZE, tick, force, false);
+            if(force >= 7)
+                return ModBuff.applyBuff(victim, LibBuff.FREEZE, tick, force, false);
+            return ModBuff.applyBuff(victim, LibBuff.SLOW, tick, force, false);
         }
 
         @Override

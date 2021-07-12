@@ -37,6 +37,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.bernie.geckolib3.GeckoLib;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -105,6 +106,8 @@ public class MagickCore
         ModEnchantments.ENCHANTMENTS.register(eventBus);
         //ModEntites.ENTITY_TYPES.register(eventBus);
         ModBuff.initBuff();
+
+        GeckoLib.initialize();
     }
 
     public static float getNegativeToOne()
@@ -126,6 +129,7 @@ public class MagickCore
             CapabilityManager.INSTANCE.register(IElementAnimalState.class, new CapabilityElementAnimalState.Storage<>(), () -> new CapabilityElementAnimalState.Implementation(ModElements.getElement(LibElements.ORIGIN)));
             CapabilityManager.INSTANCE.register(IElementOnTool.class, new CapabilityElementOnTool.Storage<>(), CapabilityElementOnTool.Implementation::new);
             Networking.registerMessage();
+            ModBrew.registryBrewing();
         });
     }
 

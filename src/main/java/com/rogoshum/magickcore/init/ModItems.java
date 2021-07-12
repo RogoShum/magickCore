@@ -50,7 +50,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> orb_bottle = ITEMS.register("orb_bottle", () -> new OrbBottleItem(BaseItem.properties.maxStackSize(1).setISTER(() -> OrbBottleRenderer::new)));
     public static final RegistryObject<Item> element_meat = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties.maxStackSize(16).food(
-            new Food.Builder().meat().saturation(3f).fastToEat().setAlwaysEdible().effect(() -> new EffectInstance(ModEffects.MANA_STASIS.get(), 1200), 10).build())));
+            new Food.Builder().meat().saturation(3f).fastToEat().setAlwaysEdible().effect(() -> new EffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> element_crystal = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties.maxStackSize(8)));
     public static final RegistryObject<Item> element_wool = ITEMS.register("element_wool", () -> new ElementWoolItem(ModBlocks.element_wool.get(), BaseItem.properties.maxStackSize(64).setISTER(() -> ElementWoolTileEntityItemStackRenderer::new)));
     public static final RegistryObject<Item> element_string = ITEMS.register("element_string", () -> new ElementContainerItem(BaseItem.properties.maxStackSize(64)));

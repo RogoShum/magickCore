@@ -66,7 +66,7 @@ public class ManaSphereEntity extends ManaPointEntity {
                     }
                     if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
                         this.getElement().getAbility().applyDebuff(entity, this.getTickTime(), this.getForce() / 5);
-                    if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()) && MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
+                    if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
                         this.getElement().getAbility().applyBuff(entity, this.getTickTime(), this.getForce() / 5);
                 }
             }

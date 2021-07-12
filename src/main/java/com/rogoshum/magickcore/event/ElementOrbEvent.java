@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
+import com.rogoshum.magickcore.entity.ManaPowerEntity;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEnchantments;
 import com.rogoshum.magickcore.init.ModEntites;
@@ -48,20 +49,20 @@ public class ElementOrbEvent {
 
     public static void initElementMap()
     {
-        spawnElementMap.put(EndermanEntity.class, new LivingElementTable(3, LibElements.VOID));
-        spawnElementMap.put(BlazeEntity.class, new LivingElementTable(3, LibElements.SOLAR));
+        spawnElementMap.put(EndermanEntity.class, new LivingElementTable(5, LibElements.VOID));
+        spawnElementMap.put(BlazeEntity.class, new LivingElementTable(5, LibElements.SOLAR));
         spawnElementMap.put(CaveSpiderEntity.class, new LivingElementTable(1, LibElements.WITHER));
-        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(3, LibElements.WITHER));
-        spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(3, LibElements.VOID));
+        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(7, LibElements.WITHER));
+        spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(10, LibElements.VOID));
         spawnElementMap.put(MagmaCubeEntity.class, new LivingElementTable(2, LibElements.SOLAR));
 
         spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(7, LibElements.VOID));
         spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(10, LibElements.SOLAR));
 
-        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(4, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(3, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(4, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(3, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(9, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(8, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(9, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(8, LibElements.STASIS));
 
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
@@ -114,19 +115,31 @@ public class ElementOrbEvent {
     public void onDrops(LivingDropsEvent event)
     {
         IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-        if(state != null && state.getIsDeprived() && !state.getElement().getType().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote)
+        if(state != null && event.getEntityLiving() instanceof IMob && !state.getElement().getType().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote)
         {
-            ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, event.getEntityLiving().world);
-            Vector3d vec = event.getEntityLiving().getPositionVec();
-            orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-            orb.setElement(state.getElement());
-            orb.setTickTime(200);
-            orb.setShooter(event.getEntityLiving());
-            event.getEntityLiving().world.addEntity(orb);
+            if(state.getIsDeprived())
+            {
+                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, event.getEntityLiving().world);
+                Vector3d vec = event.getEntityLiving().getPositionVec();
+                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                orb.setElement(state.getElement());
+                orb.setTickTime(200);
+                orb.setShooter(event.getEntityLiving());
+                event.getEntityLiving().world.addEntity(orb);
+            }
+            else
+            {
+                ManaPowerEntity orb = new ManaPowerEntity(ModEntites.mana_power, event.getEntityLiving().world);
+                Vector3d vec = event.getEntityLiving().getPositionVec();
+                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                orb.setTickTime(100);
+                orb.setMana(event.getEntityLiving().getMaxHealth());
+                event.getEntityLiving().world.addEntity(orb);
+            }
         }
 
         IElementAnimalState animalState = event.getEntityLiving().getCapability(MagickCore.elementAnimal).orElse(null);
-        if(animalState != null && animalState.getElement().getType() != LibElements.ORIGIN)
+        if(animalState != null && animalState.getElement().getType() != LibElements.ORIGIN && !event.getEntityLiving().world.isRemote)
         {
             Collection<ItemEntity> loots = event.getDrops();
             loots.stream().forEach((e) -> {
@@ -169,6 +182,12 @@ public class ElementOrbEvent {
         }
     }
 
+    public static float getShieldCapacity(LivingEntity livingEntity)
+    {
+        return MagickCore.rand.nextInt((int) livingEntity.getHealth()) + livingEntity.getHealth();
+    }
+
+
     @SubscribeEvent
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event)
     {
@@ -184,7 +203,7 @@ public class ElementOrbEvent {
 
             if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
             {
-                state.setFinalMaxElementShield(MagickCore.rand.nextInt(91) + 10);
+                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
             }
 
@@ -198,7 +217,7 @@ public class ElementOrbEvent {
 
             if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
             {
-                state.setFinalMaxElementShield(MagickCore.rand.nextInt(41) + 10);
+                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
             }
 
@@ -212,7 +231,7 @@ public class ElementOrbEvent {
 
             if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
             {
-                state.setFinalMaxElementShield(MagickCore.rand.nextInt(91) + 50);
+                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
             }
 

@@ -59,18 +59,20 @@ public class ModLoots {
         @Nonnull
         @Override
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
+           if(context.getQueriedLootTableId().toString().contains("minecraft:chests"))
+           {
+               while (context.getRandom().nextBoolean())
+               {
+                   int lucky = 1;
+                   while (context.getRandom().nextBoolean())
+                       lucky++;
 
-            while (context.getRandom().nextBoolean())
-            {
-                int lucky = 1;
-                while (context.getRandom().nextBoolean())
-                    lucky++;
-
-                int tick = context.getRandom().nextInt(lucky + 1) * context.getRandom().nextInt(lucky * 2) * context.getRandom().nextInt(lucky + 2) * 10;
-                if(context.getRandom().nextInt(lucky + 1) + context.getRandom().nextInt(lucky + 1) > 10)
-                    tick = Integer.MAX_VALUE;
-                generatedLoot.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomItemWithLucky(lucky), tick));
-            }
+                   int tick = context.getRandom().nextInt(lucky + 1) * context.getRandom().nextInt(lucky * 2) * context.getRandom().nextInt(lucky + 2) * 10;
+                   if(context.getRandom().nextInt(lucky + 1) + context.getRandom().nextInt(lucky + 1) > 10)
+                       tick = Integer.MAX_VALUE;
+                   generatedLoot.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomItemWithLucky(lucky), tick));
+               }
+           }
             return generatedLoot;
         }
     }

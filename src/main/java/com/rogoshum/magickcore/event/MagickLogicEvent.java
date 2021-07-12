@@ -9,6 +9,8 @@ import com.rogoshum.magickcore.api.IManaMob;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.*;
+import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaEyeEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
@@ -38,6 +40,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
@@ -49,6 +52,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -120,6 +124,14 @@ public class MagickLogicEvent {
 			event.setTrace(MagickCore.emptyUUID);
 	}
 
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void onMagickReleaseCancled(EntityEvents.MagickPreReleaseEvent event)
+	{
+
+
+	}
+
 	@SubscribeEvent
 	public void preMagickRelease(EntityEvents.MagickPreReleaseEvent event)
 	{
@@ -173,6 +185,15 @@ public class MagickLogicEvent {
 				}
 				else
 					event.setCanceled(true);
+			}
+		}
+
+		if(event.isCanceled())
+		{
+			for(int i = 0; i < 20; ++i) {
+				((ServerWorld)event.getEntity().world).spawnParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + event.getEntity().getPosX()
+						, MagickCore.getNegativeToOne() + event.getEntity().getPosY() + event.getEntity().getHeight()
+						, MagickCore.getNegativeToOne() + event.getEntity().getPosZ(), 1, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.01, 0.3);
 			}
 		}
 	}
@@ -473,8 +494,8 @@ public class MagickLogicEvent {
 			if(state.getElementShieldMana() < 0.0f)
 				state.setElementShieldMana(0.0f);
 
-			if(state.getMaxManaValue() < 5000.0f)
-				state.setMaxManaValue(5000.0f);
+			if(state.getMaxManaValue() < 50.0f)
+				state.setMaxManaValue(50f);
 
 			if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
 				((LivingEntity)event.getEntity()).setHealth(0.0f);
@@ -494,8 +515,6 @@ public class MagickLogicEvent {
 			}
 
 			state.tick(event.getEntity());
-
-			HashMap<String, Integer> map = new HashMap<>();
 
 			for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
 				if(stack != null && NBTTagHelper.hasElementOnTool(stack, LibElements.ARC))
@@ -535,12 +554,11 @@ public class MagickLogicEvent {
 		IEntityState old = event.getOriginal().getCapability(MagickCore.entityState).orElse(null);
 		IEntityState state = event.getPlayer().getCapability(MagickCore.entityState).orElse(null);
 
-		state.setElement(old.getElement());
-		state.setMaxManaValue(old.getMaxManaValue());
-		state.setMaxElementShieldMana(old.getMaxElementShieldMana());
-
 		if(!event.isWasDeath())
 		{
+			state.setMaxManaValue(old.getMaxManaValue() );
+			state.setElement(old.getElement());
+			state.setMaxElementShieldMana(old.getMaxElementShieldMana());
 			state.setManaValue(old.getManaValue());
 			state.setElementShieldMana(old.getElementShieldMana());
 			Iterator it = old.getBuffList().keySet().iterator();
@@ -549,6 +567,10 @@ public class MagickLogicEvent {
 				ManaBuff buff = old.getBuffList().get(it.next());
 				ModBuff.applyBuff(event.getPlayer(), buff.getType(), buff.getTick(), buff.getForce(), true);
 			}
+		}
+		else
+		{
+			state.setMaxManaValue(old.getMaxManaValue() * 0.75f);
 		}
 	}
 

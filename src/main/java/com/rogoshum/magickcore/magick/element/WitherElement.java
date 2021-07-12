@@ -39,7 +39,7 @@ public class WitherElement extends MagickElement{
         @Override
         public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
             if(ModBuff.hasBuff(victim, LibBuff.WITHER))
-                force *= 2;
+                force *= 1.5;
 
             boolean flag = false;
             if(entity != null && projectile != null)

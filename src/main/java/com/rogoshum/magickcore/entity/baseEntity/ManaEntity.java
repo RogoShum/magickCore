@@ -8,10 +8,13 @@ import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Pose;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -210,7 +213,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
     }
 
     @Override
-    public IManaElement getElement() { if(this.getManaData() != null) return this.getManaData().getElement(); return null; }
+    public IManaElement getElement() { if(this.getManaData() != null) return this.getManaData().getElement(); return ModElements.getElement(LibElements.ORIGIN); }
 
     @Override
     public void setElement(IManaElement manaElement) {
