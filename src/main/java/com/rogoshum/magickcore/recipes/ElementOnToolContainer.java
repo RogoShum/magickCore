@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.MobEntity;
@@ -8,28 +8,28 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
-public class ElementOnToolRecipe extends NBTRecipeContainer{
+public class ElementOnToolContainer extends NBTRecipeContainer{
     private final String item;
     private final int count;
     private boolean equip;
 
-    public static ElementOnToolRecipe create(String item, ItemContainer... containers)
+    public static ElementOnToolContainer create(String item, IItemContainer... containers)
     {
-        return new ElementOnToolRecipe(item, 1, containers);
+        return new ElementOnToolContainer(item, 1, containers);
     }
 
-    public static ElementOnToolRecipe create(String item, int count, ItemContainer... containers)
+    public static ElementOnToolContainer create(String item, int count, IItemContainer... containers)
     {
-        return new ElementOnToolRecipe(item, count, containers);
+        return new ElementOnToolContainer(item, count, containers);
     }
 
-    public ElementOnToolRecipe equip()
+    public ElementOnToolContainer equip()
     {
         equip = true;
         return this;
     }
 
-    protected ElementOnToolRecipe(String item, int count, ItemContainer... containers)
+    protected ElementOnToolContainer(String item, int count, IItemContainer... containers)
     {
         super(containers);
         this.item = item;

@@ -51,20 +51,22 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
                     ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 5, false);
                     //this.getElement().getAbility().damageEntity(this, null, entity, 10, 10);
-                    TrailParticle trail = trace.get(id);
-                    for (Vector3d vec : trail.getTrailPoint()) {
-                        if (this.rand.nextInt(20) == 0) {
-                            LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getCycleTexture()
-                                    , new Vector3d(vec.x
-                                    , vec.y
-                                    , vec.z)
-                                    , MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick(), this.getElement().getRenderer());
-                            litPar.setGlow();
-                            litPar.setParticleGravity(0f);
-                            litPar.setShakeLimit(20.0f);
-                            litPar.setLimitScale();
-                            //litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
-                            MagickCore.addMagickParticle(litPar);
+                    if (this.rand.nextInt(10) == 0) {
+                        TrailParticle trail = trace.get(id);
+                        for (Vector3d vec : trail.getTrailPoint()) {
+                            if(this.rand.nextInt(4) == 0) {
+                                LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getCycleTexture()
+                                        , new Vector3d(vec.x
+                                        , vec.y
+                                        , vec.z)
+                                        , MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick(), this.getElement().getRenderer());
+                                litPar.setGlow();
+                                litPar.setParticleGravity(0f);
+                                litPar.setShakeLimit(20.0f);
+                                litPar.setLimitScale();
+                                //litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
+                                MagickCore.addMagickParticle(litPar);
+                            }
                         }
                     }
                 }
@@ -77,7 +79,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     {
         if(this.world.isRemote() && this.getElement() != null)
         {
-            for(int i = 0; i < 2; ++i) {
+            if(this.ticksExisted % 2 == 0){
                 LitParticle par = new LitParticle(this.world, this.getElement().getRenderer().getParticleTexture()
                         , new Vector3d(this.getPosX()
                         , this.getPosY() + this.getHeight() / 2
@@ -88,7 +90,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05);
                 MagickCore.addMagickParticle(par);
             }
-            for(int i = 0; i < 1; ++i) {
+            if(this.ticksExisted % 5 == 0){
                 LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getMistTexture()
                         , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                         , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2

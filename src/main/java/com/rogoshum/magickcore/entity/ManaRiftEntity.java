@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.init.ModBuff;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -23,7 +24,10 @@ public class ManaRiftEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
-
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.BLOCK_BAMBOO_SAPLING_PLACE, 2.0F, 1.0F + this.rand.nextFloat());
+        }
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.1F, 0.005F));
 

@@ -32,8 +32,8 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
         {
             helper.setEntityModel(renderer.getEntityModel());
 
-            matrixStackIn.translate(0, -0.01f, 0);
-            matrixStackIn.scale(1.01f, 1.02f, 1.01f);
+            matrixStackIn.translate(0, -0.005f, 0);
+            matrixStackIn.scale(1.01f, 1.01f, 1.01f);
 
             if(state.getBuffList().containsKey(LibBuff.PARALYSIS))
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.ARC).getColor());

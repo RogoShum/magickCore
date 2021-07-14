@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -31,7 +32,10 @@ public class ManaSphereEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
-
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.BLOCK_CHAIN_PLACE, 1.0F, 1.0F + this.rand.nextFloat());
+        }
         for(int i = 0; i < 30;++i)
         {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());

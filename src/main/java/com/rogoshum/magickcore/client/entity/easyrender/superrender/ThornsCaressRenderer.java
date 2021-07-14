@@ -38,10 +38,11 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
             matrixStackIn.pop();
             float c = entityIn.ticksExisted % 11;
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
-            RenderHelper.renderCylinder(cylinder_rotate, matrixStackIn, bufferIn, 1.0f, entityIn.getElement().getRenderer().getColor()
-                    , 1.0f, 0.35f, 32, true, entityIn.getUniqueID().toString(), 0.25f);
+            //matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(360f * (c / 10)));
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_rotate), matrixStackIn, bufferIn, 1.0f, entityIn.getElement().getRenderer().getColor()
+                    , 1.0f, 0.35f, 8, true, entityIn.getUniqueID().toString(), 0.5f);
 
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.3f, entityIn.getHitReactions(), 2.10f, packedLightIn);
+            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.3f, entityIn.getHitReactions(), 0.2f, packedLightIn);
         }
     }
 }

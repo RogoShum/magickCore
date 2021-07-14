@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
@@ -37,7 +38,6 @@ public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.push();
         matrixStackIn.translate(0.5F, 0.5F, 0.5F);
-
         float xOffset = -1 / 32f;
         float zOffset = 0;
         matrixStackIn.translate(-xOffset, 0, -zOffset);

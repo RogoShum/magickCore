@@ -273,6 +273,12 @@ public class RenderHelper {
         return type;
     }
 
+    public static RenderType getTexedCylinderGlint(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
+        RenderType type = RenderType.makeType("_TexedCylinderGlint", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, true, false, rendertype$state);
+        return type;
+    }
+
     public static RenderType getTexedSphereGlow(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
         RenderType type = RenderType.makeType("_TexedSphereGlow", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, true, false, rendertype$state);
@@ -306,7 +312,7 @@ public class RenderHelper {
         renderParticle(matrixStackIn, buffer, alpha, color, false, null, 0f);
     }
 
-    public static void renderCylinder(ResourceLocation res, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float alpha, float[] color, float baseRadius, float height, int stacks, boolean shake, String shakeName, float limit)
+    public static void renderCylinder(RenderType type, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float alpha, float[] color, float baseRadius, float height, int stacks, boolean shake, String shakeName, float limit)
     {
         double majorStep = height / stacks;
         double minorStep = 2.0 * Math.PI / stacks;
@@ -314,7 +320,6 @@ public class RenderHelper {
 
         matrixStackIn.push();
         Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
-        RenderType type = getTexedCylinderGlow(res);
         VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
         for (i = 0; i < stacks; ++i) {
             float z0 = (float) (0.5 * height - i * majorStep);

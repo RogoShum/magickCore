@@ -16,7 +16,7 @@ public class ModGroup {
 
 	    @Override
 	    public ItemStack createIcon() {
-	        return new ItemStack(Items.ACACIA_BOAT);
+	        return new ItemStack(ModItems.magick_container.get());
 	    }
 	}
 }

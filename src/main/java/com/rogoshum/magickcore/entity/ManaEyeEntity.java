@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,6 +28,12 @@ public class ManaEyeEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.BLOCK_PORTAL_TRIGGER, 2.0F, 1.0F + this.rand.nextFloat());
+        }
+
         if(this.ticksExisted % 20 == 0) {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
             this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.01F));

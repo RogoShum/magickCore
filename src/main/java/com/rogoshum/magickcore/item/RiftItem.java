@@ -16,8 +16,10 @@ import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
@@ -35,6 +37,12 @@ public class RiftItem extends BaseItem{
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        playerIn.setActiveHand(handIn);
+        return super.onItemRightClick(worldIn, playerIn, handIn);
+    }
+
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
         if(!worldIn.isRemote) {
             List<Entity> list = playerIn.world.getEntitiesWithinAABB(ManaRuneEntity.class, playerIn.getBoundingBox().grow(16));
             IEntityState state = playerIn.getCapability(MagickCore.entityState).orElse(null);
@@ -43,10 +51,20 @@ public class RiftItem extends BaseItem{
                         , Math.min(state.getManaValue() / 200f, 1f), (int) Math.min(state.getManaValue(), 900)
                         , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 list.get(0).remove();
-                playerIn.getHeldItem(handIn).shrink(1);
+                playerIn.getActiveItemStack().shrink(1);
             }
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.onItemUseFinish(stack, worldIn, playerIn);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 5;
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
     }
 
     @Override

@@ -59,7 +59,7 @@ public class MagickContainerItemStackTileEntityRenderer extends ItemStackTileEnt
         if(element != null)
             color = element.getRenderer().getColor();
         matrixStackIn.push();
-        float scale = (float) mana / 100000f;
+        float scale = (float) mana / 10000f;
 
         matrixStackIn.scale(scale, scale, scale);
         RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), (IRenderTypeBuffer.Impl)bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.3f, color, RenderHelper.renderLight);

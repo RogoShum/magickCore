@@ -17,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -31,6 +32,10 @@ public class ManaElementOrbEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F - this.rand.nextFloat());
+        }
         List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox());
         for(Entity entity : list)
         {

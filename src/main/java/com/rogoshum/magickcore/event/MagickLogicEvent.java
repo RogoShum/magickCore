@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.capability.*;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaEyeEntity;
+import com.rogoshum.magickcore.entity.ManaItemEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
@@ -20,6 +21,7 @@ import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.init.ModRecipes;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.network.ElementAnimalPack;
@@ -44,6 +46,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -52,6 +55,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -65,6 +69,29 @@ public class MagickLogicEvent {
 	{
 		if(event.phase == TickEvent.Phase.END && event.side.isServer())
 			((ServerWorld)event.world).getEntities().forEach((e) -> MinecraftForge.EVENT_BUS.post(new EntityEvents.EntityUpdateEvent(e)));
+	}
+
+	@SubscribeEvent
+	public void onExplosion(ExplosionEvent.Detonate event)
+	{
+		if(event.getWorld().isRemote()) return;
+		List<Entity> list = event.getAffectedEntities();
+		for (int i = 0; i < list.size(); ++i)
+		{
+			Entity entity = list.get(i);
+			if(entity instanceof ItemEntity)
+			{
+				ItemStack originStack = ((ItemEntity)entity).getItem();
+				ItemStack output = ModRecipes.findExplosionOutput(originStack).copy();
+				if(output != ItemStack.EMPTY)
+				{
+					output.setCount(originStack.getCount());
+					ManaItemEntity mana = new ManaItemEntity(event.getWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ(), output);
+					if(event.getWorld().addEntity(mana))
+						entity.remove();
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -294,6 +321,7 @@ public class MagickLogicEvent {
 			event.getEntityLiving().rotationPitch = event.getEntityLiving().prevRotationPitch;
 			event.getEntityLiving().rotationYaw = event.getEntityLiving().prevRotationYaw;
 			event.getEntityLiving().ticksExisted -= 1;
+			event.getEntityLiving().setSilent(true);
 			if(event.getEntityLiving().getHealth() > 0)
 				event.setCanceled(true);
 		}
@@ -461,6 +489,8 @@ public class MagickLogicEvent {
 		{
 			state.hitElementShield();
 			state.setElementShieldMana(state.getElementShieldMana() - damage);
+			if(damage > 0.0f && event.getEntityLiving().hurtResistantTime <= 10)
+				spawnParticle(state.getElement().getType(), event.getEntity());
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);
 		}
@@ -472,6 +502,24 @@ public class MagickLogicEvent {
 			event.getEntityLiving().attackEntityFrom(event.getSource(), amount);
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);
+			if(damage > 0.0f)
+				spawnParticle(state.getElement().getType(), event.getEntity());
+		}
+	}
+
+	public static void spawnParticle(String element, Entity entity)
+	{
+		ElementRenderer render = MagickCore.proxy.getElementRender(element);
+		World world = entity.world;
+		for(int i = 0; i < 10; ++i) {
+			LitParticle litPar = new LitParticle(world, render.getParticleTexture()
+					, new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()
+					, MagickCore.getNegativeToOne() / 2f + entity.getPosY() + entity.getHeight() / 2
+					, MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosZ())
+					, entity.getWidth() / 5f, entity.getWidth() / 5f, 0.8f * MagickCore.rand.nextFloat(), 20, render);
+			litPar.setGlow();
+			litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+			MagickCore.addMagickParticle(litPar);
 		}
 	}
 
@@ -570,7 +618,7 @@ public class MagickLogicEvent {
 		}
 		else
 		{
-			state.setMaxManaValue(old.getMaxManaValue() * 0.75f);
+			state.setMaxManaValue(old.getMaxManaValue() * 0.95f);
 		}
 	}
 

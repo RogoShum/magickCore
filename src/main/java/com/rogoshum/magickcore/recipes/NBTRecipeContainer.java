@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
@@ -16,14 +17,14 @@ import java.util.List;
 
 public abstract class NBTRecipeContainer implements INBTRecipe {
     private boolean shapeless;
-    private final List<ItemContainer> containers = new ArrayList<>();
+    private final List<IItemContainer> containers = new ArrayList<>();
 
-    public NBTRecipeContainer(ItemContainer... containers)
+    public NBTRecipeContainer(IItemContainer... containers)
     {
         Collections.addAll(this.containers, containers);
     }
 
-    public List<ItemContainer> getContainers()
+    public List<IItemContainer> getContainers()
     {
         return containers;
     }
@@ -32,7 +33,7 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
 
     public boolean matches(CraftingInventory inv)
     {
-        List<ItemContainer> copy = new ArrayList<>();
+        List<IItemContainer> copy = new ArrayList<>();
         copy.addAll(containers);
 
         int invSize = 0;
@@ -42,7 +43,7 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
 
             for(int i = 0; i < copy.size(); i++)
             {
-                ItemContainer copyC = copy.get(i);
+                IItemContainer copyC = copy.get(i);
                 for(int c = 0; c < inv.getSizeInventory(); c++)
                 {
                     if(copyC.matches(inv.getStackInSlot(c)) && !matchTable.containsKey(c) && !matchTable.containsValue(i)) {
@@ -84,21 +85,21 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
         return this;
     }
 
-    public static class ItemContainer {
+    public static class ItemContainer implements IItemContainer {
         protected final String item;
         protected String[] keys = {};
 
-        public static ItemContainer create(String item, String... tagKey)
+        public static IItemContainer create(String item, String... tagKey)
         {
             return new ItemContainer(item, tagKey);
         }
 
-        public static ItemContainer create(String item)
+        public static IItemContainer create(String item)
         {
             return new ItemContainer(item);
         }
 
-        public static ItemContainer empty()
+        public static IItemContainer empty()
         {
             return new ItemContainer("minecraft:air");
         }

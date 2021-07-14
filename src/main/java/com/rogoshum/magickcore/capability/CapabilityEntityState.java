@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -269,8 +270,11 @@ public class CapabilityEntityState{
 			 {
 				 ManaBuff buff = buffList.get(i.next());
 				 buff.setTick(buff.getTick() - 1).effectEntity(entity);
-				 if(buff.getTick() < 1)
+				 if(buff.getTick() < 1) {
 					 i.remove();
+					 if(i.equals(LibBuff.FREEZE))
+						 event.getEntityLiving().setSilent(false);
+				 }
 			 }
 		 }
 

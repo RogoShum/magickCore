@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import org.lwjgl.system.CallbackI;
@@ -27,7 +28,10 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     @Override
     public void tick() {
         super.tick();
-
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0F, 1.0F - this.rand.nextFloat());
+        }
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.4F, 0.005F));
 
@@ -41,7 +45,8 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
             reaction.tick();
         }
         this.traceEntity(null, 32, new Vector3d(0, 0, 0), 1.0f, 1);
-        if(this.ticksExisted % 2 ==0) {
+        boolean makeSound = false;
+        //if(this.ticksExisted % 2 ==0) {
             HashMap<Integer, TrailParticle> trace = this.getTraceEntity();
             Iterator<Integer> ite = trace.keySet().iterator();
             while (ite.hasNext()) {
@@ -50,6 +55,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
                 if(entity == null)
                     return;
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity)) {
+                    makeSound = true;
                     ModBuff.applyBuff(entity, LibBuff.PARALYSIS, 50, 5, false);
                     this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 10, 10);
                     TrailParticle trail = trace.get(id);
@@ -69,7 +75,10 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
                     }
                 }
             }
-        }
+        //}
+
+        if(makeSound)
+            this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 2.0F, 1.0F + this.rand.nextFloat());
         applyParticle();
     }
 

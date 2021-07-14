@@ -13,6 +13,7 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -28,6 +29,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     public void tick() {
         super.tick();
         Entity cloest = null;
+
         this.traceEntity(null, 16, new Vector3d(0, 0, 0), 0.0f, 0);
         if(this.ticksExisted % 2 ==0) {
             HashMap<Integer, TrailParticle> trace = this.getTraceEntity();
@@ -42,14 +44,21 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                         cloest = entity;
                     if(this.getDistance(entity) <= 9.5)
                         ModBuff.applyBuff(entity, LibBuff.SLOW, 200, 5, false);
-                    if(this.getDistance(entity) <= 3)
+                    if(this.getDistance(entity) <= 3) {
                         this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 20, 1f);
+                        ModBuff.applyBuff(entity, LibBuff.FREEZE, 200, 1, false);
+                    }
                 }
             }
         }
 
         if(cloest != null && cloest.isAlive()) {
             Vector3d vec = cloest.getPositionVec().add(0, 2, 0).subtract(this.getPositionVec());
+            this.setMotion(vec.normalize().scale(0.1));
+        }
+        else if(this.getOwner() != null)
+        {
+            Vector3d vec = this.getOwner().getPositionVec().add(0, 2, 0).subtract(this.getPositionVec());
             this.setMotion(vec.normalize().scale(0.1));
         }
         this.prevPosX = this.getPosX();

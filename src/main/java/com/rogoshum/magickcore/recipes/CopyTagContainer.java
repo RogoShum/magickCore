@@ -1,8 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IItemContainer;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -11,21 +10,21 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 
-public class CopyNBTTagRecipe extends NBTRecipeContainer{
+public class CopyTagContainer extends NBTRecipeContainer{
     private final String item;
     private final int count;
 
-    public static CopyNBTTagRecipe create(String item, ItemContainer... containers)
+    public static CopyTagContainer create(String item, IItemContainer... containers)
     {
-        return new CopyNBTTagRecipe(item, 1, containers);
+        return new CopyTagContainer(item, 1, containers);
     }
 
-    public static CopyNBTTagRecipe create(String item, int count, ItemContainer... containers)
+    public static CopyTagContainer create(String item, int count, IItemContainer... containers)
     {
-        return new CopyNBTTagRecipe(item, count, containers);
+        return new CopyTagContainer(item, count, containers);
     }
 
-    private CopyNBTTagRecipe(String item, int count, ItemContainer... containers)
+    private CopyTagContainer(String item, int count, IItemContainer... containers)
     {
         super(containers);
         this.item = item;
@@ -37,8 +36,8 @@ public class CopyNBTTagRecipe extends NBTRecipeContainer{
         ItemStack stack = new ItemStack(Registry.ITEM.getOrDefault(new ResourceLocation(item)));
 
         CompoundNBT tag = new CompoundNBT();
-        List<ItemContainer> containers =  this.getContainers();
-        for(ItemContainer container : containers)
+        List<IItemContainer> containers =  this.getContainers();
+        for(IItemContainer container : containers)
         {
             for (int i = 0; i < inv.getSizeInventory(); ++i)
             {

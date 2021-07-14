@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface INBTRecipe {
 
-    public List<NBTRecipeContainer.ItemContainer> getContainers();
+    public List<IItemContainer> getContainers();
 
     public abstract ItemStack getResultStack(CraftingInventory inv);
 

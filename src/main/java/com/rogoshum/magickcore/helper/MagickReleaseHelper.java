@@ -140,7 +140,7 @@ public class MagickReleaseHelper {
     }
 
     public static boolean canEntityTraceAnother(Entity e, Entity another) {
-        return another == getEntityRayTrace(e, e.getPositionVec().add(0, e.getHeight() / 2, 0), another.getPositionVec().add(0, another.getHeight() / 2, 0), 64);
+        return another == getEntityRayTrace(e, e.getPositionVec().add(0, e.getHeight() / 2, 0), another.getPositionVec().add(0, another.getHeight() / 2, 0).subtract(e.getPositionVec().add(0, e.getHeight() / 2, 0)).normalize(), 64);
     }
 
     public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction) {
@@ -150,23 +150,19 @@ public class MagickReleaseHelper {
     public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction, float finalD) {
         Entity foundEntity = null;
 
-        final double finalDistance = finalD;
-        double distance = finalDistance;
-        RayTraceResult pos = raycast(e, finalDistance);
-        Vector3d positionVector = e.getPositionVec();
-        if (e instanceof PlayerEntity) {
-            positionVector = positionVector.add(0, e.getEyeHeight(), 0);
-        }
+        double distance = finalD;
+        RayTraceResult pos = raycast(e, vec, diraction, finalD);
+        Vector3d positionVector = vec;
 
         if (pos != null) {
             distance = pos.getHitVec().distanceTo(positionVector);
         }
 
-        Vector3d lookVector = e.getLookVec();
-        Vector3d reachVector = positionVector.add(lookVector.x * finalDistance, lookVector.y * finalDistance, lookVector.z * finalDistance);
+        Vector3d lookVector = diraction;
+        Vector3d reachVector = positionVector.add(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD);
 
         Entity lookedEntity = null;
-        List<Entity> entitiesInBoundingBox = e.getEntityWorld().getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(lookVector.x * finalDistance, lookVector.y * finalDistance, lookVector.z * finalDistance).grow(1F, 1F, 1F));
+        List<Entity> entitiesInBoundingBox = e.getEntityWorld().getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).grow(1F, 1F, 1F));
         double minDistance = distance;
 
         for (Entity entity : entitiesInBoundingBox) {

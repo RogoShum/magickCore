@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -26,7 +27,10 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public void tick() {
         super.tick();
-
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.BLOCK_ANVIL_PLACE, 1.0F, 0.7F + this.rand.nextFloat());
+        }
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.1F, 0.005F));
 
@@ -64,7 +68,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
                         , new Vector3d(this.getPosX()
                         , this.getPosY() + this.getHeight()
                         , this.getPosZ())
-                        , 1.1f, 1.1f, 0.4f, 60, this.getElement().getRenderer());
+                        , 0.7f, 0.7f, 0.4f, 60, this.getElement().getRenderer());
                 cc.setGlow();
                 cc.setParticleGravity(0);
                 MagickCore.addMagickParticle(cc);

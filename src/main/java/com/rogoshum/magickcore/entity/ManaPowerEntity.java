@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -46,6 +47,10 @@ public class ManaPowerEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
+        if(!this.world.isRemote && this.ticksExisted % 20 == 0)
+        {
+            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F + this.rand.nextFloat());
+        }
         if(this.world.isRemote)
         {
             for(int i = 0; i < 2; ++i) {
@@ -70,7 +75,6 @@ public class ManaPowerEntity extends ManaPointEntity {
                 if (living instanceof PlayerEntity) {
                     IEntityState state = living.getCapability(MagickCore.entityState).orElse(null);
                     state.setMaxManaValue(state.getMaxManaValue() + getMana());
-
                     if (this.world.isRemote) {
                         int age = (int) (this.getDistance(living) * 2);
                         for (int i = 0; i < 5; ++i) {

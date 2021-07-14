@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.EnumTargetType;
 import com.rogoshum.magickcore.api.IManaItem;
@@ -16,8 +17,10 @@ import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
@@ -35,7 +38,7 @@ public class SuperItem extends BaseItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
         if(!worldIn.isRemote) {
             List<Entity> list = playerIn.world.getEntitiesWithinAABB(ManaRuneEntity.class, playerIn.getBoundingBox().grow(16));
 
@@ -45,30 +48,49 @@ public class SuperItem extends BaseItem {
                 list.get(1).remove();
                 list.get(2).remove();
                 IEntityState state = playerIn.getCapability(MagickCore.entityState).orElse(null);
+                int mana = (int) state.getManaValue();
+                if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
+                    mana = EnumManaLimit.MAX_MANA.getValue();
                 if (state.getElement().getType() == LibElements.SOLAR) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.radiance_wall, playerIn, position, ModElements.getElement(LibElements.SOLAR), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.radiance_wall, playerIn, position, ModElements.getElement(LibElements.SOLAR), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 } else if (state.getElement().getType() == LibElements.ARC) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.chaos_reach, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.ARC), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.chaos_reach, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.ARC), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 } else if (state.getElement().getType() == LibElements.VOID) {
                     DawnWardEntity orb = new DawnWardEntity(ModEntites.mana_shield, worldIn);
-                    MagickReleaseHelper.releasePointEntity(ModEntites.mana_shield, playerIn, position.add(0, -orb.getHeight() / 2, 0), ModElements.getElement(LibElements.VOID), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.mana_shield, playerIn, position.add(0, -orb.getHeight() / 2, 0), ModElements.getElement(LibElements.VOID), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 } else if (state.getElement().getType() == LibElements.STASIS) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.silence_squall, playerIn, position.add(0, 2, 0), ModElements.getElement(LibElements.STASIS), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.silence_squall, playerIn, position.add(0, 2, 0), ModElements.getElement(LibElements.STASIS), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 } else if (state.getElement().getType() == LibElements.WITHER) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.thorns_caress, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.WITHER), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.thorns_caress, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.WITHER), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 } else if (state.getElement().getType() == LibElements.TAKEN) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.ascendant_realm, playerIn, position.add(0, 0, 0), ModElements.getElement(LibElements.TAKEN), null, 0, (int) state.getManaValue()
+                    MagickReleaseHelper.releasePointEntity(ModEntites.ascendant_realm, playerIn, position.add(0, 0, 0), ModElements.getElement(LibElements.TAKEN), null, 0, mana
                             , 0, EnumTargetType.NONE, EnumManaType.NONE);
                 }
-                playerIn.getHeldItem(handIn).shrink(1);
+                playerIn.getActiveItemStack().shrink(1);
             }
         }
+        return super.onItemUseFinish(stack, worldIn, playerIn);
+    }
+
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        playerIn.setActiveHand(handIn);
         return super.onItemRightClick(worldIn, playerIn, handIn);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 30;
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
     }
 
     @Override

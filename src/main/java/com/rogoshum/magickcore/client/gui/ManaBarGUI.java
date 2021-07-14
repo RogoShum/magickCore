@@ -88,5 +88,9 @@ public class ManaBarGUI extends AbstractGui {
         this.minecraft.getTextureManager().bindTexture(mana_bar);
         blit(matrixStack, (int) (width * 0.75), (int) (height * 0.95), 0, 0, leng, 5, leng, 5);
         matrixStack.pop();
+
+        /*matrixStack.push();
+        Minecraft.getInstance().fontRenderer.drawString(matrixStack, Float.toString(state.getManaValue()) + " " + Float.toString(state.getMaxManaValue()), (int) (width * 0.75), (int) (height * 0.95), 0);
+        matrixStack.pop();*/
     }
 }

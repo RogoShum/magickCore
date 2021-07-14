@@ -17,6 +17,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.Constants;
@@ -71,6 +73,10 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     if(!this.world.isRemote) {
                         manaCapacity += tile.outputManaCapacity(1);
                         updateInfo();
+                        if(this.ticksExisted % 20 == 0)
+                        {
+                            this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.2F, 1.0F + MagickCore.rand.nextFloat());
+                        }
                     }
                     else
                         makeParticle(tile.getPos(), tile.eType, 1f);
@@ -85,6 +91,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                             material = null;
                         manaCapacity = 0;
                         updateInfo();
+                        this.world.playSound(null, this.getPos(), SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F + MagickCore.rand.nextFloat());
                     }
                     else if(!flag && this.world.isRemote)
                     {
@@ -100,6 +107,10 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     tile.receiveManaCapacity((int) back);
                     ((ManaItem) getMainItem().getItem()).setElement(getMainItem(), ModElements.getElement(tile.eType));
                     updateInfo();
+                    if(this.ticksExisted % 20 == 0)
+                    {
+                        this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.2F, 1.0F + MagickCore.rand.nextFloat());
+                    }
                 }
                 else
                     makeParticle(tile.getPos(), tile.eType, 0.5f);

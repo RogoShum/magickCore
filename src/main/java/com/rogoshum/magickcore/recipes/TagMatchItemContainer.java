@@ -1,22 +1,20 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 
 import java.util.HashMap;
 
-public class ItemTagMatchContainer extends NBTRecipeContainer.ItemContainer {
+public class TagMatchItemContainer extends NBTRecipeContainer.ItemContainer {
     private final HashMap<String, INBT> map = new HashMap();
-    protected ItemTagMatchContainer(String item, HashMap<String, INBT> map) {
+    protected TagMatchItemContainer(String item, HashMap<String, INBT> map) {
         super(item);
         this.map.putAll(map);
     }
 
-    public static ItemTagMatchContainer create(String item, HashMap<String, INBT> map)
+    public static TagMatchItemContainer create(String item, HashMap<String, INBT> map)
     {
-        return new ItemTagMatchContainer(item, map);
+        return new TagMatchItemContainer(item, map);
     }
 
     @Override
@@ -30,10 +28,16 @@ public class ItemTagMatchContainer extends NBTRecipeContainer.ItemContainer {
                 }
                 return true;
             }
-            else
-                return false;
+            else return map.isEmpty();
         }
 
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemTagMatchContainer{ " + this.item +
+                " tag= " + map +
+                '}';
     }
 }

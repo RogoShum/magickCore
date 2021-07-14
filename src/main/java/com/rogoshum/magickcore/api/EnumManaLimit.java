@@ -18,8 +18,8 @@ public enum EnumManaLimit {
         return value;
     }
 
-    public int limit(float value)
+    public float limit(float value)
     {
-        return (int) Math.min(value, this.value);
+        return Math.min(value, this.value);
     }
 }

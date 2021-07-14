@@ -18,6 +18,7 @@ import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -37,6 +38,10 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     @Override
     public void tick() {
         super.tick();
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_HIT, 2.0F, 1.0F - this.rand.nextFloat());
+        }
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(1000), new VectorHitReaction(rand, 0.4F, 0.01F));
 

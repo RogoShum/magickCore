@@ -122,7 +122,7 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return 5;
+        return 10;
     }
 
     @Override

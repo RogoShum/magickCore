@@ -34,6 +34,18 @@ public class NBTTagHelper {
         return getStackTag(stack).contains("ELEMENT");
     }
 
+    public static ItemStack setElement(ItemStack stack, String element)
+    {
+        if(!stack.isEmpty())
+        {
+            CompoundNBT tag = getStackTag(stack);
+            tag.putString("ELEMENT", element);
+            stack.setTag(tag);
+        }
+
+        return stack;
+    }
+
     public static String getElement(ItemStack stack)
     {
         if(!stack.isEmpty() && hasElement(stack))

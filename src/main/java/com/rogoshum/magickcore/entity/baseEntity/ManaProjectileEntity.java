@@ -21,6 +21,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -75,6 +76,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	@Override
 	public void tick() {
 		super.tick();
+		if(!this.world.isRemote && this.ticksExisted == 1)
+		{
+			this.playSound(SoundEvents.BLOCK_BAMBOO_FALL, 1.5F, 1.0F + this.rand.nextFloat());
+		}
 		applyParticle();
 		traceTarget();
 	}

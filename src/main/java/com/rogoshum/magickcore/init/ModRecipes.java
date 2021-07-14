@@ -1,41 +1,54 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.item.ManaItem;
-import com.rogoshum.magickcore.item.OrbBottleItem;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
-import net.minecraft.entity.EntityType;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
+import com.rogoshum.magickcore.recipes.recipe.ElementItemRecipes;
+import com.rogoshum.magickcore.recipes.recipe.ElementToolRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.StringNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IRegistryDelegate;
-import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModRecipes {
+    //Explosion Recipes(easy recipe)
+    private static final HashMap<IItemContainer, ItemStack> ExplosionRecipesMap = new HashMap<>();
+
+    public static void putExplosionRecipe(IItemContainer input, ItemStack output) {
+        if(!ExplosionRecipesMap.containsKey(input))
+            ExplosionRecipesMap.put(input, output);
+        else try {
+            throw new Exception("Containing same input on the map = [" + input.toString() +"]");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ItemStack findExplosionOutput(ItemStack stack)
+    {
+        for(IItemContainer container : ExplosionRecipesMap.keySet())
+        {
+            if(container.matches(stack))
+                return ExplosionRecipesMap.get(container);
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    //Event registry MagickLogicEvent::onExplosion
+
+    //////////////////////////////
     public static final String element_crystal_seeds = MagickCore.MOD_ID + ":element_crystal_seeds";
     public static final String element_wool = MagickCore.MOD_ID + ":element_wool";
     public static final String element_string = MagickCore.MOD_ID + ":element_string";
@@ -48,7 +61,7 @@ public class ModRecipes {
     public static final String wither = MagickCore.MOD_ID + ":wither";
     public static final String taken = MagickCore.MOD_ID + ":taken";
 
-    public static final INBTRecipe elementOrbTag = CopyNBTTagRecipe.create(element_crystal_seeds, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("seeds")).shapeless();
+    public static final INBTRecipe elementOrbTag = CopyTagContainer.create(element_crystal_seeds, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("seed")).shapeless();
     public static final SpecialRecipeSerializer<?> element_orb_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementOrbTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -56,7 +69,7 @@ public class ModRecipes {
         }
     }).setRegistryName("element_orb_recipe");
 
-    public static final INBTRecipe elementWoolTag = CopyNBTTagRecipe.create(element_wool, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("wool")).shapeless();
+    public static final INBTRecipe elementWoolTag = CopyTagContainer.create(element_wool, NBTRecipeContainer.ItemContainer.create(orb_bottle, "ELEMENT"), NBTRecipeContainer.ItemContainer.create("wool")).shapeless();
     public static final SpecialRecipeSerializer<?> element_wool_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementWoolTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -64,7 +77,7 @@ public class ModRecipes {
         }
     }).setRegistryName("element_wool_recipe");
 
-    public static final INBTRecipe elementStringTag = CopyNBTTagRecipe.create(element_string, 4, NBTRecipeContainer.ItemContainer.create("element_wool", "ELEMENT")).shapeless();
+    public static final INBTRecipe elementStringTag = CopyTagContainer.create(element_string, 4, NBTRecipeContainer.ItemContainer.create("element_wool", "ELEMENT")).shapeless();
     public static final SpecialRecipeSerializer<?> element_string_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(elementStringTag, r){
         @Override
         public IRecipeSerializer<?> getSerializer() {
@@ -81,53 +94,61 @@ public class ModRecipes {
 
     public static void init()
     {
-        ItemTagMatchContainer arcContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.ARC));
-        arc_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(arc, arcContainer, arcContainer, arcContainer, arcContainer).shapeless(), r){
+        TagMatchItemContainer arcContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.ARC));
+        arc_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(arc, arcContainer, arcContainer, arcContainer, arcContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return arc_element_recipe;
             }
         }).setRegistryName("arc_element_recipe");
 
-        ItemTagMatchContainer solarContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.SOLAR));
-        solar_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(solar, solarContainer, solarContainer, solarContainer, solarContainer).shapeless(), r){
+        TagMatchItemContainer solarContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.SOLAR));
+        solar_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(solar, solarContainer, solarContainer, solarContainer, solarContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return solar_element_recipe;
             }
         }).setRegistryName("solar_element_recipe");
 
-        ItemTagMatchContainer voidContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.VOID));
-        void_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(voidItem, voidContainer, voidContainer, voidContainer, voidContainer).shapeless(), r){
+        TagMatchItemContainer voidContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.VOID));
+        void_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(voidItem, voidContainer, voidContainer, voidContainer, voidContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return void_element_recipe;
             }
         }).setRegistryName("void_element_recipe");
 
-        ItemTagMatchContainer stasisContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.STASIS));
-        stasis_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(stasis, stasisContainer, stasisContainer, stasisContainer, stasisContainer).shapeless(), r){
+        TagMatchItemContainer stasisContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.STASIS));
+        stasis_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(stasis, stasisContainer, stasisContainer, stasisContainer, stasisContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return stasis_element_recipe;
             }
         }).setRegistryName("stasis_element_recipe");
 
-        ItemTagMatchContainer witherContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.WITHER));
-        wither_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(wither, witherContainer, witherContainer, witherContainer, witherContainer).shapeless(), r){
+        TagMatchItemContainer witherContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.WITHER));
+        wither_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(wither, witherContainer, witherContainer, witherContainer, witherContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return wither_element_recipe;
             }
         }).setRegistryName("wither_element_recipe");
 
-        ItemTagMatchContainer takenContainer = ItemTagMatchContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.TAKEN));
-        taken_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyNBTTagRecipe.create(taken, takenContainer, takenContainer, takenContainer, takenContainer).shapeless(), r){
+        TagMatchItemContainer takenContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.TAKEN));
+        taken_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(taken, takenContainer, takenContainer, takenContainer, takenContainer).shapeless(), r){
             @Override
             public IRecipeSerializer<?> getSerializer() {
                 return taken_element_recipe;
             }
         }).setRegistryName("taken_element_recipe");
+
+        putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), new ItemStack(ModItems.mana_glowstone.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), new ItemStack(ModItems.mana_radstone.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
     }
 
     @SubscribeEvent
@@ -144,12 +165,21 @@ public class ModRecipes {
                 taken_element_recipe,
                 element_wool_recipe,
                 element_string_recipe,
-                ElementToolRecipe.element_sword_recipe,
-                ElementToolRecipe.element_axe_recipe,
-                ElementToolRecipe.element_helmet_recipe,
-                ElementToolRecipe.element_chest_recipe,
-                ElementToolRecipe.element_leg_recipe,
-                ElementToolRecipe.element_boots_recipe
+                ElementToolRecipes.element_sword_recipe,
+                ElementToolRecipes.element_axe_recipe,
+                ElementToolRecipes.element_helmet_recipe,
+                ElementToolRecipes.element_chest_recipe,
+                ElementToolRecipes.element_leg_recipe,
+                ElementToolRecipes.element_boots_recipe,
+                ElementItemRecipes.recipe_0,
+                ElementItemRecipes.recipe_1,
+                ElementItemRecipes.recipe_2,
+                ElementItemRecipes.recipe_3,
+                ElementItemRecipes.recipe_4,
+                ElementItemRecipes.recipe_5,
+                ElementItemRecipes.recipe_6,
+                ElementItemRecipes.recipe_7,
+                ElementItemRecipes.recipe_8
         );
     }
 
