@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.api.EnumTargetType;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.entity.ManaOrbEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
@@ -207,6 +208,12 @@ public class MagickReleaseHelper {
 
     public static boolean sameLikeOwner(Entity owner, Entity other)
     {
+        if(owner == null)
+            return false;
+
+        if(other == null)
+            return false;
+
         boolean isOwnerPlayer = owner instanceof PlayerEntity;
         boolean isOtherPlayer = other instanceof PlayerEntity;
 
@@ -226,6 +233,10 @@ public class MagickReleaseHelper {
             return true;
 
         if(!isOwnerPlayer && other instanceof TameableEntity && !(((TameableEntity)other).getOwner() instanceof PlayerEntity))
+            return true;
+
+        ITakenState state = other.getCapability(MagickCore.takenState).orElse(null);
+        if(state != null && state.getOwnerUUID().equals(owner.getUniqueID()))
             return true;
 
         return false;

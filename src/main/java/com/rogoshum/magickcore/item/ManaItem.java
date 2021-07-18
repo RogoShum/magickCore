@@ -6,8 +6,10 @@ import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.network.ManaItemDataPack;
@@ -17,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
@@ -135,6 +138,16 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         IEntityState state = entityLiving.getCapability(MagickCore.entityState).orElse(null);
+        if(entityLiving instanceof ServerPlayerEntity) {
+            if (stack.getItem() instanceof EyeItem)
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.EYE);
+            if (stack.getItem() instanceof OrbStaffItem)
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.ORB_STAFF);
+            if (stack.getItem() instanceof StarStaffItem)
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.STAR_STAFF);
+            if (stack.getItem() instanceof LaserStaffItem)
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.LASER_STAFF);
+        }
         releaseMagick(entityLiving, state, stack);
         return super.onItemUseFinish(stack, worldIn, entityLiving);
     }

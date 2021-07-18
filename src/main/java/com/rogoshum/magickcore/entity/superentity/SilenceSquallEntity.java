@@ -29,9 +29,19 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     public void tick() {
         super.tick();
         Entity cloest = null;
+        if(!this.world.isRemote && this.rand.nextBoolean() && this.rand.nextBoolean())
+        {
+            this.playSound(SoundEvents.BLOCK_CHAIN_HIT, 1.0F, 1.0F + this.rand.nextFloat());
+        }
+        if(!this.world.isRemote)
+            this.playSound(SoundEvents.UI_TOAST_IN, 2.0F, 1.0F - this.rand.nextFloat());
+        if(!this.world.isRemote && this.rand.nextBoolean())
+        {
+            this.playSound(SoundEvents.UI_TOAST_OUT, 2.0F, 1.0F + this.rand.nextFloat());
+        }
 
         this.traceEntity(null, 16, new Vector3d(0, 0, 0), 0.0f, 0);
-        if(this.ticksExisted % 2 ==0) {
+        //if(this.ticksExisted % 2 ==0) {
             HashMap<Integer, TrailParticle> trace = this.getTraceEntity();
             Iterator<Integer> ite = trace.keySet().iterator();
             while (ite.hasNext()) {
@@ -45,11 +55,15 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     if(this.getDistance(entity) <= 9.5)
                         ModBuff.applyBuff(entity, LibBuff.SLOW, 200, 5, false);
                     if(this.getDistance(entity) <= 3) {
-                        this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 20, 1f);
                         ModBuff.applyBuff(entity, LibBuff.FREEZE, 200, 1, false);
+                        if(this.ticksExisted % 20 == 0)
+                        {
+                            this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 20, 1f);
+                            entity.hurtResistantTime = 0;
+                        }
                     }
                 }
-            }
+            //}
         }
 
         if(cloest != null && cloest.isAlive()) {

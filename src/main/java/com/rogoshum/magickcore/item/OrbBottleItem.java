@@ -72,7 +72,7 @@ public class OrbBottleItem extends BaseItem{
                 IElementAnimalState state = target.getCapability(MagickCore.elementAnimal).orElse(null);
                 state.setElement(ModElements.getElement(tag.getString("ELEMENT")));
                 tag.remove("ELEMENT");
-                stack.setTag(tag);
+                playerIn.setHeldItem(hand,stack);
             }
         }
         return super.itemInteractionForEntity(stack, playerIn, target, hand);

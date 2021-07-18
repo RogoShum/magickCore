@@ -26,7 +26,7 @@ public class NBTTagHelper {
     public static CompoundNBT getEntityTag(Entity entity)
     {
         CompoundNBT nbt = new CompoundNBT();
-        entity.writeWithoutTypeId(nbt);
+        entity.writeUnlessRemoved(nbt);
         return nbt;
     }
 

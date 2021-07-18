@@ -69,7 +69,12 @@ public class ManaSphereEntity extends ManaPointEntity {
                         this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, this.getTickTime(), this.getForce() / 5);
                     }
                     if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
+                    {
+                        EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this.getOwner(), entity);
+                        MinecraftForge.EVENT_BUS.post(event);
                         this.getElement().getAbility().applyDebuff(entity, this.getTickTime(), this.getForce() / 5);
+                    }
+
                     if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
                         this.getElement().getAbility().applyBuff(entity, this.getTickTime(), this.getForce() / 5);
                 }

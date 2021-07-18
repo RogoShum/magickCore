@@ -87,6 +87,13 @@ public class ModBuff{
             }
         }, true);
 
+        putBuff(LibBuff.TAKEN_KING, (e) ->{
+            IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
+            if(e instanceof LivingEntity) {
+                ((LivingEntity) e).heal(state.getBuffList().get(LibBuff.TAKEN_KING).getForce() / 20f);
+            }
+        }, true);
+
         putBuff(LibBuff.WEAKEN, (e) ->{}, false);
         putBuff(LibBuff.TAKEN, (e) ->{}, true);
         putBuff(LibBuff.CRIPPLE, (e) ->{}, false);

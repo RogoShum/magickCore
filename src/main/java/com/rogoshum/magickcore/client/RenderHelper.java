@@ -243,6 +243,12 @@ public class RenderHelper {
         return type;
     }
 
+    public static RenderType getTexedOrb_CRUMBLING(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(CRUMBLING_TRANSPARENCY).build(false);
+        RenderType type = RenderType.makeType("_Tex_OrbCRUMBLING", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        return type;
+    }
+
     public static RenderType getTexedOrbGlow(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(light_transparency).build(false);
         RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);

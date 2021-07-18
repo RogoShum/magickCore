@@ -179,7 +179,8 @@ public class ModRecipes {
                 ElementItemRecipes.recipe_5,
                 ElementItemRecipes.recipe_6,
                 ElementItemRecipes.recipe_7,
-                ElementItemRecipes.recipe_8
+                ElementItemRecipes.recipe_8,
+                ElementItemRecipes.recipe_9
         );
     }
 

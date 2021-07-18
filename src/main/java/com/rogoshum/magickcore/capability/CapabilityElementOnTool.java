@@ -45,13 +45,14 @@ public class CapabilityElementOnTool {
 		 public void tick(LivingEntity entity) {
 			 HashMap<String, Integer> map = new HashMap<>();
 
-			 for (ItemStack stack : entity.getEquipmentAndArmor()) {
-				 CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
-				 if(tag != null)
-				 for(String key : tag.keySet())
-				 {
-				 	 ModElements.getElement(key).getAbility().applyToolElement(stack, 1);
-					 map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
+			 if(entity.getEquipmentAndArmor() != null) {
+				 for (ItemStack stack : entity.getEquipmentAndArmor()) {
+					 CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
+					 if (tag != null)
+						 for (String key : tag.keySet()) {
+							 ModElements.getElement(key).getAbility().applyToolElement(stack, 1);
+							 map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
+						 }
 				 }
 			 }
 

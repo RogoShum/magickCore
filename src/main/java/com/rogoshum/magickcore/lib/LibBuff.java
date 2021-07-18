@@ -9,6 +9,7 @@ public class LibBuff {
     public static final String WITHER = "wither";
     public static final String WEAKEN = "weaken";
     public static final String TAKEN = "taken";
+    public static final String TAKEN_KING = "taken_king";
 
     public static final String STASIS = "stasis";
     public static final String LIGHT = "light";

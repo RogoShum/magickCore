@@ -46,6 +46,12 @@ public class Networking {
                 .decoder(ElementAnimalPack::new)
                 .consumer(ElementAnimalPack::handler)
                 .add();
+
+        INSTANCE.messageBuilder(TakenStatePack.class, nextID())
+                .encoder(TakenStatePack::toBytes)
+                .decoder(TakenStatePack::new)
+                .consumer(TakenStatePack::handler)
+                .add();
     }
 
 

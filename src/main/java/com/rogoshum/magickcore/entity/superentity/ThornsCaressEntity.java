@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -27,9 +28,19 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     public void tick() {
         super.tick();
 
-        Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.4F, 0.005F));
-
+        for(int i = 0; i < 30;++i)
+        {
+            Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
+            this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.02F));
+        }
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.ENTITY_WITHER_SPAWN, 2.0F, 1.0F - this.rand.nextFloat());
+        }
+        if(!this.world.isRemote && this.ticksExisted % 20 == 0)
+        {
+            this.playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 2.0F, 1.0F - this.rand.nextFloat());
+        }
         Iterator<Integer> iter = hitReactions.keySet().iterator();
         while (iter.hasNext()) {
             VectorHitReaction reaction = hitReactions.get(iter.next());
@@ -50,6 +61,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                     return;
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
                     ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 5, false);
+                    ModBuff.applyBuff(entity, LibBuff.CRIPPLE, 100, 5, false);
                     //this.getElement().getAbility().damageEntity(this, null, entity, 10, 10);
                     if (this.rand.nextInt(10) == 0) {
                         TrailParticle trail = trace.get(id);

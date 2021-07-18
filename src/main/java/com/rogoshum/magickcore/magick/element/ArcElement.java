@@ -140,6 +140,7 @@ public class ArcElement extends MagickElement{
         @Override
         public void applyToolElement(LivingEntity entity, int level) {
             for(int i = 0; i < level; ++i) {
+                entity.ticksExisted+=MagickCore.rand.nextInt(2) + 1;
                 entity.tick();
             }
 

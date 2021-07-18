@@ -36,13 +36,17 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
             entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 1.0f, Integer.toString(entityIn.getEntityId()), 0.1f);
             entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 1.0f, Integer.toString(entityIn.getEntityId()), 2f);
             matrixStackIn.pop();
+            matrixStackIn.push();
+            matrixStackIn.scale(1.45f, 1.45f, 1.45f);
+            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.4f, entityIn.getHitReactions(), 2.10f, packedLightIn);
+            matrixStackIn.pop();
             float c = entityIn.ticksExisted % 11;
-            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
+            float degress = 360f * (c / 10);
+            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(degress));
             //matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(360f * (c / 10)));
             RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_rotate), matrixStackIn, bufferIn, 1.0f, entityIn.getElement().getRenderer().getColor()
                     , 1.0f, 0.35f, 8, true, entityIn.getUniqueID().toString(), 0.5f);
-
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.3f, entityIn.getHitReactions(), 0.2f, packedLightIn);
+            matrixStackIn.scale(1.25f, 1.25f, 1.25f);
         }
     }
 }

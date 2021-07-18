@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -48,7 +49,7 @@ public class LayerRenderHelper extends LivingRenderer {
         super.preRenderCallback(entitylivingbaseIn, matrixStackIn, partialTickTime);
     }
 
-    public void render(LivingEntity entityIn, LivingRenderer renderer, ResourceLocation tex, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(LivingEntity entityIn, EntityRenderer renderer, ResourceLocation tex, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         matrixStackIn.push();
         this.entityModel.swingProgress = this.getSwingProgress(entityIn, partialTicks);
 
@@ -125,28 +126,17 @@ public class LayerRenderHelper extends LivingRenderer {
             int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
             this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, color[0], color[1], color[2], this.alpha);
         }
-
-        /*RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.003921569F);
-        RenderSystem.color4f(color[0], color[1], color[2], this.alpha);
-        RenderSystem.enableDepthTest();*/
-        List<LayerRenderer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, renderer, "layerRenderers");
-        for(int cc = 0; cc < layerRenderers.size(); ++cc)
-        {
-            LayerRenderer layerrenderer = layerRenderers.get(cc);
-            layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);
+        if(renderer instanceof LivingRenderer) {
+            List<LayerRenderer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, (LivingRenderer)renderer, "layerRenderers");
+            for (int cc = 0; cc < layerRenderers.size(); ++cc) {
+                LayerRenderer layerrenderer = layerRenderers.get(cc);
+                layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);
+            }
         }
-        /*RenderSystem.disableDepthTest();
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();*/
         matrixStackIn.pop();
     }
 
-    public RenderType getEntityRenderType(LivingRenderer renderer, LivingEntity entityIn)
+    public RenderType getEntityRenderType(EntityRenderer renderer, LivingEntity entityIn)
     {
         boolean flag = this.isVisible(entityIn);
         boolean flag1 = !flag && !entityIn.isInvisibleToPlayer(Minecraft.getInstance().player);

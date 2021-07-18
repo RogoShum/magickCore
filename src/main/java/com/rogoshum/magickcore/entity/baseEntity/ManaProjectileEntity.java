@@ -162,15 +162,19 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	@Override
 	protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
 			if(this.getManaData() != null) {
-				if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
-				{
+				if (this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity())) {
 					EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
 					MinecraftForge.EVENT_BUS.post(event);
 					this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
 				}
 
-				if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
+				if (this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
+				{
+					EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+					MinecraftForge.EVENT_BUS.post(event);
 					this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
+				}
+
 				if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
 					this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce());
 			}

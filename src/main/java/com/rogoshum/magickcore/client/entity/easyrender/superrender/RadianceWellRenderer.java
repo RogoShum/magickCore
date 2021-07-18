@@ -79,9 +79,9 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
                 matrixStackIn.push();
                 matrixStackIn.translate(0, -entityIn.getHeight() * 2 + 1.4, 0);
-                matrixStackIn.scale(6.05f, 1, 6.05f);
+                matrixStackIn.scale(6.05f, 1.45f, 6.05f);
                 RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlow(cylinder_bloom), matrixStackIn, bufferIn, 0.35f * alphaC, entityIn.getElement().getRenderer().getColor()
-                        , 2f, 6.5f, 32, true, entityIn.getUniqueID().toString(), 0.0f);
+                        , 2f, 4.5f, 32, true, entityIn.getUniqueID().toString(), 0.0f);
                 matrixStackIn.pop();
             }
         }

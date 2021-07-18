@@ -1,11 +1,18 @@
 package com.rogoshum.magickcore.magick.element;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.capability.ITakenState;
+import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModDamage;
+import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -22,12 +29,33 @@ public class TakenElement extends MagickElement{
 
         @Override
         public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return false;
+            return ModBuff.applyBuff(victim, LibBuff.TAKEN, tick, force, true);
         }
 
         @Override
         public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            return false;
+            if(ModBuff.hasBuff(victim, LibBuff.TAKEN))
+                force *= 1.75;
+
+            boolean flag = false;
+            if(entity != null && projectile != null)
+                flag = victim.attackEntityFrom(ModDamage.applyProjectileTakenDamage(entity, projectile), force);
+            else if(entity != null)
+                flag = victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(entity), force);
+            else if(projectile != null)
+                flag = victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(projectile), force);
+            else
+                flag = victim.attackEntityFrom(ModDamage.getTakenDamage(), force);
+
+            if(flag && force >= 7 && entity != null && victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
+            {
+                ITakenState state = victim.getCapability(MagickCore.takenState).orElse(null);
+                state.setOwner(entity.getUniqueID());
+                state.setTime(tick);
+                victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
+            }
+
+            return flag;
         }
 
         @Override
@@ -37,11 +65,20 @@ public class TakenElement extends MagickElement{
 
         @Override
         public boolean applyBuff(Entity victim, int tick, float force) {
-            return false;
+            return ModBuff.applyBuff(victim, LibBuff.TAKEN_KING, tick, force, true);
         }
 
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
+
+            if(victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
+            {
+                ITakenState state = victim.getCapability(MagickCore.takenState).orElse(null);
+                state.setOwner(victim.getUniqueID());
+                state.setTime((int) (tick * force));
+
+                return true;
+            }
             return false;
         }
 

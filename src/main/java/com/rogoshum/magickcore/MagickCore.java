@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore;
 
+import com.rogoshum.magickcore.advancements.StringTrigger;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.capability.*;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -7,11 +8,13 @@ import com.rogoshum.magickcore.client.tileentity.ElementCrystalRenderer;
 import com.rogoshum.magickcore.client.tileentity.ElementWoolRenderer;
 import com.rogoshum.magickcore.client.tileentity.MagickContainerRenderer;
 import com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer;
+import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.event.MagickLogicEvent;
 import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.network.Networking;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -37,6 +40,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import software.bernie.geckolib3.GeckoLib;
 
 import java.lang.reflect.Constructor;
@@ -59,6 +65,10 @@ public class MagickCore
 	public static final String Data = MOD_ID + ":data";
 	public static final UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final UUID emptyUUID_EYE = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
+    @CapabilityInject(ITakenState.class)
+    public static Capability<ITakenState> takenState;
+
 	@CapabilityInject(IEntityState.class)
     public static Capability<IEntityState> entityState;
 
@@ -97,6 +107,7 @@ public class MagickCore
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new MagickLogicEvent());
         MinecraftForge.EVENT_BUS.register(new ElementOrbEvent());
+        MinecraftForge.EVENT_BUS.register(new AdvancementsEvent());
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.BLOCKS.register(eventBus);
         ModEffects.EFFECTS.register(eventBus);
@@ -128,6 +139,7 @@ public class MagickCore
             CapabilityManager.INSTANCE.register(IManaItemData.class, new CapabilityManaItemData.Storage<>(), () -> new CapabilityManaItemData.Implementation(ModElements.getElement(LibElements.ORIGIN)));
             CapabilityManager.INSTANCE.register(IElementAnimalState.class, new CapabilityElementAnimalState.Storage<>(), () -> new CapabilityElementAnimalState.Implementation(ModElements.getElement(LibElements.ORIGIN)));
             CapabilityManager.INSTANCE.register(IElementOnTool.class, new CapabilityElementOnTool.Storage<>(), CapabilityElementOnTool.Implementation::new);
+            CapabilityManager.INSTANCE.register(ITakenState.class, new CapabilityTakenEntity.Storage<>(), CapabilityTakenEntity.Implementation::new);
             Networking.registerMessage();
             ModBrew.registryBrewing();
         });

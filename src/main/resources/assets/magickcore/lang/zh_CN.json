@@ -16,12 +16,12 @@
     "item.magickcore.element_wool": "元素羊毛毛",
     "item.magickcore.element_string": "元素线线",
 
-    "item.magickcore.arc": "§b电弧发生器",
-    "item.magickcore.solar": "§6烈焰点燃仪",
-    "item.magickcore.void": "§5虚空吞噬点",
-    "item.magickcore.stasis": "§3冰影零点守则",
-    "item.magickcore.wither": "§2腐蚀邪魔剑法",
-    "item.magickcore.taken": "§8夺魂之王才具",
+    "item.magickcore.arc": "§b电弧核心",
+    "item.magickcore.solar": "§6烈焰核心",
+    "item.magickcore.void": "§5虚空核心",
+    "item.magickcore.stasis": "§3冰影核心",
+    "item.magickcore.wither": "§2枯萎核心",
+    "item.magickcore.taken": "§8夺魂核心",
 
     "item.magickcore.mana_spider_eye": "魔力蜘蛛眼",
     "item.magickcore.mana_glowstone": "魔力萤石粉",
@@ -95,7 +95,7 @@
 
     //描述
     "magickcore.description.element": "§d元素§7: %s",
-    "magickcore.description.force": "§d魔素§7: %s",
+    "magickcore.description.force": "§d强度§7: %s",
     "magickcore.description.mana": "§d魔素量§7: %s",
     "magickcore.description.mana_type": "§d类型§7: %s",
     "magickcore.description.tick": "§d存在时间§7: %s",
@@ -130,6 +130,10 @@
     "magickcore.tool_attribute.void": "§5减少攻击冷却",
     "magickcore.tool_attribute.stasis": "§3小范围实体减速",
     "magickcore.tool_attribute.wither": "§2随机触发耐久回复",
-    "magickcore.tool_attribute.taken": "§8伤害生物几率夺魂",
-    "magickcore.tool_duration": "§7磨损："
+    "magickcore.tool_attribute.taken": "§8伤害生物几率半傀儡化",
+    "magickcore.tool_duration": "§7磨损：",
+
+    //书
+    "magickcore.book.name": "魔法核心指南",
+    "magickcore.book.landing_text": "这个模组为世界带来了什么，这个模组都能让你做到什么，部分内容都会为你讲解。"
 }

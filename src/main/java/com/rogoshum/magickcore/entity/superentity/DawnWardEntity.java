@@ -157,6 +157,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
             if (!entityIn.isBeingRidden()) {
                 entityIn.addVelocity(d0, 0.0D, d1);
+                this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_FALL, 2.0F, 1.0F - this.rand.nextFloat());
             }
         }
     }

@@ -33,7 +33,7 @@ public class RuneItem extends BaseItem{
         if(!context.getWorld().isRemote) {
             IEntityState state = context.getPlayer().getCapability(MagickCore.entityState).orElse(null);
             ManaRuneEntity orb = new ManaRuneEntity(ModEntites.mana_rune, context.getWorld());
-            orb.setPosition(context.getPos().getX() + 0.5, context.getPos().getY()+1, context.getPos().getZ() + 0.5);
+            orb.setPosition(context.getHitVec().x, context.getHitVec().y, context.getHitVec().z);
             orb.setElement(state.getElement());
             orb.setTickTime(10000);
             orb.setOwner(context.getPlayer());

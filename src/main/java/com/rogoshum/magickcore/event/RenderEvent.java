@@ -164,7 +164,7 @@ public class RenderEvent {
     @SubscribeEvent
     public void cancelFreezeEntity(RenderLivingEvent.Pre event) {
         IEntityState state = event.getEntity().getCapability(MagickCore.entityState).orElse(null);
-        if (state.getBuffList().containsKey(LibBuff.FREEZE)) {
+        if (state != null && state.getBuffList().containsKey(LibBuff.FREEZE)) {
             event.setCanceled(true);
             freezeRender.render(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), 0);
         }

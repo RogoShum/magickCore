@@ -11,11 +11,18 @@ public class TakenRenderer extends ElementRenderer {
 
     private ResourceLocation[] mist = new ResourceLocation[3];
 
+    private ResourceLocation particle = new ResourceLocation(MagickCore.MOD_ID +":textures/element/taken/particle.png");
+
     public TakenRenderer() {
         super(RenderHelper.TAKEN);
         mist[0] = mist_0;
         mist[1] = mist_1;
         mist[2] = mist_2;
+    }
+
+    @Override
+    public ResourceLocation getParticleTexture() {
+        return particle;
     }
 
     @Override

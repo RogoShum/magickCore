@@ -24,7 +24,7 @@ public class ModBrew {
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "shulker", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "turtle", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "scute", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_II.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "prismarine", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get())));

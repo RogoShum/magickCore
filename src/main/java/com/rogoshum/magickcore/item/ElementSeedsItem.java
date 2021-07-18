@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -42,6 +44,11 @@ public class ElementSeedsItem extends BlockItem implements IItemColor {
     }
 
     @Override
+    public String getTranslationKey() {
+        return this.getDefaultTranslationKey();
+    }
+
+    @Override
     protected boolean onBlockPlaced(BlockPos pos, World worldIn, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
         if(stack.hasTag() && stack.getTag().contains("ELEMENT")) {
             ElementCrystalTileEntity crystal = (ElementCrystalTileEntity) worldIn.getTileEntity(pos);
@@ -61,5 +68,9 @@ public class ElementSeedsItem extends BlockItem implements IItemColor {
             }
         }
         return 16777215;
+    }
+
+    @Override
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
     }
 }

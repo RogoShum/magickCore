@@ -1,11 +1,9 @@
-package com.rogoshum.magickcore.recipes.recipe;
+package com.rogoshum.magickcore.recipes;
 
 import com.rogoshum.magickcore.api.IItemContainer;
-import com.rogoshum.magickcore.recipes.NBTRecipeContainer;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class CreateStackContainer extends NBTRecipeContainer {
