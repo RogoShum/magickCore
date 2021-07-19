@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.init.ModItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.item.Items;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IItemProvider;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;

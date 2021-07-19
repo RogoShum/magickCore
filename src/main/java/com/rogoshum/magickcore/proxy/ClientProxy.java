@@ -1,5 +1,6 @@
-package com.rogoshum.magickcore;
+package com.rogoshum.magickcore.proxy;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.AllEntity;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.block.tileentity.ElementWoolTileEntity;
@@ -11,6 +12,9 @@ import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
 import com.rogoshum.magickcore.client.element.*;
 import com.rogoshum.magickcore.client.entity.easyrender.outline.ManaRiftOutlineRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.*;
+import com.rogoshum.magickcore.client.entity.render.ManaEntityRenderer;
+import com.rogoshum.magickcore.client.entity.render.ManaObjectRenderer;
+import com.rogoshum.magickcore.client.entity.render.living.TimeManagerRenderer;
 import com.rogoshum.magickcore.client.item.MagickBakedModel;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.ElementCrystalRenderer;
@@ -21,6 +25,8 @@ import com.rogoshum.magickcore.entity.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.event.RenderOutlineEvent;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
@@ -29,25 +35,32 @@ import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.settings.ParticleStatus;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientProxy extends CommonProxy
+public class ClientProxy implements IProxy
 {
 	private HashMap<String, ElementRenderer> renderers = new HashMap<String, ElementRenderer>();
 	private RenderOutlineEvent event = new RenderOutlineEvent();
-
+	public static ErrorRenderer error = new ErrorRenderer();
 	public ElementRenderer getElementRender(String name)
 	{
 		return this.renderers.get(name) != null ? this.renderers.get(name) : this.renderers.get(LibElements.ORIGIN);
@@ -61,6 +74,7 @@ public class ClientProxy extends CommonProxy
 	{
 		MinecraftForge.EVENT_BUS.register(new RenderEvent());
 		MinecraftForge.EVENT_BUS.addListener(event::onRenderWorldLast);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
@@ -68,11 +82,43 @@ public class ClientProxy extends CommonProxy
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
 	}
 
+	public void registerEntityRenderer(FMLClientSetupEvent event)
+	{
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_orb, ManaObjectRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_shield, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_star, ManaObjectRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_laser, ManaObjectRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_eye, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_rift, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_rune, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_sphere, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.radiance_wall, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.chaos_reach, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.thorns_caress, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.silence_squall, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.ascendant_realm, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_power, ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.element_orb, ManaObjectRenderer::new);
+	}
+
 	public void registerItemColors(ColorHandlerEvent.Item event) {
-		event.getItemColors().register((IItemColor) ModItems.element_crystal_seeds.get().getItem(), ModItems.element_crystal_seeds.get());
-		event.getItemColors().register((IItemColor) ModItems.element_meat.get().getItem(), ModItems.element_meat.get());
-		event.getItemColors().register((IItemColor) ModItems.element_crystal.get().getItem(), ModItems.element_crystal.get());
-		event.getItemColors().register((IItemColor) ModItems.element_string.get().getItem(), ModItems.element_string.get());
+		IItemColor color = new IItemColor() {
+			@Override
+			public int getColor(ItemStack stack, int p_getColor_2_) {
+				if(NBTTagHelper.hasElement(stack)) {
+					float[] color = MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor();
+					float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
+					return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
+				}
+				return 	16777215;
+			}
+		};
+		event.getItemColors().register(color, ModItems.element_crystal_seeds.get());
+		event.getItemColors().register(color, ModItems.element_meat.get());
+		event.getItemColors().register(color, ModItems.element_crystal.get());
+		event.getItemColors().register(color, ModItems.element_string.get());
+		event.getItemColors().register(color, ModItems.element_wool.get());
 	}
 
 	public void onModelBaked(ModelBakeEvent event) {
@@ -194,5 +240,12 @@ public class ClientProxy extends CommonProxy
 			MagickCore.LOGGER.info("Successes to add sprite [" + name + "]");
 		else
 			MagickCore.LOGGER.info("Failed to add sprite [" + name + "]");
+	}
+
+	public static class ErrorRenderer extends ElementRenderer
+	{
+		public ErrorRenderer() {
+			super(new float[]{1f, 0, 0});
+		}
 	}
 }

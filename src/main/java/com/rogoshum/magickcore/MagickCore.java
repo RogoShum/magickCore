@@ -1,7 +1,5 @@
 package com.rogoshum.magickcore;
 
-import com.rogoshum.magickcore.advancements.StringTrigger;
-import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.capability.*;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.ElementCrystalRenderer;
@@ -14,11 +12,12 @@ import com.rogoshum.magickcore.event.MagickLogicEvent;
 import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.network.Networking;
-import net.minecraft.advancements.CriteriaTriggers;
+import com.rogoshum.magickcore.proxy.ClientProxy;
+import com.rogoshum.magickcore.proxy.CommonProxy;
+import com.rogoshum.magickcore.proxy.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -40,14 +39,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.system.CallbackI;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import software.bernie.geckolib3.GeckoLib;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -85,7 +77,7 @@ public class MagickCore
     public static Capability<IElementOnTool> elementOnTool;
 	
 	public static Random rand = new Random();
-    public static CommonProxy proxy = new CommonProxy() {};
+    public static IProxy proxy;
 
     public MagickCore() {
         // Register the setup method for modloading
@@ -98,7 +90,7 @@ public class MagickCore
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
-        //DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
+        DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
         ModElements.putElementsIn();
         ElementOrbEvent.initElementMap();
         proxy.registerHandlers();
@@ -115,10 +107,9 @@ public class MagickCore
         ModItems.ITEMS.register(eventBus);
         ModTileEntities.TILE_ENTITY.register(eventBus);
         ModEnchantments.ENCHANTMENTS.register(eventBus);
-        //ModEntites.ENTITY_TYPES.register(eventBus);
         ModBuff.initBuff();
 
-        GeckoLib.initialize();
+        //GeckoLib.initialize();
     }
 
     public static float getNegativeToOne()
@@ -126,8 +117,6 @@ public class MagickCore
         return rand.nextFloat() - rand.nextFloat();
     }
     public static void addMagickParticle(LitParticle par) {proxy.addMagickParticle(par);}
-
-
 
     private void setup(final FMLCommonSetupEvent event)
     {

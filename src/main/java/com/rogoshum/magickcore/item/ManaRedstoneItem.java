@@ -28,7 +28,7 @@ public class ManaRedstoneItem extends BaseItem implements IManaMaterial {
     public boolean upgradeManaItem(IManaItemData data) {
         if(data.getTickTime() >= EnumManaLimit.TICK.getValue())
             return false;
-        data.setTickTime((int) EnumManaLimit.TICK.limit(data.getTickTime() + 100));
+        data.setTickTime((int) EnumManaLimit.TICK.limit(data.getTickTime() + 20));
         return true;
     }
 

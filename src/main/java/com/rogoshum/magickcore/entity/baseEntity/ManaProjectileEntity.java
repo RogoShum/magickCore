@@ -32,6 +32,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.core.jmx.Server;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,8 +52,9 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	public void setTrail(TrailParticle trail) {this.trail = trail;}
 
 	@Override
-	public void setShooter(@Nullable Entity entityIn) {
+	public void setShooter(Entity entityIn) {
 		super.setShooter(entityIn);
+		if(entityIn != null)
 		this.setOwnerUUID(entityIn.getUniqueID());
 	}
 
@@ -61,7 +63,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	public Entity func_234616_v_() {
 		Entity entity = super.func_234616_v_();
 
-		if(entity == null && this.world instanceof ClientWorld) {
+		if(entity == null && this.world.isRemote) {
 			ArrayList<Entity> list = new ArrayList<>();
 			((ClientWorld) this.world).getAllEntities().forEach((list::add));
 
@@ -80,7 +82,8 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 		{
 			this.playSound(SoundEvents.BLOCK_BAMBOO_FALL, 1.5F, 1.0F + this.rand.nextFloat());
 		}
-		applyParticle();
+		if(world.isRemote)
+			applyParticle();
 		traceTarget();
 	}
 

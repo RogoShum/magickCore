@@ -3,9 +3,9 @@ package com.rogoshum.magickcore.api;
 import com.rogoshum.magickcore.MagickCore;
 
 public enum EnumManaLimit {
-    FORCE(7),
+    FORCE(5),
     RANGE(16),
-    TICK(1500),
+    TICK(200),
     MAX_MANA(5000);
 
     private int value;

@@ -62,7 +62,7 @@ public class EyeItem extends ManaItem{
                 tooltip.add(new StringTextComponent(""));
                 tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + data.getElement().getType()))));
                 tooltip.add((new TranslationTextComponent(LibItem.FORCE)).appendString(" ").append((new StringTextComponent(Float.toString(data.getForce())))));
-                tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append((new StringTextComponent(Float.toString((float) data.getTickTime() / 20f) + "s"))));
+                tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append((new StringTextComponent(Float.toString((float) data.getTickTime() / 4f) + "s"))));
                 tooltip.add((new TranslationTextComponent(LibItem.MANA_TYPE)).appendString(" ").append((new StringTextComponent(data.getManaType().getLabel()))));
 
                 if (data.getTrace()) {

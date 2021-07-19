@@ -3,10 +3,11 @@ package com.rogoshum.magickcore.item;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.block.tileentity.ElementWoolTileEntity;
+import com.rogoshum.magickcore.client.item.ElementWoolTileEntityItemStackRenderer;
+import com.rogoshum.magickcore.init.ModBlocks;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -24,9 +25,9 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
-public class ElementWoolItem extends BlockItem implements IItemColor {
-    public ElementWoolItem(Block blockIn, Properties builder) {
-        super(blockIn, builder);
+public class ElementWoolItem extends BlockItem{
+    public ElementWoolItem() {
+        super(ModBlocks.element_wool.get(), BaseItem.properties.maxStackSize(64).setISTER(() -> ElementWoolTileEntityItemStackRenderer::new));
     }
 
     @Override
@@ -45,19 +46,6 @@ public class ElementWoolItem extends BlockItem implements IItemColor {
             crystal.eType = stack.getTag().getString("ELEMENT");
         }
         return super.onBlockPlaced(pos, worldIn, player, stack, state);
-    }
-
-    @Override
-    public int getColor(ItemStack stack, int p_getColor_2_) {
-        if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains("ELEMENT")) {
-                float[] color = MagickCore.proxy.getElementRender(tag.getString("ELEMENT")).getColor();
-                float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
-                return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
-            }
-        }
-        return 0;
     }
 
     @Override

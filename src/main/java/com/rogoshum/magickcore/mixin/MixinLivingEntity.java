@@ -26,6 +26,9 @@ public abstract class MixinLivingEntity extends Entity {
     }
 
     @Shadow
+    public abstract float getHealth();
+
+    @Shadow
     public abstract float getMaxHealth();
 
     @Inject(method = "setHealth", at = @At("HEAD"))
@@ -33,7 +36,7 @@ public abstract class MixinLivingEntity extends Entity {
         IEntityState state = this.getCapability(MagickCore.entityState).orElse(null);
         if(state != null && state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
             float force = state.getBuffList().get(LibBuff.CRIPPLE).getForce();
-            float maxHealth = this.getMaxHealth() - (this.getMaxHealth() * force * 0.025f);
+            float maxHealth = Math.min(this.getMaxHealth() - (this.getMaxHealth() * force * 0.025f), getHealth());
             if(health > maxHealth)
                 health = maxHealth;
         }

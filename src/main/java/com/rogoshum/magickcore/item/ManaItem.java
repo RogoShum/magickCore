@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibAdvancements;
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +31,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -93,16 +96,52 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         }
     }
 
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        super.getShareTag(stack);
+        CompoundNBT nbt = NBTTagHelper.getStackTag(stack);
+        if(!nbt.contains("CAPABILITY"))
+            nbt.put("CAPABILITY", new CompoundNBT());
+        CompoundNBT tag = nbt.getCompound("CAPABILITY");
+        tag.putString("ELEMENT", this.getElement(stack).getType());
+        tag.putBoolean("TRACE", this.getTrace(stack));
+        tag.putString("TYPE", this.getManaType(stack).getLabel());
+        tag.putFloat("RANGE", this.getRange(stack));
+        tag.putFloat("FORCE", this.getForce(stack));
+        tag.putFloat("MANA", this.getMana(stack));
+        tag.putInt("TICK", this.getTickTime(stack));
+        return nbt;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
+        super.readShareTag(stack, nbt);
+        CompoundNBT nbt1 = NBTTagHelper.getStackTag(stack);
+        if(nbt1.contains("CAPABILITY")) {
+            CompoundNBT tag = nbt1.getCompound("CAPABILITY");
+            this.setElement(stack, ModElements.getElement(tag.getString("ELEMENT")));
+            this.setTrace(stack, tag.getBoolean("TRACE"));
+            EnumManaType mana = EnumManaType.getEnum(tag.getString("TYPE"));
+            if (mana != null)
+                this.setManaType(stack, EnumManaType.getEnum(tag.getString("TYPE")));
+            this.setRange(stack, tag.getFloat("RANGE"));
+            this.setForce(stack, tag.getFloat("FORCE"));
+            this.setMana(stack, tag.getFloat("MANA"));
+            this.setTickTime(stack, tag.getInt("TICK"));
+        }
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-        updateData(stack, entityIn, itemSlot);
+        //updateData(stack, entityIn, itemSlot);
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        updateData(stack, entity, 0);
-        return false;
+        //updateData(stack, entity, 0);
+        return super.onEntityItemUpdate(stack, entity);
     }
 
     private void updateData(ItemStack stack, Entity entityIn, int slot)
@@ -241,7 +280,7 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         if(stack.getItem() instanceof IManaItem)
             return ((IManaItem)stack.getItem()).getItemData(stack).getManaType();
 
-        return null;
+        return EnumManaType.NONE;
     }
 
     @Override

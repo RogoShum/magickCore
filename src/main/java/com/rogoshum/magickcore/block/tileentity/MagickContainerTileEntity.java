@@ -41,11 +41,17 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         {
             PlayerEntity player = this.world.getPlayerByUuid(this.playerUniqueId);
 
+            if(player == null)
+                eType = LibElements.ORIGIN;
+            else {
+                IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
+                eType = state.getElement().getType();
+            }
+
             if(transMana && player != null)
             {
                 double dis = Math.sqrt(player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
                 IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
-                eType = state.getElement().getType();
                 if(dis > 16)
                 {
                     transMana = false;
@@ -147,7 +153,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         return remaining;
     }
 
-    private void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
+    protected void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
 
     public ItemStack getMaterialItem() { return mainItem; }
     public void clearMaterialItem() {

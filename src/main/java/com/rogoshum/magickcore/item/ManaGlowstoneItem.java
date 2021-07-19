@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.item;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.api.IManaMaterial;

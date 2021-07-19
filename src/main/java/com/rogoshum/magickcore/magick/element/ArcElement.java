@@ -103,6 +103,7 @@ public class ArcElement extends MagickElement{
 
         public void makeParticle(World world, Vector3d pos, Vector3d pos1, String type, float scaleP)
         {
+            if(!world.isRemote) return;
             ElementRenderer renderer = MagickCore.proxy.getElementRender(type);
             double dis = pos.subtract(pos1).length();
             int distance = (int) (10 * dis);

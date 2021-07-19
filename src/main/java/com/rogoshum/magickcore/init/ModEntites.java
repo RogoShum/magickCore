@@ -1,13 +1,10 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.render.*;
-import com.rogoshum.magickcore.client.entity.render.living.TimeManagerRenderer;
 import com.rogoshum.magickcore.entity.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.entity.living.TimeManagerEntity;
 
-import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -17,11 +14,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModEntites {
@@ -47,23 +41,6 @@ public class ModEntites {
         event.enqueueWork(() -> {
             GlobalEntityTypeAttributes.put(time_manager, MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).create());
         });
-        
-        RenderingRegistry.registerEntityRenderingHandler(time_manager, TimeManagerRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(mana_orb, ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_shield, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_star, ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_laser, ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_eye, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_rift, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_rune, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_sphere, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(radiance_wall, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(chaos_reach, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(thorns_caress, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(silence_squall, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ascendant_realm, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(mana_power, ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(element_orb, ManaObjectRenderer::new);
     }
 	
 	@SubscribeEvent

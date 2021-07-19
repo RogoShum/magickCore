@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.block;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.entity.ManaItemEntity;
+import com.rogoshum.magickcore.item.ManaItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -49,6 +52,8 @@ public class MagickCraftingBlock extends BaseBlock{
             }
             else if(magickCrafting.getMainItem() != null && magickCrafting.getMainItem() != ItemStack.EMPTY)
             {
+                //ManaItemEntity entity = new ManaItemEntity(worldIn, player.getPosX(), player.getPosY(), player.getPosZ(), magickCrafting.getMainItem().copy());
+                //worldIn.addEntity(entity);
                 player.inventory.addItemStackToInventory(magickCrafting.getMainItem());
                 magickCrafting.clearMainItem();
             }

@@ -20,6 +20,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -180,6 +181,16 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
         }
 
         return reactions;
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeAttackedWithItem() {
+        return false;
     }
 
     protected void collideWithNearbyEntities() {

@@ -89,6 +89,8 @@ public class CapabilityManaData {
 
 		 @Override
 		 public UUID getTraceTarget() {
+			 if(traceTarget == null)
+				 return MagickCore.emptyUUID;
 			 return traceTarget;
 		 }
 
@@ -129,6 +131,8 @@ public class CapabilityManaData {
 
 		 @Override
 		 public EnumTargetType getTargetType() {
+			 if(targetType == null)
+				 return EnumTargetType.NONE;
 			 return this.targetType;
 		 }
 
@@ -139,6 +143,8 @@ public class CapabilityManaData {
 
 		 @Override
 		 public EnumManaType getManaType() {
+		 	if(manaType == null)
+		 		return EnumManaType.NONE;
 			 return manaType;
 		 }
 

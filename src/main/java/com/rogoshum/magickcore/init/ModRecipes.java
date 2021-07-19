@@ -142,13 +142,13 @@ public class ModRecipes {
             }
         }).setRegistryName("taken_element_recipe");
 
-        putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
+        /*putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), new ItemStack(ModItems.mana_glowstone.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), new ItemStack(ModItems.mana_radstone.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));*/
     }
 
     @SubscribeEvent

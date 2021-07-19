@@ -60,15 +60,15 @@ public class LitParticle {
         this.renderer = renderer;
     }
 
-    public void setTraceTarget(Entity traceTarget){this.traceTarget = traceTarget;}
-    public void setLimitScale(){this.limitScale = true;}
-    public void setShakeLimit(float shakeLimit)
+    public LitParticle setTraceTarget(Entity traceTarget){this.traceTarget = traceTarget;return this;}
+    public LitParticle setLimitScale(){this.limitScale = true;return this;}
+    public LitParticle setShakeLimit(float shakeLimit)
     {
-        this.shakeLimit = shakeLimit;
+        this.shakeLimit = shakeLimit;return this;
     }
-    public void setParticleGravity(float g)
+    public LitParticle setParticleGravity(float g)
     {
-        this.particleGravity = g;
+        this.particleGravity = g;return this;
     }
 
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl buffer)
@@ -134,10 +134,11 @@ public class LitParticle {
         this.setBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
     }
 
-    public void addMotion(double x, double y, double z) {
+    public LitParticle addMotion(double x, double y, double z) {
         this.motionX += x;
         this.motionY += y;
         this.motionZ += z;
+        return this;
     }
 
     public float getAlpha(float alpha) {
@@ -234,12 +235,13 @@ public class LitParticle {
         this.boundingBox = bb;
     }
 
-    public void setGlow() { this.isGlow = true; }
+    public LitParticle setGlow() { this.isGlow = true;
+        return this;}
     public boolean getGlow() { return this.isGlow;}
 
     public boolean isDead() { return age >= maxAge; }
 
-    public void setCanCollide(boolean canCollide) {this.canCollide = canCollide;}
+    public LitParticle setCanCollide(boolean canCollide) {this.canCollide = canCollide;return this;}
 
     public boolean shouldRender(ClippingHelper camera) {
         AxisAlignedBB axisalignedbb = getBoundingBox().grow(0.5D);

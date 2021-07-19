@@ -7,7 +7,6 @@ import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -45,7 +44,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living))
             {
                 this.getElement().getAbility().hitEntity(this, living, this.getTickTime(), 1);
-                this.getElement().getAbility().damageEntity(this.getOwner(), this, living, this.getTickTime(), EnumManaLimit.FORCE.getValue());
+                this.getElement().getAbility().damageEntity(this.getOwner(), this, living, this.getTickTime() / 4, EnumManaLimit.FORCE.getValue());
             }
         }
     }

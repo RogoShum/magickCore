@@ -147,7 +147,7 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof ManaEyeEntity)
 		{
 			ManaEyeEntity eye = (ManaEyeEntity) event.getEntity();
-			if(event.getMagickType() == "EYE_STAR" && eye.getOwner() instanceof LivingEntity && !((LivingEntity)eye.getOwner()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null)))
+			if(event.getMagickType().equals("EYE_STAR") && eye.getOwner() instanceof LivingEntity && !((LivingEntity)eye.getOwner()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null)))
 				event.setTrace(MagickCore.emptyUUID);
 		}
 		else
@@ -156,15 +156,15 @@ public class MagickLogicEvent {
 				event.setTrace(MagickReleaseHelper.getTraceEntity(event.getEntity()));
 		}
 
-		if(event.getMagickType() == "SUPER_ENTITY")
+		if(event.getMagickType().equals("SUPER_ENTITY"))
 			event.setTick(event.getTick() / 4);
 
-		if(event.getMagickType() == "magickcore:mana_rift")
+		if(event.getMagickType().equals("magickcore:mana_rift"))
 			event.setTick(event.getTick() * 2);
 
-		if(event.getMagickType() == "magickcore:mana_eye")
-			event.setTick(event.getTick() * 12);
-
+		if(event.getMagickType().equals("magickcore:mana_eye")) {
+			event.setTick(event.getTick() * 5);
+		}
 		if(event.getTrace() == null)
 			event.setTrace(MagickCore.emptyUUID);
 	}
@@ -555,8 +555,10 @@ public class MagickLogicEvent {
 
 	public static void spawnParticle(String element, Entity entity)
 	{
-		ElementRenderer render = MagickCore.proxy.getElementRender(element);
 		World world = entity.world;
+		if(!world.isRemote) return;
+		ElementRenderer render = MagickCore.proxy.getElementRender(element);
+
 		for(int i = 0; i < 10; ++i) {
 			LitParticle litPar = new LitParticle(world, render.getParticleTexture()
 					, new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()

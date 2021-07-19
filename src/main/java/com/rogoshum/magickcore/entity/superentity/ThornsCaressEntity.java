@@ -11,7 +11,6 @@ import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -60,13 +59,13 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 if(entity == null)
                     return;
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
-                    ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 5, false);
+                    ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 2, false);
                     ModBuff.applyBuff(entity, LibBuff.CRIPPLE, 100, 5, false);
                     //this.getElement().getAbility().damageEntity(this, null, entity, 10, 10);
                     if (this.rand.nextInt(10) == 0) {
                         TrailParticle trail = trace.get(id);
                         for (Vector3d vec : trail.getTrailPoint()) {
-                            if(this.rand.nextInt(4) == 0) {
+                            if(this.rand.nextInt(4) == 0 && this.world.isRemote) {
                                 LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getCycleTexture()
                                         , new Vector3d(vec.x
                                         , vec.y

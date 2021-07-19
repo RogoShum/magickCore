@@ -8,7 +8,6 @@ import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -29,7 +28,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 
-public class ElementSeedsItem extends BlockItem implements IItemColor {
+public class ElementSeedsItem extends BlockItem{
     public ElementSeedsItem(Block blockIn, Properties builder) {
         super(blockIn, builder);
     }
@@ -55,19 +54,6 @@ public class ElementSeedsItem extends BlockItem implements IItemColor {
             crystal.eType = stack.getTag().getString("ELEMENT");
         }
         return super.onBlockPlaced(pos, worldIn, player, stack, state);
-    }
-
-    @Override
-    public int getColor(ItemStack stack, int p_getColor_2_) {
-        if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains("ELEMENT")) {
-                float[] color = MagickCore.proxy.getElementRender(tag.getString("ELEMENT")).getColor();
-                float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
-                return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
-            }
-        }
-        return 16777215;
     }
 
     @Override

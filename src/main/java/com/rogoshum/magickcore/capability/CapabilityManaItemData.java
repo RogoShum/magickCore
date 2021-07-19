@@ -44,15 +44,21 @@ public class CapabilityManaItemData {
 		@Override
 		public void readNBT(Capability<T> capability, T instance, Direction side, INBT nbt) {
 			CompoundNBT tag = (CompoundNBT) nbt;
-			instance.setElement(ModElements.getElement(tag.getString(ELEMENT)));
-			instance.setForce(tag.getFloat(FORCE));
-			instance.setTickTime(tag.getInt(TICK));
-			instance.setRange(tag.getFloat(RANGE));
+			if(tag.contains("ELEMENT"))
+				instance.setElement(ModElements.getElement(tag.getString(ELEMENT)));
+			if(tag.contains("FORCE"))
+				instance.setForce(tag.getFloat(FORCE));
+			if(tag.contains("TICK"))
+				instance.setTickTime(tag.getInt(TICK));
+			if(tag.contains("RANGE"))
+				instance.setRange(tag.getFloat(RANGE));
 			EnumManaType mana = EnumManaType.getEnum(tag.getString(MANA_TYPE));
 			if(mana != null)
 				instance.setManaType(mana);
-			instance.setMana(tag.getFloat(MANA));
-			instance.setTrace(tag.getBoolean(TRACE));
+			if(tag.contains("MANA"))
+				instance.setMana(tag.getFloat(MANA));
+			if(tag.contains("TRACE"))
+				instance.setTrace(tag.getBoolean(TRACE));
 		}
     }
 
@@ -150,12 +156,16 @@ public class CapabilityManaItemData {
 
 		 @Override
 		 public EnumManaType getManaType() {
+		 	if(manaType == null)
+		 		return EnumManaType.NONE;
 			 return manaType;
 		 }
 
 		 @Override
 		 public void setManaType(EnumManaType type) {
 			 manaType = type;
+			 if(manaType == null)
+				 manaType = EnumManaType.NONE;
 		 }
 	 }
 

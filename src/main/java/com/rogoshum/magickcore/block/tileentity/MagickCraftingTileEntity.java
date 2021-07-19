@@ -17,6 +17,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -51,14 +52,17 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
         }
 
         ItemStack material = null;
+        MagickContainerTileEntity tileEntity = null;
         List<MagickContainerTileEntity> container = new ArrayList<>();
         world.tickableTileEntities.forEach((tile) -> { if(tile instanceof MagickContainerTileEntity && ((MagickContainerTileEntity) tile).getPlayerUniqueId().equals(this.getPlayerUniqueId())) { container.add((MagickContainerTileEntity) tile); }});
         container.sort((MagickContainerTileEntity o1, MagickContainerTileEntity o2)->o2.getManaCapacity() - o1.getManaCapacity());
 
         for(MagickContainerTileEntity tile : container)
         {
-            if(material == null && tile.getMaterialItem() != null && !tile.getMaterialItem().isEmpty() && tile.getMaterialItem().getItem() instanceof IManaMaterial)
+            if(material == null && tile.getMaterialItem() != null && !tile.getMaterialItem().isEmpty() && tile.getMaterialItem().getItem() instanceof IManaMaterial) {
                 material = tile.getMaterialItem();
+                tileEntity = tile;
+            }
         }
 
         for(MagickContainerTileEntity tile : container)
@@ -67,7 +71,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                 continue;
 
             //upgradeAction
-            if(material != null) {
+            if(material != null && tile == tileEntity) {
                 if(manaCapacity < ((IManaMaterial)material.getItem()).getManaNeed())
                 {
                     if(!this.world.isRemote) {
@@ -75,7 +79,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                         updateInfo();
                         if(this.ticksExisted % 20 == 0)
                         {
-                            this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.2F, 1.0F + MagickCore.rand.nextFloat());
+                            this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.1F, 1.0F + MagickCore.rand.nextFloat());
                         }
                     }
                     else
@@ -87,8 +91,10 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     if(flag && !this.world.isRemote)
                     {
                         material.setCount(material.getCount() - 1);
-                        if(material.getCount() <= 0)
+                        if(material.getCount() <= 0) {
+                            tileEntity.updateInfo();
                             material = null;
+                        }
                         manaCapacity = 0;
                         updateInfo();
                         this.world.playSound(null, this.getPos(), SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F + MagickCore.rand.nextFloat());
@@ -99,7 +105,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     }
                 }
             }
-            else if(((ManaItem) getMainItem().getItem()).getMana(getMainItem()) < ((ManaItem) getMainItem().getItem()).getMaxMana(getMainItem()))    //transManaAction
+            else if(material == null && ((ManaItem) getMainItem().getItem()).getMana(getMainItem()) < ((ManaItem) getMainItem().getItem()).getMaxMana(getMainItem()))    //transManaAction
             {
                 if(!this.world.isRemote) {
                     int manaGet = tile.outputManaCapacity(5);
@@ -109,7 +115,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     updateInfo();
                     if(this.ticksExisted % 20 == 0)
                     {
-                        this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.2F, 1.0F + MagickCore.rand.nextFloat());
+                        this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 0.1F, 1.0F + MagickCore.rand.nextFloat());
                     }
                 }
                 else
@@ -181,9 +187,13 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
     public void setPlayerUniqueId(UUID uuid){this.playerUniqueId = uuid; updateInfo();}
     public UUID getPlayerUniqueId(){return this.playerUniqueId;}
 
-    private void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
+    private void updateInfo() {
+        world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
 
-    public ItemStack getMainItem() { return mainItem; }
+    public ItemStack getMainItem() {
+        return mainItem;
+    }
+
     public void clearMainItem() {
         mainItem = ItemStack.EMPTY;
         updateInfo();

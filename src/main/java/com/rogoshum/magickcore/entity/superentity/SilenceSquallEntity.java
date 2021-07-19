@@ -53,7 +53,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
                         cloest = entity;
                     if(this.getDistance(entity) <= 9.5)
-                        ModBuff.applyBuff(entity, LibBuff.SLOW, 200, 5, false);
+                        ModBuff.applyBuff(entity, LibBuff.SLOW, 200, 4, false);
                     if(this.getDistance(entity) <= 3) {
                         ModBuff.applyBuff(entity, LibBuff.FREEZE, 200, 1, false);
                         if(this.ticksExisted % 20 == 0)

@@ -1,46 +1,36 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.CommonProxy;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class OrbBottleItem extends BaseItem{
 
-    public OrbBottleItem(Properties properties) {
-        super(properties);
+    public OrbBottleItem() {
+        super(BaseItem.properties.maxStackSize(1).setISTER(() -> OrbBottleRenderer::new));
     }
 
     @Override

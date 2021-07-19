@@ -1,9 +1,9 @@
-package com.rogoshum.magickcore;
+package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 
-public class CommonProxy
+public class CommonProxy implements IProxy
 {
 
 	public void init() {}

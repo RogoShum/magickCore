@@ -1,15 +1,10 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.ElementWoolTileEntityItemStackRenderer;
-import com.rogoshum.magickcore.client.item.MagickContainerItemStackTileEntityRenderer;
-import com.rogoshum.magickcore.client.item.MagickCraftingItemStackTileEntityRenderer;
-import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.item.*;
 
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
@@ -44,14 +39,14 @@ public class ModItems {
     public static final RegistryObject<Item> mana_dragon_breath = ITEMS.register("mana_dragon_breath", ManaDragonBreathItem::new);
     public static final RegistryObject<Item> mana_nether_wart = ITEMS.register("mana_nether_wart", ManaNetherWartItem::new);
 
-    public static final RegistryObject<Item> magick_crafting = ITEMS.register("magick_crafting", () -> new BlockItem(ModBlocks.magick_crafting.get(), BaseItem.properties.maxStackSize(1).setISTER(() -> MagickCraftingItemStackTileEntityRenderer::new)));
-    public static final RegistryObject<Item> magick_container = ITEMS.register("magick_container", () -> new BlockItem(ModBlocks.magick_container.get(), BaseItem.properties.maxStackSize(1).setISTER(() -> MagickContainerItemStackTileEntityRenderer::new)));
+    public static final RegistryObject<Item> magick_crafting = ITEMS.register("magick_crafting", MagickCraftingItem::new);
+    public static final RegistryObject<Item> magick_container = ITEMS.register("magick_container", MagickContainerItem::new);
     public static final RegistryObject<Item> element_crystal_seeds = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.element_crystal.get(), BaseItem.properties.maxStackSize(4)));
 
-    public static final RegistryObject<Item> orb_bottle = ITEMS.register("orb_bottle", () -> new OrbBottleItem(BaseItem.properties.maxStackSize(1).setISTER(() -> OrbBottleRenderer::new)));
+    public static final RegistryObject<Item> orb_bottle = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> element_meat = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties.maxStackSize(16).food(
             new Food.Builder().meat().saturation(3f).fastToEat().setAlwaysEdible().effect(() -> new EffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> element_crystal = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties.maxStackSize(8)));
-    public static final RegistryObject<Item> element_wool = ITEMS.register("element_wool", () -> new ElementWoolItem(ModBlocks.element_wool.get(), BaseItem.properties.maxStackSize(64).setISTER(() -> ElementWoolTileEntityItemStackRenderer::new)));
+    public static final RegistryObject<Item> element_wool = ITEMS.register("element_wool", ElementWoolItem::new);
     public static final RegistryObject<Item> element_string = ITEMS.register("element_string", () -> new ElementContainerItem(BaseItem.properties.maxStackSize(64)));
 }

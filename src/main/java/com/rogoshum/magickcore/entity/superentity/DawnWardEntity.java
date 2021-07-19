@@ -4,17 +4,12 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.element.MagickElement;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.*;
-import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -56,7 +51,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
             reaction.tick();
         }
 
-        if(this.ticksExisted % 2 == 0) {
+        if(this.ticksExisted % 2 == 0 && this.world.isRemote) {
             LitParticle par = new LitParticle(this.world, this.getElement().getRenderer().getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2

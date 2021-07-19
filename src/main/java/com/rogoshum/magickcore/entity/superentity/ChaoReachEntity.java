@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -11,11 +12,9 @@ import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,20 +56,22 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity)) {
                     makeSound = true;
                     ModBuff.applyBuff(entity, LibBuff.PARALYSIS, 50, 5, false);
-                    this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 10, 10);
-                    TrailParticle trail = trace.get(id);
-                    for (Vector3d vec : trail.getTrailPoint()) {
-                        if (this.rand.nextInt(40) == 0) {
-                            LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getMistTexture()
-                                    , new Vector3d(MagickCore.getNegativeToOne() + vec.x
-                                    , MagickCore.getNegativeToOne() + vec.y + this.getHeight()
-                                    , MagickCore.getNegativeToOne() + vec.z)
-                                    , this.rand.nextFloat() * 1.5f, this.rand.nextFloat() * 1.5f, 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick(), this.getElement().getRenderer());
-                            litPar.setGlow();
-                            litPar.setParticleGravity(0f);
-                            litPar.setShakeLimit(35.0f);
-                            litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
-                            MagickCore.addMagickParticle(litPar);
+                    this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 10, EnumManaLimit.FORCE.getValue());
+                    if(this.world.isRemote) {
+                        TrailParticle trail = trace.get(id);
+                        for (Vector3d vec : trail.getTrailPoint()) {
+                            if (this.rand.nextInt(40) == 0) {
+                                LitParticle litPar = new LitParticle(this.world, this.getElement().getRenderer().getMistTexture()
+                                        , new Vector3d(MagickCore.getNegativeToOne() + vec.x
+                                        , MagickCore.getNegativeToOne() + vec.y + this.getHeight()
+                                        , MagickCore.getNegativeToOne() + vec.z)
+                                        , this.rand.nextFloat() * 1.5f, this.rand.nextFloat() * 1.5f, 0.6f + 0.4f * this.rand.nextFloat(), this.getElement().getRenderer().getParticleRenderTick(), this.getElement().getRenderer());
+                                litPar.setGlow();
+                                litPar.setParticleGravity(0f);
+                                litPar.setShakeLimit(35.0f);
+                                litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
+                                MagickCore.addMagickParticle(litPar);
+                            }
                         }
                     }
                 }

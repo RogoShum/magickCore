@@ -1,9 +1,6 @@
 package com.rogoshum.magickcore.client.particle;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IMagickElementObject;
-import com.rogoshum.magickcore.client.VectorHitReaction;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector3d;
 
