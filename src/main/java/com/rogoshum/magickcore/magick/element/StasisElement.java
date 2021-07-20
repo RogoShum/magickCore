@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.magick.element;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.capability.IElementOnTool;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
@@ -52,7 +53,7 @@ public class StasisElement extends MagickElement{
             else
                 flag = victim.attackEntityFrom(ModDamage.getStasisDamage(), force);
             if(flag)
-                ModBuff.applyBuff(victim, LibBuff.FREEZE, tick / 10, 0, false);
+                ModBuff.applyBuff(victim, LibBuff.FREEZE, tick / 8, 0, false);
 
             return flag;
         }
@@ -74,7 +75,7 @@ public class StasisElement extends MagickElement{
 
         @Override
         public boolean applyDebuff(Entity victim, int tick, float force) {
-            if(force >= 7)
+            if(tick >= EnumManaLimit.TICK.getValue())
                 return ModBuff.applyBuff(victim, LibBuff.FREEZE, tick, force, false);
             return ModBuff.applyBuff(victim, LibBuff.SLOW, tick, force, false);
         }

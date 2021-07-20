@@ -32,7 +32,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
         {
             helper.setEntityModel(renderer.getEntityModel());
 
-            matrixStackIn.translate(0, -0.005f, 0);
+            matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
             matrixStackIn.scale(1.01f, 1.01f, 1.01f);
 
             if(state.getBuffList().containsKey(LibBuff.PARALYSIS))
@@ -62,7 +62,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
 
             if(state.getBuffList().containsKey(LibBuff.STASIS)) {
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.STASIS).getColor());
-                matrixStackIn.translate(0, -0.005f, 0);
+                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
                 matrixStackIn.scale(1.001f, 1.01f, 1.001f);
                 //matrixStackIn.translate(0, -0.02f, 0);
                 helper.setColor(color);
@@ -73,7 +73,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
 
             if(state.getBuffList().containsKey(LibBuff.LIGHT)) {
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.VOID).getColor());
-                matrixStackIn.translate(0, -0.005f, 0);
+                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
                 matrixStackIn.scale(1.001f, 1.01f, 1.001f);
                 //matrixStackIn.translate(0, -0.01f, 0);
                 helper.setColor(color);
@@ -83,7 +83,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
             }
 
             if(state.getBuffList().containsKey(LibBuff.RADIANCE_WELL)) {
-                matrixStackIn.translate(0, -0.005f, 0);
+                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
                 matrixStackIn.scale(1.001f, 1.01f, 1.001f);
                 //matrixStackIn.translate(0, -0.01f, 0);
                 float[] gold = {1f, 0.6f, 0};
@@ -95,7 +95,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
             }
 
             if(state.getBuffList().containsKey(LibBuff.DECAY)) {
-                matrixStackIn.translate(0, -0.005f, 0);
+                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
                 matrixStackIn.scale(1.001f, 1.01f, 1.001f);
                 //matrixStackIn.translate(0, -0.01f, 0);
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.WITHER).getColor());
@@ -106,7 +106,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
             }
 
             if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI)) {
-                matrixStackIn.translate(0, -0.005f, 0);
+                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
                 matrixStackIn.scale(1.001f, 1.01f, 1.001f);
                 //matrixStackIn.translate(0, -0.01f, 0);
                 float[] gold = {1f, 0.8f, 0};

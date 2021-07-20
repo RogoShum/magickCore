@@ -1,0 +1,8 @@
+{
+	"name": "magickcore.book.name",
+	"landing_text": "magickcore.book.landing_text",
+	"version": 1,
+	"creative_tab" : "magickcore_group",
+	"model": "magickcore:book_magickcore",
+	"book_texture": "magickcore:textures/book_image/book_gray.png"
+}

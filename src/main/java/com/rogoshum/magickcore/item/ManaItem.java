@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.IManaItem;
@@ -21,11 +22,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -92,6 +95,21 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
 
                 if (RoguelikeHelper.isRogueItem(stack))
                     tooltip.add((new TranslationTextComponent(LibItem.ROGUE_TICK)).appendString(" ").append((new StringTextComponent(Integer.toString(RoguelikeHelper.getItemRemainTime(stack))))));
+            }
+        }
+    }
+
+    @Override
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.isInGroup(group)) {
+            ItemStack stack = new ItemStack(this);
+            IManaItemData data = stack.getCapability(MagickCore.manaItemData).orElse(null);
+            if(data != null) {
+                data.setTrace(true);
+                data.setTickTime(EnumManaLimit.TICK.getValue());
+                data.setForce(EnumManaLimit.FORCE.getValue());
+                data.setManaType(EnumManaType.ATTACK);
+                items.add(stack);
             }
         }
     }

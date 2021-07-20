@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 public class ElementItem extends BaseItem{
@@ -24,7 +25,11 @@ public class ElementItem extends BaseItem{
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if(!worldIn.isRemote) {
             IEntityState state = playerIn.getCapability(MagickCore.entityState).orElse(null);
-            state.setElement(ModElements.getElement(element));
+            if(!state.getElement().getType().equals(element)) {
+                state.setElement(ModElements.getElement(element));
+                playerIn.getHeldItem(handIn).shrink(1);
+                playerIn.world.playSound(null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, playerIn.getSoundCategory(), 1.5f, 1.0f);
+            }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }

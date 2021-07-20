@@ -6,11 +6,13 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 
 public class ManaLaserEntity extends ManaProjectileEntity {
@@ -21,6 +23,24 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    protected void traceTarget()
+    {
+        if(this.getTraceTarget() != MagickCore.emptyUUID && !this.world.isRemote)
+        {
+            Entity entity = ((ServerWorld)this.world).getEntityByUuid(this.getTraceTarget());
+
+            if(entity != null) {
+                Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 2, entity.getPosZ());
+                Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+
+                Vector3d motion = goal.subtract(self).normalize().scale(this.getMotion().length() * 0.175);
+                this.setMotion(motion.add(this.getMotion().scale(0.95)));
+            }
+            else
+                this.setMotion(this.getMotion().scale(1.1));
+        }
     }
 
     @Override
@@ -36,7 +56,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                    , 0.1f, 0.1f, 1.0f, 10, this.getElement().getRenderer());
+                    , 0.15f, 0.15f, 1.0f, 10, this.getElement().getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
         }
@@ -48,18 +68,18 @@ public class ManaLaserEntity extends ManaProjectileEntity {
             if (this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity())) {
                 EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
                 MinecraftForge.EVENT_BUS.post(event);
-                this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/2);
+                this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
             }
 
             if (this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
             {
                 EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
                 MinecraftForge.EVENT_BUS.post(event);
-                this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/2);
+                this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
             }
 
             if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
-                this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/2);
+                this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
         }
     }
 }

@@ -1,0 +1,18 @@
+{
+  "name": "冰影元素",
+  "advancement": "magickcore:learn/stasis",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:stasis",
+      "text": "冰影元素是一种暗影元素，是一种具有缓速和冻结效果的元素。$(br2)冰影元素可以使目标行动变缓，也可以冻结目标，阻止目标行动。"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "超能状态的冰影元素可以产生一股寒冰气流，跟随拥有者并自动寻找非友军单位造成冻结和伤害效果。"
+    }
+  ]
+}

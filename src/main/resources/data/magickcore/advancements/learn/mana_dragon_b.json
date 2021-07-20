@@ -1,0 +1,11 @@
+{
+  "parent": "magickcore:learn/root",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "mana_dragon_b"
+		}
+	}
+  }
+}

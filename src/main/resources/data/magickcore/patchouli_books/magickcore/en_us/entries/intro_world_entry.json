@@ -1,0 +1,12 @@
+{
+  "name": "Changing World",
+  "icon": "minecraft:grass",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+	  "title": "Changing World",
+      "text": "In order to explore the final form of life, the two forces brought light and dark into the world, which derived divergent element attributes. $(br2)From then on, all creatures in the world have gained the ability to use the energy of light and dark, and individuals also understand how to create elements through light and dark, and take advantages of powerful element attributes to protect themself. $(br)You can also learn to use this ability."
+    }
+  ]
+}

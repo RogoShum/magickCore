@@ -8,15 +8,18 @@ import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
 import com.rogoshum.magickcore.recipes.recipe.ElementItemRecipes;
 import com.rogoshum.magickcore.recipes.recipe.ElementToolRecipes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.StringNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 
@@ -142,13 +145,22 @@ public class ModRecipes {
             }
         }).setRegistryName("taken_element_recipe");
 
-        /*putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), new ItemStack(ModItems.mana_glowstone.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), new ItemStack(ModItems.mana_radstone.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));*/
+        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
+
+        Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
+        if(book != null)
+        {
+            ItemStack stack = new ItemStack(book);
+            NBTTagHelper.getStackTag(stack).putString("patchouli:book", "magickcore:magickcore");
+            putExplosionRecipe(TagMatchItemContainer.create(Items.BOOK.toString()), stack);
+        }
     }
 
     @SubscribeEvent

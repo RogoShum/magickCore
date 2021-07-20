@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class PlayerShieldRenderer extends EasyLayerRender<LivingEntity> {
     public static LayerRenderHelper helper = new LayerRenderHelper(Minecraft.getInstance().getRenderManager(), null);

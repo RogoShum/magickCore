@@ -142,8 +142,11 @@ public class ArcElement extends MagickElement{
         public void applyToolElement(LivingEntity entity, int level) {
             for(int i = 0; i < level; ++i) {
                 entity.ticksExisted+=MagickCore.rand.nextInt(2) + 1;
-                entity.tick();
+                if(entity.isServerWorld())
+                    entity.tick();
             }
+
+            entity.addPotionEffect(new EffectInstance(Effects.SPEED, 20, level));
 
             if(entity.ticksExisted % 20 == 0) {
                 IElementOnTool tool = entity.getCapability(MagickCore.elementOnTool).orElse(null);

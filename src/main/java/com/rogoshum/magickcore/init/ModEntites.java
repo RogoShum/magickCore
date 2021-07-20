@@ -19,7 +19,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModEntites {
-	public static final EntityType<TimeManagerEntity> time_manager = (EntityType<TimeManagerEntity>) EntityType.Builder.create(TimeManagerEntity::new, EntityClassification.MISC).size(1f, 1f).build("time_manager").setRegistryName("time_manager");
+	//public static final EntityType<TimeManagerEntity> time_manager = (EntityType<TimeManagerEntity>) EntityType.Builder.create(TimeManagerEntity::new, EntityClassification.MISC).size(1f, 1f).build("time_manager").setRegistryName("time_manager");
 	public static final EntityType<ManaOrbEntity> mana_orb = (EntityType<ManaOrbEntity>) EntityType.Builder.create(ManaOrbEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("mana_orb").setRegistryName("mana_orb");
 	public static final EntityType<ManaStarEntity> mana_star = (EntityType<ManaStarEntity>) EntityType.Builder.create(ManaStarEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("mana_star").setRegistryName("mana_star");
 	public static final EntityType<ManaLaserEntity> mana_laser = (EntityType<ManaLaserEntity>) EntityType.Builder.create(ManaLaserEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("mana_laser").setRegistryName("mana_laser");
@@ -39,7 +39,7 @@ public class ModEntites {
 	@SubscribeEvent
     public static void setupAttributes(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            GlobalEntityTypeAttributes.put(time_manager, MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).create());
+            //GlobalEntityTypeAttributes.put(time_manager, MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).create());
         });
     }
 	
@@ -48,7 +48,7 @@ public class ModEntites {
 	{
 		event.getRegistry().registerAll
 		(
-				time_manager,
+				//time_manager,
 				mana_orb,
 				mana_shield,
 				mana_star,

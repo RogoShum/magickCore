@@ -85,6 +85,10 @@
     "item.minecraft.potion.effect.mana_consum_reduce_ii": "Mana cost reduction Potion II",
     "item.minecraft.potion.effect.mana_force": "Mana force Potion",
 
+    "item.minecraft.potion.effect.refreshing": "Refreshing Water",
+    "item.minecraft.lingering_potion.effect.refreshing": "Refreshing Water",
+    "item.minecraft.splash_potion.effect.refreshing": "Refreshing Water",
+
     //enchantment
     "enchantment.magickcore.element_deprivation": "Element Deprivation",
 

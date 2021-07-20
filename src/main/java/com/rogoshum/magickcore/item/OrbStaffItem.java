@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.EnumManaType;

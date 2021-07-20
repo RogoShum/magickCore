@@ -28,6 +28,12 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         {
             this.playSound(SoundEvents.BLOCK_ANVIL_PLACE, 1.0F, 0.7F + this.rand.nextFloat());
         }
+
+        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 5)
+        {
+            this.playSound(SoundEvents.UI_TOAST_OUT, 5.0F, (1.0F + this.rand.nextFloat()));
+        }
+
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.1F, 0.005F));
 

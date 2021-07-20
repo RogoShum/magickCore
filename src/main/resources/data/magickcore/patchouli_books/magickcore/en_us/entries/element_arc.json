@@ -1,0 +1,18 @@
+{
+  "name": "Arc Element",
+  "advancement": "magickcore:learn/arc",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:arc",
+      "text": "Arc Element is born from light, can chain creatures and paralyze them."
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "Arc Element in super state can auto search non-friendly creatures, causes continuous damage and paralysis through high-energy arc rays."
+    }
+  ]
+}

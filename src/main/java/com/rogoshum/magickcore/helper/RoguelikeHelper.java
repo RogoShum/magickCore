@@ -62,6 +62,8 @@ public class RoguelikeHelper {
     {
         if(sec == Integer.MAX_VALUE)
             return stack;
+        if(sec < 10)
+            sec = 10;
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         tag.putInt(LibItem.ROGUELIKE_MAX_TICK, sec * 20);
         tag.putInt(LibItem.ROGUELIKE_TICK, sec * 20);

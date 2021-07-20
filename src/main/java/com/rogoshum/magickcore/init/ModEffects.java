@@ -43,6 +43,7 @@ public class ModEffects {
     public static RegistryObject<Potion> TRACE_P = POTIONS.register(LibEffect.TRACE, () -> new Potion(new EffectInstance(TRACE.get(), 4800, 0)));
     public static RegistryObject<Potion> MANA_FORCE_P = POTIONS.register(LibEffect.MANA_FORCE, () -> new Potion(new EffectInstance(MANA_FORCE.get(), 4800, 0)));
 
+    public static RegistryObject<Potion> NOTHING = POTIONS.register(LibEffect.NOTHING, () -> new Potion());
     public static final List<Effect> effectList = new ArrayList<>();
 
     public static class ModEffect extends Effect

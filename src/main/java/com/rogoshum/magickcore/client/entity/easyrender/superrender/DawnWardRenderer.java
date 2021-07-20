@@ -27,7 +27,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
             matrixStackIn.scale(0.97f, 0.97f, 0.97f);
             entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.5f, entityIn.getHitReactions(), 0.3f, packedLightIn);
 
-            float orbScale = 1.0f;
+            /*float orbScale = 1.0f;
             double distance = entityIn.getPositionVec().subtract(Minecraft.getInstance().player.getPositionVec()).length() - entityIn.getWidth() / 2;
             if(distance < 0)
                 distance = 0;
@@ -36,7 +36,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
             if(orbScale < 0.64f)
                 orbScale = 0.64f;
             matrixStackIn.scale(orbScale, orbScale, orbScale);
-            entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 0.2f);
+            entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 0.2f);*/
         }
     }
 }

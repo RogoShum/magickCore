@@ -1,0 +1,18 @@
+{
+  "name": "枯萎元素",
+  "advancement": "magickcore:learn/wither",
+  "icon": "magickcore:wither",
+  "category": "element",
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:wither",
+      "text": "枯萎元素是一种暗影元素，是一种具有压制和削弱效果的元素。$(br2)枯萎元素可以使目标持续流血，但不会击杀目标。也可以限制目标最大回血量，使其无法达到满血状态。"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "超能状态的枯萎元素会在符文中间形成一个枯萎球体，对非友军单位释放牵引线，对目标造成血量限制和持续流血效果。"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "魔眼",
+  "advancement": "magickcore:learn/eye",
+  "icon": "magickcore:eye",
+  "category": "mana_item",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:eye",
+	  "text": "魔眼是一种魔法道具，可以存储元素能量，再释放出去。$(br)魔眼一旦产生就无法再被挪动位置，也无法被常规伤害破坏。$(br)魔眼释放魔力的方式是以周围非友军实体为目标，产生零星去接触目标实体。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_eye.png"],
+	  "border": "true"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.item.ManaItem;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,6 +45,8 @@ public class ManaElementOrbEntity extends ManaProjectileEntity {
             {
                 IEntityState state = entity.getCapability(MagickCore.entityState).orElse(null);
                 state.setManaValue(state.getManaValue() + 100);
+                if(!(entity instanceof PlayerEntity) && state.getElement().getType().equals(LibElements.ORIGIN))
+                    state.setElement(this.getElement());
                 this.remove();
                 flag = true;
             }

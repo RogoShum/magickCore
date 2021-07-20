@@ -1,0 +1,6 @@
+{
+  "name": "元素",
+  "description": "支撑魔力系统的基本能量",
+  "icon": "magickcore:textures/element/taken/particle.png",
+  "sortnum": 4
+}

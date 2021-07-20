@@ -1,0 +1,63 @@
+{
+  "name": "原始元素水晶配方",
+  "advancement": "magickcore:learn/orb_bottle",
+  "icon": "magickcore:magick_container",
+  "category": "mana_tool",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:magick_container",
+	  "text": "魔法容器，潜行右键可以与自身链接，存储元素能量进去。$(br)也可以存放魔法材料。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_container.png"],
+	  "border": "true"
+    },
+	{
+      "type": "spotlight",
+	  "item": "magickcore:magick_crafting",
+	  "text": "魔法创造台，用于升级元素道具，右键可以把魔法道具存储进去，空手潜行后右键可以链接周围的魔法容器，用容器来提供能量源。$(br)也可以吸收魔法容器里的魔法材料来升级元素道具。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_crafting.png"],
+	  "border": "true"
+    },
+	{
+      "type": "spotlight",
+	  "item": "magickcore:rune",
+	  "text": "生成定点类魔法的重要道具，右键可以放在地上。$(br)生成符需要依靠符文才能够产生魔法。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_rune.png"],
+	  "border": "true"
+    },
+	{
+      "type": "spotlight",
+	  "item": "magickcore:rift",
+	  "text": "站上去即可提供buff和debuff的魔法裂痕，自动按需来消耗玩家的元素能量，需要一个符文来使用。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_rift.png"],
+	  "border": "true"
+    },
+	{
+      "type": "spotlight",
+	  "item": "magickcore:super_spawner",
+	  "text": "可以产生巨大影响的生成符，由此诞生出产生巨大破坏力、或超强防御力、控制力的魔法，不同的元素可以生成不同的魔法。$(br)消耗玩家全部的能量，需要三个符文来使用。"
+    },
+	{
+      "type": "image",
+	  "title": "合成方案",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_travler.png"],
+	  "border": "true"
+    }
+  ]
+}

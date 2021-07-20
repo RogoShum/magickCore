@@ -1,0 +1,13 @@
+{
+  "name": "追踪药水",
+  "advancement": "magickcore:learn/mana_disc",
+  "icon": "minecraft:potion{Potion:\"magickcore:trace\"}",
+  "category": "mana_tool",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:trace\"}",
+	  "text": "由含有“disc(唱片)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：使释放的魔法含带追踪效果。"
+    }
+  ]
+}

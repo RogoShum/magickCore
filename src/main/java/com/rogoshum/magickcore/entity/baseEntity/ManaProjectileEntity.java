@@ -80,7 +80,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 		super.tick();
 		if(!this.world.isRemote && this.ticksExisted == 1)
 		{
-			this.playSound(SoundEvents.BLOCK_BAMBOO_FALL, 1.5F, 1.0F + this.rand.nextFloat());
+			this.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, 1.5F, 1.0F + this.rand.nextFloat());
 		}
 		if(world.isRemote)
 			applyParticle();
@@ -112,7 +112,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 			Entity entity = ((ServerWorld)this.world).getEntityByUuid(this.getTraceTarget());
 
 			if(entity != null) {
-				Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+				Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 2, entity.getPosZ());
 				Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
 
 				Vector3d motion = goal.subtract(self).normalize().scale(this.getMotion().length() * 0.06);
@@ -204,6 +204,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
 	@Override
 	public void remove() {
+		if(!this.world.isRemote)
+		{
+			this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.5F, 1.0F + this.rand.nextFloat());
+		}
 		if(this.world.isRemote() && this.getElement() != null)
 		{
 			for(int c = 0; c < 15; ++c) {

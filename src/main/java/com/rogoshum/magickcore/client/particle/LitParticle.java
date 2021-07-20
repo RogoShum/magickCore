@@ -62,14 +62,8 @@ public class LitParticle {
 
     public LitParticle setTraceTarget(Entity traceTarget){this.traceTarget = traceTarget;return this;}
     public LitParticle setLimitScale(){this.limitScale = true;return this;}
-    public LitParticle setShakeLimit(float shakeLimit)
-    {
-        this.shakeLimit = shakeLimit;return this;
-    }
-    public LitParticle setParticleGravity(float g)
-    {
-        this.particleGravity = g;return this;
-    }
+    public LitParticle setShakeLimit(float shakeLimit) { this.shakeLimit = shakeLimit;return this; }
+    public LitParticle setParticleGravity(float g) { this.particleGravity = g;return this; }
 
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl buffer)
     {

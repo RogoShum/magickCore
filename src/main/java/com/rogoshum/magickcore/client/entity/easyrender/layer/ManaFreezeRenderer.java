@@ -23,12 +23,12 @@ public class ManaFreezeRenderer extends EasyLayerRender<LivingEntity> {
         helper.setColor(RenderHelper.ORIGIN);
         helper.render(entity, renderer, renderer.getEntityTexture(entity), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 
-        matrixStackIn.translate(0, -0.02f, 0);
+        matrixStackIn.translate(0, -0.02f * entity.getHeight(), 0);
         matrixStackIn.scale(1.04f, 1.04f, 1.04f);
 
         helper.setAlpha(1f);
         helper.setColor(MagickCore.proxy.getElementRender(LibElements.STASIS).getColor());
-        helper.render(entity, renderer, RenderHelper.RES_ITEM_GLINT, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, Minecraft.getInstance().getRenderManager().getPackedLight(entity, partialTicks));
+        helper.render(entity, renderer, RenderHelper.RES_ITEM_GLINT, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, RenderHelper.renderLight);
     }
 
     public float[] getColorBlender(int time, float[] preColor, float[] blend)

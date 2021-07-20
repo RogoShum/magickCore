@@ -29,9 +29,9 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity>{
 
             VectorHitReaction[] test = {};
             entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.4f, entityIn.getHitReactions(), 2.10f, packedLightIn);
-            matrixStackIn.scale(0.48f, 0.48f, 0.48f);
-            entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 0.5f, Integer.toString(entityIn.getEntityId()), 0.1f);
-            matrixStackIn.scale(0.64f, 0.64f, 0.64f);
+            //matrixStackIn.scale(0.48f, 0.48f, 0.48f);
+            //entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 0.5f, Integer.toString(entityIn.getEntityId()), 0.1f);
+            matrixStackIn.scale(0.30f, 0.30f, 0.30f);
             entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f, entityIn.getHitReactions(), 6.0f, packedLightIn);
         }
     }

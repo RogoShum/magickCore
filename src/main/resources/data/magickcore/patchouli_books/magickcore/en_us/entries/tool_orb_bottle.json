@@ -1,0 +1,26 @@
+{
+  "name": "元素容器",
+  "advancement": "magickcore:learn/orb_bottle",
+  "icon": "magickcore:orb_bottle",
+  "category": "mana_tool",
+  "pages": [
+	{
+	  "title": "空的元素容器",
+      "type": "spotlight",
+	  "item": "magickcore:orb_bottle",
+	  "text": "元素容器是用来存储元素能量的容器，使用{元素剥夺}附魔击杀怪物后，站在元素能量面前右键，即可吸收面前的元素能量。$(br2)吸收元素能量之后的元素容器，可以被用来制作其他有用的东西。"
+    },
+	{
+	  "title": "电弧元素容器",
+      "type": "spotlight",
+	  "item": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
+	  "text": "一个吸收了元素的容器，可以使用元素容器去制作元素水晶种子，去种出能够转换自身元素属性的重要材料：{含有元素的元素水晶}$(br2)合成方案：一个元素容器 + 任何一种种子。"
+    },
+	{
+	  "title": "电弧元素水晶",
+      "type": "spotlight",
+	  "item": "magickcore:element_crystal{ELEMENT:\"arc\"}",
+	  "text": "含有元素的元素水晶可以通过元素水晶种子来种植、收获。而这种元素水晶可以合成出转换自身元素的元素核心。$(br2)把四个相同元素的元素水晶依次摆放在工作台即可。"
+    }
+  ]
+}

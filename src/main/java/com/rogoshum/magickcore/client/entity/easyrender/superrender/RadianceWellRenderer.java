@@ -11,6 +11,7 @@ import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -71,10 +72,14 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
                 IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(sphereOrb));
                 float[] color = entityIn.getElement().getRenderer().getColor();
                 float alpha = 0.6f * alphaC;
-                buffer.pos(matrix4f, -1.0f, 0.0f, -1.0f).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-                buffer.pos(matrix4f, -1.0f, 0.0f, 1.0f).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-                buffer.pos(matrix4f, 1.0f, 0.0f, 1.0f).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-                buffer.pos(matrix4f, 1.0f, 0.0f, -1.0f).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+                buffer.pos(matrix4f, -1.0f, 0.0f, -1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(-1.0f, 0.0f, -1.0f).endVertex();
+                buffer.pos(matrix4f, -1.0f, 0.0f, 1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(-1.0f, 0.0f, 1.0f).endVertex();
+                buffer.pos(matrix4f, 1.0f, 0.0f, 1.0f).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(1.0f, 0.0f, 1.0f).endVertex();
+                buffer.pos(matrix4f, 1.0f, 0.0f, -1.0f).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(1.0f, 0.0f, -1.0f).endVertex();
                 matrixStackIn.pop();
 
                 matrixStackIn.push();

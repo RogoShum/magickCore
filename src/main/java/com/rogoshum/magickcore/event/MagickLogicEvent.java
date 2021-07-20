@@ -54,6 +54,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -339,7 +340,7 @@ public class MagickLogicEvent {
 			event.getEntityLiving().rotationPitch = event.getEntityLiving().prevRotationPitch;
 			event.getEntityLiving().rotationYaw = event.getEntityLiving().prevRotationYaw;
 			event.getEntityLiving().ticksExisted -= 1;
-			event.getEntityLiving().setSilent(true);
+			//event.getEntityLiving().setSilent(true);
 			if(event.getEntityLiving().getHealth() > 0)
 				event.setCanceled(true);
 		}
@@ -401,17 +402,23 @@ public class MagickLogicEvent {
 			}
 		}
 
-		if(!(event.getEntityLiving() instanceof PlayerEntity) && event.getSource().getDamageType().equals(DamageSource.LIGHTNING_BOLT.getDamageType()) && event.getAmount() >= 5.0f)
+		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
+			event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public void onLightning(EntityStruckByLightningEvent event)
+	{
+		IEntityState state = event.getEntity().getCapability(MagickCore.entityState).orElse(null);
+		if(state != null && !(event.getEntity() instanceof PlayerEntity))
 		{
 			if(state.getElement().getType().equals(LibElements.ORIGIN)) {
 				state.setElement(ModElements.getElement(LibElements.ARC));
 				state.setElementShieldMana(50);
 				state.setFinalMaxElementShield(50);
+				state.setMaxManaValue(50f);
 			}
 		}
-
-		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
-			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -436,8 +443,10 @@ public class MagickLogicEvent {
 
 			if(!(entity instanceof PlayerEntity)) {
 				IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
-				if (attacker.getElement().getType() != LibElements.ORIGIN && MagickCore.rand.nextBoolean())
-					attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3);
+				if (attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= event.getAmount() || MagickCore.rand.nextBoolean())) {
+					if(attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3) || state.getManaValue() >= event.getAmount())
+						state.setManaValue(state.getManaValue() - event.getAmount());
+				}
 			}
 
 			ITakenState taken = event.getSource().getTrueSource().getCapability(MagickCore.takenState).orElse(null);

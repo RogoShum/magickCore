@@ -36,6 +36,17 @@ public class ManaSphereEntity extends ManaPointEntity {
         {
             this.playSound(SoundEvents.BLOCK_CHAIN_PLACE, 1.0F, 1.0F + this.rand.nextFloat());
         }
+
+        if(!this.world.isRemote && this.ticksExisted % 4 == 0 && this.ticksExisted < this.getTickTime() - 5)
+        {
+            this.playSound(SoundEvents.BLOCK_BEEHIVE_DROP, 2.0F, (1.0F - this.rand.nextFloat()));
+        }
+
+        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 5)
+        {
+            this.playSound(SoundEvents.UI_TOAST_OUT, 3.0F, (1.0F + this.rand.nextFloat()));
+        }
+
         for(int i = 0; i < 30;++i)
         {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());

@@ -1,0 +1,40 @@
+{
+  "name": "认识元素",
+  "advancement": "magickcore:learn/root",
+  "icon": "magickcore:element_crystal",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+      "text": "元素是光与暗的分支，是由每个个体对于光暗的不同理解所分化出来的具有属性的能量，本质上都是在使用超因果之力（即光与暗之力）。$(br2)这种能量可以存在于个体内，$(l)也可以从个体上抽离出来$()。$(br2)当携带元素能量的生物死亡死，会产生一股$(l)原始能量$()。"
+    },
+	{
+      "type": "image",
+	  "title": "原始能量",
+	  "images": ["magickcore:textures/book_image/origin_energy.png"],
+	  "border": "true"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "原始能量不能提供任何的元素属性，只能提供最基本的能量，当你靠近原始能量，它会向你体内传递能量，提高你所能控制的能量的上限值。$(br)而你的能量上限值，也就决定了在魔力道具内部没有存储能量时，你所能输出的能量上限。"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "除去吸收能量上限，你还可以做到改变你自身的元素属性，去使用元素之力。而你需要的就是来自于$(#ffdd00){元素剥夺}$(0)的能量，使用带有$(#ffdd00){元素剥夺}$(0)附魔的武器击杀生物，可以抽离出其他生物身上的$(l)元素能量$()。"
+    },
+	{
+      "type": "image",
+	  "title": "元素能量",
+	  "images": ["magickcore:textures/book_image/element_power.png"],
+	  "text": "此为冰属性的元素能量",
+	  "border": "true"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "捕捉元素能量的关键，就是尝试去引爆一组下界石英。"
+    }
+  ]
+}

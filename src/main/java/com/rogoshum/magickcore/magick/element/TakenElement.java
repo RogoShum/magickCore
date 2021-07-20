@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.magick.element;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
@@ -47,7 +48,7 @@ public class TakenElement extends MagickElement{
             else
                 flag = victim.attackEntityFrom(ModDamage.getTakenDamage(), force);
 
-            if(flag && force >= 7 && entity != null && victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
+            if(flag && force >= EnumManaLimit.FORCE.getValue() * 1.75 && entity != null && victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
             {
                 ITakenState state = victim.getCapability(MagickCore.takenState).orElse(null);
                 state.setOwner(entity.getUniqueID());

@@ -1,0 +1,13 @@
+{
+  "name": "魔力龙息",
+  "advancement": "magickcore:learn/mana_dragon_b",
+  "icon": "magickcore:mana_dragon_breath",
+  "category": "mana_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_dragon_breath",
+	  "text": "由爆炸中的龙息产生。"
+    }
+  ]
+}

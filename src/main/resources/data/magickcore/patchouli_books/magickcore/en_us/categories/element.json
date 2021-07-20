@@ -1,0 +1,6 @@
+{
+  "name": "Element",
+  "description": "The basic energy that supports the magic system",
+  "icon": "magickcore:textures/element/taken/particle.png",
+  "sortnum": 4
+}

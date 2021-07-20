@@ -1,0 +1,19 @@
+{
+  "name": "Eye",
+  "advancement": "magickcore:learn/eye",
+  "icon": "magickcore:eye",
+  "category": "mana_item",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:eye",
+	  "text": "Eye is a kind of mana item, which can store element energy and release it. $(br)Once created, it can no longer be moved or destroyed by normal damage. $(br)The way it releases its magic power is to target non-friendly entities around it and generate sporadic contact with the target"
+    },
+	{
+      "type": "image",
+	  "title": "Crafting",
+	  "images": ["magickcore:textures/book_image/recipe/recipe_eye.png"],
+	  "border": "true"
+    }
+  ]
+}

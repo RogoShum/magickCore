@@ -67,7 +67,7 @@ public class ModLoots {
                    while (context.getRandom().nextBoolean())
                        lucky++;
 
-                   int tick = context.getRandom().nextInt(lucky + 1) * context.getRandom().nextInt(lucky * 2) * context.getRandom().nextInt(lucky + 2) * 10;
+                   int tick = (context.getRandom().nextInt(lucky) + 1) * (context.getRandom().nextInt(lucky * 2) + 1) * (context.getRandom().nextInt(lucky + 1) + 1) * 10;
                    if(context.getRandom().nextInt(lucky + 1) + context.getRandom().nextInt(lucky + 1) > 10)
                        tick = Integer.MAX_VALUE;
                    generatedLoot.add(RoguelikeHelper.TransItemRogue(RoguelikeHelper.createRandomItemWithLucky(lucky), tick));

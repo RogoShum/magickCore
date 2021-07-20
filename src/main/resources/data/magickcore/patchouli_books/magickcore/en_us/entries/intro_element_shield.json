@@ -1,0 +1,19 @@
+{
+  "name": "Elemental Shield",
+  "advancement": "magickcore:learn/element_shield",
+  "icon": "minecraft:shield",
+  "category": "intro",
+  "pages": [
+	{
+      "type": "image",
+	  "title": "Match game",
+	  "images": ["magickcore:textures/book_image/element_shield.png"],
+	  "border": "true",
+	  "text": "Elemental Shield is a defense mechanism that can resist damage." 
+    },
+    {
+      "type": "text",
+      "text": "The Elemental Shield capacity of a natural creature is usually higher than its own HP, but won't be more than twice its maximum HP. $(br2)Element shield can reduce the power of non-magic damage and reduce the magic damage different from its own element shield attribute to a certain extent. Only the attack from same element can achieve the maximum benefit of damaging the Elemental Shield. $(br2)Players can produce Elemental Shields in a short period of time by drinking Shield Capacity potion. $(br2)Melee weapons wrapped with elemental strings can also effectively damage Elemental Shields."
+    }
+  ]
+}

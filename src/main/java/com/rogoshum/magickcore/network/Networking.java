@@ -52,6 +52,12 @@ public class Networking {
                 .decoder(TakenStatePack::new)
                 .consumer(TakenStatePack::handler)
                 .add();
+
+        INSTANCE.messageBuilder(ParticlePack.class, nextID())
+                .encoder(ParticlePack::toBytes)
+                .decoder(ParticlePack::new)
+                .consumer(ParticlePack::handler)
+                .add();
     }
 
 

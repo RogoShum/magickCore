@@ -1,0 +1,18 @@
+{
+  "name": "Stasis Element",
+  "advancement": "magickcore:learn/stasis",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:stasis",
+      "text": "Stasis Element is born from dark, can slow down and frozen target."
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "Stasis Element in super state can auto search non-friendly creatures, trace and frozen them."
+    }
+  ]
+}

@@ -74,8 +74,11 @@ public class ModBuff{
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
-                living.addPotionEffect(new EffectInstance(Effects.ABSORPTION, state.getBuffList().get(LibBuff.RADIANCE_WELL).getTick(), (int) state.getBuffList().get(LibBuff.RADIANCE_WELL).getForce()));
                 living.heal(living.getMaxHealth() * 0.1f);
+                if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth())
+                {
+                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.1f);
+                }
                 living.hurtTime = 0;
             }
         }, true);

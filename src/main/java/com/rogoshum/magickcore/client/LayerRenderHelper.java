@@ -93,7 +93,7 @@ public class LayerRenderHelper extends LivingRenderer {
         this.applyRotations(entityIn, matrixStackIn, f7, f, partialTicks);
         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
 
-        Method me = ObfuscationReflectionHelper.findMethod(LivingRenderer.class, "preRenderCallback", LivingEntity.class,MatrixStack.class,float.class);
+        Method me = ObfuscationReflectionHelper.findMethod(LivingRenderer.class, "func_225620_a_", LivingEntity.class,MatrixStack.class,float.class);
         try {
             me.invoke(renderer, entityIn, matrixStackIn, partialTicks);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -127,7 +127,7 @@ public class LayerRenderHelper extends LivingRenderer {
             this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, color[0], color[1], color[2], this.alpha);
         }
         if(renderer instanceof LivingRenderer) {
-            List<LayerRenderer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, (LivingRenderer)renderer, "layerRenderers");
+            List<LayerRenderer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, (LivingRenderer)renderer, "field_177097_h");
             for (int cc = 0; cc < layerRenderers.size(); ++cc) {
                 LayerRenderer layerrenderer = layerRenderers.get(cc);
                 layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);

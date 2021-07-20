@@ -84,7 +84,7 @@ public class ClientProxy implements IProxy
 
 	public void registerEntityRenderer(FMLClientSetupEvent event)
 	{
-		RenderingRegistry.registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
+		//RenderingRegistry.registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_orb, ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_shield, ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_star, ManaObjectRenderer::new);

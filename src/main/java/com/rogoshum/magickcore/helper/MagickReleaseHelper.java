@@ -217,28 +217,38 @@ public class MagickReleaseHelper {
         boolean isOwnerPlayer = owner instanceof PlayerEntity;
         boolean isOtherPlayer = other instanceof PlayerEntity;
 
-        if(isOwnerPlayer && isOtherPlayer)
-            return true;
+        if(other instanceof ProjectileEntity)
+        {
+            if(!isOwnerPlayer && !(((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity))
+                return true;
 
-        if(!isOwnerPlayer && !isOtherPlayer)
-            return true;
+            if(isOwnerPlayer && ((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity)
+                return true;
+        }
 
-        if(isOwnerPlayer && other instanceof ProjectileEntity && ((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity)
-            return true;
+        if(other instanceof TameableEntity) {
+            if(isOwnerPlayer && ((TameableEntity)other).getOwner() instanceof PlayerEntity)
+                return true;
 
-        if(!isOwnerPlayer && other instanceof ProjectileEntity && !(((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity))
-            return true;
+            if(!isOwnerPlayer && !(((TameableEntity)other).getOwner() instanceof PlayerEntity))
+                return true;
+        }
 
-        if(isOwnerPlayer && other instanceof TameableEntity && ((TameableEntity)other).getOwner() instanceof PlayerEntity)
-            return true;
+        if(other instanceof ManaEntity) {
+            if(isOwnerPlayer && ((ManaEntity)other).getOwner() instanceof PlayerEntity)
+                return true;
 
-        if(!isOwnerPlayer && other instanceof TameableEntity && !(((TameableEntity)other).getOwner() instanceof PlayerEntity))
-            return true;
+            if(!isOwnerPlayer && !(((ManaEntity)other).getOwner() instanceof PlayerEntity))
+                return true;
+        }
 
         ITakenState state = other.getCapability(MagickCore.takenState).orElse(null);
         if(state != null && state.getOwnerUUID().equals(owner.getUniqueID()))
             return true;
 
-        return false;
+        if(isOwnerPlayer && isOtherPlayer)
+            return true;
+
+        return !isOwnerPlayer && !isOtherPlayer;
     }
 }

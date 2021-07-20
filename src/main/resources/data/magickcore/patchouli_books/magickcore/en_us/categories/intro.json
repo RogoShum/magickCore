@@ -1,0 +1,6 @@
+{
+  "name": "World",
+  "description": "What is inside this world",
+  "icon": "magickcore:textures/element/base/magick_particle.png",
+  "sortnum": 0
+}

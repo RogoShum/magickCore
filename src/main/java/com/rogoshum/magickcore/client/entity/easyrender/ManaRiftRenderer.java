@@ -11,6 +11,7 @@ import com.rogoshum.magickcore.entity.ManaRiftEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -39,10 +40,14 @@ public class ManaRiftRenderer extends EasyRenderer<ManaRiftEntity>{
             IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(entityIn.getElement().getRenderer().getOrbTexture()));
             float[] color = entityIn.getElement().getRenderer().getColor();
             float alpha = 0.15f;
-            buffer.pos(matrix4f, -1.0f, 0.0f, -1.0f).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, -1.0f, 0.0f, 1.0f).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 1.0f, 0.0f, 1.0f).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 1.0f, 0.0f, -1.0f).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, -1.0f, 0.0f, -1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(-1.0f, 0.0f, -1.0f).endVertex();
+            buffer.pos(matrix4f, -1.0f, 0.0f, 1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(-1.0f, 0.0f, 1.0f).endVertex();
+            buffer.pos(matrix4f, 1.0f, 0.0f, 1.0f).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(1.0f, 0.0f, 1.0f).endVertex();
+            buffer.pos(matrix4f, 1.0f, 0.0f, -1.0f).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(1.0f, 0.0f, -1.0f).endVertex();
             matrixStackIn.pop();
         }
     }

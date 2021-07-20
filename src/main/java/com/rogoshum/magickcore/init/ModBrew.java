@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.lib.LibEffect;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,20 +21,21 @@ public class ModBrew {
 
     public static void registryBrewing()
     {
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "disc", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "shulker", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("potion", "element_crystal", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "disc", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "shulker", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "scute", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "scute", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "prismarine", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "prismarine", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_CONSUM_REDUCE, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_CONSUM_REDUCE, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "nautilus", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "nautilus", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_REGEN, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_I.get())));
         BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_REGEN, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("awkward", "netherite", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get())));
+        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "netherite", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get())));
     }
 
     public static class BrewingRecipe implements IBrewingRecipe

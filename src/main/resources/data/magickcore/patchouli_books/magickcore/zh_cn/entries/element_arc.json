@@ -1,0 +1,18 @@
+{
+  "name": "电弧元素",
+  "advancement": "magickcore:learn/arc",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:arc",
+      "text": "电弧元素是一种光能元素，是一种具有连锁型和麻痹性的属性。$(br2)电弧元素可以连锁目标附近的其他目标，也可以麻痹受伤目标，使其动作缓慢。"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "超能状态的电弧元素可以自动寻找非友军目标，通过高能电弧射线造成持续伤害和麻痹效果。"
+    }
+  ]
+}

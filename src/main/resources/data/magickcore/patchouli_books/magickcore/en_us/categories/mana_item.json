@@ -1,0 +1,6 @@
+{
+  "name": "Element Item",
+  "description": "Magick items can store element",
+  "icon": "magickcore:orb_staff",
+  "sortnum": 3
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Mana tool",
+  "description": "Tools that can make or brings Magick",
+  "icon": "magickcore:orb_bottle",
+  "sortnum": 2
+}

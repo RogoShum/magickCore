@@ -51,75 +51,54 @@ public class RenderHelper {
 
     public static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     public static final int renderLight = 15728880;
-    protected static final RenderState.TransparencyState light_transparency = new RenderState.TransparencyState("translucent_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.003921569F);
-        RenderSystem.depthMask(false);
-    }, () -> {
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-    });
+    public static final int halfLight = 7864440;
 
-    protected static final RenderState.TransparencyState normal_transparency = new RenderState.TransparencyState("translucent_transparency", () -> {
+    protected static final RenderState.TransparencyState NO_TRANSPARENCY = new RenderState.TransparencyState("no_transparency", () -> {
+        RenderSystem.disableBlend();
+    }, () -> {
+    });
+    protected static final RenderState.TransparencyState ADDITIVE_TRANSPARENCY = new RenderState.TransparencyState("additive_transparency", () -> {
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
     }, () -> {
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
-
-    protected static final RenderState.TransparencyState solid = new RenderState.TransparencyState("solid", () -> {
+    protected static final RenderState.TransparencyState LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("lightning_transparency", () -> {
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
     }, () -> {
+        RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
-
+    protected static final RenderState.TransparencyState GLINT_TRANSPARENCY = new RenderState.TransparencyState("glint_transparency", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
+    }, () -> {
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
     protected static final RenderState.TransparencyState CRUMBLING_TRANSPARENCY = new RenderState.TransparencyState("crumbling_transparency", () -> {
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.003921569F);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.depthMask(false);
     }, () -> {
         RenderSystem.depthMask(true);
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
     protected static final RenderState.TransparencyState TRANSLUCENT_TRANSPARENCY = new RenderState.TransparencyState("translucent_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.003921569F);
         RenderSystem.depthMask(false);
     }, () -> {
         RenderSystem.depthMask(true);
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-    });
-
-    protected static final RenderState.TransparencyState LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("lightning_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.003921569F);
-        RenderSystem.depthMask(false);
-    }, () -> {
-        RenderSystem.depthMask(true);
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
@@ -232,61 +211,55 @@ public class RenderHelper {
     protected static final RenderState.LineState DEFAULT_LINE = new RenderState.LineState(OptionalDouble.of(6.0D));
 
     public static RenderType getTexedOrbSolid(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(solid).build(false);
-        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(NO_TRANSPARENCY).alpha(DEFAULT_ALPHA).shadeModel(SHADE_ENABLED).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType type = RenderType.makeType("_Tex_Orb_Solid", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedOrb(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(normal_transparency).build(false);
-        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
-        return type;
-    }
-
-    public static RenderType getTexedOrb_CRUMBLING(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(CRUMBLING_TRANSPARENCY).build(false);
-        RenderType type = RenderType.makeType("_Tex_OrbCRUMBLING", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedOrbGlow(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(light_transparency).build(false);
-        RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedOrbGlint(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(light_transparency).texturing(ENTITY_GLINT_TEXTURING).build(false);
-        RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.POSITION_TEX_COLOR, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(GLINT_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
+        RenderType type = RenderType.makeType("_TexedOrbGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedEntityGlow(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(true);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(true);
         RenderType type = RenderType.makeType("_TexedEntityGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedEntityGlint(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(true);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(GLINT_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(true);
         RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedCylinderGlow(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
         RenderType type = RenderType.makeType("_TexedCylinderGlow", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, true, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedCylinderGlint(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
         RenderType type = RenderType.makeType("_TexedCylinderGlint", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, true, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedSphereGlow(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
         RenderType type = RenderType.makeType("_TexedSphereGlow", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, true, false, rendertype$state);
         return type;
     }
@@ -294,13 +267,13 @@ public class RenderHelper {
     public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/enchanted_item_glint.png");
     public static final ResourceLocation ripple_4 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_4.png");
     public static final ResourceLocation ripple_2 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png");
-    public static final RenderType POINTS = RenderType.makeType(MagickCore.MOD_ID + "_POINTS", DefaultVertexFormats.ENTITY, GL_POINTS, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(normal_transparency).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).overlay(OVERLAY_ENABLED).build(false));
-    public static final RenderType LINES = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).overlay(OVERLAY_ENABLED).build(false));
-    public static final RenderType ORB = RenderType.makeType(MagickCore.MOD_ID + "_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().transparency(light_transparency).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false));
-    public static final RenderType SPHERE = RenderType.makeType(MagickCore.MOD_ID + "_Sphere", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(normal_transparency).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false));
-    public static final RenderType CRUMBLING = RenderType.makeType(MagickCore.MOD_ID + "_CRUMBLING", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(CRUMBLING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false));
-    public static final RenderType LIGHTING = RenderType.makeType(MagickCore.MOD_ID + "_Lighting", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false));
-    public static final RenderType OUTLINE = RenderType.makeType(MagickCore.MOD_ID + "_OUTLINE", DefaultVertexFormats.POSITION, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(OUTLINE_TARGET).build(true));
+    public static final RenderType POINTS = RenderType.makeType(MagickCore.MOD_ID + "_POINTS", DefaultVertexFormats.ENTITY, GL_POINTS, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).build(false));
+    public static final RenderType LINES = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).build(false));
+    public static final RenderType ORB = RenderType.makeType(MagickCore.MOD_ID + "_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().transparency(LIGHTNING_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
+    public static final RenderType SPHERE = RenderType.makeType(MagickCore.MOD_ID + "_Sphere", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
+    public static final RenderType CRUMBLING = RenderType.makeType(MagickCore.MOD_ID + "_CRUMBLING", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(CRUMBLING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
+    public static final RenderType LIGHTING = RenderType.makeType(MagickCore.MOD_ID + "_Lighting", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
+    public static final RenderType OUTLINE = RenderType.makeType(MagickCore.MOD_ID + "_OUTLINE", DefaultVertexFormats.POSITION, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(OUTLINE_TARGET).build(true));
     public static void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, float limit)
     {
         renderSphere(matrix4f, bufferIn, type, stacks, alpha, hitReaction, color, packedLightIn, false, null, limit);
@@ -343,8 +316,8 @@ public class RenderHelper {
                 Vector3d V0 = group.getVertex(x, z0, y).getPositionVec();
                 Vector3d V1 = group.getVertex(x, z1, y).getPositionVec();
 
-                buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(15728880).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
-                buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(15728880).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
+                buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
+                buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
             }
             bufferIn.finish(type);
             matrixStackIn.pop();
@@ -358,7 +331,7 @@ public class RenderHelper {
         matrixStackIn.push();
         Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
         //matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-
+        int light = renderLight;
         if(shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
             group.putVertex(-1.0F, 0.0F, 0.0F, limit);
@@ -371,21 +344,21 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(1.0F, 1.0F * length, 0.0F).getPositionVec();
             Vector3d V3 = group.getVertex(1.0F, 0.0F, 0.0F).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         }
         else {
-            buffer.pos(matrix4f, -1.0F, 0.0F, 0.0F).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, -1.0F, 1.0F * length, 0.0F).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 1.0F, 1.0F * length, 0.0F).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 1.0F, 0.0F, 0.0F).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, -1.0F, 0.0F, 0.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
+            buffer.pos(matrix4f, -1.0F, 1.0F * length, 0.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 1.0F * length, 0.0F).endVertex();
+            buffer.pos(matrix4f, 1.0F, 1.0F * length, 0.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 1.0F * length, 0.0F).endVertex();
+            buffer.pos(matrix4f, 1.0F, 0.0F, 0.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 0.0F, 0.0F).endVertex();
 
-            buffer.pos(matrix4f, 0.0F, 0.0F, -1.0F).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 0.0F, 1.0F * length, -1.0F).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 0.0F, 1.0F * length, 1.0F).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, 0.0F, 0.0F, 1.0F).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, 0.0F, 0.0F, -1.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, -1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, 1.0F * length, -1.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, -1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, 1.0F * length, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, 1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, 0.0F, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, 1.0F).endVertex();
         }
         matrixStackIn.pop();
     }
@@ -399,6 +372,7 @@ public class RenderHelper {
     {
         matrixStackIn.push();
         Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+        int light = renderLight;
         if(shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
             group.putVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ(), limit);
@@ -411,16 +385,16 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
             Vector3d V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         }
         else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).endVertex();
         }
         matrixStackIn.pop();
     }
@@ -430,7 +404,7 @@ public class RenderHelper {
         matrixStackIn.push();
         Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
         matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-
+        int light = renderLight;
         if(shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
             group.putVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ(), limit);
@@ -443,16 +417,16 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
             Vector3d V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         }
         else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).tex(1.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).tex(1.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).tex(0.0f, 0.0f).color(color[0], color[1], color[2], alpha).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).tex(0.0f, 1.0f).color(color[0], color[1], color[2], alpha).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).endVertex();
         }
         matrixStackIn.pop();
     }

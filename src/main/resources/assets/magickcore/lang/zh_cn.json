@@ -84,6 +84,10 @@
     "item.minecraft.potion.effect.mana_consum_reduce_ii": "强力减耗药水",
     "item.minecraft.potion.effect.mana_force": "威力药水",
 
+    "item.minecraft.potion.effect.refreshing": "清爽水",
+    "item.minecraft.lingering_potion.effect.refreshing": "清爽水",
+    "item.minecraft.splash_potion.effect.refreshing": "清爽水",
+
     //附魔
     "enchantment.magickcore.element_deprivation": "元素剥夺",
 

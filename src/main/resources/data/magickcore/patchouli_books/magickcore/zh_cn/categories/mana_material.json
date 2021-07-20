@@ -1,0 +1,6 @@
+{
+  "name": "魔法材料",
+  "description": "爆炸产生能量",
+  "icon": "magickcore:textures/items/element_crystal.png",
+  "sortnum": 1
+}
