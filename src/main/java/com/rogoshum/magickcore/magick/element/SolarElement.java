@@ -50,11 +50,13 @@ public class SolarElement extends MagickElement{
 
         @Override
         public boolean hitBlock(World world, BlockPos pos, int tick) {
-            if(world.getBlockState(pos).getBlock().equals(Blocks.ICE.getBlock()) || world.getBlockState(pos).getBlock().equals(Blocks.SNOW.getBlock()) || world.getBlockState(pos).getBlock().equals(Blocks.SNOW_BLOCK.getBlock()))
-                world.setBlockState(pos, Blocks.WATER.getDefaultState());
+            if(!world.isRemote) {
+                if (world.getBlockState(pos).getBlock().equals(Blocks.ICE.getBlock()) || world.getBlockState(pos).getBlock().equals(Blocks.SNOW.getBlock()) || world.getBlockState(pos).getBlock().equals(Blocks.SNOW_BLOCK.getBlock()))
+                    world.setBlockState(pos, Blocks.WATER.getDefaultState());
 
-            if(world.isAirBlock(pos.add(0, 1, 0)) && Blocks.FIRE.getDefaultState().isValidPosition(world, pos.add(0, 1, 0)))
-                world.setBlockState(pos.add(0, 1, 0), Blocks.FIRE.getDefaultState());
+                if (world.isAirBlock(pos.add(0, 1, 0)) && Blocks.FIRE.getDefaultState().isValidPosition(world, pos.add(0, 1, 0)))
+                    world.setBlockState(pos.add(0, 1, 0), Blocks.FIRE.getDefaultState());
+            }
             return false;
         }
 

@@ -46,6 +46,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -283,6 +284,11 @@ public class MagickLogicEvent {
 		IManaData state = event.getEntity().getCapability(MagickCore.manaData).orElse(null);
 		if(state != null)
 		{
+			if(!event.getEntity().world.isRemote && event.getEntity().ticksExisted == state.getTickTime() - 5)
+			{
+				event.getEntity().playSound(SoundEvents.UI_TOAST_OUT, 3.0F, (1.0F + MagickCore.rand.nextFloat()));
+			}
+
 			if(event.getEntity().ticksExisted > state.getTickTime() && state.getTickTime() >= 0)
 				event.getEntity().remove();
 		}

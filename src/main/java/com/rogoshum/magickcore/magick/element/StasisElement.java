@@ -60,11 +60,13 @@ public class StasisElement extends MagickElement{
 
         @Override
         public boolean hitBlock(World world, BlockPos pos, int tick) {
-            if(world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock()))
-                world.setBlockState(pos, Blocks.ICE.getDefaultState());
+            if(!world.isRemote) {
+                if (world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock()))
+                    world.setBlockState(pos, Blocks.ICE.getDefaultState());
 
-            if(world.isAirBlock(pos.add(0, 1, 0)) && Blocks.SNOW.getDefaultState().isValidPosition(world, pos.add(0, 1, 0)))
-                world.setBlockState(pos.add(0, 1, 0), Blocks.SNOW.getDefaultState(), 2);
+                if (world.isAirBlock(pos.add(0, 1, 0)) && Blocks.SNOW.getDefaultState().isValidPosition(world, pos.add(0, 1, 0)))
+                    world.setBlockState(pos.add(0, 1, 0), Blocks.SNOW.getDefaultState(), 2);
+            }
             return false;
         }
 
