@@ -72,6 +72,7 @@ public class AdvancementsEvent {
             });
 
             IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
+            if(state != null)
                 AdvancementsEvent.STRING_TRIGGER.trigger(player, state.getElement().getType());
         }
     }
