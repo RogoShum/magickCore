@@ -112,7 +112,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 			Entity entity = ((ServerWorld)this.world).getEntityByUuid(this.getTraceTarget());
 
 			if(entity != null) {
-				Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 2, entity.getPosZ());
+				Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
 				Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
 
 				Vector3d motion = goal.subtract(self).normalize().scale(this.getMotion().length() * 0.06);

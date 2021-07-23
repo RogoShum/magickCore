@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -82,7 +83,7 @@ public class VoidElement extends MagickElement{
         @Override
         public void applyToolElement(LivingEntity entity, int level) {
             ItemStack stack = entity.getHeldItemMainhand();
-            if(NBTTagHelper.hasElementOnTool(stack, LibElements.VOID))
+            if(stack.hasTag() && NBTTagHelper.hasElementOnTool(stack, LibElements.VOID))
             {
                 CompoundNBT tag = NBTTagHelper.getStackTag(stack);
                 tag.putInt("VOID_LEVEL", level);

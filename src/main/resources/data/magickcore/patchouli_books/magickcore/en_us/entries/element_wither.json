@@ -1,5 +1,5 @@
 {
-  "name": "枯萎元素",
+  "name": "Wither Element",
   "advancement": "magickcore:learn/wither",
   "icon": "magickcore:wither",
   "category": "element",
@@ -7,7 +7,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:wither",
-      "text": "枯萎元素是一种暗影元素，是一种具有压制和削弱效果的元素。$(br2)枯萎元素可以使目标持续流血，但不会击杀目标。也可以限制目标最大回血量，使其无法达到满血状态。"
+      "text": "Wither Element is born from drak，it's a element suppression of the target。$(br2)Wither element makes target brief bleeding，但不会击杀目标。也可以限制目标最大回血量，使其无法达到满血状态。"
     },
 	{
       "type": "text",

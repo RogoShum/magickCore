@@ -154,6 +154,15 @@ public class ModRecipes {
         putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
 
+
+        /*putExplosionRecipe(TagMatchItemContainer.create(ModItems.solar.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.SOLAR));
+        putExplosionRecipe(TagMatchItemContainer.create(ModItems.arc.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.ARC));
+        putExplosionRecipe(TagMatchItemContainer.create(ModItems.voidE.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.VOID));
+
+        putExplosionRecipe(TagMatchItemContainer.create(ModItems.stasis.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.STASIS));
+        putExplosionRecipe(TagMatchItemContainer.create(ModItems.wither.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.WITHER));
+        putExplosionRecipe(TagMatchItemContainer.create(ModItems.taken.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.TAKEN));*/
+
         Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
         if(book != null)
         {

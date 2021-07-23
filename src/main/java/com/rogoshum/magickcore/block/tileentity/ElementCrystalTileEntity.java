@@ -6,7 +6,11 @@ import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
+import com.rogoshum.magickcore.entity.ManaPowerEntity;
+import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -61,6 +65,24 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
         entity.setItem(stack);
         entity.setPickupDelay(20);
         world.addEntity(entity);
+
+        if(world.rand.nextBoolean()) {
+            if(world.rand.nextBoolean()) {
+                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, world);
+                orb.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
+                orb.setElement(ModElements.getElement(eType));
+                orb.setTickTime(200);
+                world.addEntity(orb);
+            }
+            else {
+                ManaPowerEntity orb2 = new ManaPowerEntity(ModEntites.mana_power, world);
+                orb2.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
+                orb2.setElement(ModElements.getElement(eType));
+                orb2.setTickTime(100);
+                orb2.setMana(10);
+                world.addEntity(orb2);
+            }
+        }
     }
 
     private void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }

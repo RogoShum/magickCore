@@ -1,5 +1,5 @@
 {
-  "name": "魔力蜘蛛眼",
+  "name": "Mana Spider Eye",
   "advancement": "magickcore:learn/mana_spider_eye",
   "icon": "magickcore:mana_spider_eye",
   "category": "mana_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_spider_eye",
-	  "text": "由爆炸中的发酵蜘蛛眼产生。"
+	  "text": "Created by any Spider Eye in the Explosion."
     }
   ]
 }

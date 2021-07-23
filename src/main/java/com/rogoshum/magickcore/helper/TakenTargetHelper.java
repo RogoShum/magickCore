@@ -19,19 +19,19 @@ public class TakenTargetHelper {
             if(state != null && mob.world != null) {
                 LivingEntity victim = null;
                 LivingEntity owner = (LivingEntity) ((ServerWorld) mob.world).getEntityByUuid(state.getOwnerUUID());
-                for (Entity entity : list) {
-                    ITakenState takenEntity = entity.getCapability(MagickCore.takenState).orElse(null);
-                    boolean sameOwner = false;
-                    if (takenEntity == null || !takenEntity.getOwnerUUID().equals(state.getOwnerUUID()))
-                        sameOwner = true;
+                if(owner != null && owner != mob) {
+                    for (Entity entity : list) {
+                        ITakenState takenEntity = entity.getCapability(MagickCore.takenState).orElse(null);
+                        boolean sameOwner = false;
+                        if (takenEntity == null || !takenEntity.getOwnerUUID().equals(state.getOwnerUUID()))
+                            sameOwner = true;
 
-                    if (entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(owner, entity) && MagickReleaseHelper.canEntityTraceAnother(mob, entity) && sameOwner) {
-
-                        if (victim == null || mob.getDistance(victim) > mob.getDistance(entity))
-                            victim = (LivingEntity) entity;
+                        if (entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(owner, entity) && MagickReleaseHelper.canEntityTraceAnother(mob, entity) && sameOwner) {
+                            if (victim == null || mob.getDistance(victim) > mob.getDistance(entity))
+                                victim = (LivingEntity) entity;
+                        }
                     }
                 }
-
                 return victim;
             }
         }
@@ -41,7 +41,7 @@ public class TakenTargetHelper {
 
     public static LivingEntity decideChangeTarget(Entity taken, LivingEntity host, LivingEntity target, double range)
     {
-        if(host != null && MagickReleaseHelper.sameLikeOwner(host, target))
+        if(host != null)
         {
             LivingEntity newTarget = target;
             if(host.getUniqueID().equals(target.getUniqueID()))

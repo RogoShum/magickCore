@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -47,12 +48,17 @@ public class CapabilityElementOnTool {
 
 			 if(entity.getEquipmentAndArmor() != null) {
 				 for (ItemStack stack : entity.getEquipmentAndArmor()) {
-					 CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
-					 if (tag != null)
+					 if (stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT)) {
+						 CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
+						 if(tag.isEmpty()) {
+							 stack.getTag().remove(LibElementTool.TOOL_ELEMENT);
+						 }
+
 						 for (String key : tag.keySet()) {
 							 ModElements.getElement(key).getAbility().applyToolElement(stack, 1);
 							 map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
 						 }
+					 }
 				 }
 			 }
 

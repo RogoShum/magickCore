@@ -1,5 +1,5 @@
 {
-  "name": "魔力龙息",
+  "name": "Mana Dragon's Breath",
   "advancement": "magickcore:learn/mana_dragon_b",
   "icon": "magickcore:mana_dragon_breath",
   "category": "mana_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_dragon_breath",
-	  "text": "由爆炸中的龙息产生。"
+	  "text": "Created by Dragon's Breath in the Explosion."
     }
   ]
 }

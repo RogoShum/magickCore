@@ -1,5 +1,5 @@
 {
-  "name": "魔力火药",
+  "name": "Mana Gunpowder",
   "advancement": "magickcore:learn/mana_powder",
   "icon": "magickcore:mana_gunpowder",
   "category": "mana_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_gunpowder",
-	  "text": "由爆炸中的火药产生。"
+	  "text": "Created by Gunpowder in the Explosion."
     }
   ]
 }

@@ -244,7 +244,7 @@ public class MagickReleaseHelper {
 
         ITakenState state = other.getCapability(MagickCore.takenState).orElse(null);
         if(state != null && state.getOwnerUUID().equals(owner.getUniqueID()))
-            return true;
+                return true;
 
         if(isOwnerPlayer && isOtherPlayer)
             return true;

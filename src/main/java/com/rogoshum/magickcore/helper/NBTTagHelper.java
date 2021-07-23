@@ -48,7 +48,7 @@ public class NBTTagHelper {
 
     public static String getElement(ItemStack stack)
     {
-        if(!stack.isEmpty() && hasElement(stack))
+        if(!stack.isEmpty() && stack.hasTag() && hasElement(stack))
             return getStackTag(stack).getString("ELEMENT");
 
         return LibElements.ORIGIN;
@@ -57,7 +57,7 @@ public class NBTTagHelper {
     public static boolean hasElementOnTool(ItemStack stack, String element)
     {
         try {
-            if (!stack.isEmpty() && getToolElementTable(stack).contains(element))
+            if (!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT) && getToolElementTable(stack).contains(element))
                 return true;
         }
         catch (Exception exception)
@@ -71,7 +71,7 @@ public class NBTTagHelper {
 
     public static boolean consumeElementOnTool(ItemStack stack, String element)
     {
-        if(!stack.isEmpty() && hasElementOnTool(stack, element))
+        if(!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT) && hasElementOnTool(stack, element))
         {
             CompoundNBT tag = getToolElementTable(stack);
             int count = tag.getInt(element);

@@ -1,5 +1,5 @@
 {
-  "name": "魔力红石粉",
+  "name": "Mana Redstone Dust",
   "advancement": "magickcore:learn/mana_red",
   "icon": "magickcore:mana_redstone",
   "category": "mana_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_redstone",
-	  "text": "由爆炸中的红石产生。"
+	  "text": "Created by Redstone Dust in the Explosion."
     }
   ]
 }

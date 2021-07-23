@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.item.ManaItem;
+import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.item.Item;
@@ -32,6 +33,11 @@ public class RoguelikeHelper {
     public static void HandleTickItem(ItemStack stack)
     {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+        if(tag.contains(LibElementTool.TOOL_ELEMENT) && tag.getCompound(LibElementTool.TOOL_ELEMENT).isEmpty())
+        {
+            tag.remove(LibElementTool.TOOL_ELEMENT);
+        }
+
         if(tag.contains(LibItem.ROGUELIKE_MAX_TICK))
         {
             if(tag.contains(LibItem.ROGUELIKE_TICK))

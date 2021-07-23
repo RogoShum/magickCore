@@ -219,7 +219,7 @@ public class RenderEvent {
     @SubscribeEvent
     public void onItemDescription(ItemTooltipEvent event)
     {
-        if(event.getItemStack().hasTag())
+        if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(LibElementTool.TOOL_ELEMENT))
         {
             CompoundNBT tag = NBTTagHelper.getToolElementTable(event.getItemStack());
             if(tag.keySet().size() > 0) {

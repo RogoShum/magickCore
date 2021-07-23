@@ -25,6 +25,7 @@ import com.rogoshum.magickcore.init.ModRecipes;
 import com.rogoshum.magickcore.item.ElementCrystalItem;
 import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.network.*;
 import net.minecraft.client.Minecraft;
