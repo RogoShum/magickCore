@@ -19,24 +19,17 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
 
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
         Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
-        float scale = Math.min(1f, (float) entityIn.ticksExisted / 5f) * entityIn.getWidth();
-        matrixStackIn.scale(scale, scale, scale);
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            VectorHitReaction[] test = {};
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.2f, entityIn.getHitReactions(), 0.3f, packedLightIn);
-            matrixStackIn.scale(0.97f, 0.97f, 0.97f);
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.5f, entityIn.getHitReactions(), 0.3f, packedLightIn);
-
-            /*float orbScale = 1.0f;
-            double distance = entityIn.getPositionVec().subtract(Minecraft.getInstance().player.getPositionVec()).length() - entityIn.getWidth() / 2;
-            if(distance < 0)
-                distance = 0;
-            orbScale -= 0.05f * (float)distance;
-
-            if(orbScale < 0.64f)
-                orbScale = 0.64f;
-            matrixStackIn.scale(orbScale, orbScale, orbScale);
-            entityIn.getElement().getRenderer().renderOrb(matrixStackIn, bufferIn, 0.2f);*/
+            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 6.0f, entityIn.getElement().getRenderer().getColor()
+                    , 2.0f, partialTicks, entityIn.world);
+            if(entityIn.ticksExisted > 25) {
+                float scale = Math.min(1f, (float) (entityIn.ticksExisted - 25) / 5f) * entityIn.getWidth();
+                matrixStackIn.scale(scale, scale, scale);
+                VectorHitReaction[] test = {};
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.2f, entityIn.getHitReactions(), 0.3f, packedLightIn);
+                matrixStackIn.scale(0.97f, 0.97f, 0.97f);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.5f, entityIn.getHitReactions(), 0.3f, packedLightIn);
+            }
         }
     }
 }

@@ -25,18 +25,13 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
     @Override
     public void render(RadianceWellEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-        matrixStackIn.translate(0, -entityIn.getHeight() / 2 + 0.005, 0);
-        matrixStackIn.scale(1.002f, 1.002f, 1.002f);
         Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 7.0f, entityIn.getElement().getRenderer().getColor()
-                    , 10.0f, partialTicks, entityIn.world, entityIn.getUniqueID().toString(), 0.0f);
-            matrixStackIn.scale(0.997f, 0.997f, 0.997f);
-            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 7.0f, entityIn.getElement().getRenderer().getColor()
-                    , 10.0f, partialTicks, entityIn.world, entityIn.getUniqueID().toString(), 0.0f);
-
+                    , 1.0f, partialTicks, entityIn.world);
+            matrixStackIn.translate(0, -entityIn.getHeight() / 2 + 0.005, 0);
             matrixStackIn.translate(0, entityIn.getHeight(), 0);
             matrixStackIn.scale(0.7f, 0.7f, 0.7f);
             float alphaS = Math.min(1f, (float)entityIn.ticksExisted / 5f);
@@ -44,26 +39,26 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
             matrixStackIn.scale(1.5f, 1.5f, 1.5f);
             entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
             matrixStackIn.pop();
-            entityIn.setMotion(0, 1, 0);
-            if (entityIn.getTrail() == null)
-                entityIn.setTrail(new TrailParticle(entityIn, new Vector3d(0, entityIn.getHeight() / 2, 0), 30, 0.8d));
-            else {
-                matrixStackIn.push();
-                matrixStackIn.scale(0.3f, 0.3f, 0.3f);
-                entityIn.getTrail().tick();
-                float alpha = (float) (entityIn.getMotion().length()) * 1.5f;
-                for (Vector3d vec : entityIn.getTrail().getTrailPoint()) {
-                    matrixStackIn.push();
-                    matrixStackIn.translate(vec.x - entityIn.getPositionVec().x, vec.y - entityIn.getPositionVec().y, vec.z - entityIn.getPositionVec().z);
-                    entityIn.getElement().getRenderer().renderTrail(matrixStackIn, bufferIn, alpha *= 0.9f, Integer.toString(entityIn.getEntityId()), 0f);
-                    matrixStackIn.pop();
-                    matrixStackIn.scale(0.98f, 0.98f, 0.98f);
-                }
-                matrixStackIn.pop();
-            }
-            matrixStackIn.scale(0.7142f, 0.7142f, 0.7142f);
 
-            if(entityIn.ticksExisted > 20) {
+            if(entityIn.ticksExisted > 10) {
+                entityIn.setMotion(0, 1, 0);
+                if (entityIn.getTrail() == null)
+                    entityIn.setTrail(new TrailParticle(entityIn, new Vector3d(0, entityIn.getHeight() / 2, 0), 30, 0.8d));
+                else {
+                    matrixStackIn.push();
+                    matrixStackIn.scale(0.3f, 0.3f, 0.3f);
+                    entityIn.getTrail().tick();
+                    float alpha = (float) (entityIn.getMotion().length()) * 1.5f;
+                    for (Vector3d vec : entityIn.getTrail().getTrailPoint()) {
+                        matrixStackIn.push();
+                        matrixStackIn.translate(vec.x - entityIn.getPositionVec().x, vec.y - entityIn.getPositionVec().y, vec.z - entityIn.getPositionVec().z);
+                        entityIn.getElement().getRenderer().renderTrail(matrixStackIn, bufferIn, alpha *= 0.9f, Integer.toString(entityIn.getEntityId()), 0f);
+                        matrixStackIn.pop();
+                        matrixStackIn.scale(0.98f, 0.98f, 0.98f);
+                    }
+                    matrixStackIn.pop();
+                }
+                matrixStackIn.scale(0.7142f, 0.7142f, 0.7142f);
                 float alphaC = Math.min(1f, ((float) entityIn.ticksExisted - 20f) / 20f);
                 matrixStackIn.push();
                 matrixStackIn.translate(0, -entityIn.getHeight() * 2, 0);
@@ -71,7 +66,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
                 Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
                 IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(sphereOrb));
                 float[] color = entityIn.getElement().getRenderer().getColor();
-                float alpha = 0.6f * alphaC;
+                float alpha = 0.8f * alphaC;
                 buffer.pos(matrix4f, -1.0f, 0.0f, -1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f)
                         .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(-1.0f, 0.0f, -1.0f).endVertex();
                 buffer.pos(matrix4f, -1.0f, 0.0f, 1.0f).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f)

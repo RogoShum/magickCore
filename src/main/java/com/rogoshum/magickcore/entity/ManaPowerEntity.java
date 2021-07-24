@@ -68,7 +68,7 @@ public class ManaPowerEntity extends ManaPointEntity {
 
         if(getMana() > 0)
         {
-            List<LivingEntity> livings = getLivingEntity(5);
+            List<LivingEntity> livings = getLivingEntity(7);
 
             for (LivingEntity living : livings) {
 

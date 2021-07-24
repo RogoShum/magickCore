@@ -116,9 +116,9 @@ public class ElementOrbEvent {
     public void onDrops(LivingDropsEvent event)
     {
         IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-        if(state != null && event.getEntityLiving() instanceof IMob && !state.getElement().getType().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote)
+        if(state != null && event.getEntityLiving() instanceof IMob && !event.getEntityLiving().world.isRemote)
         {
-            if(state.getIsDeprived())
+            if(!state.getElement().getType().equals(LibElements.ORIGIN) && state.getIsDeprived())
             {
                 ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, event.getEntityLiving().world);
                 Vector3d vec = event.getEntityLiving().getPositionVec();
@@ -134,7 +134,7 @@ public class ElementOrbEvent {
                 Vector3d vec = event.getEntityLiving().getPositionVec();
                 orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
                 orb.setTickTime(100);
-                orb.setMana(event.getEntityLiving().getMaxHealth());
+                orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
                 event.getEntityLiving().world.addEntity(orb);
             }
         }

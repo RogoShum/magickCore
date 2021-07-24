@@ -1,0 +1,16 @@
+{
+	"chaos_spawn": { "sounds": ["magickcore:chaos_spawn"]},
+	"chaos_ambience": { "sounds": ["magickcore:chaos_ambience"]},
+	"chaos_attak": { "sounds": ["magickcore:chaos_attak"]},
+	"dawnward_spawn": { "sounds": ["magickcore:dawnward_spawn"]},
+	"shpere_dissipate": { "sounds": ["magickcore:shpere_dissipate"]},
+	"sphere_ambience": { "sounds": ["magickcore:sphere_ambience"]},
+	"sphere_spawn": { "sounds": ["magickcore:sphere_spawn"]},
+	"squal_ambience": { "sounds": ["magickcore:squal_ambience"]},
+	"squal_spawn": { "sounds": ["magickcore:squal_spawn"]},
+	"wall_ambience": { "sounds": ["magickcore:wall_ambience"]},
+	"wall_dissipate": { "sounds": ["magickcore:wall_dissipate"]},
+	"wall_spawn": { "sounds": ["magickcore:wall_spawn"]},
+	"wither_ambience": { "sounds": ["magickcore:wither_ambience"]},
+	"wither_spawn": { "sounds": ["magickcore:wither_spawn"]}
+}

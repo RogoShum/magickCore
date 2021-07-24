@@ -23,25 +23,28 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
 
     @Override
     public void render(ChaoReachEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-        matrixStackIn.translate(0, -entityIn.getHeight(), 0);
-        matrixStackIn.scale(1.002f, 1.002f, 1.002f);
         Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            matrixStackIn.translate(0, entityIn.getHeight(), 0);
-            matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-            matrixStackIn.push();
-            float c = entityIn.ticksExisted % 11;
-            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
-            matrixStackIn.pop();
-            matrixStackIn.push();
-            matrixStackIn.scale(0.9f + 0.2f * MagickCore.rand.nextFloat(), 0.9f + 0.2f * MagickCore.rand.nextFloat(), 0.9f + 0.2f * MagickCore.rand.nextFloat());
-            RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entityIn.ticksExisted % 10) + ".png"))), 1.0f, entityIn.getElement().getRenderer().getColor());
-            matrixStackIn.pop();
-            matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
+            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
+                    , 1.0f, partialTicks, entityIn.world);
+            if(entityIn.ticksExisted > 30) {
+                float scale = Math.min(1f, (float) (entityIn.ticksExisted - 30) / 5f);
+                matrixStackIn.scale(1.45f * scale, 1.45f * scale, 1.45f * scale);
+                matrixStackIn.push();
+                float c = entityIn.ticksExisted % 11;
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
+                matrixStackIn.pop();
+                matrixStackIn.push();
+                matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
+                RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entityIn.ticksExisted % 10) + ".png"))), 1.0f, entityIn.getElement().getRenderer().getColor());
+                matrixStackIn.pop();
+
+                matrixStackIn.scale(0.8f, 0.8f, 0.8f);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
+            }
         }
     }
 }

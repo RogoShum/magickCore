@@ -77,7 +77,7 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
             else {
                 ManaPowerEntity orb2 = new ManaPowerEntity(ModEntites.mana_power, world);
                 orb2.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
-                orb2.setElement(ModElements.getElement(eType));
+                orb2.setElement(ModElements.getElement(LibElements.ORIGIN));
                 orb2.setTickTime(100);
                 orb2.setMana(10);
                 world.addEntity(orb2);

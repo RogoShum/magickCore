@@ -105,6 +105,7 @@ public class MagickCore
         ModEffects.EFFECTS.register(eventBus);
         ModEffects.POTIONS.register(eventBus);
         ModItems.ITEMS.register(eventBus);
+        ModSounds.SOUNDS.register(eventBus);
         ModTileEntities.TILE_ENTITY.register(eventBus);
         ModEnchantments.ENCHANTMENTS.register(eventBus);
         ModBuff.initBuff();

@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -34,11 +35,11 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         }
         if(!this.world.isRemote && this.ticksExisted == 1)
         {
-            this.playSound(SoundEvents.ENTITY_WITHER_SPAWN, 2.0F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.rand.nextFloat() / 3);
         }
-        if(!this.world.isRemote && this.ticksExisted % 20 == 0)
+        if(!this.world.isRemote && this.ticksExisted % 13 == 0)
         {
-            this.playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 2.0F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() / 5);
         }
         Iterator<Integer> iter = hitReactions.keySet().iterator();
         while (iter.hasNext()) {

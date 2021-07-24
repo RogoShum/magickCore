@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,8 +27,16 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         super.tick();
         if(!this.world.isRemote && this.ticksExisted == 1)
         {
-            this.playSound(SoundEvents.BLOCK_ANVIL_PLACE, 1.0F, 0.7F + this.rand.nextFloat());
+            this.playSound(ModSounds.wall_spawn.get(), 2.0F, 0.7F + this.rand.nextFloat());
         }
+
+        if(!this.world.isRemote && this.ticksExisted % 7 == 0)
+        {
+            this.playSound(ModSounds.wall_ambience.get(), 0.5F, 0.8F - this.rand.nextFloat() / 4);
+        }
+
+        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 5)
+            this.playSound(ModSounds.wall_dissipate.get(), 2.0F, 1.0F + this.rand.nextFloat());
 
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.1F, 0.005F));

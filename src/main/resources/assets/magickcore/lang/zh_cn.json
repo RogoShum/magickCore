@@ -84,6 +84,25 @@
     "item.minecraft.potion.effect.mana_consum_reduce_ii": "强力减耗药水",
     "item.minecraft.potion.effect.mana_force": "威力药水",
 
+    "item.minecraft.tipped_arrow.effect.shield_regen": "护盾恢复之箭",
+    "item.minecraft.tipped_arrow.effect.shield_regen_i": "护盾恢复之箭",
+    "item.minecraft.tipped_arrow.effect.shield_regen_ii": "护盾恢复之箭",
+
+    "item.minecraft.tipped_arrow.effect.shield_value": "盾容药水之箭",
+    "item.minecraft.tipped_arrow.effect.shield_value_i": "盾容药水之箭",
+    "item.minecraft.tipped_arrow.effect.shield_value_ii": "盾容药水之箭",
+
+    "item.minecraft.tipped_arrow.effect.mana_regen": "魔力恢复之箭",
+    "item.minecraft.tipped_arrow.effect.mana_regen_i": "魔力恢复之箭",
+    "item.minecraft.tipped_arrow.effect.mana_regen_ii": "魔力恢复之箭",
+
+    "item.minecraft.tipped_arrow.effect.mana_consum_reduce": "减耗之箭",
+    "item.minecraft.tipped_arrow.effect.mana_consum_reduce_i": "减耗之箭",
+    "item.minecraft.tipped_arrow.effect.mana_consum_reduce_ii": "减耗之箭",
+
+    "item.minecraft.tipped_arrow.effect.trace": "追踪之箭",
+    "item.minecraft.tipped_arrow.effect.mana_force": "威力之箭",
+
     "item.minecraft.potion.effect.refreshing": "清爽水",
     "item.minecraft.lingering_potion.effect.refreshing": "清爽水",
     "item.minecraft.splash_potion.effect.refreshing": "清爽水",
@@ -136,6 +155,22 @@
     "magickcore.tool_attribute.wither": "§2随机触发耐久回复",
     "magickcore.tool_attribute.taken": "§8伤害生物几率半傀儡化",
     "magickcore.tool_duration": "§7磨损：",
+
+    "entity.magickcore.mana_orb": "魔力涡流",
+    "entity.magickcore.mana_star": "魔力零星",
+    "entity.magickcore.mana_laser": "魔力激光",
+    "entity.magickcore.mana_shield": "黎明护盾",
+    "entity.magickcore.mana_eye": "魔眼",
+    "entity.magickcore.mana_rift": "裂痕",
+    "entity.magickcore.mana_rune": "符文",
+    "entity.magickcore.mana_sphere": "涡流",
+    "entity.magickcore.radiance_wall": "光焰之井",
+    "entity.magickcore.chaos_reach": "混沌之触",
+    "entity.magickcore.thorns_caress": "棘刺呵护",
+    "entity.magickcore.silence_squall": "沉默狂啸",
+    "entity.magickcore.ascendant_realm": "上维领域",
+    "entity.magickcore.element_orb": "元素能量",
+    "entity.magickcore.mana_power": "原始能量",
 
     //书
     "magickcore.book.name": "魔法核心指南",

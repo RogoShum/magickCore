@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,8 +30,14 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         super.tick();
         if(!this.world.isRemote && this.ticksExisted == 1)
         {
-            this.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 2.0F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.chaos_spawn.get(), 2.0F, 1.0F - this.rand.nextFloat());
         }
+
+        if(!this.world.isRemote && this.ticksExisted > 20 && this.ticksExisted % 5 == 0)
+        {
+            this.playSound(ModSounds.chaos_ambience.get(), 1.0F, 1.0F + this.rand.nextFloat());
+        }
+
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.4F, 0.005F));
 
@@ -79,7 +86,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         //}
 
         if(makeSound)
-            this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 2.0F, 1.0F + this.rand.nextFloat());
+            this.playSound(ModSounds.chaos_attak.get(), 2.0F, 1.0F - this.rand.nextFloat() / 3);
         applyParticle();
     }
 

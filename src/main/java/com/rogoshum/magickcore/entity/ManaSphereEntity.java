@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -34,12 +35,20 @@ public class ManaSphereEntity extends ManaPointEntity {
         super.tick();
         if(!this.world.isRemote && this.ticksExisted == 1)
         {
-            this.playSound(SoundEvents.BLOCK_CHAIN_PLACE, 1.0F, 1.0F + this.rand.nextFloat());
+            this.playSound(ModSounds.sphere_spawn.get(), 1.0F, 1.0F - this.rand.nextFloat() / 5);
         }
 
-        if(!this.world.isRemote && this.ticksExisted % 4 == 0 && this.ticksExisted < this.getTickTime() - 5)
+        if(!this.world.isRemote && this.ticksExisted == 10)
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+
+        if(!this.world.isRemote && this.ticksExisted % 15 == 0 && this.ticksExisted < this.getTickTime() - 10 && this.ticksExisted > 10)
         {
-            this.playSound(SoundEvents.BLOCK_BEEHIVE_DROP, 2.0F, (1.0F - this.rand.nextFloat()));
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+        }
+
+        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 20)
+        {
+            this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.rand.nextFloat()));
         }
 
         for(int i = 0; i < 30;++i)

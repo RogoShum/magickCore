@@ -68,8 +68,8 @@ public class ArcElement extends MagickElement{
             else
                 flag = victim.attackEntityFrom(ModDamage.getArcDamage(), force);
 
-            if(flag && !victim.world.isRemote)
-                victim.func_241841_a((ServerWorld) victim.world, null);
+            //if(flag && !victim.world.isRemote)
+                //victim.func_241841_a((ServerWorld) victim.world, null);
 
             if(flag)
             {

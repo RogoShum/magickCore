@@ -398,7 +398,7 @@ public class MagickLogicEvent {
 		if(entity instanceof LivingEntity)
 		{
 			IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
-			if(attacker.getBuffList().containsKey(LibBuff.LIGHT))
+			if(attacker != null && attacker.getBuffList().containsKey(LibBuff.LIGHT))
 				event.setAmount(event.getAmount() * 1.5f);
 
 			if(((LivingEntity)entity).getActivePotionMap().containsKey(ModEffects.MANA_FORCE.orElse(null)))
@@ -450,7 +450,7 @@ public class MagickLogicEvent {
 
 			if(!(entity instanceof PlayerEntity)) {
 				IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
-				if (attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= event.getAmount() || MagickCore.rand.nextBoolean())) {
+				if (attacker != null && attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= event.getAmount() || MagickCore.rand.nextBoolean())) {
 					if(attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3) || state.getManaValue() >= event.getAmount())
 						state.setManaValue(state.getManaValue() - event.getAmount());
 				}
@@ -517,7 +517,7 @@ public class MagickLogicEvent {
 				unlock = true;
 			}
 			else if(matchMeleeType) {
-				damage = event.getAmount();
+				damage = event.getAmount() * 3;
 				unlock = true;
 			}
 			else if(state.getElement().getType().equals(LibElements.ORIGIN))

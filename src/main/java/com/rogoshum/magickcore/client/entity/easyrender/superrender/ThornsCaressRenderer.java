@@ -23,13 +23,12 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
 
     @Override
     public void render(ThornsCaressEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-        matrixStackIn.translate(0, -entityIn.getHeight() / 2 + 0.005, 0);
-        matrixStackIn.scale(1.002f, 1.002f, 1.002f);
         Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            matrixStackIn.translate(0, entityIn.getHeight() / 2, 0);
+            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
+                    , 1.0f, partialTicks, entityIn.world);
             matrixStackIn.scale(1.45f, 1.45f, 1.45f);
             matrixStackIn.push();
             matrixStackIn.scale(0.25f, 0.25f, 0.25f);

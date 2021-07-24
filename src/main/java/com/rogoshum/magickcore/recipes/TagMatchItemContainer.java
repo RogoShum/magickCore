@@ -1,5 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IItemContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 
@@ -12,9 +14,18 @@ public class TagMatchItemContainer extends NBTRecipeContainer.ItemContainer {
         this.map.putAll(map);
     }
 
+    protected TagMatchItemContainer(String item) {
+        super(item);
+    }
+
     public static TagMatchItemContainer create(String item, HashMap<String, INBT> map)
     {
         return new TagMatchItemContainer(item, map);
+    }
+
+    public static TagMatchItemContainer create(String item)
+    {
+        return new TagMatchItemContainer(item);
     }
 
     @Override

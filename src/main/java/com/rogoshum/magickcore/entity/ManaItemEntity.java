@@ -27,6 +27,7 @@ public class ManaItemEntity extends ItemEntity {
     @Override
     public void tick() {
         setNoGravity(true);
+        setGlowing(true);
         super.tick();
     }
 

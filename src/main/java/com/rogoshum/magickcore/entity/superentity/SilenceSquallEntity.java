@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,15 +30,18 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     public void tick() {
         super.tick();
         Entity cloest = null;
-        if(!this.world.isRemote && this.rand.nextBoolean() && this.rand.nextBoolean())
+        if(!this.world.isRemote && this.ticksExisted == 1)
         {
-            this.playSound(SoundEvents.BLOCK_CHAIN_HIT, 1.0F, 1.0F + this.rand.nextFloat());
+            this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.rand.nextFloat() / 3);
         }
-        if(!this.world.isRemote)
-            this.playSound(SoundEvents.UI_TOAST_IN, 2.0F, 1.0F - this.rand.nextFloat());
+
         if(!this.world.isRemote && this.rand.nextBoolean())
         {
-            this.playSound(SoundEvents.UI_TOAST_OUT, 2.0F, 1.0F + this.rand.nextFloat());
+            this.playSound(SoundEvents.UI_TOAST_OUT, 1.0F, 1.0F + this.rand.nextFloat());
+        }
+        if(!this.world.isRemote && this.ticksExisted % 12 == 0)
+        {
+            this.playSound(ModSounds.squal_ambience.get(), 1.0F, 1.3F - this.rand.nextFloat() / 3);
         }
 
         this.traceEntity(null, 16, new Vector3d(0, 0, 0), 0.0f, 0);

@@ -23,10 +23,10 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
 
     @Override
     public void render(SilenceSquallEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-        matrixStackIn.translate(0, -entityIn.getHeight(), 0);
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             float alpha = Math.min(1.0f, (float)entityIn.ticksExisted / 100f);
-            matrixStackIn.translate(0, entityIn.getHeight(), 0);
+            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 11.0f, entityIn.getElement().getRenderer().getColor()
+                    , 0.7f, partialTicks, entityIn.world);
             matrixStackIn.scale(1.45f, 1.45f, 1.45f);
             matrixStackIn.push();
             matrixStackIn.scale(1.0f, 3.6f, 1.0f);

@@ -148,9 +148,23 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
     }
 
     public UUID getOwnerUUID() {
-        CompoundNBT tag = this.getDataManager().get(dataUUID);
-        if(tag.hasUniqueId("UUID"))
-            return tag.getUniqueId("UUID");
+        try{
+            if(dataUUID != null && this.getDataManager().getDirty() != null) {
+                CompoundNBT tag = this.getDataManager().get(dataUUID);
+                if (tag.hasUniqueId("UUID"))
+                    return tag.getUniqueId("UUID");
+            }
+        }
+        catch (Exception e)
+        {
+            MagickCore.LOGGER.warn("dataUUID: " + dataUUID);
+            MagickCore.LOGGER.warn("getDataManager: " + this.getDataManager());
+            MagickCore.LOGGER.warn("getDirty: " + this.getDataManager().getDirty());
+            //if(this.getDataManager().getDirty() != null) {
+                //MagickCore.LOGGER.warn("contains: " + this.getDataManager().getDirty());
+            //}
+            e.printStackTrace();
+        }
         return MagickCore.emptyUUID;
     }
 

@@ -42,6 +42,9 @@ public abstract class EasyTileRenderer<T extends TileEntity> {
 
     public void preRender(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks)
     {
+        if(entity == null || entity.getWorld() == null || entity.getWorld().getBlockState(entity.getPos()) == null)
+            return;
+
         matrixStackIn.push();
         double x = entity.getPos().getX() + 0.5;
         double y = entity.getPos().getY() + 0.5;
