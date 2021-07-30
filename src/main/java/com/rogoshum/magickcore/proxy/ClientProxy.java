@@ -2,10 +2,7 @@ package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.AllEntity;
-import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
-import com.rogoshum.magickcore.block.tileentity.ElementWoolTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.block.tileentity.*;
 import com.rogoshum.magickcore.client.entity.easyrender.*;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
@@ -17,10 +14,7 @@ import com.rogoshum.magickcore.client.entity.render.ManaObjectRenderer;
 import com.rogoshum.magickcore.client.entity.render.living.TimeManagerRenderer;
 import com.rogoshum.magickcore.client.item.MagickBakedModel;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.client.tileentity.easyrender.ElementCrystalRenderer;
-import com.rogoshum.magickcore.client.tileentity.easyrender.ElementWoolRenderer;
-import com.rogoshum.magickcore.client.tileentity.easyrender.MagickContainerRenderer;
-import com.rogoshum.magickcore.client.tileentity.easyrender.MagickCraftingRenderer;
+import com.rogoshum.magickcore.client.tileentity.easyrender.*;
 import com.rogoshum.magickcore.entity.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.event.RenderEvent;
@@ -200,6 +194,7 @@ public class ClientProxy implements IProxy
 		RenderEvent.putTileRender(MagickContainerTileEntity.class, new MagickContainerRenderer());
 		RenderEvent.putTileRender(ElementCrystalTileEntity.class, new ElementCrystalRenderer());
 		RenderEvent.putTileRender(ElementWoolTileEntity.class, new ElementWoolRenderer());
+		RenderEvent.putTileRender(MagickBarrierTileEntity.class, new MagickBarrierRenderer());
 	}
 
 	private void putElementRenderer()

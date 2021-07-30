@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -29,9 +30,9 @@ public class ElementShieldRenderer extends EasyRenderer<Entity>{
         {
             float value = state.getElementShieldMana();
             if(value > 0.0f) {
-                float alpha = value / 100.0f;
+                float alpha = value / ((LivingEntity)entity).getMaxHealth();
 
-                if(value > 100.0f)
+                if(value > ((LivingEntity)entity).getMaxHealth())
                     alpha = 1.0f;
 
                 float[] color = state.getElement().getRenderer().getColor();
@@ -45,7 +46,7 @@ public class ElementShieldRenderer extends EasyRenderer<Entity>{
                 if(entity == player)
                     offset = offset.add(0, -1, 0);
 
-                if (entity.ticksExisted % 15 == 0 && !Minecraft.getInstance().isGamePaused()) {
+                if (entity.ticksExisted % 5 == 0 && partialTicks < 0.1f && !Minecraft.getInstance().isGamePaused()) {
                     LitParticle par = new LitParticle(entity.world, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_" + Integer.toString(MagickCore.rand.nextInt(5)) + ".png")
                             , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosX() + offset.x
                             , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() / 2 + offset.y

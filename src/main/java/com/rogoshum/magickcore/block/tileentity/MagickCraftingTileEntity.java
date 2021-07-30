@@ -22,6 +22,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -35,7 +36,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
     private UUID playerUniqueId = MagickCore.emptyUUID;
     public String eType = LibElements.ORIGIN;
     private boolean crafting;
-    private int ticksExisted;
+
     private ErrorRenderer error = new ErrorRenderer();
 
     public MagickCraftingTileEntity() {
@@ -163,6 +164,12 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
         float directionPoint = (float) (this.ticksExisted % distance) / distance;
         int c = (int) (directionPoint * distance);
 
+        float height = (float) (this.ticksExisted % 120) / 60f;
+        if(height > 1.0f) {
+            height = 2.0f - height;
+        }
+        height = (float) Math.pow(height, 1.5f);
+
         float scale;
         for (int i = 0; i < distance; i++) {
             if(i == c)
@@ -172,7 +179,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
             //MagickCore.LOGGER.debug(i + " " + c);
             double trailFactor = i / (distance - 1.0D);
             double tx = pos.getX() + offset + (this.pos.getX() - pos.getX()) * trailFactor + world.rand.nextGaussian() * 0.005;
-            double ty = pos.getY() + offset + (this.pos.getY() - pos.getY()) * trailFactor + world.rand.nextGaussian() * 0.005;
+            double ty = pos.getY() + offset + (this.pos.getY() + 0.25 + height * 0.2 - pos.getY()) * trailFactor + world.rand.nextGaussian() * 0.005;
             double tz = pos.getZ() + offset + (this.pos.getZ() - pos.getZ()) * trailFactor + world.rand.nextGaussian() * 0.005;
             LitParticle par = new LitParticle(this.world, renderer.getParticleTexture()
                     , new Vector3d(tx, ty, tz), scale * scaleP, scale * scaleP, 1.0f, 5, renderer);
@@ -181,6 +188,14 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
             par.setGlow();
             MagickCore.addMagickParticle(par);
         }
+
+        LitParticle par = new LitParticle(this.world, renderer.getParticleTexture()
+                , new Vector3d(this.pos.getX() + offset, this.pos.getY() + offset + 0.25 + height * 0.2, this.pos.getZ() + offset), 0.25f * scaleP, 0.25f * scaleP, 1.0f, 20, renderer);
+        par.setParticleGravity(0);
+        //par.setLimitScale();
+        par.setGlow();
+        par.addMotion(MagickCore.getNegativeToOne() * 0.015, MagickCore.getNegativeToOne() * 0.015, MagickCore.getNegativeToOne() * 0.015);
+        MagickCore.addMagickParticle(par);
     }
 
     public void enableTrans(){if(this.crafting) this.crafting = false; else this.crafting = true; updateInfo();}

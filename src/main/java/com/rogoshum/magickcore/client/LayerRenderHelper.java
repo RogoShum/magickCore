@@ -126,6 +126,7 @@ public class LayerRenderHelper extends LivingRenderer {
             int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
             this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, color[0], color[1], color[2], this.alpha);
         }
+
         if(renderer instanceof LivingRenderer) {
             List<LayerRenderer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, (LivingRenderer)renderer, "field_177097_h");
             for (int cc = 0; cc < layerRenderers.size(); ++cc) {

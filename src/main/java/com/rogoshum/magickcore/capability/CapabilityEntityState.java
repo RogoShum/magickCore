@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
+import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
@@ -10,7 +9,6 @@ import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -20,10 +18,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 public class CapabilityEntityState{
 	public static final String MANA_VALUE = "MANA_VALUE";

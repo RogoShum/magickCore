@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.event;
+package com.rogoshum.magickcore.event.magickevent;
 
 import java.util.*;
 
@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IMagickElementObject;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.api.IManaMob;
+import com.rogoshum.magickcore.api.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.*;
@@ -15,6 +16,8 @@ import com.rogoshum.magickcore.entity.ManaEyeEntity;
 import com.rogoshum.magickcore.entity.ManaItemEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
+import com.rogoshum.magickcore.event.AdvancementsEvent;
+import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.helper.RoguelikeHelper;
@@ -409,6 +412,8 @@ public class MagickLogicEvent {
 			}
 		}
 
+		if(state != null)
+			state.hitElementShield();
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			event.setCanceled(true);
 	}
@@ -462,8 +467,6 @@ public class MagickLogicEvent {
 				event.setAmount(event.getAmount() * 1.25f);
 			}
 		}
-
-
 	}
 
 	@SubscribeEvent
@@ -475,19 +478,7 @@ public class MagickLogicEvent {
 
 		if(state != null && state.getElementShieldMana() > 0)
 		{
-			if(event.getType().equals(LibBuff.PARALYSIS) && !state.getElement().getType().equals(LibElements.ARC))
-				event.setCanceled(true);
-
-			if((event.getType().equals(LibBuff.CRIPPLE) || event.getType().equals(LibBuff.WITHER)) && !state.getElement().getType().equals(LibElements.WITHER))
-				event.setCanceled(true);
-
-			if((event.getType().equals(LibBuff.FRAGILE) || event.getType().equals(LibBuff.WEAKEN)) && !state.getElement().getType().equals(LibElements.VOID))
-				event.setCanceled(true);
-
-			if((event.getType().equals(LibBuff.SLOW) || event.getType().equals(LibBuff.FREEZE)) && !state.getElement().getType().equals(LibElements.STASIS))
-				event.setCanceled(true);
-
-			if(event.getType().equals(LibBuff.TAKEN) && !state.getElement().getType().equals(LibElements.TAKEN))
+			if(!event.getType().getElement().equals(state.getElement().getType()))
 				event.setCanceled(true);
 		}
 	}
@@ -512,12 +503,13 @@ public class MagickLogicEvent {
 
 			float damage;
 			boolean unlock = false;
+
 			if(shieldElement.equals(damageType)) {
-				damage = event.getAmount() * 2;
+				damage = event.getAmount() * 1.25f;
 				unlock = true;
 			}
 			else if(matchMeleeType) {
-				damage = event.getAmount() * 3;
+				damage = event.getAmount() * 1.5f;
 				unlock = true;
 			}
 			else if(state.getElement().getType().equals(LibElements.ORIGIN))
@@ -610,6 +602,14 @@ public class MagickLogicEvent {
 						new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
 		}
 
+		/*if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null)
+		{
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
+				Networking.INSTANCE.send(
+						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						new OwnerStatePack(event.getEntity().getEntityId(), ((IOwnerEntity) event.getEntity()).getOwner().getUniqueID()));
+		}*/
+
 		IEntityState state = event.getEntity().getCapability(MagickCore.entityState).orElse(null);
 		if(state != null)
 		{
@@ -662,12 +662,13 @@ public class MagickLogicEvent {
 		IManaData data = event.getEntity().getCapability(MagickCore.manaData).orElse(null);
 		if(event.getEntity().getCapability(MagickCore.manaData).orElse(null) != null)
 		{
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
-			Networking.INSTANCE.send(
-					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-					new ManaDataPack(event.getEntity().getEntityId(), data.getElement().getType(), data.getTargetType().getLabel()
-							, data.getManaType().getLabel(), data.getRange(), data.getForce()
-							, data.getTraceTarget(), data.getTickTime()));
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed && data.getElement() != null) {
+				Networking.INSTANCE.send(
+						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						new ManaDataPack(event.getEntity().getEntityId(), data.getElement().getType(), data.getTargetType().getLabel()
+								, data.getManaType().getLabel(), data.getRange(), data.getForce()
+								, data.getTraceTarget(), data.getTickTime()));
+			}
 		}
 	}
 

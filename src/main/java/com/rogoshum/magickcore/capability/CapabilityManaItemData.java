@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.helper.RoguelikeHelper;
+import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibMaterial;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -15,8 +15,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.UUID;
-
 public class CapabilityManaItemData {
 	public static final String ELEMENT = "ELEMENT";
 	public static final String MANA = "MANA";
@@ -24,6 +22,7 @@ public class CapabilityManaItemData {
 	public static final String TICK = "TICK";
 	public static final String RANGE = "RANGE";
 	public static final String TRACE = "TRACE";
+	public static final String MATERIAL = "MATERIAL";
 	public static final String MANA_TYPE = "MANA_TYPE";
 
 	public static class Storage<T extends IManaItemData> implements IStorage<T>
@@ -38,33 +37,35 @@ public class CapabilityManaItemData {
 			tag.putString(MANA_TYPE, instance.getManaType().getLabel());
 			tag.putFloat(MANA, instance.getMana());
 			tag.putBoolean(TRACE, instance.getTrace());
+			tag.putString(MATERIAL, instance.getMaterial().getName());
 			return tag;
 		}
 
 		@Override
 		public void readNBT(Capability<T> capability, T instance, Direction side, INBT nbt) {
 			CompoundNBT tag = (CompoundNBT) nbt;
-			if(tag.contains("ELEMENT"))
+				if(tag.contains(MATERIAL))
+					instance.setMaterial(ManaMaterials.getMaterial(tag.getString(MATERIAL)));
+			if(tag.contains(ELEMENT))
 				instance.setElement(ModElements.getElement(tag.getString(ELEMENT)));
-			if(tag.contains("FORCE"))
+			if(tag.contains(FORCE))
 				instance.setForce(tag.getFloat(FORCE));
-			if(tag.contains("TICK"))
+			if(tag.contains(TICK))
 				instance.setTickTime(tag.getInt(TICK));
-			if(tag.contains("RANGE"))
+			if(tag.contains(RANGE))
 				instance.setRange(tag.getFloat(RANGE));
 			EnumManaType mana = EnumManaType.getEnum(tag.getString(MANA_TYPE));
 			if(mana != null)
 				instance.setManaType(mana);
-			if(tag.contains("MANA"))
+			if(tag.contains(MANA))
 				instance.setMana(tag.getFloat(MANA));
-			if(tag.contains("TRACE"))
+			if(tag.contains(TRACE))
 				instance.setTrace(tag.getBoolean(TRACE));
 		}
     }
 
 	 public static class Implementation implements IManaItemData
 	 {
-		 private final float maxMana = RoguelikeHelper.MAX_MANA - 1;
 		 private float range;
 		 private float force;
 		 private float mana;
@@ -72,10 +73,12 @@ public class CapabilityManaItemData {
 		 private int tick;
 		 private IManaElement element;
 		 private boolean trace;
+		 private IManaLimit material;
 
 		 public Implementation(IManaElement element) {
 			 this.element = element;
 			 this.manaType = EnumManaType.NONE;
+			 this.material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
 		 }
 
 		 @Override
@@ -108,12 +111,12 @@ public class CapabilityManaItemData {
 		 public float receiveMana(float mana) {
 		 	 float extra = 0;
 
-			 if(this.mana + mana <= this.maxMana)
+			 if(this.mana + mana <= this.material.getMana())
 			 	this.mana += mana;
 			 else
 			 {
-				 extra = this.mana + mana - this.maxMana;
-				 this.mana = this.maxMana;
+				 extra = this.mana + mana - this.material.getMana();
+				 this.mana = this.material.getMana();
 			 }
 
 			 return extra;
@@ -121,7 +124,7 @@ public class CapabilityManaItemData {
 
 		 @Override
 		 public float getMaxMana() {
-			 return maxMana;
+			 return material.getMana();
 		 }
 
 		 @Override
@@ -166,6 +169,20 @@ public class CapabilityManaItemData {
 			 manaType = type;
 			 if(manaType == null)
 				 manaType = EnumManaType.NONE;
+		 }
+
+		 @Override
+		 public IManaLimit getMaterial() {
+			 return material;
+		 }
+
+		 @Override
+		 public void setMaterial(IManaLimit limit) {
+			 this.material = limit;
+			 this.force = Math.min(Math.max(this.force - 3f, 0), limit.getForce());
+			 this.tick = Math.min(Math.max(this.tick - 50, 0), limit.getTick());
+			 this.range = Math.min(Math.max(this.range - 4f, 0), limit.getRange());
+			 this.mana = 0;
 		 }
 	 }
 

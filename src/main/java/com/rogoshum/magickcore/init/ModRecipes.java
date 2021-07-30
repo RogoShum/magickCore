@@ -148,6 +148,7 @@ public class ModRecipes {
 
         putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), new ItemStack(ModItems.mana_glowstone.get()));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.BLAZE_ROD.toString()), new ItemStack(ModItems.mana_blaze_rod.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), new ItemStack(ModItems.mana_radstone.get()));
         putExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
@@ -186,12 +187,7 @@ public class ModRecipes {
                 taken_element_recipe,
                 element_wool_recipe,
                 element_string_recipe,
-                ElementToolRecipes.element_sword_recipe,
-                ElementToolRecipes.element_axe_recipe,
-                ElementToolRecipes.element_helmet_recipe,
-                ElementToolRecipes.element_chest_recipe,
-                ElementToolRecipes.element_leg_recipe,
-                ElementToolRecipes.element_boots_recipe,
+                ElementToolRecipes.element_any_recipe,
                 ElementItemRecipes.recipe_0,
                 ElementItemRecipes.recipe_1,
                 ElementItemRecipes.recipe_2,

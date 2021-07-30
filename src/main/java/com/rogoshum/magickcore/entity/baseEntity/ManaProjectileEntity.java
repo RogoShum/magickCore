@@ -1,20 +1,18 @@
 package com.rogoshum.magickcore.entity.baseEntity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
-import com.rogoshum.magickcore.api.IMagickElementObject;
-import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -30,21 +28,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkHooks;
-import org.apache.logging.log4j.core.jmx.Server;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.UUID;
 
-public abstract class ManaProjectileEntity extends ThrowableEntity implements IMagickElementObject {
+public abstract class ManaProjectileEntity extends ThrowableEntity implements IMagickElementObject, IOwnerEntity {
 	public boolean cansee;
 	protected TrailParticle trail;
+	private Vector3d homePos;
 	private static final DataParameter<CompoundNBT> dataUUID = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.COMPOUND_NBT);
 	public ManaProjectileEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
 	    super(type, worldIn);
-	    if(worldIn.isRemote)
+		if(worldIn.isRemote)
 	    	this.setTickTime(20);
 	}
 
@@ -56,6 +52,17 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 		super.setShooter(entityIn);
 		if(entityIn != null)
 		this.setOwnerUUID(entityIn.getUniqueID());
+	}
+
+	@Override
+	public void setOwner(Entity entityIn)
+	{
+		this.setShooter(entityIn);
+	}
+
+	@Override
+	public Entity getOwner(){
+		return this.func_234616_v_();
 	}
 
 	@Nullable
@@ -78,6 +85,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 	@Override
 	public void tick() {
 		super.tick();
+		if(this.homePos == null)
+			this.homePos = this.getPositionVec();
+		else if(this.homePos.subtract(this.getPositionVec()).length() > this.getRange())
+			this.remove();
 		if(!this.world.isRemote && this.ticksExisted == 1)
 		{
 			this.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, 1.5F, 1.0F + this.rand.nextFloat());
@@ -92,6 +103,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 		this.dataManager.register(dataUUID, new CompoundNBT());
 	}
 
+	@Override
 	public void setOwnerUUID(UUID uuid) {
 		CompoundNBT tag = new CompoundNBT();
 		tag.putUniqueId("UUID", uuid);

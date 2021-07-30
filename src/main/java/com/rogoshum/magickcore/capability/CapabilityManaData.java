@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.capability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,7 +30,15 @@ public class CapabilityManaData {
 		@Override
 		public INBT writeNBT(Capability<T> capability, T instance, Direction side) {
 			CompoundNBT tag = new CompoundNBT();
-			tag.putString(ELEMENT, instance.getElement().getType());
+			try {
+				tag.putString(ELEMENT, instance.getElement().getType());
+			}
+			catch (Exception e)
+			{
+				MagickCore.LOGGER.warn(instance.getElement());
+				if(instance.getElement() != null)
+					MagickCore.LOGGER.warn(instance.getElement().getType());
+			}
 			tag.putUniqueId(TRACE_TARGET, instance.getTraceTarget());
 			tag.putFloat(FORCE, instance.getForce());
 			tag.putInt(TICK, instance.getTickTime());

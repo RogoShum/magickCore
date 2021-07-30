@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.LayerRenderHelper;
@@ -35,85 +36,30 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
             matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
             matrixStackIn.scale(1.01f, 1.01f, 1.01f);
 
-            if(state.getBuffList().containsKey(LibBuff.PARALYSIS))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.ARC).getColor());
+            for(ManaBuff buff : state.getBuffList().values())
+            {
+                if(!buff.isBeneficial()) {
+                    color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor());
+                }
+            }
 
-            if(state.getBuffList().containsKey(LibBuff.WITHER))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.WITHER).getColor());
-
-            if(state.getBuffList().containsKey(LibBuff.SLOW))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.STASIS).getColor());
-
-            if(state.getBuffList().containsKey(LibBuff.CRIPPLE))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.WITHER).getColor());
-
-            if(state.getBuffList().containsKey(LibBuff.FRAGILE) || state.getBuffList().containsKey(LibBuff.WEAKEN))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.VOID).getColor());
-
-            if(state.getBuffList().containsKey(LibBuff.TAKEN))
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.TAKEN).getColor());
-
-            //helper.preRender(entity, matrixStackIn, partialTicks);
             if (color[0] > 0.0f || color[1] > 0.0f || color[2] > 0.0f) {
                 helper.setColor(color);
-                helper.setAlpha(1.0f);
+                helper.setAlpha(0.5f);
                 helper.render(entity, renderer, RenderHelper.RES_ITEM_GLINT, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
             }
 
-            if(state.getBuffList().containsKey(LibBuff.STASIS)) {
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.STASIS).getColor());
-                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
-                matrixStackIn.scale(1.001f, 1.01f, 1.001f);
-                //matrixStackIn.translate(0, -0.02f, 0);
-                helper.setColor(color);
-                helper.setAlpha(1.0f);
-                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-            }
-
-            if(state.getBuffList().containsKey(LibBuff.LIGHT)) {
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.VOID).getColor());
-                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
-                matrixStackIn.scale(1.001f, 1.01f, 1.001f);
-                //matrixStackIn.translate(0, -0.01f, 0);
-                helper.setColor(color);
-                helper.setAlpha(1.0f);
-                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-            }
-
-            if(state.getBuffList().containsKey(LibBuff.RADIANCE_WELL)) {
-                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
-                matrixStackIn.scale(1.001f, 1.01f, 1.001f);
-                //matrixStackIn.translate(0, -0.01f, 0);
-                float[] gold = {1f, 0.6f, 0};
-                color = getColorBlender(time++, color, gold);
-                helper.setColor(color);
-                helper.setAlpha(1.0f);
-                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-            }
-
-            if(state.getBuffList().containsKey(LibBuff.DECAY)) {
-                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
-                matrixStackIn.scale(1.001f, 1.01f, 1.001f);
-                //matrixStackIn.translate(0, -0.01f, 0);
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(LibElements.WITHER).getColor());
-                helper.setColor(color);
-                helper.setAlpha(1.0f);
-                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-            }
-
-            if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI)) {
-                matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
-                matrixStackIn.scale(1.001f, 1.01f, 1.001f);
-                //matrixStackIn.translate(0, -0.01f, 0);
-                float[] gold = {1f, 0.8f, 0};
-                helper.setColor(gold);
-                helper.setAlpha(1.0f);
-                //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-                helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+            for(ManaBuff buff : state.getBuffList().values())
+            {
+                if(buff.isBeneficial()) {
+                    matrixStackIn.translate(0, -0.005f * entity.getHeight(), 0);
+                    matrixStackIn.scale(1.01f, 1.01f, 1.01f);
+                    //matrixStackIn.translate(0, -0.02f, 0);
+                    helper.setColor(getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor()));
+                    helper.setAlpha(1.0f);
+                    //helper.render(entity, renderer, RenderHelper.ripple_4, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                    helper.render(entity, renderer, RenderHelper.ripple_2, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ public class ModEnchantments {
         }
 
         public int getMinEnchantability(int enchantmentLevel) {
-            return 20;
+            return 10;
         }
 
         public int getMaxEnchantability(int enchantmentLevel) {

@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.block.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.api.IManaMaterial;
+import com.rogoshum.magickcore.api.IManaTransable;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
@@ -10,6 +11,7 @@ import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -24,7 +26,7 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity {
+public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaTransable {
     private ItemStack mainItem;
     private int manaCapacity;
     public final int maxManaCapacity = 10000;
@@ -39,19 +41,23 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     public void tick() {
         if(this.playerUniqueId != MagickCore.emptyUUID)
         {
-            PlayerEntity player = this.world.getPlayerByUuid(this.playerUniqueId);
+            LivingEntity player = this.world.getPlayerByUuid(this.playerUniqueId);
 
             if(player == null)
                 eType = LibElements.ORIGIN;
             else {
                 IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
-                eType = state.getElement().getType();
+                if(state != null)
+                    eType = state.getElement().getType();
             }
 
             if(transMana && player != null)
             {
                 double dis = Math.sqrt(player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
                 IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
+                if(state == null)
+                    return;
+
                 if(dis > 16)
                 {
                     transMana = false;

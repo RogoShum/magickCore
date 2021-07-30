@@ -20,31 +20,15 @@ public class ManaFreezeRenderer extends EasyLayerRender<LivingEntity> {
         int packedLightIn = RenderHelper.renderLight;
 
         helper.setEntityModel(renderer.getEntityModel());
+        //helper.setAlpha(1f);
         helper.setColor(RenderHelper.ORIGIN);
         helper.render(entity, renderer, renderer.getEntityTexture(entity), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 
-        matrixStackIn.translate(0, -0.02f * entity.getHeight(), 0);
-        matrixStackIn.scale(1.04f, 1.04f, 1.04f);
+        matrixStackIn.translate(0, -0.05f * entity.getHeight(), 0);
+        matrixStackIn.scale(1.1f, 1.1f, 1.1f);
 
         helper.setAlpha(1f);
         helper.setColor(MagickCore.proxy.getElementRender(LibElements.STASIS).getColor());
         helper.render(entity, renderer, RenderHelper.RES_ITEM_GLINT, entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, RenderHelper.renderLight);
-    }
-
-    public float[] getColorBlender(int time, float[] preColor, float[] blend)
-    {
-        float[] newColor = new float[3];
-        float scale = 0f;
-        if(time > 0)
-            scale = (float)time / (float)time + 1.0f;
-        newColor[0] = scale * preColor[0];
-        newColor[1] = scale * preColor[1];
-        newColor[2] = scale * preColor[2];
-
-        newColor[0] = newColor[0] + (1.0f-scale) * blend[0];
-        newColor[1] = newColor[1] + (1.0f-scale) * blend[1];
-        newColor[2] = newColor[2] + (1.0f-scale) * blend[2];
-
-        return newColor;
     }
 }

@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.item.*;
 
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
@@ -17,31 +18,33 @@ public class ModItems {
     public static final RegistryObject<ManaItem> star_staff = ITEMS.register(LibItem.STAR_STAFF, StarStaffItem::new);
     public static final RegistryObject<ManaItem> orb_staff = ITEMS.register(LibItem.ORB_STAFF, OrbStaffItem::new);
     public static final RegistryObject<ManaItem> laser_staff = ITEMS.register(LibItem.LASER_STAFF, LaserStaffItem::new);
-    public static final RegistryObject<Item> super_spawner = ITEMS.register("super_spawner", SuperItem::new);
-    public static final RegistryObject<Item> rune = ITEMS.register("rune", RuneItem::new);
-    public static final RegistryObject<Item> rift = ITEMS.register("rift", RiftItem::new);
-    public static final RegistryObject<ManaItem> eye = ITEMS.register("eye", EyeItem::new);
+    public static final RegistryObject<Item> super_spawner = ITEMS.register(LibItem.SUPER_SPAWNER, SuperItem::new);
+    public static final RegistryObject<Item> rune = ITEMS.register(LibItem.RUNE, RuneItem::new);
+    public static final RegistryObject<Item> rift = ITEMS.register(LibItem.RIFT, RiftItem::new);
+    public static final RegistryObject<ManaItem> eye = ITEMS.register(LibItem.EYE, EyeItem::new);
 
     //public static final RegistryObject<ManaItem> buff = ITEMS.register("buff", BuffItem::new);
 
-    public static final RegistryObject<Item> arc = ITEMS.register("arc", () -> new ElementItem(LibElements.ARC));
-    public static final RegistryObject<Item> solar = ITEMS.register("solar", () -> new ElementItem(LibElements.SOLAR));
-    public static final RegistryObject<Item> voidE = ITEMS.register("void", () -> new ElementItem(LibElements.VOID));
-    public static final RegistryObject<Item> stasis = ITEMS.register("stasis", () -> new ElementItem(LibElements.STASIS));
-    public static final RegistryObject<Item> wither = ITEMS.register("wither", () -> new ElementItem(LibElements.WITHER));
-    public static final RegistryObject<Item> taken = ITEMS.register("taken", () -> new ElementItem(LibElements.TAKEN));
+    public static final RegistryObject<Item> arc = ITEMS.register(LibItem.ARC, () -> new ElementItem(LibElements.ARC));
+    public static final RegistryObject<Item> solar = ITEMS.register(LibItem.SOLAR, () -> new ElementItem(LibElements.SOLAR));
+    public static final RegistryObject<Item> voidE = ITEMS.register(LibItem.VOID, () -> new ElementItem(LibElements.VOID));
+    public static final RegistryObject<Item> stasis = ITEMS.register(LibItem.STASIS, () -> new ElementItem(LibElements.STASIS));
+    public static final RegistryObject<Item> wither = ITEMS.register(LibItem.WITHER, () -> new ElementItem(LibElements.WITHER));
+    public static final RegistryObject<Item> taken = ITEMS.register(LibItem.TAKEN, () -> new ElementItem(LibElements.TAKEN));
 
     //material
     public static final RegistryObject<Item> mana_spider_eye = ITEMS.register("mana_spider_eye", ManaFermentedSpiderEyeItem::new);
-    public static final RegistryObject<Item> mana_glowstone = ITEMS.register("mana_glowstone", ManaGlowstoneItem::new);
+    public static final RegistryObject<Item> mana_glowstone = ITEMS.register("mana_glowstone", ManaForceUpgradeItem::new);
     public static final RegistryObject<Item> mana_gunpowder = ITEMS.register("mana_gunpowder", ManaGunpowderItem::new);
-    public static final RegistryObject<Item> mana_radstone = ITEMS.register("mana_redstone", ManaRedstoneItem::new);
+    public static final RegistryObject<Item> mana_radstone = ITEMS.register("mana_redstone", ManaTickUpgradeItem::new);
+    public static final RegistryObject<Item> mana_blaze_rod = ITEMS.register("mana_blaze_rod", ManaRangeUpgradeItem::new);
     public static final RegistryObject<Item> mana_dragon_breath = ITEMS.register("mana_dragon_breath", ManaDragonBreathItem::new);
     public static final RegistryObject<Item> mana_nether_wart = ITEMS.register("mana_nether_wart", ManaNetherWartItem::new);
 
     public static final RegistryObject<Item> magick_crafting = ITEMS.register("magick_crafting", MagickCraftingItem::new);
     public static final RegistryObject<Item> magick_container = ITEMS.register("magick_container", MagickContainerItem::new);
     public static final RegistryObject<Item> element_crystal_seeds = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.element_crystal.get(), BaseItem.properties.maxStackSize(4)));
+    public static final RegistryObject<Item> magick_barrier = ITEMS.register("magick_barrier", () -> new BlockItem(ModBlocks.magick_barrier.get(), BaseItem.properties.maxStackSize(1)));
 
     public static final RegistryObject<Item> orb_bottle = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> element_meat = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties.maxStackSize(16).food(

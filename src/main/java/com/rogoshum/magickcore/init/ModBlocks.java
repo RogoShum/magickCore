@@ -1,10 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.ElementCrystalBlock;
-import com.rogoshum.magickcore.block.ElementWoolBlock;
-import com.rogoshum.magickcore.block.MagickContainerBlock;
-import com.rogoshum.magickcore.block.MagickCraftingBlock;
+import com.rogoshum.magickcore.block.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -20,4 +17,5 @@ public class ModBlocks {
     public static RegistryObject<Block> magick_container = BLOCKS.register("magick_container", () -> new MagickContainerBlock(AbstractBlock.Properties.create(Material.ICE).notSolid().hardnessAndResistance(3)));
     public static RegistryObject<Block> element_crystal = BLOCKS.register("element_crystal", () -> new ElementCrystalBlock(AbstractBlock.Properties.create(Material.PLANTS).doesNotBlockMovement().tickRandomly().zeroHardnessAndResistance().sound(SoundType.GLASS).notSolid()));
     public static RegistryObject<Block> element_wool = BLOCKS.register("element_wool", () -> new ElementWoolBlock(AbstractBlock.Properties.create(Material.WOOL).hardnessAndResistance(1.2f).tickRandomly()));
+    public static RegistryObject<Block> magick_barrier = BLOCKS.register("magick_barrier", () -> new MagickBarrierBlock(AbstractBlock.Properties.create(Material.ICE).notSolid().hardnessAndResistance(3)));
 }

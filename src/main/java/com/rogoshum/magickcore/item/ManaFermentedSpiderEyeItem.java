@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.lib.LibItem;

@@ -1,9 +1,10 @@
 package com.rogoshum.magickcore.helper;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModItems;
@@ -11,24 +12,17 @@ import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
-import net.minecraft.item.Item;
+import com.rogoshum.magickcore.lib.LibMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
-import net.minecraftforge.fml.RegistryObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class RoguelikeHelper {
-    public static final float MAX_FORCE = 8;
-    public static final float MAX_MANA = 20001;
-    public static final float MAX_TICK = 1800;
 
     public static void HandleTickItem(ItemStack stack)
     {
@@ -79,7 +73,7 @@ public class RoguelikeHelper {
 
     public static ItemStack createRandomItemWithLucky(int lucky)
     {
-        int tick = (int) (Math.pow(lucky, 3) * MagickCore.rand.nextFloat() * MagickCore.rand.nextInt(lucky * 2));
+        int tick = (int) (Math.pow(lucky, 3) * MagickCore.rand.nextFloat() * (MagickCore.rand.nextInt(lucky * 2) + 1));
        if(MagickCore.rand.nextInt(3) == 0)
        {
            tick *= 100;
@@ -107,19 +101,22 @@ public class RoguelikeHelper {
             else
                 item = ModItems.eye.get();
 
+           IManaLimit material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
+           if(lucky > 7)
+                material = ManaMaterials.getMaterialRandom();
             boolean trace = MagickCore.rand.nextInt(lucky) > 3;
-            float force = (float) Math.min(MagickCore.rand.nextInt(lucky) + MagickCore.rand.nextInt(lucky) * 1.1, MAX_FORCE);
+            float force = (float) Math.min(MagickCore.rand.nextInt(lucky) + MagickCore.rand.nextInt(lucky) * 1.1, material.getMana());
             int mana = 0;
             for (int i = 0; i < lucky; ++i)
             {
-                mana += MagickCore.rand.nextInt((int) (MAX_MANA / 4));
+                mana += MagickCore.rand.nextInt((int) (material.getMana() / 4));
             }
 
-            return createRandomManaItem(item, force, tick, mana, trace);
+            return createRandomManaItem(item, material, force, tick, mana, trace);
        }
     }
 
-    public static ItemStack createRandomManaItem(ManaItem item, float force, int tick, int mana, boolean trace)
+    public static ItemStack createRandomManaItem(ManaItem item, IManaLimit material, float force, int tick, int mana, boolean trace)
     {
         ItemStack stack = new ItemStack(item);
 
@@ -127,7 +124,7 @@ public class RoguelikeHelper {
         EnumManaType manaType = EnumManaType.getRandomEnum();
         if(element.getType() == LibElements.ORIGIN)
             manaType = EnumManaType.ATTACK;
-        ManaItemHelper.putDataIn(stack, element, Math.max(1, force) , tick, mana , MagickCore.rand.nextInt(4) + 1, trace , manaType);
+        ManaItemHelper.putDataIn(stack, material, element, Math.max(1, force) , tick, mana , MagickCore.rand.nextInt(4) + 1, trace , manaType);
         return stack;
     }
 }

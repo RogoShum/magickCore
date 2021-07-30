@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.api;
 
 import com.rogoshum.magickcore.capability.IManaData;
-import net.minecraftforge.common.capabilities.Capability;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 
 import javax.annotation.Nullable;
 import java.util.UUID;

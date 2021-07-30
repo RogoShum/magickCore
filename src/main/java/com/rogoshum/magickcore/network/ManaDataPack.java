@@ -1,10 +1,8 @@
 package com.rogoshum.magickcore.network;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.client.Minecraft;
@@ -12,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.lwjgl.system.CallbackI;
 
 import java.util.UUID;
 import java.util.function.Supplier;

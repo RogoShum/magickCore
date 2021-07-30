@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.event;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.advancements.StringTrigger;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.item.*;
 import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibEffect;
@@ -42,13 +43,13 @@ public class AdvancementsEvent {
                 else if(item.getItem() instanceof ManaItem)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MANA_ITEM);
 
-                else if(item.getItem() instanceof ManaRedstoneItem)
+                else if(item.getItem().getRegistryName().equals(ModItems.mana_radstone.get().getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.RED_STONE);
                 else if(item.getItem() instanceof ManaNetherWartItem)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.WART);
                 else if(item.getItem() instanceof ManaDragonBreathItem)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.DRAGON_BREATH);
-                else if(item.getItem() instanceof ManaGlowstoneItem)
+                else if(item.getItem().getRegistryName().equals(ModItems.mana_glowstone.get().getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.GLOW_STONE_DUST);
                 else if(item.getItem() instanceof ManaGunpowderItem)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.GUN_POWDER);

@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -75,6 +76,14 @@ public abstract class EasyRenderer<T extends Entity> {
         return new Vector2f(yaw, pitch);
     }
 
+    public static Vector3d getEntityRenderVector(Entity entity, float partialTicks)
+    {
+        double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
+        double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
+        double z = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * (double) partialTicks;
+        return new Vector3d(x, y, z);
+    }
+
     public abstract void render(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks);
 
     public void postRender(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks)
@@ -84,8 +93,6 @@ public abstract class EasyRenderer<T extends Entity> {
     }
 
     public static void renderRift(MatrixStack matrixStackIn, IVertexBuilder bufferIn, ManaEntity entityIn, float sizeIn, float[] color, float alphaIn, float partialTicks, IWorldReader worldIn) {
-        MatrixStack.Entry matrixEntryIn = matrixStackIn.getLast();
-
         double d2 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosX, entityIn.getPosX());
         double d0 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosY + entityIn.getHeight() / 2, entityIn.getPosY() + entityIn.getHeight() / 2);
         double d1 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosZ, entityIn.getPosZ());
@@ -97,7 +104,7 @@ public abstract class EasyRenderer<T extends Entity> {
         int j1 = MathHelper.floor(d1 + (double)sizeIn);
 
         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(i, k - sizeIn, i1), new BlockPos(j, l + sizeIn, j1))) {
-            getBlockShadow(entityIn, matrixEntryIn, bufferIn, worldIn, blockpos, d2, d0, d1, color, alphaIn, sizeIn);
+            getBlockShadow(entityIn, matrixStackIn, bufferIn, worldIn, blockpos, d2, d0, d1, color, alphaIn, sizeIn);
         }
     }
 
@@ -112,7 +119,8 @@ public abstract class EasyRenderer<T extends Entity> {
         return alpha;
     }
 
-    private static void getBlockShadow(ManaEntity entityIn, MatrixStack.Entry matrixEntryIn, IVertexBuilder bufferIn, IWorldReader worldIn, BlockPos blockPosIn, double xIn, double yIn, double zIn, float[] color, float alphaIn, float sizeIn) {
+    private static void getBlockShadow(ManaEntity entityIn, MatrixStack matrixStackIn, IVertexBuilder bufferIn, IWorldReader worldIn, BlockPos blockPosIn, double xIn, double yIn, double zIn, float[] color, float alphaIn, float sizeIn) {
+        MatrixStack.Entry matrixEntryIn = matrixStackIn.getLast();
         BlockState blockstate = worldIn.getBlockState(blockPosIn);
         //if (worldIn.getLight(blockPosIn) > 3) {
             VoxelShape voxelshape = blockstate.getShape(worldIn, blockPosIn);

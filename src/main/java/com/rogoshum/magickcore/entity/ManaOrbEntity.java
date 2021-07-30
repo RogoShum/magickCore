@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.entity;
 
-import com.rogoshum.magickcore.api.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import com.rogoshum.magickcore.init.ModEntites;

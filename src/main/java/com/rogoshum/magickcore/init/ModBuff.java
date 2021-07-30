@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.Effect;
@@ -21,7 +22,7 @@ public class ModBuff{
 
     public static void initBuff()
     {
-        putBuff(LibBuff.PARALYSIS, (e) -> {
+        putBuff(LibBuff.PARALYSIS, LibElements.ARC, false, (e) -> {
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(state != null) {
                 float force = state.getBuffList().get(LibBuff.PARALYSIS).getForce();
@@ -30,7 +31,7 @@ public class ModBuff{
             }
         } , true);
 
-        putBuff(LibBuff.SLOW, (e) -> {
+        putBuff(LibBuff.SLOW, LibElements.STASIS, false, (e) -> {
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(state != null) {
                 float force = state.getBuffList().get(LibBuff.SLOW).getForce();
@@ -39,7 +40,7 @@ public class ModBuff{
             }
         } , true);
 
-        putBuff(LibBuff.WITHER, (e) -> {
+        putBuff(LibBuff.WITHER, LibElements.WITHER, false, (e) -> {
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(state != null) {
                 if(e instanceof LivingEntity && ((LivingEntity)e).getHealth() > 0.01f)
@@ -47,7 +48,7 @@ public class ModBuff{
             }
         } , false);
 
-        putBuff(LibBuff.FRAGILE, (e) -> {
+        putBuff(LibBuff.FRAGILE, LibElements.VOID, false, (e) -> {
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(state != null) {
                 if(state.getBuffList().get(LibBuff.FRAGILE).getForce() > 5)
@@ -60,7 +61,7 @@ public class ModBuff{
             }
         } , false);
 
-        putBuff(LibBuff.HYPERMUTEKI, (e) ->{
+        putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e) ->{
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
                 living.setHealth(living.getMaxHealth());
@@ -70,7 +71,7 @@ public class ModBuff{
             }
         }, true);
 
-        putBuff(LibBuff.RADIANCE_WELL, (e) ->{
+        putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e) ->{
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
@@ -83,31 +84,31 @@ public class ModBuff{
             }
         }, true);
 
-        putBuff(LibBuff.DECAY, (e) ->{
+        putBuff(LibBuff.DECAY, LibElements.WITHER, true, (e) ->{
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(e instanceof LivingEntity) {
                 ((LivingEntity) e).getActivePotionMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActivePotionMap().get(effect).getAmplifier() <= (int) state.getBuffList().get(LibBuff.DECAY).getForce());
             }
         }, true);
 
-        putBuff(LibBuff.TAKEN_KING, (e) ->{
+        putBuff(LibBuff.TAKEN_KING, LibElements.TAKEN, true, (e) ->{
             IEntityState state = e.getCapability(MagickCore.entityState).orElse(null);
             if(e instanceof LivingEntity) {
                 ((LivingEntity) e).heal(state.getBuffList().get(LibBuff.TAKEN_KING).getForce() / 20f);
             }
         }, true);
 
-        putBuff(LibBuff.WEAKEN, (e) ->{}, false);
-        putBuff(LibBuff.TAKEN, (e) ->{}, true);
-        putBuff(LibBuff.CRIPPLE, (e) ->{}, false);
-        putBuff(LibBuff.FREEZE, (e) ->{}, false);
-        putBuff(LibBuff.STASIS, (e) ->{}, true);
-        putBuff(LibBuff.LIGHT, (e) ->{}, true);
+        putBuff(LibBuff.WEAKEN, LibElements.VOID, false, (e) ->{}, false);
+        putBuff(LibBuff.TAKEN, LibElements.TAKEN, false, (e) ->{}, true);
+        putBuff(LibBuff.CRIPPLE, LibElements.WITHER, false, (e) ->{}, false);
+        putBuff(LibBuff.FREEZE, LibElements.STASIS, false, (e) ->{}, false);
+        putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e) ->{}, true);
+        putBuff(LibBuff.LIGHT, LibElements.VOID, true, (e) ->{}, true);
     }
 
-    protected static void putBuff(String s, Consumer<? super Entity> func, boolean canRefreshBuff)
+    protected static void putBuff(String s, String element, boolean beneficial, Consumer<? super Entity> func, boolean canRefreshBuff)
     {
-        buff.put(s, new ManaBuff(s) {
+        ManaBuff buf = new ManaBuff(s, element) {
             @Override
             public void effectEntity(Entity entity) {
                 func.accept(entity);
@@ -117,7 +118,12 @@ public class ModBuff{
             public boolean canRefreshBuff() {
                 return canRefreshBuff;
             }
-        });
+        };
+
+        if(beneficial)
+            buff.put(s, buf.beneficial());
+        else
+            buff.put(s, buf);
     }
 
     public static ManaBuff getBuff(String type){
@@ -143,7 +149,7 @@ public class ModBuff{
     public static boolean applyBuff(Entity entity, String type, int tick, float force, boolean beneficial){
         if(!(entity instanceof LivingEntity))
             return false;
-        EntityEvents.ApplyManaBuffEvent event = new EntityEvents.ApplyManaBuffEvent((LivingEntity) entity, type, beneficial);
+        EntityEvents.ApplyManaBuffEvent event = new EntityEvents.ApplyManaBuffEvent((LivingEntity) entity, getBuff(type), beneficial);
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())
             return false;

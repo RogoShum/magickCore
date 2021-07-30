@@ -1,24 +1,17 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaItem;
-import com.rogoshum.magickcore.capability.IManaData;
-import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ManaItemDataPack extends EntityPack{

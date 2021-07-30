@@ -1,16 +1,13 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.enums.EnumManaLimit;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.entity.ManaRuneEntity;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.helper.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -25,7 +22,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 

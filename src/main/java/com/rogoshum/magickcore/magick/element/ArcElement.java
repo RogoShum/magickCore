@@ -1,29 +1,20 @@
 package com.rogoshum.magickcore.magick.element;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.capability.IElementOnTool;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaStarEntity;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -31,11 +22,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
-import java.util.Vector;
 
 public class ArcElement extends MagickElement{
     public ArcElement(String name, ElementAbility ability) {
@@ -50,7 +38,7 @@ public class ArcElement extends MagickElement{
 
         @Override
         public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.PARALYSIS, Math.max(tick / 10, 20), force, false);
+            return ModBuff.applyBuff(victim, LibBuff.PARALYSIS, tick, force, false);
         }
 
         @Override

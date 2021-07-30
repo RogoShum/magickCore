@@ -1,10 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
-import com.rogoshum.magickcore.block.tileentity.ElementWoolTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.block.tileentity.*;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -27,4 +24,8 @@ public class ModTileEntities {
     public static RegistryObject<TileEntityType<ElementWoolTileEntity>> element_wool_tileentity = TILE_ENTITY.register("element_wool"
             , () -> TileEntityType.Builder.create(ElementWoolTileEntity::new
                     , ModBlocks.element_wool.get()).build(null));
+
+    public static RegistryObject<TileEntityType<MagickBarrierTileEntity>> magick_barrier_tileentity = TILE_ENTITY.register("magick_barrier_tileentity"
+            , () -> TileEntityType.Builder.create(MagickBarrierTileEntity::new
+                    , ModBlocks.magick_barrier.get()).build(null));
 }

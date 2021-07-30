@@ -74,10 +74,10 @@ public class WitherElement extends MagickElement{
 
         @Override
         public void applyToolElement(ItemStack stack, int level) {
-            if(stack.getDamage() > 0 && MagickCore.rand.nextInt(100) == 0) {
+            /*if(stack.getDamage() > 0 && MagickCore.rand.nextInt(100) == 0) {
                 stack.setDamage(stack.getDamage() - 1);
                 NBTTagHelper.consumeElementOnTool(stack, LibElements.WITHER);
-            }
+            }*/
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.entity.baseEntity;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.magick.element.MagickElement;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.vector.Vector2f;

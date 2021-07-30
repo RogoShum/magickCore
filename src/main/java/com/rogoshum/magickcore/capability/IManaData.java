@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.api.IManaElement;
 
 import java.util.UUID;

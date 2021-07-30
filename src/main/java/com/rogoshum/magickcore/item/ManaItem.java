@@ -1,19 +1,19 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.helper.RoguelikeHelper;
+import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.lib.LibMaterial;
 import com.rogoshum.magickcore.network.ManaItemDataPack;
 import com.rogoshum.magickcore.network.Networking;
 import net.minecraft.client.util.ITooltipFlag;
@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
@@ -34,7 +35,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -79,12 +79,26 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
     }
 
     @Override
+    public Rarity getRarity(ItemStack stack) {
+        return super.getRarity(stack);
+    }
+
+    @Override
+    public ITextComponent getDisplayName(ItemStack stack) {
+        IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
+        if(data != null)
+            return new TranslationTextComponent(MagickCore.MOD_ID + ".material." + data.getMaterial().getName()).appendString(" ").append(new TranslationTextComponent(super.getTranslationKey(stack)));
+        return new TranslationTextComponent(this.getTranslationKey(stack));
+    }
+
+    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if(stack.getItem() instanceof IManaItem) {
             IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
             if(data != null) {
                 tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + data.getElement().getType()))));
                 tooltip.add((new TranslationTextComponent(LibItem.FORCE)).appendString(" ").append((new StringTextComponent(Float.toString(data.getForce())))));
+                tooltip.add((new TranslationTextComponent(LibItem.RANGE)).appendString(" ").append((new StringTextComponent(Float.toString(data.getRange())+"M"))));
                 tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append((new StringTextComponent(Float.toString((float) data.getTickTime() / 20f) + "s"))));
                 tooltip.add((new TranslationTextComponent(LibItem.MANA_TYPE)).appendString(" ").append((new StringTextComponent(data.getManaType().getLabel()))));
 
@@ -106,9 +120,12 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
             IManaItemData data = stack.getCapability(MagickCore.manaItemData).orElse(null);
             if(data != null) {
                 data.setTrace(true);
-                data.setTickTime(EnumManaLimit.TICK.getValue());
-                data.setForce(EnumManaLimit.FORCE.getValue());
+                data.setMaterial(ManaMaterials.getLastMaterial());
+                data.setTickTime(data.getMaterial().getTick());
+                data.setRange(data.getMaterial().getRange());
+                data.setForce(data.getMaterial().getForce());
                 data.setManaType(EnumManaType.ATTACK);
+                //data.setMana(data.getMaxMana());
                 items.add(stack);
             }
         }
@@ -129,6 +146,7 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         tag.putFloat("FORCE", this.getForce(stack));
         tag.putFloat("MANA", this.getMana(stack));
         tag.putInt("TICK", this.getTickTime(stack));
+        tag.putString("MATERIAL", this.getMaterial(stack).getName());
         return nbt;
     }
 
@@ -138,6 +156,7 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         CompoundNBT nbt1 = NBTTagHelper.getStackTag(stack);
         if(nbt1.contains("CAPABILITY")) {
             CompoundNBT tag = nbt1.getCompound("CAPABILITY");
+            this.setMaterial(stack, ManaMaterials.getMaterial(tag.getString("MATERIAL")));
             this.setElement(stack, ModElements.getElement(tag.getString("ELEMENT")));
             this.setTrace(stack, tag.getBoolean("TRACE"));
             EnumManaType mana = EnumManaType.getEnum(tag.getString("TYPE"));
@@ -319,5 +338,19 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
     public void setTickTime(ItemStack stack, int tick) {
         if(stack.getItem() instanceof IManaItem)
             ((IManaItem)stack.getItem()).getItemData(stack).setTickTime(tick);
+    }
+
+    @Override
+    public IManaLimit getMaterial(ItemStack stack) {
+        if(stack.getItem() instanceof IManaItem)
+            return ((IManaItem)stack.getItem()).getItemData(stack).getMaterial();
+
+        return ManaMaterials.getMaterial(LibMaterial.ORIGIN);
+    }
+
+    @Override
+    public void setMaterial(ItemStack stack, IManaLimit limit){
+        if(stack.getItem() instanceof IManaItem)
+            ((IManaItem)stack.getItem()).getItemData(stack).setMaterial(limit);
     }
 }

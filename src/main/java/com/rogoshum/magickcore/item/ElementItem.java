@@ -1,12 +1,8 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.entity.ManaRiftEntity;
 import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;

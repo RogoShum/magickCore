@@ -1,29 +1,20 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class CapabilityElementOnTool {
 	public static class Storage<T extends IElementOnTool> implements Capability.IStorage<T>
@@ -40,7 +31,7 @@ public class CapabilityElementOnTool {
 
 	 public static class Implementation implements IElementOnTool
 	 {
-	 	private float addtionDamage;
+	 	 private float addtionDamage;
 		 private int tick;
 		 @Override
 		 public void tick(LivingEntity entity) {

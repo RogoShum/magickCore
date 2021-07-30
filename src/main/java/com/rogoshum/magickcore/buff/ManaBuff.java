@@ -8,17 +8,30 @@ import java.util.function.Consumer;
 
 public abstract class ManaBuff implements Cloneable {
     private final String type;
+    private final String element;
     private int tick;
     private float force;
-
-    public ManaBuff(String type)
+    private boolean beneficial;
+    public ManaBuff(String type, String element)
     {
         this.type = type;
+        this.element = element;
+    }
+
+    public ManaBuff beneficial(){
+        beneficial = true;
+        return this;
+    }
+
+    public boolean isBeneficial(){
+        return beneficial;
     }
 
     public abstract void effectEntity(Entity entity);
 
     public String getType() { return type; }
+
+    public String getElement() { return element; }
 
     public int getTick() { return tick; }
 

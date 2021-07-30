@@ -43,7 +43,7 @@ public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> 
                 int id = ite.next();
                 Entity entity = entityIn.world.getEntityByID(id);
                 if(MagickReleaseHelper.sameLikeOwner(entityIn.getOwner(), entity)) {
-                    Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight(), 0).subtract(entity.getPositionVec().add(0, entity.getHeight() / 2, 0));
+                    Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight(), 0).subtract(getEntityRenderVector(entity, partialTicks).add(0, entity.getHeight() / 2, 0));
                     float distance = (float) dirc.length();
                     dirc = dirc.normalize();
                     Vector2f rota = getRotationFromVector(dirc);

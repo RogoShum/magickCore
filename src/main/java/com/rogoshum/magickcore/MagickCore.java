@@ -8,7 +8,7 @@ import com.rogoshum.magickcore.client.tileentity.MagickContainerRenderer;
 import com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
-import com.rogoshum.magickcore.event.MagickLogicEvent;
+import com.rogoshum.magickcore.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.network.Networking;
@@ -109,6 +109,7 @@ public class MagickCore
         ModTileEntities.TILE_ENTITY.register(eventBus);
         ModEnchantments.ENCHANTMENTS.register(eventBus);
         ModBuff.initBuff();
+        ManaMaterials.init();
 
         //GeckoLib.initialize();
     }
@@ -146,6 +147,8 @@ public class MagickCore
         RenderTypeLookup.setRenderLayer(ModBlocks.element_crystal.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_wool_tileentity.get(), (ElementWoolRenderer::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.element_wool.get(), RenderType.getCutout());
+
+        RenderTypeLookup.setRenderLayer(ModBlocks.magick_barrier.get(), RenderType.getCutout());
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)

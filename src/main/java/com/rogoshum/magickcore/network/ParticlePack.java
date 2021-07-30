@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.network;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumParticleType;
+import com.rogoshum.magickcore.enums.EnumParticleType;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;

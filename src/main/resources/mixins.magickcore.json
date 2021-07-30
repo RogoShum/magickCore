@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "com.rogoshum.magickcore.mixin",
-	"mixins": ["MixinMobEntity", "MixinLivingEntity"],
+	"mixins": ["MixinMobEntity", "MixinLivingEntity", "MixinItemStack"],
 	"minVersion": "0.8",
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "magickcore.refmap.json",

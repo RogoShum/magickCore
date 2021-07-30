@@ -1,20 +1,16 @@
 package com.rogoshum.magickcore.helper;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.ISuperEntity;
+import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.capability.ITakenState;
-import com.rogoshum.magickcore.entity.ManaOrbEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
-import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -23,7 +19,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
@@ -79,6 +74,8 @@ public class MagickReleaseHelper {
         pro.setTickTime(event.getTick());
         pro.setManaType(event.getType());
         pro.setTraceTarget(event.getTrace());
+        pro.setRange(event.getRange());
+
         playerIn.world.addEntity(pro);
     }
 
@@ -105,6 +102,7 @@ public class MagickReleaseHelper {
         pro.setManaType(event.getType());
         pro.setTraceTarget(event.getTrace());
         pro.setOwner(playerIn);
+        pro.setRange(event.getRange());
         playerIn.world.addEntity(pro);
     }
 
@@ -217,6 +215,14 @@ public class MagickReleaseHelper {
         boolean isOwnerPlayer = owner instanceof PlayerEntity;
         boolean isOtherPlayer = other instanceof PlayerEntity;
 
+        if(other instanceof IOwnerEntity) {
+            if(isOwnerPlayer && ((IOwnerEntity)other).getOwner() instanceof PlayerEntity)
+                return true;
+
+            if(!isOwnerPlayer && !(((IOwnerEntity)other).getOwner() instanceof PlayerEntity))
+                return true;
+        }
+
         if(other instanceof ProjectileEntity)
         {
             if(!isOwnerPlayer && !(((ProjectileEntity)other).func_234616_v_() instanceof PlayerEntity))
@@ -231,14 +237,6 @@ public class MagickReleaseHelper {
                 return true;
 
             if(!isOwnerPlayer && !(((TameableEntity)other).getOwner() instanceof PlayerEntity))
-                return true;
-        }
-
-        if(other instanceof ManaEntity) {
-            if(isOwnerPlayer && ((ManaEntity)other).getOwner() instanceof PlayerEntity)
-                return true;
-
-            if(!isOwnerPlayer && !(((ManaEntity)other).getOwner() instanceof PlayerEntity))
                 return true;
         }
 

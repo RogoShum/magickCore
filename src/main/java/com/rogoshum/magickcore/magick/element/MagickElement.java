@@ -4,12 +4,13 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaAbility;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class MagickElement implements IManaElement {
-    private String type = "ORIGIN";
+    private String type = LibElements.ORIGIN;
     private ElementAbility ability;
 
     public MagickElement(String type, ElementAbility ability)

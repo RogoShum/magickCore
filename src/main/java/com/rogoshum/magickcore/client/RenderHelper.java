@@ -241,7 +241,7 @@ public class RenderHelper {
     }
 
     public static RenderType getTexedEntityGlint(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(GLINT_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(true);
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(true);
         RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
         return type;
     }
@@ -264,6 +264,7 @@ public class RenderHelper {
         return type;
     }
 
+    public static final ResourceLocation TAKEN_LAYER = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
     public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/enchanted_item_glint.png");
     public static final ResourceLocation ripple_4 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_4.png");
     public static final ResourceLocation ripple_2 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png");
@@ -391,10 +392,10 @@ public class RenderHelper {
             buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         }
         else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
         }
         matrixStackIn.pop();
     }
@@ -417,16 +418,16 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
             Vector3d V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
         }
         else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[1].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
         }
         matrixStackIn.pop();
     }
@@ -441,15 +442,14 @@ public class RenderHelper {
         int i, j, imin, imax;
         boolean normals;
         float nsign;
-
+        drho = (float) (2.0f * Math.PI / stacks);
+        dtheta = (float) (2.0f * Math.PI / stacks);
         ds = 1.0f / stacks;
         dt = 1.0f / stacks;
         t = 1.0f; // because loop now runs from 0
         float radius = 0.5f;
         imin = 0;
-        imax = stacks;
-        drho = (float) (2.0f * Math.PI / stacks);
-        dtheta = (float) (2.0f * Math.PI / stacks);
+        imax = stacks / 2;
         // draw intermediate stacks as quad strips
         for (i = imin; i < imax; i++) {
             rho = i * drho;
@@ -465,8 +465,8 @@ public class RenderHelper {
                 x = (float) (-Math.sin(theta) * Math.sin(rho + drho));
                 y = (float) (Math.cos(theta) * Math.sin(rho + drho));
                 z = (float) (Math.cos(rho + drho));
-                s += ds;
                 posVertex(matrix4f, buffer, x * radius, y * radius, z * radius, s, t - dt, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                s += ds;
             }
             bufferIn.finish(type);
             t -= dt;

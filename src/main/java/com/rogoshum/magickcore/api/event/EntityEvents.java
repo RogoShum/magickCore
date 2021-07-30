@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.api.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
@@ -184,8 +185,8 @@ public class EntityEvents {
     public static class ApplyManaBuffEvent extends LivingEvent
     {
         private boolean beneficial;
-        private String buffType;
-        public ApplyManaBuffEvent(LivingEntity entity, String buffType, boolean beneficial)
+        private ManaBuff buffType;
+        public ApplyManaBuffEvent(LivingEntity entity, ManaBuff buffType, boolean beneficial)
         {
             super(entity);
             setBeneficial(beneficial);
@@ -195,8 +196,8 @@ public class EntityEvents {
         public boolean getBeneficial() { return beneficial; }
         public void setBeneficial(boolean beneficial) { this.beneficial = beneficial; }
 
-        public String getType() { return buffType; }
-        public void setType(String buffType) { this.buffType = buffType; }
+        public ManaBuff getType() { return buffType; }
+        public void setType(ManaBuff buffType) { this.buffType = buffType; }
 
         @Override
         public boolean isCancelable() {

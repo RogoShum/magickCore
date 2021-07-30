@@ -1,10 +1,8 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.IManaElement;
-
-import java.util.UUID;
+import com.rogoshum.magickcore.api.IManaLimit;
 
 public interface IManaItemData {
 	
@@ -30,4 +28,7 @@ public interface IManaItemData {
 
 	public EnumManaType getManaType();
 	public void setManaType(EnumManaType type);
+
+	public IManaLimit getMaterial();
+	public void setMaterial(IManaLimit limit);
 }

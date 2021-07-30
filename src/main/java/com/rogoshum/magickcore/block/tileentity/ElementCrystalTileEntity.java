@@ -81,7 +81,7 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
                 orb2.setTickTime(100);
                 orb2.setMana(10);
                 world.addEntity(orb2);
-            }
+           }
         }
     }
 

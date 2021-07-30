@@ -93,25 +93,23 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     public boolean testBoundingBox(Entity entityIn) {
-        boolean flag = false;
         AxisAlignedBB box = entityIn.getBoundingBox();
-        flag = testBoundingBoxPoint(box.minX, box.minY, box.minZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.minX, box.minY, box.maxZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.maxX, box.minY, box.maxZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.maxX, box.minY, box.minZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.minX, box.maxY, box.minZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.minX, box.maxY, box.maxZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.maxX, box.maxY, box.maxZ);
-        if(flag) return true;
-        flag = testBoundingBoxPoint(box.maxX, box.maxY, box.minZ);
 
-        return flag;
+        if(testBoundingBoxPoint(box.minX, box.minY, box.minZ)) return true;
+
+        if(testBoundingBoxPoint(box.minX, box.minY, box.maxZ)) return true;
+
+        if(testBoundingBoxPoint(box.maxX, box.minY, box.maxZ)) return true;
+
+        if(testBoundingBoxPoint(box.maxX, box.minY, box.minZ)) return true;
+
+        if(testBoundingBoxPoint(box.minX, box.maxY, box.minZ)) return true;
+
+        if(testBoundingBoxPoint(box.minX, box.maxY, box.maxZ)) return true;
+
+        if(testBoundingBoxPoint(box.maxX, box.maxY, box.maxZ)) return true;
+
+        return testBoundingBoxPoint(box.maxX, box.maxY, box.minZ);
     }
 
     public boolean testBoundingBoxPoint(double x, double y, double z) {

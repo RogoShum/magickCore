@@ -1,8 +1,5 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
-import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.lib.LibItem;
@@ -15,8 +12,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ManaGlowstoneItem extends BaseItem implements IManaMaterial {
-    public ManaGlowstoneItem() {
+public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
+    public ManaForceUpgradeItem() {
         super(BaseItem.properties.maxStackSize(2));
     }
 
@@ -27,9 +24,9 @@ public class ManaGlowstoneItem extends BaseItem implements IManaMaterial {
 
     @Override
     public boolean upgradeManaItem(IManaItemData data) {
-        if(data.getForce() >= EnumManaLimit.FORCE.getValue())
+        if(data.getForce() >= data.getMaterial().getForce())
             return false;
-        data.setForce(EnumManaLimit.FORCE.limit(data.getForce() + 1));
+        data.setForce(Math.min(data.getMaterial().getForce(), data.getForce() + 0.5f));
         return true;
     }
 

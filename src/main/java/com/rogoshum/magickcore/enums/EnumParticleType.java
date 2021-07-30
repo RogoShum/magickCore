@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.api;
+package com.rogoshum.magickcore.enums;
 
 public enum EnumParticleType {
     PARTICLE("particle"),

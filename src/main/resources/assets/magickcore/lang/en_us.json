@@ -30,6 +30,7 @@
     "item.magickcore.mana_redstone": "Mana Redstone Dust",
     "item.magickcore.mana_dragon_breath": "Mana Dragon's Breath",
     "item.magickcore.mana_nether_wart": "Mana Nether Wart",
+    "item.magickcore.mana_blaze_rod": "Mana Blaze Rod",
 
     //effect
     "effect.magickcore.shield_regen": "Shield Recovery",
@@ -121,6 +122,7 @@
     "magickcore.description.element": "§dElement§7: %s",
     "magickcore.description.force": "§dForce§7: %s",
     "magickcore.description.mana": "§dMana§7: %s",
+    "magickcore.description.range": "§Range§7: %s",
     "magickcore.description.mana_type": "§dType§7: %s",
     "magickcore.description.tick": "§dExistence time§7: %s",
     "magickcore.description.trace": "§dTrace",
@@ -144,6 +146,7 @@
     "magickcore.description.mana_dragon_breath": "§9Transform： Trace",
     "magickcore.description.mana_glowstone": "§9Transform： Increased Potency",
     "magickcore.description.mana_redstone": "§9Transform： Increased Existence time",
+    "magickcore.description.mana_blaze_rod": "§9Transform： Increased Range",
     "magickcore.description.mana_gunpowder": "§9Transform： Trans Attack to Buff",
     "magickcore.description.mana_spider_eye": "§9Transform： Trans Buff to Debuff",
     "magickcore.description.mana_nether_wart": "§9Transform： Trans Debuff to Attack",

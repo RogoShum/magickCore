@@ -58,6 +58,12 @@ public class Networking {
                 .decoder(ParticlePack::new)
                 .consumer(ParticlePack::handler)
                 .add();
+
+        INSTANCE.messageBuilder(OwnerStatePack.class, nextID())
+                .encoder(OwnerStatePack::toBytes)
+                .decoder(OwnerStatePack::new)
+                .consumer(OwnerStatePack::handler)
+                .add();
     }
 
 

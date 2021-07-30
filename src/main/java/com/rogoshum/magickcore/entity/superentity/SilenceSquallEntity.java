@@ -110,7 +110,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                         , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
                         , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
                         , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
-                        , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 4, 1.0f, 300, this.getElement().getRenderer());
+                        , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 300, this.getElement().getRenderer());
                 par.setGlow();
                 par.setParticleGravity(0);
                 par.setTraceTarget(this);

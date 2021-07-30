@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
+import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.api.ISuperEntity;
 import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.client.particle.LitParticle;

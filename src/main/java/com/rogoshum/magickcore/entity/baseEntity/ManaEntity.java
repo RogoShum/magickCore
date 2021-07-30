@@ -1,20 +1,18 @@
 package com.rogoshum.magickcore.entity.baseEntity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaType;
-import com.rogoshum.magickcore.api.EnumTargetType;
-import com.rogoshum.magickcore.api.IMagickElementObject;
-import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Pose;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -29,9 +27,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class ManaEntity extends Entity implements IMagickElementObject {
+public abstract class ManaEntity extends Entity implements IMagickElementObject, IOwnerEntity {
     protected HashMap<Integer, VectorHitReaction> hitReactions = new HashMap<Integer, VectorHitReaction>();
     public boolean cansee;
     protected TrailParticle trail;
@@ -39,7 +36,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
 
     private UUID owner_uuid;
     private int owner_id;
-    private static final DataParameter<CompoundNBT> dataUUID = EntityDataManager.createKey(ManaEntity.class, DataSerializers.COMPOUND_NBT);
+    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.createKey(ManaEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 
     public ManaEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -47,6 +44,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
             this.setTickTime(20);
     }
 
+    @Override
     public void setOwner(@Nullable Entity entityIn) {
         if (entityIn != null) {
             this.owner_uuid = entityIn.getUniqueID();
@@ -55,6 +53,7 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
         }
     }
 
+    @Override
     @Nullable
     public Entity getOwner() {
         if (this.owner_uuid != null && this.world instanceof ServerWorld) {
@@ -138,28 +137,23 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject 
 
     @Override
     protected void registerData() {
-        this.dataManager.register(dataUUID, new CompoundNBT());
+        this.dataManager.register(dataUUID, Optional.of(MagickCore.emptyUUID));
     }
 
+    @Override
     public void setOwnerUUID(UUID uuid) {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putUniqueId("UUID", uuid);
-        this.getDataManager().set(dataUUID, tag);
+        this.getDataManager().set(dataUUID, Optional.of(uuid));
     }
 
     public UUID getOwnerUUID() {
         try{
-            if(dataUUID != null && this.getDataManager().getDirty() != null) {
-                CompoundNBT tag = this.getDataManager().get(dataUUID);
-                if (tag.hasUniqueId("UUID"))
-                    return tag.getUniqueId("UUID");
-            }
+            if(this.getDataManager().get(dataUUID).isPresent())
+                return this.getDataManager().get(dataUUID).get();
         }
         catch (Exception e)
         {
             MagickCore.LOGGER.warn("dataUUID: " + dataUUID);
             MagickCore.LOGGER.warn("getDataManager: " + this.getDataManager());
-            MagickCore.LOGGER.warn("getDirty: " + this.getDataManager().getDirty());
             //if(this.getDataManager().getDirty() != null) {
                 //MagickCore.LOGGER.warn("contains: " + this.getDataManager().getDirty());
             //}

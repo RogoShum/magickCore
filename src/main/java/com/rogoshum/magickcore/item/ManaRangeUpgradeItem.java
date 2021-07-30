@@ -1,7 +1,5 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.api.EnumManaLimit;
-import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.lib.LibItem;
@@ -14,8 +12,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ManaRedstoneItem extends BaseItem implements IManaMaterial {
-    public ManaRedstoneItem() {
+public class ManaRangeUpgradeItem extends BaseItem implements IManaMaterial {
+    public ManaRangeUpgradeItem() {
         super(BaseItem.properties.maxStackSize(2));
     }
 
@@ -26,14 +24,14 @@ public class ManaRedstoneItem extends BaseItem implements IManaMaterial {
 
     @Override
     public boolean upgradeManaItem(IManaItemData data) {
-        if(data.getTickTime() >= EnumManaLimit.TICK.getValue())
+        if(data.getRange() >= data.getMaterial().getRange())
             return false;
-        data.setTickTime((int) EnumManaLimit.TICK.limit(data.getTickTime() + 20));
+        data.setRange(Math.min(data.getMaterial().getRange(), data.getRange() + 1));
         return true;
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.MANA_REDSTONE));
+        tooltip.add(new TranslationTextComponent(LibItem.MANA_BLAZE_ROD));
     }
 }

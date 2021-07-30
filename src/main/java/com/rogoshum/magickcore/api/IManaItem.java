@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.api;
 
-import com.rogoshum.magickcore.capability.IManaData;
 import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 
 public interface IManaItem {
     @Nullable
@@ -34,4 +33,7 @@ public interface IManaItem {
     public void setTickTime(ItemStack stack, int tick);
 
     public float getMaxMana(ItemStack stack);
+
+    public IManaLimit getMaterial(ItemStack stack);
+    public void setMaterial(ItemStack stack, IManaLimit limit);
 }

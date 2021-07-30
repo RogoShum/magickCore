@@ -5,13 +5,16 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.AllEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.block.tileentity.CanSeeTileEntity;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.client.VertexShakerHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.EasyLayerRender;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaFreezeRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaTakenRenderer;
 import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
@@ -19,19 +22,16 @@ import com.rogoshum.magickcore.helper.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -68,10 +68,16 @@ public class RenderEvent {
 
     private static final HashMap<CanSeeTileEntity, Integer> tileRenderTick = new HashMap<CanSeeTileEntity, Integer>();
     private static final ManaFreezeRenderer freezeRender = new ManaFreezeRenderer();
+    private static final ManaTakenRenderer takenRenderer = new ManaTakenRenderer();
 
     public static void activeTileEntityRender(CanSeeTileEntity entity)
     {
         tileRenderTick.put(entity, 5);
+    }
+
+    public static boolean isTileEntityActivated(TileEntity entity)
+    {
+        return entity instanceof CanSeeTileEntity && tileRenderTick.containsKey(entity);
     }
 
     public void tickTileRender(CanSeeTileEntity entity)
@@ -104,7 +110,7 @@ public class RenderEvent {
         IRenderTypeBuffer.Impl bufferIn = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
         for(TileEntity entity : Minecraft.getInstance().world.loadedTileEntityList)
         {
-            if(tileRenderTick.containsKey(entity) && tileRenderer.containsKey(entity.getClass())) {
+            if(isTileEntityActivated(entity) && tileRenderer.containsKey(entity.getClass())) {
                 tileRenderer.get(entity.getClass()).preRender(entity, matrixStackIn, bufferIn, event.getPartialTicks());
                 tickTileRender((CanSeeTileEntity) entity);
             }
@@ -167,6 +173,13 @@ public class RenderEvent {
         if (state != null && state.getBuffList().containsKey(LibBuff.FREEZE)) {
             event.setCanceled(true);
             freezeRender.render(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), 0);
+        }
+
+        ITakenState taken = event.getEntity().getCapability(MagickCore.takenState).orElse(null);
+        if (state != null && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID)
+                && !taken.getOwnerUUID().equals(event.getEntity().getUniqueID())  && state.getBuffList().containsKey(LibBuff.TAKEN)) {
+            event.setCanceled(true);
+            takenRenderer.render(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), event.getPartialRenderTick());
         }
     }
 
@@ -274,37 +287,13 @@ public class RenderEvent {
             IEntityState state = entity.getCapability(MagickCore.entityState).orElse(null);
             if(state != null && !state.getBuffList().isEmpty())
             {
-                if(state.getBuffList().containsKey(LibBuff.PARALYSIS))
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.ARC), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.WITHER) || state.getBuffList().containsKey(LibBuff.CRIPPLE))
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.FREEZE) || state.getBuffList().containsKey(LibBuff.SLOW))
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.FRAGILE) || state.getBuffList().containsKey(LibBuff.WEAKEN))
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.TAKEN))
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.TAKEN), Minecraft.getInstance().world);
-
-                /////////////////////////////BUFF//////////////////////////////////////
-
-                if(state.getBuffList().containsKey(LibBuff.STASIS))
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.STASIS), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.LIGHT))
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.VOID), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.RADIANCE_WELL))
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.SOLAR), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.DECAY))
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.WITHER), Minecraft.getInstance().world);
-
-                if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(LibElements.ORIGIN), Minecraft.getInstance().world);
+                for (ManaBuff buff : state.getBuffList().values())
+                {
+                    if(buff.isBeneficial())
+                        applybuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+                    else
+                        applydeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+                }
             }
 
             IElementAnimalState animalState = entity.getCapability(MagickCore.elementAnimal).orElse(null);

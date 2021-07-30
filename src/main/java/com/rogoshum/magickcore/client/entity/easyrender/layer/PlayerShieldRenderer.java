@@ -25,9 +25,9 @@ public class PlayerShieldRenderer extends EasyLayerRender<LivingEntity> {
         if(state != null) {
             float value = state.getElementShieldMana();
             if (value > 0.0f) {
-                float alpha = value / 100.0f;
+                float alpha = value / entityIn.getMaxHealth();
 
-                if (value > 100.0f)
+                if (value > entityIn.getMaxHealth())
                     alpha = 1.0f;
 
                 Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();

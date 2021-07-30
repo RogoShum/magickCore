@@ -28,7 +28,6 @@ public class MagickContainerRenderer extends EasyTileRenderer<MagickContainerTil
             color = element.getRenderer().getColor();
         matrixStackIn.push();
         float scale = (float) tileEntityIn.getManaCapacity() / (float)tileEntityIn.maxManaCapacity;
-
         matrixStackIn.scale(scale, scale, scale);
         RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.3f, color, RenderHelper.renderLight);
         matrixStackIn.pop();

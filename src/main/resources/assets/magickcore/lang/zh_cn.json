@@ -29,6 +29,7 @@
     "item.magickcore.mana_redstone": "魔力红石粉",
     "item.magickcore.mana_dragon_breath": "魔力龙息",
     "item.magickcore.mana_nether_wart": "魔力地狱疣",
+    "item.magickcore.mana_blaze_rod": "魔力烈焰棒",
 
     //药水
     "effect.magickcore.shield_regen": "护盾恢复",
@@ -118,8 +119,10 @@
 
     //描述
     "magickcore.description.element": "§d元素§7: %s",
+    "magickcore.description.material": "§d材料§7: %s",
     "magickcore.description.force": "§d强度§7: %s",
     "magickcore.description.mana": "§d魔素量§7: %s",
+    "magickcore.description.range": "§d射程§7: %s",
     "magickcore.description.mana_type": "§d类型§7: %s",
     "magickcore.description.tick": "§d存在时间§7: %s",
     "magickcore.description.trace": "§d追踪",
@@ -129,8 +132,13 @@
     "magickcore.description.solar": "§6烈焰",
     "magickcore.description.void": "§5虚空",
     "magickcore.description.arc": "§b电弧",
-    "magickcore.description.wither": "§2腐蚀",
+    "magickcore.description.wither": "§2枯萎",
     "magickcore.description.taken": "§8夺魂",
+
+    "magickcore.material.origin": "原生",
+    "magickcore.material.thunder": "雷霆",
+    "magickcore.material.nether_star": "下界之星",
+    "magickcore.material.ender_dragon": "末影之核",
 
     "magickcore.description.orb_staff": "§9能够生成球型涡流的法杖",
     "magickcore.description.star_staff": "§9能够生成星辰的法杖",
@@ -143,6 +151,7 @@
     "magickcore.description.mana_dragon_breath": "§9施加效果： 追踪",
     "magickcore.description.mana_glowstone": "§9施加效果： 增加强度",
     "magickcore.description.mana_redstone": "§9施加效果： 延长存在时间",
+    "magickcore.description.mana_blaze_rod": "§9施加效果： 增加射程",
     "magickcore.description.mana_gunpowder": "§9施加效果： 将ATTACK转换类型为BUFF",
     "magickcore.description.mana_spider_eye": "§9施加效果： 将BUFF转换类型为DEBUFF",
     "magickcore.description.mana_nether_wart": "§9施加效果： 将DEBUFF转换类型为ATTACK",

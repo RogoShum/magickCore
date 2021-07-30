@@ -1,22 +1,13 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.EnumManaLimit;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.api.EnumManaType;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.helper.ManaItemHelper;
-import com.rogoshum.magickcore.helper.RoguelikeHelper;
-import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
-import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 import java.util.UUID;
 

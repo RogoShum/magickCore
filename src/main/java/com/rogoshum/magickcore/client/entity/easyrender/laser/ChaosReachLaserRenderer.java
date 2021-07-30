@@ -47,7 +47,7 @@ public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
                 int id = ite.next();
                 Entity entity = entityIn.world.getEntityByID(id);
                 if(entity != null && !MagickReleaseHelper.sameLikeOwner(entityIn.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(entityIn, entity)) {
-                    Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight() / 2, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() / 2, 0));
+                    Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight() / 2, 0).subtract(getEntityRenderVector(entity, partialTicks).add(0, entity.getHeight() / 2, 0));
                     float distance = (float) dirc.length();
                     dirc = dirc.normalize();
                     Vector2f rota = getRotationFromVector(dirc);

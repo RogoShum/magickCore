@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.helper;
 
-import com.rogoshum.magickcore.api.EnumParticleType;
+import com.rogoshum.magickcore.enums.EnumParticleType;
 import com.rogoshum.magickcore.network.Networking;
 import com.rogoshum.magickcore.network.ParticlePack;
 import net.minecraft.util.math.vector.Vector3d;
