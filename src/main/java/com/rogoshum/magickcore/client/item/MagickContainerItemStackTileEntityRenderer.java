@@ -62,10 +62,10 @@ public class MagickContainerItemStackTileEntityRenderer extends ItemStackTileEnt
         float scale = (float) mana / 10000f;
 
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), (IRenderTypeBuffer.Impl)bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.3f, color, RenderHelper.renderLight);
+        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), (IRenderTypeBuffer.Impl)bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 4, 0.3f, color, RenderHelper.renderLight);
         matrixStackIn.pop();
 
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), (IRenderTypeBuffer.Impl)bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), (IRenderTypeBuffer.Impl)bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate, 1f, 0f), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
         matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         //RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(orbTex)), 0.5f, color);
 

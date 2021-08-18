@@ -96,4 +96,9 @@ public class ManaPowerEntity extends ManaPointEntity {
         else if(this.ticksExisted > 20)
             this.remove();
     }
+
+    @Override
+    public int getSourceLight() {
+        return 3;
+    }
 }

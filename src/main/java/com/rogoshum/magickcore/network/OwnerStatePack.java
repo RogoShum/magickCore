@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IOwnerEntity;
-import com.rogoshum.magickcore.capability.ITakenState;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;

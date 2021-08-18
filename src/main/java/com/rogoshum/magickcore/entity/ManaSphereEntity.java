@@ -1,16 +1,16 @@
 package com.rogoshum.magickcore.entity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.MathHelper;
@@ -30,30 +30,12 @@ public class ManaSphereEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
-        if(!this.world.isRemote && this.ticksExisted == 1)
-        {
-            this.playSound(ModSounds.sphere_spawn.get(), 1.0F, 1.0F - this.rand.nextFloat() / 5);
-        }
 
-        if(!this.world.isRemote && this.ticksExisted == 10)
-            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
-
-        if(!this.world.isRemote && this.ticksExisted % 15 == 0 && this.ticksExisted < this.getTickTime() - 10 && this.ticksExisted > 10)
-        {
-            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
-        }
-
-        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 20)
-        {
-            this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.rand.nextFloat()));
-        }
-
-        for(int i = 0; i < 30;++i)
+        //for(int i = 0; i < 3;++i)
         {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-            this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.02F));
+            this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.05F));
         }
-
 
         Iterator<Integer> iter = hitReactions.keySet().iterator();
         while (iter.hasNext()) {
@@ -74,24 +56,39 @@ public class ManaSphereEntity extends ManaPointEntity {
             if (entity == null)
                 return;
                 if(this.getManaData() != null) {
-                    if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
-                    {
-                        EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this.getOwner(), entity);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, this.getTickTime(), this.getForce() / 5);
-                    }
-                    if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity))
-                    {
-                        EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this.getOwner(), entity);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        this.getElement().getAbility().applyDebuff(entity, this.getTickTime(), this.getForce() / 5);
-                    }
-
-                    if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
-                        this.getElement().getAbility().applyBuff(entity, this.getTickTime(), this.getForce() / 5);
+                    EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, entity);
+                    MinecraftForge.EVENT_BUS.post(event);
+                    ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, entity, this.getTickTime(), this.getForce() / 5);
+                    MagickReleaseHelper.applyElementFunction(this.getElement(), this.getManaType(), attribute);
                 }
             }
         applyParticle();
+    }
+
+    @Override
+    protected void makeSound() {
+        if(!this.world.isRemote && this.ticksExisted == 1)
+        {
+            this.playSound(ModSounds.sphere_spawn.get(), 1.0F, 1.0F - this.rand.nextFloat() / 5);
+        }
+
+        if(!this.world.isRemote && this.ticksExisted == 10)
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+
+        if(!this.world.isRemote && this.ticksExisted % 15 == 0 && this.ticksExisted < this.getTickTime() - 10 && this.ticksExisted > 10)
+        {
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+        }
+
+        if(!this.world.isRemote && this.ticksExisted == this.getTickTime() - 20)
+        {
+            this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.rand.nextFloat()));
+        }
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 8;
     }
 
     @Override

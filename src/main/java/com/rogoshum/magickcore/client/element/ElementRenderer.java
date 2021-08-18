@@ -107,8 +107,8 @@ public abstract class ElementRenderer
         RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getLaserTexture())), alpha, this.color);
     }
 
-    public void renderLaserParticle(MatrixStack matrix, IRenderTypeBuffer bufferIn, ResourceLocation res, float alpha, float length){
-        RenderHelper.renderLaserParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(res)), length, alpha, this.color, false, "", 0.0f);
+    public void renderLaserParticle(MatrixStack matrix, IRenderTypeBuffer bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
+        RenderHelper.renderLaserParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedLaserGlint(res, laserScale)), length, alpha, this.color, false, "", 0.0f);
     }
 
     public void renderOrb(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
@@ -145,17 +145,27 @@ public abstract class ElementRenderer
     }
 
     public ResourceLocation getRingTexture() {
-        return ring[MagickCore.rand.nextInt(3)];
+        return ring[MagickCore.rand.nextInt(ring.length)];
     }
     public ResourceLocation getLaserbeamTexture() {
-        return laser[MagickCore.rand.nextInt(2)];
+        return laser[MagickCore.rand.nextInt(laser.length)];
     }
+
     public ResourceLocation getWaveTexture(int i) {
-        return wave[MagickCore.rand.nextInt(i)];
+        return wave[i];
+    }
+
+    public ResourceLocation getWaveTexture() {
+        return wave[MagickCore.rand.nextInt(wave.length)];
     }
     public ResourceLocation getElcTexture() {
-        return elc[MagickCore.rand.nextInt(4)];
+        return elc[MagickCore.rand.nextInt(elc.length)];
     }
+
+    public ResourceLocation getElcTexture(int i) {
+        return elc[i];
+    }
+
     public ResourceLocation getWindTexture(int  i) {
         return wind[i];
     }
@@ -168,15 +178,6 @@ public abstract class ElementRenderer
     public ResourceLocation getCycleTexture() { return this.cycleTex; }
     public ResourceLocation getMistTexture() { return this.mistTex; }
     public ResourceLocation getTrailTexture() { return this.particleTex; }
-
-    public void setStarTexture(ResourceLocation res) { this.starTex = res; }
-    public void setParticleTexture(ResourceLocation res) { this.particleTex = res; }
-    public void setParticleSprite(ResourceLocation res) { this.particleSprite = res; }
-    public void setOrbTexture(ResourceLocation res) { this.orbTex = res; }
-    public void setLaserTexture(ResourceLocation res) { this.laserTex = res; }
-    public void setCycleTexture(ResourceLocation res) { this.cycleTex = res; }
-    public void setMistTexture(ResourceLocation res) { this.mistTex = res; }
-    public void setTrailTexture(ResourceLocation res) { this.trailTex = res; }
 
     public void tickParticle(LitParticle particle) {}
 

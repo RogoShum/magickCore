@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -27,31 +28,31 @@ public class TakenElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.TAKEN, tick, force, true);
+        public boolean hitEntity(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.TAKEN, attribute.tick, attribute.force, true);
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(ModBuff.hasBuff(victim, LibBuff.TAKEN))
-                force *= 1.75;
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(ModBuff.hasBuff(attribute.victim, LibBuff.TAKEN))
+                attribute.force *= 1.75;
 
             boolean flag = false;
-            if(entity != null && projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyProjectileTakenDamage(entity, projectile), force);
-            else if(entity != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(entity), force);
-            else if(projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(projectile), force);
+            if(attribute.entity != null && attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyProjectileTakenDamage(attribute.entity, attribute.projectile), attribute.force);
+            else if(attribute.entity != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(attribute.projectile), attribute.force);
             else
-                flag = victim.attackEntityFrom(ModDamage.getTakenDamage(), force);
+                flag = attribute.victim.attackEntityFrom(ModDamage.getTakenDamage(), attribute.force);
 
-            if(flag && force >= EnumManaLimit.FORCE.getValue() * 1.75 && entity != null && victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
+            if(flag && attribute.force >= EnumManaLimit.FORCE.getValue() * 1.75 && attribute.entity != null && attribute.victim instanceof MobEntity && ModBuff.hasBuff(attribute.victim, LibBuff.TAKEN))
             {
-                ITakenState state = victim.getCapability(MagickCore.takenState).orElse(null);
-                state.setOwner(entity.getUniqueID());
-                state.setTime(tick);
-                victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
+                ITakenState state = attribute.victim.getCapability(MagickCore.takenState).orElse(null);
+                state.setOwner(attribute.entity.getUniqueID());
+                state.setTime(attribute.tick);
+                attribute.victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
             }
 
             return flag;
@@ -63,18 +64,18 @@ public class TakenElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.TAKEN_KING, tick, force, true);
+        public boolean applyBuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.TAKEN_KING, attribute.tick, attribute.force, true);
         }
 
         @Override
-        public boolean applyDebuff(Entity victim, int tick, float force) {
+        public boolean applyDebuff(ReleaseAttribute attribute) {
 
-            if(victim instanceof MobEntity && ModBuff.hasBuff(victim, LibBuff.TAKEN))
+            if(attribute.victim instanceof MobEntity && ModBuff.hasBuff(attribute.victim, LibBuff.TAKEN))
             {
-                ITakenState state = victim.getCapability(MagickCore.takenState).orElse(null);
-                state.setOwner(victim.getUniqueID());
-                state.setTime((int) (tick * force));
+                ITakenState state = attribute.victim.getCapability(MagickCore.takenState).orElse(null);
+                state.setOwner(attribute.victim.getUniqueID());
+                state.setTime((int) (attribute.tick * attribute.force));
 
                 return true;
             }

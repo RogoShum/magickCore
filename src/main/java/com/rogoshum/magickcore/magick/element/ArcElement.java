@@ -6,13 +6,14 @@ import com.rogoshum.magickcore.capability.IElementOnTool;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaStarEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -37,50 +38,50 @@ public class ArcElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.PARALYSIS, tick, force, false);
+        public boolean hitEntity(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.PARALYSIS, attribute.tick, attribute.force, false);
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(ModBuff.hasBuff(victim, LibBuff.PARALYSIS))
-                force *= 1.25f;
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(ModBuff.hasBuff(attribute.victim, LibBuff.PARALYSIS))
+                attribute.force *= 1.25f;
 
             boolean flag;
-            if(entity != null && projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyProjectileArcDamage(entity, projectile), force);
-            else if(entity != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityArcDamage(entity), force);
-            else if(projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityArcDamage(projectile), force);
+            if(attribute.entity != null && attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyProjectileArcDamage(attribute.entity, attribute.projectile), attribute.force);
+            else if(attribute.entity != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityArcDamage(attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityArcDamage(attribute.projectile), attribute.force);
             else
-                flag = victim.attackEntityFrom(ModDamage.getArcDamage(), force);
+                flag = attribute.victim.attackEntityFrom(ModDamage.getArcDamage(), attribute.force);
 
             //if(flag && !victim.world.isRemote)
                 //victim.func_241841_a((ServerWorld) victim.world, null);
 
             if(flag)
             {
-                List<Entity> list = victim.world.getEntitiesWithinAABBExcludingEntity(victim, victim.getBoundingBox().grow(force));
+                List<Entity> list = attribute.victim.world.getEntitiesWithinAABBExcludingEntity(attribute.victim, attribute.victim.getBoundingBox().grow(attribute.force));
 
                 for(Entity entity1 : list)
                 {
                     if(entity1 instanceof LivingEntity && !ModBuff.hasBuff(entity1, LibBuff.PARALYSIS) &&
-                            MagickReleaseHelper.sameLikeOwner(victim, entity1)) {
-                        if(!victim.world.isRemote) {
-                            ManaStarEntity starEntity = new ManaStarEntity(ModEntites.mana_star, victim.world);
+                            MagickReleaseHelper.sameLikeOwner(attribute.victim, entity1)) {
+                        if(!attribute.victim.world.isRemote) {
+                            ManaStarEntity starEntity = new ManaStarEntity(ModEntites.mana_star, attribute.victim.world);
 
-                            starEntity.setShooter(entity);
-                            starEntity.setPosition(victim.getPosX(), victim.getPosY() + victim.getHeight() / 2, victim.getPosZ());
+                            starEntity.setShooter(attribute.entity);
+                            starEntity.setPosition(attribute.victim.getPosX(), attribute.victim.getPosY() + attribute.victim.getHeight() / 2, attribute.victim.getPosZ());
                             Vector3d motion = entity1.getPositionVec().add(0, entity1.getHeight() / 2, 0).subtract(starEntity.getPositionVec()).normalize();
                             starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
                             starEntity.setElement(ModElements.getElement(LibElements.ARC));
-                            starEntity.setForce(force / 2F);
+                            starEntity.setForce(attribute.force / 2F);
                             starEntity.setManaType(EnumManaType.ATTACK);
-                            starEntity.setTickTime(Math.max(tick / 10, 20));
+                            starEntity.setTickTime(Math.max(attribute.tick / 10, 20));
                             starEntity.setRange(0);
                             starEntity.setTraceTarget(entity1.getUniqueID());
-                            victim.world.addEntity(starEntity);
+                            attribute.victim.world.addEntity(starEntity);
                         }
                     }
                 }
@@ -115,15 +116,15 @@ public class ArcElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity victim, int tick, float force) {
-            if(victim instanceof LivingEntity)
-                return ((LivingEntity)victim).addPotionEffect(new EffectInstance(Effects.SPEED, tick, (int) force));
+        public boolean applyBuff(ReleaseAttribute attribute) {
+            if(attribute.victim instanceof LivingEntity)
+                return ((LivingEntity)attribute.victim).addPotionEffect(new EffectInstance(Effects.SPEED, attribute.tick, (int) attribute.force));
             return false;
         }
 
         @Override
-        public boolean applyDebuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.PARALYSIS, tick, force, false);
+        public boolean applyDebuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.PARALYSIS, attribute.tick, attribute.force, false);
         }
 
         @Override

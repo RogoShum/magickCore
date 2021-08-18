@@ -48,12 +48,12 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderOutlineEvent {
-    private static final HashMap<Class, EasyOutlineRender> outlineRenderer = new HashMap<Class, EasyOutlineRender>();
-    public static void putOutlineRender(Class clas, EasyOutlineRender renderer) { outlineRenderer.put(clas, renderer); }
+    private static final HashMap<Class, EasyRenderer> outlineRenderer = new HashMap<Class, EasyRenderer>();
+    public static void putOutlineRender(Class clas, EasyRenderer renderer) { outlineRenderer.put(clas, renderer); }
 
     private int framebufferWidth = -1;
     private int framebufferHeight = -1;
-    private final BufferBuilder bufferBuilder = new BufferBuilder(256);
+    private final IRenderTypeBuffer.Impl outlineBuffer = IRenderTypeBuffer.getImpl(new BufferBuilder(256));
     private ShaderGroup shaders = null;
 
     public RenderOutlineEvent(){}
@@ -99,7 +99,7 @@ public class RenderOutlineEvent {
 
         // step 3: prepare block faces
         MatrixStack matrixStackIn = event.getMatrixStack();
-        this.bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+        //this.bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
 
         for(Entity entity : Minecraft.getInstance().world.getAllEntities())
         {
@@ -107,12 +107,12 @@ public class RenderOutlineEvent {
             while (iter.hasNext()) {
                 Class clas = iter.next();
                 if(entity.getClass() == clas || clas == AllEntity.class) {
-                    EasyOutlineRender renderer = outlineRenderer.get(clas);
-                    renderer.preRender(entity, matrixStackIn, this.bufferBuilder, event.getPartialTicks());
+                    EasyRenderer renderer = outlineRenderer.get(clas);
+                    renderer.preRender(entity, matrixStackIn, outlineBuffer, event.getPartialTicks());
                 }
             }
         }
-        this.bufferBuilder.finishDrawing();
+        //this.bufferBuilder.finishDrawing();
 
         // step 4: bind our framebuffer
         Framebuffer framebuffer = this.shaders.getFramebufferRaw(MagickCore.MOD_ID + ":final");
@@ -125,7 +125,7 @@ public class RenderOutlineEvent {
         RenderSystem.disableAlphaTest();
         RenderSystem.depthMask(/*flag*/false);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        WorldVertexBufferUploader.draw(this.bufferBuilder);
+        WorldVertexBufferUploader.draw((BufferBuilder) outlineBuffer.getBuffer(RenderHelper.ORB));
         //bufferIn.finish(RenderHelper.OUTLINE);
 
         // step 6: apply shaders

@@ -46,8 +46,8 @@ public class LitParticle {
     private float shakeLimit;
     private boolean limitScale;
     private Entity traceTarget;
-    public LitParticle(World world, ResourceLocation texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, ElementRenderer renderer)
-    {
+
+    public LitParticle(World world, ResourceLocation texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, ElementRenderer renderer) {
         this.world = world;
         this.texture = texture;
         this.setSize(scaleWidth, scaleHeight);
@@ -60,14 +60,43 @@ public class LitParticle {
         this.renderer = renderer;
     }
 
-    public LitParticle setTraceTarget(Entity traceTarget){this.traceTarget = traceTarget;return this;}
-    public LitParticle setLimitScale(){this.limitScale = true;return this;}
-    public LitParticle setShakeLimit(float shakeLimit) { this.shakeLimit = shakeLimit;return this; }
-    public LitParticle setParticleGravity(float g) { this.particleGravity = g;return this; }
+    public LitParticle setColor(float[] color) {
+        this.color = color;
+        return this;
+    }
 
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl buffer)
-    {
-        if(this.texture == null) return;
+    public LitParticle setColor(float r, float g, float b) {
+        this.color = new float[]{r, g, b};
+        return this;
+    }
+
+    public LitParticle setTexture(ResourceLocation texture) {
+        this.texture = texture;
+        return this;
+    }
+
+    public LitParticle setTraceTarget(Entity traceTarget) {
+        this.traceTarget = traceTarget;
+        return this;
+    }
+
+    public LitParticle setLimitScale() {
+        this.limitScale = true;
+        return this;
+    }
+
+    public LitParticle setShakeLimit(float shakeLimit) {
+        this.shakeLimit = shakeLimit;
+        return this;
+    }
+
+    public LitParticle setParticleGravity(float g) {
+        this.particleGravity = g;
+        return this;
+    }
+
+    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl buffer) {
+        if (this.texture == null) return;
         matrixStackIn.push();
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
@@ -77,16 +106,13 @@ public class LitParticle {
         matrixStackIn.translate(x - camX, y - camY, z - camZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
 
-        if(shakeLimit > 0.0f)
-        {
-            if(isGlow)
+        if (shakeLimit > 0.0f) {
+            if (isGlow)
                 RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrbGlow(texture)), getAlpha(alpha), color, true, this.toString(), shakeLimit);
             else
                 RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrb(texture)), getAlpha(alpha), color, true, this.toString(), shakeLimit);
-        }
-        else
-        {
-            if(isGlow)
+        } else {
+            if (isGlow)
                 RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrbGlow(texture)), getAlpha(alpha), color);
             else
                 RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrb(texture)), getAlpha(alpha), color);
@@ -100,9 +126,9 @@ public class LitParticle {
             this.scaleWidth = particleWidth;
             this.scaleHeight = particleHeight;
             AxisAlignedBB axisalignedbb = this.getBoundingBox();
-            double d0 = (axisalignedbb.minX + axisalignedbb.maxX - (double)particleWidth) / 2.0D;
-            double d1 = (axisalignedbb.minZ + axisalignedbb.maxZ - (double)particleWidth) / 2.0D;
-            this.setBoundingBox(new AxisAlignedBB(d0, axisalignedbb.minY, d1, d0 + (double)this.scaleWidth, axisalignedbb.minY + (double)this.scaleHeight, d1 + (double)this.scaleWidth));
+            double d0 = (axisalignedbb.minX + axisalignedbb.maxX - (double) particleWidth) / 2.0D;
+            double d1 = (axisalignedbb.minZ + axisalignedbb.maxZ - (double) particleWidth) / 2.0D;
+            this.setBoundingBox(new AxisAlignedBB(d0, axisalignedbb.minY, d1, d0 + (double) this.scaleWidth, axisalignedbb.minY + (double) this.scaleHeight, d1 + (double) this.scaleWidth));
         }
 
     }
@@ -125,7 +151,7 @@ public class LitParticle {
         this.posZ = z;
         float f = this.scaleWidth / 2.0F;
         float f1 = this.scaleHeight;
-        this.setBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
+        this.setBoundingBox(new AxisAlignedBB(x - (double) f, y, z - (double) f, x + (double) f, y + (double) f1, z + (double) f));
     }
 
     public LitParticle addMotion(double x, double y, double z) {
@@ -136,17 +162,17 @@ public class LitParticle {
     }
 
     public float getAlpha(float alpha) {
-        float f = ((float)this.age) / (float)this.maxAge;
+        float f = ((float) this.age) / (float) this.maxAge;
         f = Math.min(f, 1.0f);
         return alpha * f;
     }
 
     public float getScale(float scale) {
-        float f = (float)this.age / (float)this.maxAge;
-        if(f <= 0.5f)
-            f  = 1.0f - f;
+        float f = (float) this.age / (float) this.maxAge;
+        if (f <= 0.5f)
+            f = 1.0f - f;
         f = 1.0F - f;
-        return limitScale && (float)this.age / (float)this.maxAge <= 0.5f ? scale : scale * f * 2f;
+        return limitScale && (float) this.age / (float) this.maxAge <= 0.5f ? scale : scale * f * 2f;
     }
 
     public void tick() {
@@ -154,10 +180,9 @@ public class LitParticle {
         this.lPosY = this.posY;
         this.lPosZ = this.posZ;
         this.age++;
-        this.motionY -= 0.04D * (double)this.particleGravity;
+        this.motionY -= 0.04D * (double) this.particleGravity;
 
-        if(this.traceTarget != null)
-        {
+        if (this.traceTarget != null) {
             Vector3d vec = this.traceTarget.getPositionVec().add(0, this.traceTarget.getHeight() / 2, 0).subtract(this.posX, this.posY, this.posZ).normalize();
             double length = 0.3;
 
@@ -167,18 +192,20 @@ public class LitParticle {
         }
 
         this.move(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= (double)0.98F;
-        this.motionY *= (double)0.98F;
-        this.motionZ *= (double)0.98F;
+        this.motionX *= (double) 0.98F;
+        this.motionY *= (double) 0.98F;
+        this.motionZ *= (double) 0.98F;
         if (this.onGround) {
-            this.motionX *= (double)0.7F;
-            this.motionZ *= (double)0.7F;
+            this.motionX *= (double) 0.7F;
+            this.motionZ *= (double) 0.7F;
         }
 
         renderer.tickParticle(this);
     }
 
-    public void easyTick() { this.age++;}
+    public void easyTick() {
+        this.age++;
+    }
 
 
     public void move(double x, double y, double z) {
@@ -187,7 +214,7 @@ public class LitParticle {
             double d1 = y;
             double d2 = z;
             if (this.canCollide && (x != 0.0D || y != 0.0D || z != 0.0D)) {
-                Vector3d vector3d = Entity.collideBoundingBoxHeuristically((Entity)null, new Vector3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.dummy(), new ReuseableStream<>(Stream.empty()));
+                Vector3d vector3d = Entity.collideBoundingBoxHeuristically((Entity) null, new Vector3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.dummy(), new ReuseableStream<>(Stream.empty()));
                 x = vector3d.x;
                 y = vector3d.y;
                 z = vector3d.z;
@@ -198,7 +225,7 @@ public class LitParticle {
                 this.resetPositionToBB();
             }
 
-            if (Math.abs(d1) >= (double)1.0E-5F && Math.abs(y) < (double)1.0E-5F) {
+            if (Math.abs(d1) >= (double) 1.0E-5F && Math.abs(y) < (double) 1.0E-5F) {
                 this.collidedY = true;
             }
 
@@ -229,19 +256,29 @@ public class LitParticle {
         this.boundingBox = bb;
     }
 
-    public LitParticle setGlow() { this.isGlow = true;
-        return this;}
-    public boolean getGlow() { return this.isGlow;}
+    public LitParticle setGlow() {
+        this.isGlow = true;
+        return this;
+    }
 
-    public boolean isDead() { return age >= maxAge; }
+    public boolean getGlow() {
+        return this.isGlow;
+    }
 
-    public LitParticle setCanCollide(boolean canCollide) {this.canCollide = canCollide;return this;}
+    public boolean isDead() {
+        return age >= maxAge;
+    }
+
+    public void add() {
+        MagickCore.addMagickParticle(this);
+    }
+
+    public LitParticle setCanCollide(boolean canCollide) {
+        this.canCollide = canCollide;
+        return this;
+    }
 
     public boolean shouldRender(ClippingHelper camera) {
-        AxisAlignedBB axisalignedbb = getBoundingBox().grow(0.5D);
-        if (axisalignedbb.hasNaN() || axisalignedbb.getAverageEdgeLength() == 0.0D) {
-            axisalignedbb = new AxisAlignedBB(this.posX - 2.0D, this.posY - 2.0D, this.posZ - 2.0D, this.posX + 2.0D, this.posY + 2.0D, this.posZ + 2.0D);
-        }
-        return camera.isBoundingBoxInFrustum(axisalignedbb);
+        return camera.isBoundingBoxInFrustum(this.boundingBox);
     }
 }

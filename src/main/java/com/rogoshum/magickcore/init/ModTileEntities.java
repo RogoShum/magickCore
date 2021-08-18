@@ -28,4 +28,12 @@ public class ModTileEntities {
     public static RegistryObject<TileEntityType<MagickBarrierTileEntity>> magick_barrier_tileentity = TILE_ENTITY.register("magick_barrier_tileentity"
             , () -> TileEntityType.Builder.create(MagickBarrierTileEntity::new
                     , ModBlocks.magick_barrier.get()).build(null));
+
+    public static RegistryObject<TileEntityType<MagickSupplierTileEntity>> magick_supplier_tileentity = TILE_ENTITY.register("magick_supplier_tileentity"
+            , () -> TileEntityType.Builder.create(MagickSupplierTileEntity::new
+                    , ModBlocks.magick_supplier.get()).build(null));
+
+    public static RegistryObject<TileEntityType<MagickRepeaterTileEntity>> magick_repeater_tileentity = TILE_ENTITY.register("magick_repeater_tileentity"
+            , () -> TileEntityType.Builder.create(MagickRepeaterTileEntity::new
+                    , ModBlocks.magick_repeater.get()).build(null));
 }

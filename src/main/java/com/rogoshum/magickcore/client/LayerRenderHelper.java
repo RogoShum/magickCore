@@ -115,7 +115,7 @@ public class LayerRenderHelper extends LivingRenderer {
             }
         }
 
-        RenderType type = RenderHelper.getTexedEntityGlint(tex);
+        RenderType type = RenderHelper.getTexedEntityGlint(tex, 0.32f, 10f);
         if(!tex.toString().contains(MagickCore.MOD_ID))
             type = getEntityRenderType(renderer, entityIn);
 

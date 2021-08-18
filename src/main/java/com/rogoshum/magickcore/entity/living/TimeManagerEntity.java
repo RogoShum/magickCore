@@ -26,6 +26,5 @@ public class TimeManagerEntity extends RelicEntity{
 	@Override
 	public void tick() {
 		super.tick();
-		//this.setDead();
 	}
 }

@@ -11,12 +11,17 @@ import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +34,15 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
+            matrixStackIn.push();
+            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(225));
+            matrixStackIn.translate(0.4, 0.1, 0);
+            matrixStackIn.scale(2.5f, 2.5f, 2.5f);
+            ItemStack stack = new ItemStack(Items.GOLDEN_SWORD);
+            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack, null, null);
+            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            matrixStackIn.pop();
+
             EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 7.0f, entityIn.getElement().getRenderer().getColor()
                     , 1.0f, partialTicks, entityIn.world);
             matrixStackIn.translate(0, -entityIn.getHeight() / 2 + 0.005, 0);
@@ -36,11 +50,11 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
             matrixStackIn.scale(0.7f, 0.7f, 0.7f);
             float alphaS = Math.min(1f, (float)entityIn.ticksExisted / 5f);
             matrixStackIn.push();
-            matrixStackIn.scale(1.5f, 1.5f, 1.5f);
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
+            matrixStackIn.scale(1.25f, 1.25f, 1.25f);
+            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 12, 0.9f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
             matrixStackIn.pop();
 
-            if(entityIn.ticksExisted > 10) {
+            if(entityIn.initial) {
                 entityIn.setMotion(0, 1, 0);
                 if (entityIn.getTrail() == null)
                     entityIn.setTrail(new TrailParticle(entityIn, new Vector3d(0, entityIn.getHeight() / 2, 0), 30, 0.8d));
@@ -78,10 +92,10 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
                 matrixStackIn.pop();
 
                 matrixStackIn.push();
-                matrixStackIn.translate(0, -entityIn.getHeight() * 2 + 1.4, 0);
+                matrixStackIn.translate(0, -entityIn.getHeight() * 2, 0);
                 matrixStackIn.scale(6.05f, 1.45f, 6.05f);
-                RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlow(cylinder_bloom), matrixStackIn, bufferIn, 0.35f * alphaC, entityIn.getElement().getRenderer().getColor()
-                        , 2f, 4.5f, 32, true, entityIn.getUniqueID().toString(), 0.0f);
+                RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f), matrixStackIn, bufferIn, 0.0f, 0.75f * alphaC, entityIn.getElement().getRenderer().getColor()
+                        , 2f, 6.0f, 16, entityIn.getHitReactions(), 0.2f);
                 matrixStackIn.pop();
             }
         }

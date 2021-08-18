@@ -18,7 +18,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaTakenRenderer;
 import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
@@ -134,18 +133,9 @@ public class RenderEvent {
 
         for(int i = 0; i < particles.size(); ++i)
         {
-            if(isInRangeToRender3d(particles.get(i), vec.x, vec.y, vec.z) && shouldRender(clippinghelper, particles.get(i)))
+            if(particles.get(i).shouldRender(clippinghelper))//isInRangeToRender3d(particles.get(i), vec.x, vec.y, vec.z)
                 particles.get(i).render(event.getMatrixStack(), bufferIn);
         }
-    }
-
-    public boolean shouldRender(ClippingHelper clippinghelper, LitParticle par)
-    {
-        AxisAlignedBB axisalignedbb = par.getBoundingBox().grow(0.5D);
-        if (axisalignedbb.hasNaN() || axisalignedbb.getAverageEdgeLength() == 0.0D) {
-            axisalignedbb = new AxisAlignedBB(par.getPosX() - 2.0D, par.getPosY() - 2.0D, par.getPosZ() - 2.0D, par.getPosX() + 2.0D, par.getPosY() + 2.0D, par.getPosZ() + 2.0D);
-        }
-        return clippinghelper.isBoundingBoxInFrustum(axisalignedbb);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -6,7 +6,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,8 +44,7 @@ public class ManaEyeEntity extends ManaPointEntity {
 
                 String magickType = getTraceTarget() == MagickCore.emptyUUID_EYE ? "EYE_STAR" : "EYE_STAR_TRACE";
 
-                EntityEvents.MagickReleaseEvent event = new EntityEvents.MagickReleaseEvent(this, this.getElement(), this.getForce(), this.getTickTime(), this.getManaType(), living.getUniqueID(), this.getRange(), magickType);
-                MinecraftForge.EVENT_BUS.post(event);
+                EntityEvents.MagickReleaseEvent event = MagickReleaseHelper.postReleaseMagick(this, this.getElement(), this.getForce(), this.getTickTime(), this.getManaType(), living.getUniqueID(), this.getRange(), magickType);
 
                 starEntity.setShooter(this.getOwner());
                 starEntity.setPosition(this.getPosX(), this.getPosY() + this.getHeight() / 2, this.getPosZ());
@@ -104,5 +103,10 @@ public class ManaEyeEntity extends ManaPointEntity {
                 MagickCore.addMagickParticle(litPar);
             }
         }
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 5;
     }
 }

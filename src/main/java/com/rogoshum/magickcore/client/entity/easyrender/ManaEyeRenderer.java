@@ -22,7 +22,7 @@ public class ManaEyeRenderer extends EasyRenderer<ManaEyeEntity>{
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             VectorHitReaction[] test = {};
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.6f, test, 0.0f, packedLightIn);
+            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 4, 0.6f, test, 0.0f, packedLightIn);
         }
     }
 }

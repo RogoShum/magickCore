@@ -4,11 +4,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -44,14 +44,20 @@ public class ManaRiftEntity extends ManaPointEntity {
 
         List<LivingEntity> livings = getLivingEntity(1);
         for (LivingEntity living : livings) {
+            ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, living, 100, this.getForce());
             if (MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
-                this.getElement().getAbility().applyBuff(living, 100, this.getForce());
+                MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.BUFF, attribute);
             } else {
-                this.getElement().getAbility().applyDebuff(living, 100, this.getForce());
+                MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.DEBUFF, attribute);
             }
         }
 
         applyParticle();
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 8;
     }
 
     protected void applyParticle()

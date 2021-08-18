@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ManaNetherWartItem extends BaseItem implements IManaMaterial {
     public ManaNetherWartItem() {
-        super(BaseItem.properties.maxStackSize(2));
+        super(BaseItem.properties);
     }
 
     @Override

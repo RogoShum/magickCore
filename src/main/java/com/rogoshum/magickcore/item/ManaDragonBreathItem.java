@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ManaDragonBreathItem extends BaseItem implements IManaMaterial {
     public ManaDragonBreathItem() {
-        super(BaseItem.properties.maxStackSize(2));
+        super(BaseItem.properties);
     }
 
     @Override

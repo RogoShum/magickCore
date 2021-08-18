@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,6 @@ public class LaserStaffItem extends ManaItem {
             MagickReleaseHelper.releaseProjectileEntity(ModEntites.mana_laser, playerIn, element, trace, this.getForce(stack), this.getTickTime(stack)
                     , this.getRange(stack), this.getManaType(stack));
 
-        MagickCore.LOGGER.debug(this.getRange(stack));
         return false;
     }
 }

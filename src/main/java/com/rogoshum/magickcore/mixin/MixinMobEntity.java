@@ -2,9 +2,7 @@ package com.rogoshum.magickcore.mixin;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.capability.ITakenState;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.helper.TakenTargetHelper;
-import net.minecraft.client.world.ClientWorld;
+import com.rogoshum.magickcore.tool.TakenTargetHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -18,9 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.awt.*;
-import java.util.UUID;
 
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity extends Entity {

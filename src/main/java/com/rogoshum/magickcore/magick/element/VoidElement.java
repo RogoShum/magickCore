@@ -1,33 +1,17 @@
 package com.rogoshum.magickcore.magick.element;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IElementOnTool;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-
-import java.util.Iterator;
-import java.util.UUID;
 
 public class VoidElement extends MagickElement{
     public VoidElement(String name, ElementAbility ability) {
@@ -41,26 +25,26 @@ public class VoidElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.WEAKEN, tick, force, false);
+        public boolean hitEntity(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.WEAKEN, attribute.tick, attribute.force, false);
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(ModBuff.hasBuff(victim, LibBuff.WEAKEN))
-                force *= 2;
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(ModBuff.hasBuff(attribute.victim, LibBuff.WEAKEN))
+                attribute.force *= 2;
 
             boolean flag = false;
-            if(entity != null && projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyProjectileVoidDamage(entity, projectile), force);
-            else if(entity != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(entity), force);
-            else if(projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(projectile), force);
+            if(attribute.entity != null && attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyProjectileVoidDamage(attribute.entity, attribute.projectile), attribute.force);
+            else if(attribute.entity != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(attribute.projectile), attribute.force);
             else
-                flag = victim.attackEntityFrom(ModDamage.getVoidDamage(), force);
+                flag = attribute.victim.attackEntityFrom(ModDamage.getVoidDamage(), attribute.force);
             if(flag)
-                ModBuff.applyBuff(victim, LibBuff.FRAGILE, 10, 0, false);
+                ModBuff.applyBuff(attribute.victim, LibBuff.FRAGILE, 10, 0, false);
 
             return flag;
         }
@@ -71,13 +55,13 @@ public class VoidElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.LIGHT, tick, force, true);
+        public boolean applyBuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.LIGHT, attribute.tick, attribute.force, true);
         }
 
         @Override
-        public boolean applyDebuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.FRAGILE, tick, force, false);
+        public boolean applyDebuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.FRAGILE, attribute.tick, attribute.force, false);
         }
 
         @Override

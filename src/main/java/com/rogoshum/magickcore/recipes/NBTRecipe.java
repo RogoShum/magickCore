@@ -1,19 +1,12 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.INBTRecipe;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.init.ModRecipes;
-import com.rogoshum.magickcore.item.OrbBottleItem;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Mod;
 
 public class NBTRecipe extends SpecialRecipe {
     private final INBTRecipe container;

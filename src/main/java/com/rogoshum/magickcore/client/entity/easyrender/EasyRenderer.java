@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -58,7 +59,6 @@ public abstract class EasyRenderer<T extends Entity> {
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
-
         render(entity, matrixStackIn, bufferIn, partialTicks);
         postRender(entity, matrixStackIn, bufferIn, partialTicks);
     }
@@ -73,7 +73,7 @@ public abstract class EasyRenderer<T extends Entity> {
         float pitch = (float) (Math.atan2(-dirc.y, tmp) * 180 / Math.PI);
         if (pitch < 0)
             pitch += 360;
-        return new Vector2f(yaw, pitch);
+        return new Vector2f(yaw + 90, pitch - 90);
     }
 
     public static Vector3d getEntityRenderVector(Entity entity, float partialTicks)

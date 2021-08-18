@@ -1,8 +1,7 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;

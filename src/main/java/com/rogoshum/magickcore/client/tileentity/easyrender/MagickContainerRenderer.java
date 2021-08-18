@@ -22,17 +22,17 @@ public class MagickContainerRenderer extends EasyTileRenderer<MagickContainerTil
         float[] color = {1, 1, 1};
         matrixStackIn.push();
         matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+        //matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         IManaElement element = ModElements.getElement(tileEntityIn.eType);
         if(element != null)
             color = element.getRenderer().getColor();
         matrixStackIn.push();
         float scale = (float) tileEntityIn.getManaCapacity() / (float)tileEntityIn.maxManaCapacity;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.3f, color, RenderHelper.renderLight);
+        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank, 0.32f, 0f), 4, 0.3f, color, RenderHelper.renderLight);
         matrixStackIn.pop();
 
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.32f, 0f), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         //RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(orbTex)), 0.5f, color);

@@ -7,11 +7,10 @@ import com.rogoshum.magickcore.client.entity.easyrender.*;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
 import com.rogoshum.magickcore.client.element.*;
-import com.rogoshum.magickcore.client.entity.easyrender.outline.ManaRiftOutlineRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.*;
+import com.rogoshum.magickcore.client.entity.render.LifeStateEntityRenderer;
 import com.rogoshum.magickcore.client.entity.render.ManaEntityRenderer;
 import com.rogoshum.magickcore.client.entity.render.ManaObjectRenderer;
-import com.rogoshum.magickcore.client.entity.render.living.TimeManagerRenderer;
 import com.rogoshum.magickcore.client.item.MagickBakedModel;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.*;
@@ -19,7 +18,7 @@ import com.rogoshum.magickcore.entity.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.event.RenderOutlineEvent;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -30,11 +29,9 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.settings.ParticleStatus;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -67,9 +64,9 @@ public class ClientProxy implements IProxy
 	public void registerHandlers()
 	{
 		MinecraftForge.EVENT_BUS.register(new RenderEvent());
-		MinecraftForge.EVENT_BUS.addListener(event::onRenderWorldLast);
+		//MinecraftForge.EVENT_BUS.addListener(event::onRenderWorldLast);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
+		//FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
 		putEasyRenderer();
@@ -94,6 +91,7 @@ public class ClientProxy implements IProxy
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.ascendant_realm, ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.mana_power, ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntites.element_orb, ManaObjectRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntites.life_state, LifeStateEntityRenderer::new);
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
@@ -182,7 +180,7 @@ public class ClientProxy implements IProxy
 		RenderEvent.putLayerRender(ClientPlayerEntity.class, new PlayerShieldRenderer());
 
 		//outline
-		RenderOutlineEvent.putOutlineRender(RadianceWellEntity.class, new ManaRiftOutlineRenderer());
+
 
 		//laser
 		RenderEvent.putLaserRender(RadianceWellEntity.class, new RadianceWellLaserRenderer());
@@ -195,6 +193,7 @@ public class ClientProxy implements IProxy
 		RenderEvent.putTileRender(ElementCrystalTileEntity.class, new ElementCrystalRenderer());
 		RenderEvent.putTileRender(ElementWoolTileEntity.class, new ElementWoolRenderer());
 		RenderEvent.putTileRender(MagickBarrierTileEntity.class, new MagickBarrierRenderer());
+		RenderEvent.putTileRender(MagickRepeaterTileEntity.class, new MagickRepeaterRenderer());
 	}
 
 	private void putElementRenderer()

@@ -21,30 +21,54 @@ public class MagickBarrierRenderer extends EasyTileRenderer<MagickBarrierTileEnt
         if(tileEntityIn != null && !tileEntityIn.isRemoved() && tileEntityIn.isClosed())
         {
             RenderEvent.activeTileEntityRender(tileEntityIn);
-            IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedCylinderGlint(RenderHelper.blankTex));
-            float[] color = RenderHelper.ORIGIN;
-            float alpha = 0.2f;
-            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2], alpha).
+            float[] color = tileEntityIn.getElementData().getElement().getRenderer().getColor();
+            float alpha = 0.4f;
+            float alphaAdd = 0.0f;
+            matrixStackIn.push();
+            IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedCylinderGlint(RenderHelper.blankTex, 1f, 0f));
+            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2], alphaAdd + alpha * tileEntityIn.mana / tileEntityIn.requiredMana).
                     tex(0, 0).overlay(OverlayTexture.NO_OVERLAY).
                     lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
+            float offsetX1 = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getX() - tileEntityIn.getPos().getX();
+            float offsetY1 = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getY() - tileEntityIn.getPos().getY();
+            float offsetZ1 = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getZ() - tileEntityIn.getPos().getZ();
 
-            float offsetX = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getX() - tileEntityIn.getPos().getX();
-            float offsetY = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getY() - tileEntityIn.getPos().getY();
-            float offsetZ = ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getZ() - tileEntityIn.getPos().getZ();
+            matrixStackIn.translate(offsetX1, offsetY1, offsetZ1);
 
-            matrixStackIn.translate(offsetX, offsetY, offsetZ);
-
-            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2], alpha).
+            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2],
+                    alphaAdd + alpha * ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).mana / ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).requiredMana).
                     tex(1, 0).overlay(OverlayTexture.NO_OVERLAY).
                     lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
 
-            offsetX = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getX() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getX();
-            offsetY = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getY() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getY();
-            offsetZ = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getZ() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getZ();
+            float offsetX = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getX() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getX();
+            float offsetY = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getY() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getY();
+            float offsetZ = ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).getPos().getZ() - ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).getPos().getZ();
 
             matrixStackIn.translate(offsetX, offsetY, offsetZ);
 
-            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2], alpha).
+            buffer.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2],
+                    alphaAdd + alpha * ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).mana / ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).requiredMana).
+                    tex(1, 1).overlay(OverlayTexture.NO_OVERLAY).
+                    lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
+            matrixStackIn.pop();
+
+            IVertexBuilder line = bufferIn.getBuffer(RenderHelper.LINES);
+            alphaAdd = 0.25f;
+            line.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2], alphaAdd + alpha * tileEntityIn.mana / tileEntityIn.requiredMana).
+                    tex(0, 0).overlay(OverlayTexture.NO_OVERLAY).
+                    lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
+
+            matrixStackIn.translate(offsetX1, offsetY1, offsetZ1);
+
+            line.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2],
+                    alphaAdd + alpha * ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).mana / ((MagickBarrierTileEntity)tileEntityIn.getOutputFirst()).requiredMana).
+                    tex(1, 0).overlay(OverlayTexture.NO_OVERLAY).
+                    lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
+
+            matrixStackIn.translate(offsetX, offsetY, offsetZ);
+
+            line.pos(matrixStackIn.getLast().getMatrix(), 0, 0, 0).color(color[0], color[1], color[2],
+                    alphaAdd + alpha * ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).mana / ((MagickBarrierTileEntity)tileEntityIn.getOutputSecond()).requiredMana).
                     tex(1, 1).overlay(OverlayTexture.NO_OVERLAY).
                     lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
         }

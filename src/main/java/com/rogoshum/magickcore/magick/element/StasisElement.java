@@ -3,11 +3,12 @@ package com.rogoshum.magickcore.magick.element;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.capability.IElementOnTool;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -30,26 +31,26 @@ public class StasisElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.SLOW, tick, force, false);
+        public boolean hitEntity(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.SLOW, attribute.tick, attribute.force, false);
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(ModBuff.hasBuff(victim, LibBuff.SLOW))
-                force *= 1.5;
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(ModBuff.hasBuff(attribute.victim, LibBuff.SLOW))
+                attribute.force *= 1.5;
 
             boolean flag = false;
-            if(entity != null && projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyProjectileStasisDamage(entity, projectile), force);
-            else if(entity != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(entity), force);
-            else if(projectile != null)
-                flag = victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(projectile), force);
+            if(attribute.entity != null && attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyProjectileStasisDamage(attribute.entity, attribute.projectile), attribute.force);
+            else if(attribute.entity != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                flag = attribute.victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(attribute.projectile), attribute.force);
             else
-                flag = victim.attackEntityFrom(ModDamage.getStasisDamage(), force);
+                flag = attribute.victim.attackEntityFrom(ModDamage.getStasisDamage(), attribute.force);
             if(flag)
-                ModBuff.applyBuff(victim, LibBuff.FREEZE, tick / 8, 0, false);
+                ModBuff.applyBuff(attribute.victim, LibBuff.FREEZE, attribute.tick / 8, 0, false);
 
             return flag;
         }
@@ -67,15 +68,15 @@ public class StasisElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity victim, int tick, float force) {
-            return ModBuff.applyBuff(victim, LibBuff.STASIS, tick, force, true);
+        public boolean applyBuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.victim, LibBuff.STASIS, attribute.tick, attribute.force, true);
         }
 
         @Override
-        public boolean applyDebuff(Entity victim, int tick, float force) {
-            if(tick >= EnumManaLimit.TICK.getValue())
-                return ModBuff.applyBuff(victim, LibBuff.FREEZE, tick, force, false);
-            return ModBuff.applyBuff(victim, LibBuff.SLOW, tick, force, false);
+        public boolean applyDebuff(ReleaseAttribute attribute) {
+            if(attribute.tick >= EnumManaLimit.TICK.getValue())
+                return ModBuff.applyBuff(attribute.victim, LibBuff.FREEZE, attribute.tick, attribute.force, false);
+            return ModBuff.applyBuff(attribute.victim, LibBuff.SLOW, attribute.tick, attribute.force, false);
         }
 
         @Override

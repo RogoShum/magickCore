@@ -7,7 +7,7 @@ import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.entity.ManaRuneEntity;
 import com.rogoshum.magickcore.entity.superentity.*;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibElements;

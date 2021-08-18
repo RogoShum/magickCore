@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ManaRangeUpgradeItem extends BaseItem implements IManaMaterial {
     public ManaRangeUpgradeItem() {
-        super(BaseItem.properties.maxStackSize(2));
+        super(BaseItem.properties);
     }
 
     @Override

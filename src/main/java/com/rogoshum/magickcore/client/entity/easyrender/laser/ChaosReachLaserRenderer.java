@@ -1,19 +1,13 @@
 package com.rogoshum.magickcore.client.entity.easyrender.laser;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
-import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -24,6 +18,8 @@ import java.util.Iterator;
 public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
     @Override
     public void preRender(ChaoReachEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+        if(!entity.initial)
+            return;
         matrixStackIn.push();
         double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
         double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
@@ -54,13 +50,14 @@ public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
                     matrixStackIn.push();
                     //matrixStackIn.translate(0, distance, 0);
                     //matrixStackIn.rotate(Vector3f.XP.rotationDegrees(30));
-                    matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x + 90));
-                    matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y - 90));
+                    matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
+                    matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
                     matrixStackIn.push();
-                    matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getElcTexture(), 0.15f, distance);
-                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getWaveTexture(3), 1.0f, distance);
-                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getLaserbeamTexture(), 0.5f, distance);
+                    matrixStackIn.scale(0.71f, 0.71f, 0.71f);
+                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getElcTexture(3), 1.0f, distance / 1.408f, 0.5f);
+                    matrixStackIn.scale(0.71f, 0.71f, 0.71f);
+                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getWaveTexture(entityIn.getEntityId() % 2 == 0 ? 0 : 1), 1.0f, distance, 1.0f);
+                    //entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getLaserbeamTexture(), 0.5f, distance, 1 / distance);
                     matrixStackIn.pop();
                     matrixStackIn.pop();
                 }

@@ -1,19 +1,13 @@
 package com.rogoshum.magickcore.client.entity.easyrender.laser;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
-import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
 import com.rogoshum.magickcore.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -52,9 +46,9 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
                     dirc = dirc.normalize();
                     Vector2f rota = getRotationFromVector(dirc);
                     matrixStackIn.push();
-                    matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x + 90));
-                    matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y - 90));
-                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getWaveTexture(3), 0.9f, distance * 1.3f);
+                    matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
+                    matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getWaveTexture(0), 0.9f, distance * 1.3f, 1.0f);
                     matrixStackIn.pop();
                 }
             }

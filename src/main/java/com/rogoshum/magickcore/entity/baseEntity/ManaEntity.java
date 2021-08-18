@@ -2,7 +2,10 @@ package com.rogoshum.magickcore.entity.baseEntity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.*;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.capability.IManaData;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.enums.EnumManaType;
@@ -28,11 +31,12 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class ManaEntity extends Entity implements IMagickElementObject, IOwnerEntity {
+public abstract class ManaEntity extends Entity implements IMagickElementObject, IOwnerEntity, ILightSourceEntity {
     protected HashMap<Integer, VectorHitReaction> hitReactions = new HashMap<Integer, VectorHitReaction>();
     public boolean cansee;
     protected TrailParticle trail;
     protected HashMap<Integer, TrailParticle> traceEntity = new HashMap<Integer, TrailParticle>();
+    public boolean initial;
 
     private UUID owner_uuid;
     private int owner_id;
@@ -51,6 +55,20 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
             this.owner_id = entityIn.getEntityId();
             this.setOwnerUUID(entityIn.getUniqueID());
         }
+    }
+
+    @Override
+    public boolean isImmuneToFire() {
+        return true;
+    }
+
+    @Override
+    public void forceFireTicks(int ticks) {
+    }
+
+    @Override
+    public int getFireTimer() {
+        return 0;
     }
 
     @Override
@@ -150,14 +168,8 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
             if(this.getDataManager().get(dataUUID).isPresent())
                 return this.getDataManager().get(dataUUID).get();
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
-            MagickCore.LOGGER.warn("dataUUID: " + dataUUID);
-            MagickCore.LOGGER.warn("getDataManager: " + this.getDataManager());
-            //if(this.getDataManager().getDirty() != null) {
-                //MagickCore.LOGGER.warn("contains: " + this.getDataManager().getDirty());
-            //}
-            e.printStackTrace();
         }
         return MagickCore.emptyUUID;
     }
@@ -172,7 +184,11 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
     public void tick() {
         super.tick();
         collideWithNearbyEntities();
+        if(!this.world.isRemote)
+            makeSound();
     }
+
+    protected void makeSound() {}
 
     public VectorHitReaction[] getHitReactions()
     {
@@ -224,6 +240,17 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
         if (this.owner_uuid != null) {
             compound.putUniqueId("Owner", this.owner_uuid);
         }
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        EntityLightSourceHandler.addLightSource(this);
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 15;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class ModEntites {
 	public static final EntityType<AscendantRealmEntity> ascendant_realm = (EntityType<AscendantRealmEntity>) EntityType.Builder.create(AscendantRealmEntity::new, EntityClassification.MISC).size(10.0f, 2.0f).build("ascendant_realm").setRegistryName("ascendant_realm");
 	public static final EntityType<ManaElementOrbEntity> element_orb = (EntityType<ManaElementOrbEntity>) EntityType.Builder.create(ManaElementOrbEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build("element_orb").setRegistryName("element_orb");
 	public static final EntityType<ManaPowerEntity> mana_power = (EntityType<ManaPowerEntity>) EntityType.Builder.create(ManaPowerEntity::new, EntityClassification.MISC).size(0.0f, 0.0f).build("mana_power").setRegistryName("mana_power");
+	public static final EntityType<LifeStateEntity> life_state = (EntityType<LifeStateEntity>) EntityType.Builder.create(LifeStateEntity::new, EntityClassification.MISC).size(0.2f, 0.2f).build("life_state").setRegistryName("life_state");
 
 	@SubscribeEvent
     public static void setupAttributes(FMLCommonSetupEvent event) {
@@ -63,7 +64,8 @@ public class ModEntites {
 				silence_squall,
 				ascendant_realm,
 				element_orb,
-				mana_power
+				mana_power,
+				life_state
 		);
 	}
 	

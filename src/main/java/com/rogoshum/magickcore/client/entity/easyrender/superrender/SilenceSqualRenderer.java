@@ -36,17 +36,17 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
             matrixStackIn.pop();
             float c = entityIn.ticksExisted % 5;
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 4)));
-            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(0)), matrixStackIn, bufferIn, 0.02f * alpha, entityIn.getElement().getRenderer().getColor()
-                    , 8.0f, 2.35f, 6, true, entityIn.getUniqueID().toString(), 0f);
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(0), 1f, 0f), matrixStackIn, bufferIn, 0.0f, 0.2f * alpha, entityIn.getElement().getRenderer().getColor()
+                    , 8.0f, 2.35f, 6, entityIn.getHitReactions(), 0f);
 
-            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(1)), matrixStackIn, bufferIn, 0.02f * alpha, entityIn.getElement().getRenderer().getColor()
-                    , 3.85f, 4.25f, 5, true, entityIn.getUniqueID().toString(), 0f);
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(1), 1f, 0f), matrixStackIn, bufferIn, 0.0f,0.2f * alpha, entityIn.getElement().getRenderer().getColor()
+                    , 3.85f, 4.25f, 5, entityIn.getHitReactions(), 0f);
 
-            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(2)), matrixStackIn, bufferIn, 0.02f * alpha, entityIn.getElement().getRenderer().getColor()
-                    , 6.0f, 6.35f, 4, true, entityIn.getUniqueID().toString(), 0f);
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(2), 1f, 0f), matrixStackIn, bufferIn, 0.0f,0.2f * alpha, entityIn.getElement().getRenderer().getColor()
+                    , 6.0f, 6.35f, 4, entityIn.getHitReactions(), 0f);
 
-            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(3)), matrixStackIn, bufferIn, 0.02f * alpha, entityIn.getElement().getRenderer().getColor()
-                    , 2f, 10.25f, 3, true, entityIn.getUniqueID().toString(), 0f);
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(entityIn.getElement().getRenderer().getWindTexture(3), 1f, 0f), matrixStackIn, bufferIn, 0.0f,0.2f * alpha, entityIn.getElement().getRenderer().getColor()
+                    , 2f, 10.25f, 3, entityIn.getHitReactions(), 0f);
 
         }
     }

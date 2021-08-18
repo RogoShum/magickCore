@@ -29,13 +29,13 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
                     , 1.0f, partialTicks, entityIn.world);
-            if(entityIn.ticksExisted > 30) {
+            if(entityIn.initial) {
                 float scale = Math.min(1f, (float) (entityIn.ticksExisted - 30) / 5f);
                 matrixStackIn.scale(1.45f * scale, 1.45f * scale, 1.45f * scale);
                 matrixStackIn.push();
                 float c = entityIn.ticksExisted % 11;
                 matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
                 matrixStackIn.pop();
                 matrixStackIn.push();
                 matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
@@ -43,7 +43,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
                 matrixStackIn.pop();
 
                 matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
             }
         }
     }

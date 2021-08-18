@@ -1,16 +1,17 @@
 package com.rogoshum.magickcore;
 
+import com.rogoshum.magickcore.block.tileentity.*;
 import com.rogoshum.magickcore.capability.*;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.client.tileentity.ElementCrystalRenderer;
-import com.rogoshum.magickcore.client.tileentity.ElementWoolRenderer;
-import com.rogoshum.magickcore.client.tileentity.MagickContainerRenderer;
-import com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer;
+import com.rogoshum.magickcore.client.tileentity.CanSeeTileEntityRenderer;
+import com.rogoshum.magickcore.client.tileentity.MagickRepeaterRenderer;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
+import com.rogoshum.magickcore.event.magickevent.ElementThingEvent;
 import com.rogoshum.magickcore.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.lifestate.LifeState;
 import com.rogoshum.magickcore.network.Networking;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
@@ -91,13 +92,15 @@ public class MagickCore
 
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
         DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
-        ModElements.putElementsIn();
+        ModElements.registryElement();
         ElementOrbEvent.initElementMap();
+        LifeState.init();
         proxy.registerHandlers();
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new MagickLogicEvent());
+        MinecraftForge.EVENT_BUS.register(new ElementThingEvent());
         MinecraftForge.EVENT_BUS.register(new ElementOrbEvent());
         MinecraftForge.EVENT_BUS.register(new AdvancementsEvent());
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -139,14 +142,16 @@ public class MagickCore
     private void doClientStuff(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), (MagickCraftingRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), (CanSeeTileEntityRenderer<MagickCraftingTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_crafting.get(), RenderType.getCutout());
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_container_tileentity.get(), (MagickContainerRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_container_tileentity.get(), (CanSeeTileEntityRenderer<MagickContainerTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_container.get(), RenderType.getCutout());
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_crystal_tileentity.get(), (ElementCrystalRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_crystal_tileentity.get(), (CanSeeTileEntityRenderer<ElementCrystalTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.element_crystal.get(), RenderType.getCutout());
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_wool_tileentity.get(), (ElementWoolRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_wool_tileentity.get(), (CanSeeTileEntityRenderer<ElementWoolTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.element_wool.get(), RenderType.getCutout());
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_repeater_tileentity.get(), (MagickRepeaterRenderer::new));
+        RenderTypeLookup.setRenderLayer(ModBlocks.magick_repeater.get(), RenderType.getCutout());
 
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_barrier.get(), RenderType.getCutout());
     }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ManaGunpowderItem extends BaseItem implements IManaMaterial {
     public ManaGunpowderItem() {
-        super(BaseItem.properties.maxStackSize(2));
+        super(BaseItem.properties);
     }
 
     @Override

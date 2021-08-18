@@ -89,7 +89,7 @@ public class ParticlePack extends EntityPack{
         LitParticle par = new LitParticle(Minecraft.getInstance().world, res, position, scaleWidth, scaleHeight, alpha, maxAge, renderer);
         if(glow)
             par.setGlow();
-        Entity entity = ((ClientWorld)Minecraft.getInstance().world).getEntityByID(trace);
+        Entity entity = Minecraft.getInstance().world.getEntityByID(trace);
 
         if(entity != null)
             par.setTraceTarget(entity);

@@ -23,4 +23,9 @@ public class ManaRuneEntity extends ManaPointEntity {
 
         super.tick();
     }
+
+    @Override
+    public int getSourceLight() {
+        return 8;
+    }
 }

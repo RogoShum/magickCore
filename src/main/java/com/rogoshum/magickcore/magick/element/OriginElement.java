@@ -1,9 +1,6 @@
 package com.rogoshum.magickcore.magick.element;
 
-import com.rogoshum.magickcore.init.ModDamage;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -24,20 +21,20 @@ public class OriginElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
+        public boolean hitEntity(ReleaseAttribute attribute) {
             return false;
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(entity != null && projectile != null)
-                return victim.attackEntityFrom(new IndirectEntityDamageSource(DamageSource.MAGIC.getDamageType(), projectile, entity), force);
-            else if(entity != null)
-                return victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), entity), force);
-            else if(projectile != null)
-                return victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), projectile), force);
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(attribute.entity != null && attribute.projectile != null)
+                return attribute.victim.attackEntityFrom(new IndirectEntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.projectile, attribute.entity), attribute.force);
+            else if(attribute.entity != null)
+                return attribute.victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                return attribute.victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.projectile), attribute.force);
             else
-                return victim.attackEntityFrom(DamageSource.MAGIC, force);
+                return attribute.victim.attackEntityFrom(DamageSource.MAGIC, attribute.force);
         }
 
         @Override
@@ -46,12 +43,12 @@ public class OriginElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity victim, int tick, float force) {
+        public boolean applyBuff(ReleaseAttribute attribute) {
             return false;
         }
 
         @Override
-        public boolean applyDebuff(Entity victim, int tick, float force) {
+        public boolean applyDebuff(ReleaseAttribute attribute) {
             return false;
         }
 

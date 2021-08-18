@@ -1,17 +1,15 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 
 public class ElementContainerItem extends BaseItem{

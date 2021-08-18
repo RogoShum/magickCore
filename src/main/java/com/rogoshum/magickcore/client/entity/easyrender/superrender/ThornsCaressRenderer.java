@@ -37,14 +37,14 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
             matrixStackIn.pop();
             matrixStackIn.push();
             matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 6, 0.4f, entityIn.getHitReactions(), 2.10f, packedLightIn);
+            entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 6, 0.4f, entityIn.getHitReactions(), 2.10f, packedLightIn);
             matrixStackIn.pop();
             float c = entityIn.ticksExisted % 11;
             float degress = 360f * (c / 10);
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(degress));
             //matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(360f * (c / 10)));
-            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_rotate), matrixStackIn, bufferIn, 1.0f, entityIn.getElement().getRenderer().getColor()
-                    , 1.0f, 0.35f, 8, true, entityIn.getUniqueID().toString(), 0.5f);
+            RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_rotate, 1f, 0f), matrixStackIn, bufferIn, 0.0f, 1.0f, entityIn.getElement().getRenderer().getColor()
+                    , 1.0f, 1f, 8, entityIn.getHitReactions(), 0.5f);
             matrixStackIn.scale(1.25f, 1.25f, 1.25f);
         }
     }

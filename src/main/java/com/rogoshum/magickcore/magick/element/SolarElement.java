@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.magick.element;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,26 +27,26 @@ public class SolarElement extends MagickElement{
         }
 
         @Override
-        public boolean hitEntity(Entity entity, Entity victim, int tick, float force) {
-            victim.setFire(Math.max(tick / 10, 20));
-            if(victim.getFireTimer() > 0)
+        public boolean hitEntity(ReleaseAttribute attribute) {
+            attribute.victim.setFire(Math.max(attribute.tick / 10, 20));
+            if(attribute.victim.getFireTimer() > 0)
                 return true;
             return false;
         }
 
         @Override
-        public boolean damageEntity(Entity entity, Entity projectile, Entity victim, int tick, float force) {
-            if(victim.getFireTimer() > 0)
-                force *= 2;
+        public boolean damageEntity(ReleaseAttribute attribute) {
+            if(attribute.victim.getFireTimer() > 0)
+                attribute.force *= 2;
 
-            if(entity != null && projectile != null)
-                return victim.attackEntityFrom(ModDamage.applyProjectileSolarDamage(entity, projectile), force);
-            else if(entity != null)
-                return victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(entity), force);
-            else if(projectile != null)
-                return victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(projectile), force);
+            if(attribute.entity != null && attribute.projectile != null)
+                return attribute.victim.attackEntityFrom(ModDamage.applyProjectileSolarDamage(attribute.entity, attribute.projectile), attribute.force);
+            else if(attribute.entity != null)
+                return attribute.victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(attribute.entity), attribute.force);
+            else if(attribute.projectile != null)
+                return attribute.victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(attribute.projectile), attribute.force);
             else
-                return victim.attackEntityFrom(ModDamage.getSolarDamage(), force);
+                return attribute.victim.attackEntityFrom(ModDamage.getSolarDamage(), attribute.force);
         }
 
         @Override
@@ -61,14 +62,14 @@ public class SolarElement extends MagickElement{
         }
 
         @Override
-        public boolean applyBuff(Entity entity, int tick, float force) {
-            return ModBuff.applyBuff(entity, LibBuff.RADIANCE_WELL, tick, force, true);
+        public boolean applyBuff(ReleaseAttribute attribute) {
+            return ModBuff.applyBuff(attribute.entity, LibBuff.RADIANCE_WELL, attribute.tick, attribute.force, true);
         }
 
         @Override
-        public boolean applyDebuff(Entity entity, int tick, float force) {
-            entity.setFire((int) (tick * (force + 1)));
-            if(entity.getFireTimer() > 0)
+        public boolean applyDebuff(ReleaseAttribute attribute) {
+            attribute.entity.setFire((int) (attribute.tick * (attribute.force + 1)));
+            if(attribute.entity.getFireTimer() > 0)
                 return true;
             return false;
         }

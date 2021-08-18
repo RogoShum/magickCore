@@ -1,9 +1,10 @@
 package com.rogoshum.magickcore.entity;
 
-import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -25,21 +26,13 @@ public class ManaOrbEntity extends ManaProjectileEntity {
         if(this.func_234616_v_() == null || p_213868_1_.getEntity().getEntityId() != this.func_234616_v_().getEntityId())
         {
             if(this.getManaData() != null) {
-                if(this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()))
-                {
-                    EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-                    MinecraftForge.EVENT_BUS.post(event);
-                    this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce() / 5);
-                }
-
-                if(this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()))
-                    this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce() / 5);
-                if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
-                    this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce() / 5);
+                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+                MinecraftForge.EVENT_BUS.post(event);
+                ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce() / 5);
+                MagickReleaseHelper.applyElementFunction(this.getElement(), this.getManaType(), attribute);
             }
 
             if (!this.world.isRemote) {
-                this.world.setEntityState(this, (byte)3);
                 this.remove();
             }
         }
@@ -57,5 +50,10 @@ public class ManaOrbEntity extends ManaProjectileEntity {
         sphere.setOwner(this.func_234616_v_());
         this.world.addEntity(sphere);
         super.remove();
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 3;
     }
 }

@@ -20,18 +20,18 @@ public class ModElements {
     private static MagickElement WITHER = new WitherElement(LibElements.WITHER, new WitherElement.WitherAbility(ModDamage.getWitherDamage()));
     private static MagickElement TAKEN = new TakenElement(LibElements.TAKEN, new TakenElement.TakenAbility(ModDamage.getTakenDamage()));
 
-    public static void putElementsIn()
+    public static void registryElement()
     {
-        ModElements.putElementIn(LibElements.ORIGIN, ORIGIN);
-        ModElements.putElementIn(LibElements.SOLAR, SOLAR);
-        ModElements.putElementIn(LibElements.ARC, ARC);
-        ModElements.putElementIn(LibElements.VOID, VOID);
-        ModElements.putElementIn(LibElements.STASIS, STASIS);
-        ModElements.putElementIn(LibElements.WITHER, WITHER);
-        ModElements.putElementIn(LibElements.TAKEN, TAKEN);
+        ModElements.putElement(LibElements.ORIGIN, ORIGIN);
+        ModElements.putElement(LibElements.SOLAR, SOLAR);
+        ModElements.putElement(LibElements.ARC, ARC);
+        ModElements.putElement(LibElements.VOID, VOID);
+        ModElements.putElement(LibElements.STASIS, STASIS);
+        ModElements.putElement(LibElements.WITHER, WITHER);
+        ModElements.putElement(LibElements.TAKEN, TAKEN);
     }
 
-    public static void putElementIn(String name, IManaElement element)
+    public static void putElement(String name, IManaElement element)
     {
         elements.put(name, element);
     }

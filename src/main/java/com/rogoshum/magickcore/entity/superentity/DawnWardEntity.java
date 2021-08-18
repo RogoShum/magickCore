@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISuperEntity;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
@@ -34,19 +34,9 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     @Override
     public void tick() {
         super.tick();
-        if(!this.world.isRemote && this.ticksExisted == 1)
-        {
-            this.playSound(ModSounds.dawnward_spawn.get(), 2.0F, 1.0F - this.rand.nextFloat());
-        }
-
-        if(!this.world.isRemote && this.ticksExisted % 10 == 0)
-        {
-            this.playSound(ModSounds.wall_ambience.get(), 0.2F, 1.0F - this.rand.nextFloat());
-        }
-
-        Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(1000), new VectorHitReaction(rand, 0.4F, 0.01F));
-
+        if(this.ticksExisted <= 25)
+            return;
+        initial = true;
 
         Iterator<Integer> iter = hitReactions.keySet().iterator();
         while (iter.hasNext()) {
@@ -66,6 +56,19 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
                     , 0.2f, 0.2f, 0.9f, 50, this.getElement().getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
+        }
+    }
+
+    @Override
+    protected void makeSound() {
+        if(this.ticksExisted == 1)
+        {
+            this.playSound(ModSounds.dawnward_spawn.get(), 2.0F, 1.0F - this.rand.nextFloat());
+        }
+
+        if(this.ticksExisted % 10 == 0)
+        {
+            this.playSound(ModSounds.wall_ambience.get(), 0.2F, 1.0F - this.rand.nextFloat());
         }
     }
 
@@ -166,8 +169,8 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    public float getBrightness() {
-        return 1.0f;
+    public int getSourceLight() {
+        return 15;
     }
 
     @Override

@@ -1,19 +1,16 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISuperEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
-import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModBuff;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModSounds;
-import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -30,19 +27,6 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     public void tick() {
         super.tick();
         Entity cloest = null;
-        if(!this.world.isRemote && this.ticksExisted == 1)
-        {
-            this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.rand.nextFloat() / 3);
-        }
-
-        if(!this.world.isRemote && this.rand.nextBoolean())
-        {
-            this.playSound(SoundEvents.UI_TOAST_OUT, 1.0F, 1.0F + this.rand.nextFloat());
-        }
-        if(!this.world.isRemote && this.ticksExisted % 12 == 0)
-        {
-            this.playSound(ModSounds.squal_ambience.get(), 1.0F, 1.3F - this.rand.nextFloat() / 3);
-        }
 
         this.traceEntity(null, 16, new Vector3d(0, 0, 0), 0.0f, 0);
         //if(this.ticksExisted % 2 ==0) {
@@ -57,12 +41,17 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
                         cloest = entity;
                     if(this.getDistance(entity) <= 9.5)
-                        ModBuff.applyBuff(entity, LibBuff.SLOW, 200, 4, false);
+                    {
+                        ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, entity, 200, 4f);
+                        MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.HIT, attribute);
+                    }
                     if(this.getDistance(entity) <= 3) {
-                        ModBuff.applyBuff(entity, LibBuff.FREEZE, 200, 1, false);
+                        ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, entity, 200, 1f);
+                        MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.DEBUFF, attribute);
                         if(this.ticksExisted % 20 == 0)
                         {
-                            this.getElement().getAbility().damageEntity(this.getOwner(), this, entity, 20, 1f);
+                            attribute = new ReleaseAttribute(this.getOwner(), this, entity, 20, 1f);
+                            MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.ATTACK, attribute);
                             entity.hurtResistantTime = 0;
                         }
                     }
@@ -86,6 +75,23 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         this.setMotion(this.getMotion().scale(0.9));
         //this.setNoGravity(true);
         applyParticle();
+    }
+
+    @Override
+    protected void makeSound() {
+        if(this.ticksExisted == 1)
+        {
+            this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.rand.nextFloat() / 3);
+        }
+
+        if(this.rand.nextBoolean())
+        {
+            this.playSound(SoundEvents.UI_TOAST_OUT, 1.0F, 1.0F + this.rand.nextFloat());
+        }
+        if(this.ticksExisted % 12 == 0)
+        {
+            this.playSound(ModSounds.squal_ambience.get(), 1.0F, 1.3F - this.rand.nextFloat() / 3);
+        }
     }
 
     protected void applyParticle()
@@ -131,5 +137,10 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                 MagickCore.addMagickParticle(litPar);
             }
         }
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 15;
     }
 }

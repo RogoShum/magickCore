@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 public class TimeManagerRenderer extends EntityRenderer<TimeManagerEntity> {
     private EntityModel<TimeManagerEntity> flyingSwordModel;

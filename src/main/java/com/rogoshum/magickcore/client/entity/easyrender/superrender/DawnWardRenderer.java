@@ -16,19 +16,19 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
 
     @Override
     public void render(DawnWardEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-
-        int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
+        //int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
+        int packedLightIn = RenderHelper.renderLight;
         Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 6.0f, entityIn.getElement().getRenderer().getColor()
                     , 2.0f, partialTicks, entityIn.world);
-            if(entityIn.ticksExisted > 25) {
+            if(entityIn.initial) {
                 float scale = Math.min(1f, (float) (entityIn.ticksExisted - 25) / 5f) * entityIn.getWidth();
                 matrixStackIn.scale(scale, scale, scale);
                 VectorHitReaction[] test = {};
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.2f, entityIn.getHitReactions(), 0.3f, packedLightIn);
-                matrixStackIn.scale(0.97f, 0.97f, 0.97f);
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.5f, entityIn.getHitReactions(), 0.3f, packedLightIn);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(RenderHelper.ripple_2, 3f, 0f), 16, 1.0f, entityIn.getHitReactions(), 0.3f, packedLightIn);
+                matrixStackIn.scale(0.99f, 0.99f, 0.99f);
+                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 16, 0.3f, entityIn.getHitReactions(), 0.5f, packedLightIn);
             }
         }
     }

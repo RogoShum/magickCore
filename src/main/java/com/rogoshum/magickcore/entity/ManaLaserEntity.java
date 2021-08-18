@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.entity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
@@ -65,21 +65,10 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     @Override
     protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
         if(this.getManaData() != null) {
-            if (this.getManaType().getLabel().equals(EnumManaType.ATTACK.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity())) {
-                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-                MinecraftForge.EVENT_BUS.post(event);
-                this.getElement().getAbility().damageEntity(this.func_234616_v_(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
-            }
-
-            if (this.getManaType().getLabel().equals(EnumManaType.DEBUFF.getLabel()) && !MagickReleaseHelper.sameLikeOwner(this.func_234616_v_(), p_213868_1_.getEntity()))
-            {
-                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-                MinecraftForge.EVENT_BUS.post(event);
-                this.getElement().getAbility().applyDebuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
-            }
-
-            if(this.getManaType().getLabel().equals(EnumManaType.BUFF.getLabel()))
-                this.getElement().getAbility().applyBuff(p_213868_1_.getEntity(), this.getTickTime(), this.getForce()/3);
+            EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+            MinecraftForge.EVENT_BUS.post(event);
+            ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, p_213868_1_.getEntity(), this.getTickTime(), this.getForce() / 3);
+            MagickReleaseHelper.applyElementFunction(this.getElement(), this.getManaType(), attribute);
         }
     }
 }

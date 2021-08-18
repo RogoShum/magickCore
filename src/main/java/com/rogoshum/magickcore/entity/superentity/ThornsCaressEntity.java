@@ -1,18 +1,17 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISuperEntity;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -27,19 +26,10 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public void tick() {
         super.tick();
-
-        for(int i = 0; i < 30;++i)
+        //for(int i = 0; i < 3;++i)
         {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
             this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.02F));
-        }
-        if(!this.world.isRemote && this.ticksExisted == 1)
-        {
-            this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.rand.nextFloat() / 3);
-        }
-        if(!this.world.isRemote && this.ticksExisted % 13 == 0)
-        {
-            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() / 5);
         }
         Iterator<Integer> iter = hitReactions.keySet().iterator();
         while (iter.hasNext()) {
@@ -87,6 +77,18 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         applyParticle();
     }
 
+    @Override
+    protected void makeSound() {
+        if(this.ticksExisted == 1)
+        {
+            this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.rand.nextFloat() / 3);
+        }
+        if(this.ticksExisted % 13 == 0)
+        {
+            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() / 5);
+        }
+    }
+
     protected void applyParticle()
     {
         if(this.world.isRemote() && this.getElement() != null)
@@ -115,5 +117,10 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 MagickCore.addMagickParticle(litPar);
             }
         }
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 15;
     }
 }

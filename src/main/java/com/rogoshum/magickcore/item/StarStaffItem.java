@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;

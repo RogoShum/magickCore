@@ -5,10 +5,13 @@ import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
 import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -38,7 +41,8 @@ public class OrbBottleItem extends BaseItem{
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")){
             IManaElement element = ModElements.getElement(tag.getString("ELEMENT"));
-            element.getAbility().applyDebuff(entityLiving, 60, 2);
+            ReleaseAttribute attribute = new ReleaseAttribute(null, null, entityLiving, 60, 2);
+            MagickReleaseHelper.applyElementFunction(element, EnumManaType.DEBUFF, attribute);
             return ItemStack.EMPTY;
         }
         return super.onItemUseFinish(stack, worldIn, entityLiving);

@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.entity.ManaRuneEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;

@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.capability;
 
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;

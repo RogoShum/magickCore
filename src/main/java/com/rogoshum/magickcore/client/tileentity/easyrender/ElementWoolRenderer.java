@@ -64,36 +64,36 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 1.0);
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.translate(1.0, 0.0, 0.0);
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270));
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(270));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate)), alpha, color);
+        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
     }
 }

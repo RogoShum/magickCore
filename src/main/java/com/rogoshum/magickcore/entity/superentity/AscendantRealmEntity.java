@@ -2,11 +2,13 @@ package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
-import com.rogoshum.magickcore.api.ISuperEntity;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.capability.ITakenState;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
+import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -24,15 +26,6 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     @Override
     public void tick() {
         super.tick();
-        if(!this.world.isRemote && this.ticksExisted == 1)
-        {
-            this.playSound(SoundEvents.ENTITY_BLAZE_DEATH, 2.0F, 1.0F - this.rand.nextFloat());
-        }
-
-        if(!this.world.isRemote && this.rand.nextInt(200) == 0)
-        {
-            this.playSound(SoundEvents.ENTITY_BLAZE_AMBIENT, 2.0F, 1.0F - this.rand.nextFloat());
-        }
         applyParticle();
         List<LivingEntity> list = getLivingEntity(1);
 
@@ -43,9 +36,23 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
             ITakenState state = living.getCapability(MagickCore.takenState).orElse(null);
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living))
             {
-                this.getElement().getAbility().hitEntity(this, living, this.getTickTime(), 1);
-                this.getElement().getAbility().damageEntity(this.getOwner(), this, living, this.getTickTime() / 4, EnumManaLimit.FORCE.getValue());
+                ReleaseAttribute attribute = new ReleaseAttribute(this.getOwner(), this, living, this.getTickTime() / 4, EnumManaLimit.FORCE.getValue());
+                MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.HIT, attribute);
+                MagickReleaseHelper.applyElementFunction(this.getElement(), EnumManaType.ATTACK, attribute);
             }
+        }
+    }
+
+    @Override
+    protected void makeSound() {
+        if(this.ticksExisted == 1)
+        {
+            this.playSound(SoundEvents.ENTITY_BLAZE_DEATH, 2.0F, 1.0F - this.rand.nextFloat());
+        }
+
+        if(this.rand.nextInt(200) == 0)
+        {
+            this.playSound(SoundEvents.ENTITY_BLAZE_AMBIENT, 2.0F, 1.0F - this.rand.nextFloat());
         }
     }
 

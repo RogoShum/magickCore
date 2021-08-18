@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,7 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
-public class ElementItem extends BaseItem{
+public class ElementItem extends BaseItem implements IManaMaterial {
     private final String element;
     public ElementItem(String element) {
         super(BaseItem.properties.maxStackSize(8));
@@ -28,5 +30,19 @@ public class ElementItem extends BaseItem{
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
+    }
+
+    @Override
+    public int getManaNeed() {
+        return 50;
+    }
+
+    @Override
+    public boolean upgradeManaItem(IManaItemData data) {
+        if(!data.getElement().getType().equals(element)){
+            data.setElement(ModElements.getElement(element));
+            return true;
+        }
+        return false;
     }
 }

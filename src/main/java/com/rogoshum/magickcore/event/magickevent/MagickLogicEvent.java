@@ -5,34 +5,32 @@ import java.util.*;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IMagickElementObject;
 import com.rogoshum.magickcore.api.IManaItem;
-import com.rogoshum.magickcore.api.IManaMob;
-import com.rogoshum.magickcore.api.IOwnerEntity;
+import com.rogoshum.magickcore.api.entity.IManaMob;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.*;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.ManaEyeEntity;
 import com.rogoshum.magickcore.entity.ManaItemEntity;
-import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
-import com.rogoshum.magickcore.helper.MagickReleaseHelper;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.helper.RoguelikeHelper;
+import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
+import com.rogoshum.magickcore.tool.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModRecipes;
-import com.rogoshum.magickcore.item.ElementCrystalItem;
 import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import com.rogoshum.magickcore.network.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -48,25 +46,23 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -74,10 +70,17 @@ public class MagickLogicEvent {
 	private static List<Entity> timeLords = new ArrayList<Entity>();
 
 	@SubscribeEvent
+	public void updateLightSource(TickEvent.WorldTickEvent event) {
+		if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START)
+			EntityLightSourceHandler.tick();
+	}
+
+	@SubscribeEvent
 	public void updateEntity(TickEvent.WorldTickEvent event)
 	{
-		if(event.phase == TickEvent.Phase.END && event.side.isServer())
+		if(event.phase == TickEvent.Phase.END && event.side.isServer()){
 			((ServerWorld)event.world).getEntities().forEach((e) -> MinecraftForge.EVENT_BUS.post(new EntityEvents.EntityUpdateEvent(e)));
+		}
 	}
 
 	@SubscribeEvent
@@ -114,7 +117,11 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof ServerPlayerEntity)
 		{
 			ServerPlayerEntity player = (ServerPlayerEntity)event.getEntity();
-			if(!player.getPersistentData().contains("MAGICKCORE_FIRST"))
+			if(!player.getPersistentData().contains(PlayerEntity.PERSISTED_NBT_TAG))
+				player.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, new CompoundNBT());
+
+			CompoundNBT PERSISTED_NBT_TAG = player.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+			if(!PERSISTED_NBT_TAG.contains("MAGICKCORE_FIRST"))
 			{
 				Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
 				if(book != null)
@@ -122,7 +129,7 @@ public class MagickLogicEvent {
 					ItemStack stack = new ItemStack(book);
 					NBTTagHelper.getStackTag(stack).putString("patchouli:book", "magickcore:magickcore");
 					player.inventory.addItemStackToInventory(stack);
-					player.getPersistentData().putBoolean("MAGICKCORE_FIRST", true);
+					PERSISTED_NBT_TAG.putBoolean("MAGICKCORE_FIRST", true);
 				}
 			}
 		}
@@ -310,10 +317,15 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof IMagickElementObject)
 		{
 			IMagickElementObject mana = (IMagickElementObject) event.getEntity();
-			IManaData data = event.getEntity().getCapability(MagickCore.manaData).orElse(null);
+			LazyOptional<IManaData> data = event.getEntity().getCapability(MagickCore.manaData);
 
-			if(data != null)
-				mana.getElement().getAbility().hitEntity(event.getEntity(), event.getVictim(), data.getTickTime(), data.getForce());
+			data.ifPresent((iManaData -> {
+				ReleaseAttribute attribute = new ReleaseAttribute(event.getEntity(), event.getEntity(), event.getVictim(), iManaData.getTickTime(), iManaData.getForce());
+				if(event.getEntity() instanceof IOwnerEntity)
+					attribute = new ReleaseAttribute(((IOwnerEntity) event.getEntity()).getOwner(), event.getEntity(), event.getVictim(), iManaData.getTickTime(), iManaData.getForce());
+				MagickReleaseHelper.applyElementFunction(iManaData.getElement(), EnumManaType.HIT, attribute);
+			}));
+
 
 			if(event.getVictim() instanceof ManaProjectileEntity)
 			{
@@ -456,7 +468,8 @@ public class MagickLogicEvent {
 			if(!(entity instanceof PlayerEntity)) {
 				IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
 				if (attacker != null && attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= event.getAmount() || MagickCore.rand.nextBoolean())) {
-					if(attacker.getElement().getAbility().applyDebuff(event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3) || state.getManaValue() >= event.getAmount())
+					ReleaseAttribute attribute = new ReleaseAttribute(entity, event.getSource().getImmediateSource(), event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3);
+					if(MagickReleaseHelper.applyElementFunction(attacker.getElement(), EnumManaType.DEBUFF, attribute) || state.getManaValue() >= event.getAmount())
 						state.setManaValue(state.getManaValue() - event.getAmount());
 				}
 			}

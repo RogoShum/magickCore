@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.init;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
 import com.rogoshum.magickcore.recipes.recipe.ElementItemRecipes;

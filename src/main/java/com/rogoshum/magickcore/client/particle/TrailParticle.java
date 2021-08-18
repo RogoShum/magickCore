@@ -47,7 +47,7 @@ public class TrailParticle{
 			{
 				//
 				if(owner instanceof Entity)
-					trailPosition[c] = trailPosition[c].subtract(((Entity)owner).getMotion().scale(0.5d));
+					trailPosition[c] = trailPosition[c].subtract(((Entity)owner).getMotion());
 
 				trailPosition[c] = trailPosition[c].subtract(motion.scale(0.5d));
 

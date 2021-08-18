@@ -1,15 +1,9 @@
 package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaItem;
-import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.helper.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -21,12 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.registry.Registry;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 

@@ -35,8 +35,8 @@ public class PlayerShieldRenderer extends EasyLayerRender<LivingEntity> {
                 matrixStackIn.scale(entityIn.getWidth() * 3f, entityIn.getHeight() * 1.5f, entityIn.getWidth() * 3f);
                 //matrixStackIn.scale(0.97f, 0.97f, 0.97f);
                 VectorHitReaction[] test = {};
-                state.getElement().getRenderer().renderSphere(positionMatrix, (IRenderTypeBuffer.Impl) bufferIn, RenderHelper.getTexedSphereGlow(blank), 16, 0.1f * alpha, test, false, Integer.toString(entityIn.getEntityId()), packedLightIn);
-                state.getElement().getRenderer().renderSphere(positionMatrix, (IRenderTypeBuffer.Impl) bufferIn, RenderHelper.getTexedSphereGlow(sphere_rotate), 16, 0.5f * alpha, test, false, Integer.toString(entityIn.getEntityId()), packedLightIn);
+                //state.getElement().getRenderer().renderSphere(positionMatrix, (IRenderTypeBuffer.Impl) bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 16, 0.1f * alpha, test, false, Integer.toString(entityIn.getEntityId()), packedLightIn);
+                state.getElement().getRenderer().renderSphere(positionMatrix, (IRenderTypeBuffer.Impl) bufferIn, RenderHelper.getTexedSphereGlow(sphere_rotate, 1f, 0f), 16, alpha, test, false, Integer.toString(entityIn.getEntityId()), packedLightIn);
                 matrixStackIn.scale(0.56f, 0.56f, 0.56f);
                 RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entityIn.ticksExisted % 10) + ".png"))), alpha, state.getElement().getRenderer().getColor());
             }
