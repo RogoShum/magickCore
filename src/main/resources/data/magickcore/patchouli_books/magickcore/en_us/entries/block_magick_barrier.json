@@ -1,0 +1,41 @@
+{
+  "name": "魔法屏障端点",
+  "advancement": "magickcore:learn/magick_barrier",
+  "icon": "magickcore:magick_barrier",
+  "category": "mana_block",
+  "pages": [
+	{
+	  "title": "魔法屏障端点",
+      "type": "spotlight",
+	  "item": "magickcore:magick_barrier",
+	  "text": "魔法屏障是一种可以穿过的屏障物体，需要至少三个端点来搭建，端点距离超过一定距离后无法连成屏障。$(br2)魔法屏障可以继承【生命状态】里的一些性质，包括魔法类型、魔力值、威力值等。$(br2)魔法屏障属于中继器方块的其中一种。"
+    },
+	{
+      "type": "image",
+	  "title": "完整的魔法屏障",
+	  "images": ["magickcore:textures/book_image/barrier.png"],
+	  "border": "true"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+      "text": "需要注意的是，【生命状态】内必须携带魔力才可以激活屏障。激活一个屏障端点后会自动向另外两个屏障端点释放相同属性的【生命状态】。"
+    },
+	{
+      "type": "image",
+	  "title": "虚空元素的魔法屏障",
+	  "images": ["magickcore:textures/book_image/void_barrier.png"],
+	  "border": "true"
+    },
+	{
+      "type": "text",
+	  "title": " ",
+	  "text": "【生命状态】所携带的元素属性亦可以施加到屏障上。同时需要相应的魔法类型的魔法材料（如攻击、BUFF、DEBUFF）才可以使屏障正常工作。" 
+    },
+	{
+	  "title": "端点合成",
+      "type": "crafting",
+	  "recipe": "magickcore:magick_barrier"
+    }
+  ]
+}

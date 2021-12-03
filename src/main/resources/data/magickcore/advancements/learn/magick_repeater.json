@@ -1,0 +1,11 @@
+{
+  "parent": "magickcore:learn/magick_supplier",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "magick_repeater"
+		}
+	}
+  }
+}
