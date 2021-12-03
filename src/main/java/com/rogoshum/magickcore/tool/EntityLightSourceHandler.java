@@ -46,16 +46,21 @@ public class EntityLightSourceHandler {
             ILightSourceEntity entity = lightList.get(i);
 
             BlockPos pos = entityPos(entity);
-            if (!entity.isAlive() || (side.isClient() && entity.getEntityWorld().getDimensionType() != Minecraft.getInstance().world.getDimensionType()))
+            if (!entity.alive() || (side.isClient() && entity.world().getDimensionType() != Minecraft.getInstance().world.getDimensionType()))
                 lightList.remove(entity);
             else {
-                ConcurrentHashMap<BlockPos, ILightSourceEntity> map = posMap.get(entity.getEntityWorld().getDimensionType());
+                ConcurrentHashMap<BlockPos, ILightSourceEntity> map = posMap.get(entity.world().getDimensionType());
                 boolean containKey = false;
                 for (BlockPos pos1 : map.keySet()) {
-                    if (pos1.equals(pos)){
-                        containKey = true;
-                        if(map.get(pos1).getSourceLight() < entity.getSourceLight())
-                            map.put(pos, entity);
+                    try{
+                        if (pos1.equals(pos)){
+                            containKey = true;
+                            if(map.get(pos1) != null && map.get(pos1).getSourceLight() < entity.getSourceLight())
+                                map.put(pos, entity);
+                        }
+                    }
+                    catch (Exception ignored) {
+
                     }
                 }
 
@@ -66,10 +71,10 @@ public class EntityLightSourceHandler {
                 boolean flag = tryAddLightSource(entity, pos);
                 /*boolean flag1 = false;
 
-                if(!colorCache.containsKey(entity.getEntityWorld().getDimensionType()))
-                    colorCache.put(entity.getEntityWorld().getDimensionType(), new HashMap<>());
+                if(!colorCache.containsKey(entity.world().getDimensionType()))
+                    colorCache.put(entity.world().getDimensionType(), new HashMap<>());
 
-                HashMap<BlockPos, Color> colorHashMap = colorCache.get(entity.getEntityWorld().getDimensionType());
+                HashMap<BlockPos, Color> colorHashMap = colorCache.get(entity.world().getDimensionType());
                 for (BlockPos pos1 : colorHashMap.keySet()) {
                     if (pos1.equals(pos)) {
                         flag1 = true;
@@ -86,7 +91,7 @@ public class EntityLightSourceHandler {
                 }
 
                 if(side.isClient() && flag)
-                    notifyBlockUpdate(entity.getEntityWorld(), pos, entity.getSourceLight());
+                    notifyBlockUpdate(entity.world(), pos, entity.getSourceLight());
 
                  */
             }
@@ -105,12 +110,12 @@ public class EntityLightSourceHandler {
                     continue;
                 }
 
-                if (!pos.equals(entityPos(entity)) || !entity.isAlive() || (side.isClient() && entity.getEntityWorld().getDimensionType() != Minecraft.getInstance().world.getDimensionType())) {
+                if (!pos.equals(entityPos(entity)) || !entity.alive() || (side.isClient() && entity.world().getDimensionType() != Minecraft.getInstance().world.getDimensionType())) {
 
                     boolean flag = tryRemoveLightSource(entity, pos);
 
                     if(side.isClient() && flag)
-                        notifyBlockUpdate(entity.getEntityWorld(), pos, entity.getSourceLight());
+                        notifyBlockUpdate(entity.world(), pos, entity.getSourceLight());
                     posIterator.remove();
                 }
             }
@@ -240,36 +245,36 @@ public class EntityLightSourceHandler {
     }
 
     public static BlockPos entityPos(ILightSourceEntity entity) {
-        return new BlockPos(entity.getPositionVec().add(0, entity.getEyeHeight(), 0));
+        return new BlockPos(entity.positionVec().add(0, entity.eyeHeight(), 0));
     }
 
     private static boolean tryAddLightSource(ILightSourceEntity entity, BlockPos pos) {
-        if (!(entity.getEntityWorld() instanceof ServerWorld)) return false;
-        Block block = entity.getEntityWorld().getBlockState(pos).getBlock();
+        if (!(entity.world() instanceof ServerWorld)) return false;
+        Block block = entity.world().getBlockState(pos).getBlock();
         if (block.equals(Blocks.AIR))
-            return entity.getEntityWorld().setBlockState(pos, ModBlocks.fake_air.get().withLight(entity.getSourceLight()));
+            return entity.world().setBlockState(pos, ModBlocks.fake_air.get().withLight(entity.getSourceLight()));
 
         if (block.equals(Blocks.CAVE_AIR))
-            return entity.getEntityWorld().setBlockState(pos, ModBlocks.fake_cave_air.get().withLight(entity.getSourceLight()));
+            return entity.world().setBlockState(pos, ModBlocks.fake_cave_air.get().withLight(entity.getSourceLight()));
 
         if (block.equals(Blocks.WATER))
-            return entity.getEntityWorld().setBlockState(pos, ModBlocks.fake_water.get().withLightAndFluid(entity.getSourceLight(), entity.getEntityWorld().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
+            return entity.world().setBlockState(pos, ModBlocks.fake_water.get().withLightAndFluid(entity.getSourceLight(), entity.world().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
 
         return false;
     }
 
     private static boolean tryRemoveLightSource(ILightSourceEntity entity, BlockPos pos) {
-        if (!(entity.getEntityWorld() instanceof ServerWorld)) return false;
-        Block block = entity.getEntityWorld().getBlockState(pos).getBlock();
+        if (!(entity.world() instanceof ServerWorld)) return false;
+        Block block = entity.world().getBlockState(pos).getBlock();
 
         if (block.equals(ModBlocks.fake_air.get()))
-            return entity.getEntityWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+            return entity.world().setBlockState(pos, Blocks.AIR.getDefaultState());
 
         if (block.equals(ModBlocks.fake_cave_air.get()))
-            return entity.getEntityWorld().setBlockState(pos, Blocks.CAVE_AIR.getDefaultState());
+            return entity.world().setBlockState(pos, Blocks.CAVE_AIR.getDefaultState());
 
         if (block.equals(ModBlocks.fake_water.get()))
-            return entity.getEntityWorld().setBlockState(pos, Blocks.WATER.getDefaultState().with(FlowingFluidBlock.LEVEL, entity.getEntityWorld().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
+            return entity.world().setBlockState(pos, Blocks.WATER.getDefaultState().with(FlowingFluidBlock.LEVEL, entity.world().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
 
         return false;
     }
@@ -278,8 +283,8 @@ public class EntityLightSourceHandler {
         if (!lightList.contains(entity) && entity.getSourceLight() > 0) {
             lightList.add(entity);
 
-            if (!posMap.containsKey(entity.getEntityWorld().getDimensionType()))
-                posMap.put(entity.getEntityWorld().getDimensionType(), new ConcurrentHashMap<>());
+            if (!posMap.containsKey(entity.world().getDimensionType()))
+                posMap.put(entity.world().getDimensionType(), new ConcurrentHashMap<>());
         }
     }
 

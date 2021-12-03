@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 public interface ILifeStateTile {
     public void touch(LifeStateEntity entity);
 
-    public BlockPos getPos();
-    public World getWorld();
-    public boolean isRemoved();
+    public BlockPos pos();
+    public World world();
+    public boolean removed();
 }

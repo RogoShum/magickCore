@@ -21,6 +21,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -123,6 +124,21 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
         }
 
         return 0;
+    }
+
+    @Override
+    public BlockPos pos() {
+        return getPos();
+    }
+
+    @Override
+    public World world() {
+        return getWorld();
+    }
+
+    @Override
+    public boolean removed() {
+        return isRemoved();
     }
 
     private float livingBeExploited(LivingEntity living, float mana) {

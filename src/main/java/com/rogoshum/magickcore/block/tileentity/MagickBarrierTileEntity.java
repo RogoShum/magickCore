@@ -27,8 +27,10 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
@@ -178,6 +180,21 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
     @Override
     public boolean isClosed() {
         return PanelHelper.isPanelClosed(this);
+    }
+
+    @Override
+    public BlockPos pos() {
+        return getPos();
+    }
+
+    @Override
+    public World world() {
+        return getWorld();
+    }
+
+    @Override
+    public boolean removed() {
+        return isRemoved();
     }
 
     @Override

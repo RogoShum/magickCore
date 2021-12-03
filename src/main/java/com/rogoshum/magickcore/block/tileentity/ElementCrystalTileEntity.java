@@ -139,22 +139,22 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     }
 
     @Override
-    public boolean isAlive() {
+    public boolean alive() {
         return !this.removed;
     }
 
     @Override
-    public Vector3d getPositionVec() {
+    public Vector3d positionVec() {
         return Vector3d.copyCentered(this.getPos());
     }
 
     @Override
-    public World getEntityWorld() {
+    public World world() {
         return this.getWorld();
     }
 
     @Override
-    public float getEyeHeight() {
+    public float eyeHeight() {
         return 0.5f;
     }
 
@@ -166,6 +166,5 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     @Override
     public void onLoad() {
         super.onLoad();
-        EntityLightSourceHandler.addLightSource(this);
     }
 }

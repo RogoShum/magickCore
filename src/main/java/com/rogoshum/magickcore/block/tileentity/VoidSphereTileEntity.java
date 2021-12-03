@@ -5,6 +5,8 @@ import com.rogoshum.magickcore.entity.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class VoidSphereTileEntity extends TileEntity implements ILifeStateTile {
     public VoidSphereTileEntity() {
@@ -13,4 +15,19 @@ public class VoidSphereTileEntity extends TileEntity implements ILifeStateTile {
 
     @Override
     public void touch(LifeStateEntity entity) {}
+
+    @Override
+    public BlockPos pos() {
+        return getPos();
+    }
+
+    @Override
+    public World world() {
+        return getWorld();
+    }
+
+    @Override
+    public boolean removed() {
+        return isRemoved();
+    }
 }

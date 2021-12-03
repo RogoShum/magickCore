@@ -256,6 +256,26 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
     }
 
     @Override
+    public boolean alive() {
+        return isAlive();
+    }
+
+    @Override
+    public Vector3d positionVec() {
+        return getPositionVec();
+    }
+
+    @Override
+    public World world() {
+        return getEntityWorld();
+    }
+
+    @Override
+    public float eyeHeight() {
+        return getEyeHeight();
+    }
+
+    @Override
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }

@@ -6,13 +6,13 @@ import net.minecraft.world.World;
 public interface ILightSourceEntity {
     public int getSourceLight();
 
-    public boolean isAlive();
+    public boolean alive();
 
-    public Vector3d getPositionVec();
+    public Vector3d positionVec();
 
-    public World getEntityWorld();
+    public World world();
 
-    public float getEyeHeight();
+    public float eyeHeight();
 
     public float[] getColor();
 }

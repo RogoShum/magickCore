@@ -12,8 +12,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -214,6 +216,21 @@ public class MagickRepeaterTileEntity extends CanSeeTileEntity implements ILifeS
         }
 
         compound.putInt("Mode", this.touchMode.mode);
+    }
+
+    @Override
+    public BlockPos pos() {
+        return getPos();
+    }
+
+    @Override
+    public World world() {
+        return getWorld();
+    }
+
+    @Override
+    public boolean removed() {
+        return isRemoved();
     }
 
     public static class InterfaceDirection {

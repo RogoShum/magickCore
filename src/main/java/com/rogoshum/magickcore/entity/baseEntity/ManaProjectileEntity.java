@@ -135,6 +135,26 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     }
 
     @Override
+    public boolean alive() {
+        return isAlive();
+    }
+
+    @Override
+    public Vector3d positionVec() {
+        return getPositionVec();
+    }
+
+    @Override
+    public World world() {
+        return getEntityWorld();
+    }
+
+    @Override
+    public float eyeHeight() {
+        return getEyeHeight();
+    }
+
+    @Override
     public float[] getColor() {
         if(this.getElement() != null && this.getElement().getRenderer() != null)
             return this.getElement().getRenderer().getColor();

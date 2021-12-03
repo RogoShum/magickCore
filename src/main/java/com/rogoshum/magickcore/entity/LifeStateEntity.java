@@ -79,7 +79,7 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
                     this.remove();
                 }
 
-                if (this.supplier.isRemoved())
+                if (this.supplier.removed())
                     this.supplier = null;
             } else {
                 TileEntity entity = getPendingTileEntityAt(supplierWorld, supplierPos);
@@ -92,7 +92,7 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
             }
 
             if (this.repeater != null) {
-                if (this.repeater.isRemoved())
+                if (this.repeater.removed())
                     this.repeater = null;
             } else {
                 TileEntity entity = getPendingTileEntityAt(repeaterWorld, repeaterPos);
@@ -184,12 +184,12 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
         super.writeAdditional(compound);
         this.carrier.serialize(compound);
         if (this.supplier != null) {
-            NBTTagHelper.putVectorDouble(compound, "supplier", Vector3d.copy(this.supplier.getPos()));
-            compound.putString("supplierWorld", this.supplier.getWorld().getDimensionKey().getLocation().toString());
+            NBTTagHelper.putVectorDouble(compound, "supplier", Vector3d.copy(this.supplier.pos()));
+            compound.putString("supplierWorld", this.supplier.world().getDimensionKey().getLocation().toString());
         }
         if (this.repeater != null) {
-            NBTTagHelper.putVectorDouble(compound, "repeater", Vector3d.copy(this.repeater.getPos()));
-            compound.putString("repeaterWorld", this.repeater.getWorld().getDimensionKey().getLocation().toString());
+            NBTTagHelper.putVectorDouble(compound, "repeater", Vector3d.copy(this.repeater.pos()));
+            compound.putString("repeaterWorld", this.repeater.world().getDimensionKey().getLocation().toString());
         }
 
         ManaItemDataHandler.serializeData(compound, this.getElementData());
@@ -261,6 +261,26 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
     @Override
     public int getSourceLight() {
         return 5;
+    }
+
+    @Override
+    public boolean alive() {
+        return isAlive();
+    }
+
+    @Override
+    public Vector3d positionVec() {
+        return getPositionVec();
+    }
+
+    @Override
+    public World world() {
+        return getEntityWorld();
+    }
+
+    @Override
+    public float eyeHeight() {
+        return getEyeHeight();
     }
 
     @Override
