@@ -18,6 +18,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaTakenRenderer;
 import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
+import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElementTool;
@@ -26,6 +27,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.minecart.MinecartEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -37,6 +41,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -64,6 +69,13 @@ public class RenderEvent {
     public static void putLayerRender(Class clas, EasyLayerRender renderer) { layerRenderer.put(clas, renderer); }
     public static void putLaserRender(Class clas, EasyRenderer renderer) { laserRenderer.put(clas, renderer); }
     public static void putTileRender(Class clas, EasyTileRenderer renderer) { tileRenderer.put(clas, renderer); }
+
+    public static <T extends TileEntity> EasyTileRenderer<T> getTileRenderer(T tile){
+        if(tileRenderer.containsKey(tile.getClass()))
+            return tileRenderer.get(tile.getClass());
+
+        return null;
+    }
 
     private static final HashMap<CanSeeTileEntity, Integer> tileRenderTick = new HashMap<CanSeeTileEntity, Integer>();
     private static final ManaFreezeRenderer freezeRender = new ManaFreezeRenderer();
@@ -261,7 +273,7 @@ public class RenderEvent {
             else
                 particles.remove(i);
         }
-
+        ClientProxy.tick++;
         Minecraft.getInstance().world.getAllEntities().forEach((e) -> MinecraftForge.EVENT_BUS.post(new EntityEvents.EntityUpdateEvent(e)));
     }
 

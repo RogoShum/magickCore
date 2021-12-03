@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ManaFermentedSpiderEyeItem extends BaseItem implements IManaMaterial {
     public ManaFermentedSpiderEyeItem() {
-        super(BaseItem.properties);
+        super(BaseItem.properties());
     }
 
     @Override

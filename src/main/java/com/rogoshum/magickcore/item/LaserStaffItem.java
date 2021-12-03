@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class LaserStaffItem extends ManaItem {
     public LaserStaffItem() {
-        super(BaseItem.properties.maxStackSize(1));
+        super(BaseItem.properties().maxStackSize(1));
     }
 
     @Override

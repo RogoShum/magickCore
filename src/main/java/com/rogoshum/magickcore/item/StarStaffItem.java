@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class StarStaffItem extends ManaItem {
     public StarStaffItem() {
-        super(BaseItem.properties.maxStackSize(1));
+        super(BaseItem.properties().maxStackSize(1));
     }
 
     @Override

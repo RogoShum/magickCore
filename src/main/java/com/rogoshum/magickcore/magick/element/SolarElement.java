@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.magick.element;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
@@ -63,14 +64,18 @@ public class SolarElement extends MagickElement{
 
         @Override
         public boolean applyBuff(ReleaseAttribute attribute) {
-            return ModBuff.applyBuff(attribute.entity, LibBuff.RADIANCE_WELL, attribute.tick, attribute.force, true);
+            return ModBuff.applyBuff(attribute.victim, LibBuff.RADIANCE_WELL, attribute.tick, attribute.force, true);
         }
 
         @Override
         public boolean applyDebuff(ReleaseAttribute attribute) {
-            attribute.entity.setFire((int) (attribute.tick * (attribute.force + 1)));
-            if(attribute.entity.getFireTimer() > 0)
-                return true;
+            if(!attribute.victim.isImmuneToFire()){
+                attribute.victim.setFire((int) (attribute.tick * (attribute.force + 1)));
+                if(attribute.victim.getFireTimer() > 0)
+                    return true;
+                else
+                    return false;
+            }
             return false;
         }
 

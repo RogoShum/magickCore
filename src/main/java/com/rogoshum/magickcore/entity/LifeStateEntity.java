@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.entity;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
 import com.rogoshum.magickcore.api.block.IManaSupplierTile;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
@@ -12,6 +13,7 @@ import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.magick.lifestate.LifeStateCarrier;
+import com.rogoshum.magickcore.tool.ProjectileHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -71,7 +73,6 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
 
     @Override
     public void tick() {
-
         if (!this.world.isRemote) {
             if (this.supplier != null) {
                 if (this.supplier.supplyMana(REQUIRE) < REQUIRE) {
@@ -101,7 +102,8 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
         }
         this.setNoGravity(true);
         super.tick();
-        Vector3d motion = this.getMotion().normalize().scale(0.05);
+        this.onImpact(ProjectileHelper.canTouchVisibleBlock(this, this::func_230298_a_));
+        Vector3d motion = this.getMotion().normalize().scale(0.05*(this.getElementData().getRange() + 1));
         this.setMotion(motion);
         this.getCarrier().tick(this);
         updateCarrierNbt();
@@ -113,7 +115,7 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
         LifeStateEntity lifeState = new LifeStateEntity(ModEntites.life_state, world);
         lifeState.setPosition(tileEntity.getPos().getX() + 0.5, tileEntity.getPos().getY() + 0.5, tileEntity.getPos().getZ() + 0.5);
         copyInfo(lifeState);
-        if (!world.isRemote)
+        if (lifeState.supplier.supplyMana(lifeState.getElementData().getMana()) >= lifeState.getElementData().getMana() && !world.isRemote)
             world.addEntity(lifeState);
 
         return lifeState;
@@ -153,7 +155,7 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
         } else {
             CompoundNBT tag = new CompoundNBT();
             this.getCarrier().serialize(tag);
-            ManaItemDataHandler.serializeData(this.dataManager.get(CARRIER_NBT), this.getElementData());
+            ManaItemDataHandler.serializeData(tag, this.getElementData());
             this.dataManager.set(CARRIER_NBT, tag);
         }
     }
@@ -259,5 +261,10 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
     @Override
     public int getSourceLight() {
         return 5;
+    }
+
+    @Override
+    public float[] getColor() {
+        return this.element_data.getElement().getRenderer().getColor();
     }
 }

@@ -31,6 +31,19 @@
     "item.magickcore.mana_nether_wart": "魔力地狱疣",
     "item.magickcore.mana_blaze_rod": "魔力烈焰棒",
 
+    "item.magickcore.repeater": "中继器标牌",
+    "item.magickcore.selector": "选取器标牌",
+    "item.magickcore.entity_repeater": "§9实体",
+    "item.magickcore.ordinary_repeater": "§9常规",
+    "item.magickcore.item_repeater": "§9物品",
+    "item.magickcore.material_repeater": "§9魔法材料",
+    "item.magickcore.potion_repeater": "§9药水",
+    "item.magickcore.entity_selector": "§9实体",
+    "item.magickcore.living_entity_selector": "§9生命体",
+    "item.magickcore.mana_extract_repeater": "§9魔力抽取",
+
+    "item.magickcore.magick_core": "杖芯",
+
     //药水
     "effect.magickcore.shield_regen": "护盾恢复",
     "effect.magickcore.shield_value": "盾容增加",
@@ -116,6 +129,10 @@
     "block.magickcore.magick_container": "魔法容器",
     "block.magickcore.element_crystal": "元素水晶",
     "block.magickcore.element_wool": "元素羊毛毛",
+    "block.magickcore.magick_barrier": "魔法屏障",
+    "block.magickcore.magick_supplier": "生命抽取器",
+    "block.magickcore.magick_repeater": "魔法中继器",
+    "block.magickcore.void_sphere": "虚空球体",
 
     //描述
     "magickcore.description.element": "§d元素§7: %s",
@@ -135,10 +152,10 @@
     "magickcore.description.wither": "§2枯萎",
     "magickcore.description.taken": "§8夺魂",
 
-    "magickcore.material.origin": "原生",
-    "magickcore.material.thunder": "雷霆",
-    "magickcore.material.nether_star": "下界之星",
-    "magickcore.material.ender_dragon": "末影之核",
+    "magickcore.material.origin": "§9原生",
+    "magickcore.material.thunder": "§9电流",
+    "magickcore.material.nether_star": "§9下界之心",
+    "magickcore.material.ender_dragon": "§9末影之核",
 
     "magickcore.description.orb_staff": "§9能够生成球型涡流的法杖",
     "magickcore.description.star_staff": "§9能够生成星辰的法杖",
@@ -180,6 +197,7 @@
     "entity.magickcore.ascendant_realm": "上维领域",
     "entity.magickcore.element_orb": "元素能量",
     "entity.magickcore.mana_power": "原始能量",
+    "entity.magickcore.life_state": "生命状态",
 
     //书
     "magickcore.book.name": "魔法核心指南",

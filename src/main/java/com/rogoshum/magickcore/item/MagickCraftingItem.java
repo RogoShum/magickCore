@@ -7,6 +7,6 @@ import net.minecraft.item.BlockItem;
 
 public class MagickCraftingItem extends BlockItem {
     public MagickCraftingItem() {
-        super(ModBlocks.magick_crafting.get(), BaseItem.properties.maxStackSize(1).setISTER(() -> MagickCraftingItemStackTileEntityRenderer::new));
+        super(ModBlocks.magick_crafting.get(), BaseItem.properties().maxStackSize(1).setISTER(() -> MagickCraftingItemStackTileEntityRenderer::new));
     }
 }

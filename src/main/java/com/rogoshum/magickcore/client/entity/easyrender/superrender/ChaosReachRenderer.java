@@ -27,8 +27,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
-                    , 1.0f, partialTicks, entityIn.world);
+            //EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor(), 1.0f, partialTicks, entityIn.world);
             if(entityIn.initial) {
                 float scale = Math.min(1f, (float) (entityIn.ticksExisted - 30) / 5f);
                 matrixStackIn.scale(1.45f * scale, 1.45f * scale, 1.45f * scale);

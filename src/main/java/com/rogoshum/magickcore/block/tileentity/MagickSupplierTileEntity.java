@@ -5,6 +5,8 @@ import com.rogoshum.magickcore.api.block.ILifeStateTile;
 import com.rogoshum.magickcore.api.block.IManaSupplierTile;
 import com.rogoshum.magickcore.capability.CapabilityEntityState;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModEntites;
@@ -29,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MagickSupplierTileEntity extends TileEntity implements ITickableTileEntity, IManaSupplierTile {
     public int ticksExisted;
     public AxisAlignedBB box;
+    public boolean powered;
 
     public MagickSupplierTileEntity() {
         super(ModTileEntities.magick_supplier_tileentity.get());
@@ -40,9 +43,26 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
         if(this.box == null)
             box = new AxisAlignedBB(this.getPos().up());
 
+        if(world.isRemote){
+            float scale = .1f;
+            ElementRenderer renderer = MagickCore.proxy.getElementRender(LibElements.ORIGIN);
+
+            LitParticle par = new LitParticle(this.world, renderer.getParticleTexture()
+                    , new Vector3d(pos.getX() + 0.5 + MagickCore.getNegativeToOne() * 0.5, pos.getY() + 0.5 + MagickCore.getNegativeToOne() * 0.5, pos.getZ() + 0.5 + MagickCore.getNegativeToOne() * 0.5)
+                    , scale, scale, MagickCore.getNegativeToOne(), 20, renderer);
+            par.setParticleGravity(0);
+            par.setGlow();
+            par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.05);
+            MagickCore.addMagickParticle(par);
+        }
+    }
+
+    public void spawnLifeState() {
+        if(this.box == null)
+            box = new AxisAlignedBB(this.getPos().up());
+
         List<LivingEntity> list = this.world.getEntitiesWithinAABB(LivingEntity.class, this.box);
-        if(this.ticksExisted % 100 == 0 && !this.world.isRemote && !list.isEmpty())
-        {
+        if(!this.world.isRemote && !list.isEmpty()) {
             AtomicReference<TileEntity> targetTile = new AtomicReference<>(null);
             this.world.loadedTileEntityList.forEach((tile) -> {
                 if (tile instanceof ILifeStateTile && (targetTile.get() == null || this.distanceTile(targetTile.get()) > this.distanceTile(tile)))
@@ -62,6 +82,20 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
                 world.addEntity(life);
             }
         }
+    }
+
+    @Override
+    public boolean shouldSpawn(boolean powered) {
+        boolean flag = true;
+
+        if(powered && this.powered)
+            flag = false;
+        else if(!powered)
+            flag = false;
+
+        this.powered = powered;
+
+        return flag;
     }
 
     @Override

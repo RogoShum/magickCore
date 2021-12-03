@@ -33,7 +33,7 @@ import java.util.List;
 public class OrbBottleItem extends BaseItem{
 
     public OrbBottleItem() {
-        super(BaseItem.properties.maxStackSize(1).setISTER(() -> OrbBottleRenderer::new));
+        super(BaseItem.properties().maxStackSize(1).setISTER(() -> OrbBottleRenderer::new));
     }
 
     @Override

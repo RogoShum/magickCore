@@ -5,6 +5,8 @@ import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.capability.IManaData;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
@@ -357,5 +359,12 @@ public abstract class ManaEntity extends Entity implements IMagickElementObject,
     @Override
     public void hitMixing(IMagickElementObject a) {
 
+    }
+
+    @Override
+    public float[] getColor() {
+        if(this.getElement() != null && this.getElement().getRenderer() != null)
+            return this.getElement().getRenderer().getColor();
+        return RenderHelper.ORIGIN;
     }
 }

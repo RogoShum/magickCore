@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.item.ItemEntity;
@@ -15,11 +17,12 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
-public class ElementWoolTileEntity extends CanSeeTileEntity{
+public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
     public ElementWoolTileEntity() {
         super(ModTileEntities.element_wool_tileentity.get());
@@ -78,5 +81,41 @@ public class ElementWoolTileEntity extends CanSeeTileEntity{
     public CompoundNBT write(CompoundNBT compound) {
         compound.putString("TYPE", this.eType);
         return super.write(compound);
+    }
+
+    @Override
+    public int getSourceLight() {
+        return 5;
+    }
+
+    @Override
+    public boolean isAlive() {
+        return !this.removed;
+    }
+
+    @Override
+    public Vector3d getPositionVec() {
+        return Vector3d.copyCentered(this.getPos());
+    }
+
+    @Override
+    public World getEntityWorld() {
+        return this.getWorld();
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 0.5f;
+    }
+
+    @Override
+    public float[] getColor() {
+        return MagickCore.proxy.getElementRender(this.eType).getColor();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        EntityLightSourceHandler.addLightSource(this);
     }
 }

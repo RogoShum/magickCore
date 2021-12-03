@@ -14,7 +14,7 @@ import java.util.UUID;
 public class OrbStaffItem extends ManaItem {
 
     public OrbStaffItem() {
-        super(BaseItem.properties.maxStackSize(1));
+        super(BaseItem.properties().maxStackSize(1));
     }
 
     @Override

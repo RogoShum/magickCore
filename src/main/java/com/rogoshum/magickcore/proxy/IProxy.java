@@ -8,6 +8,8 @@ public interface IProxy {
 
     public void preInit();
 
+    public int getTick();
+
     public void registerHandlers();
     public void addMagickParticle(LitParticle par);
 

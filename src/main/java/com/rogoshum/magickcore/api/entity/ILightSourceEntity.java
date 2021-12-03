@@ -13,4 +13,6 @@ public interface ILightSourceEntity {
     public World getEntityWorld();
 
     public float getEyeHeight();
+
+    public float[] getColor();
 }

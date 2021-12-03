@@ -52,6 +52,8 @@ public class ClientProxy implements IProxy
 	private HashMap<String, ElementRenderer> renderers = new HashMap<String, ElementRenderer>();
 	private RenderOutlineEvent event = new RenderOutlineEvent();
 	public static ErrorRenderer error = new ErrorRenderer();
+	public static int tick;
+
 	public ElementRenderer getElementRender(String name)
 	{
 		return this.renderers.get(name) != null ? this.renderers.get(name) : this.renderers.get(LibElements.ORIGIN);
@@ -60,6 +62,11 @@ public class ClientProxy implements IProxy
 	public void init() {}
 	
 	public void preInit() {}
+
+	@Override
+	public int getTick() {
+		return tick;
+	}
 
 	public void registerHandlers()
 	{
@@ -95,16 +102,13 @@ public class ClientProxy implements IProxy
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
-		IItemColor color = new IItemColor() {
-			@Override
-			public int getColor(ItemStack stack, int p_getColor_2_) {
-				if(NBTTagHelper.hasElement(stack)) {
-					float[] color = MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor();
-					float[] hsv = Color.RGBtoHSB((int) (color[0] * 255), (int) (color[1] * 255), (int) (color[2] * 255), null);
-					return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
-				}
-				return 	16777215;
+		IItemColor color = (stack, p_getColor_2_) -> {
+			if(NBTTagHelper.hasElement(stack)) {
+				float[] color1 = MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor();
+				float[] hsv = Color.RGBtoHSB((int) (color1[0] * 255), (int) (color1[1] * 255), (int) (color1[2] * 255), null);
+				return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
 			}
+			return 	16777215;
 		};
 		event.getItemColors().register(color, ModItems.element_crystal_seeds.get());
 		event.getItemColors().register(color, ModItems.element_meat.get());
@@ -143,6 +147,24 @@ public class ClientProxy implements IProxy
 		}
 
 		location = new ModelResourceLocation(ModItems.element_wool.get().getRegistryName(), "inventory");
+		existingModel = modelRegistry.get(location);
+		if (existingModel == null) {
+			throw new RuntimeException("Did not find magick_crafting in registry");
+		} else {
+			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
+			event.getModelRegistry().put(location, magickBakedModel);
+		}
+
+		location = new ModelResourceLocation(ModItems.magick_barrier.get().getRegistryName(), "inventory");
+		existingModel = modelRegistry.get(location);
+		if (existingModel == null) {
+			throw new RuntimeException("Did not find magick_crafting in registry");
+		} else {
+			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
+			event.getModelRegistry().put(location, magickBakedModel);
+		}
+
+		location = new ModelResourceLocation(ModItems.magick_repeater.get().getRegistryName(), "inventory");
 		existingModel = modelRegistry.get(location);
 		if (existingModel == null) {
 			throw new RuntimeException("Did not find magick_crafting in registry");

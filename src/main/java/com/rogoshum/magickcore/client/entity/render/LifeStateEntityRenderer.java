@@ -16,6 +16,8 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -32,6 +34,7 @@ public class LifeStateEntityRenderer extends EntityRenderer<LifeStateEntity> {
         super(renderManager);
         renderState.put(LifeState.ENTITY, this::renderEntity);
         renderState.put(LifeState.ITEM, this::renderItem);
+        renderState.put(LifeState.POTION, this::renderPotion);
     }
 
     @Override
@@ -63,6 +66,20 @@ public class LifeStateEntityRenderer extends EntityRenderer<LifeStateEntity> {
         pack.matrixStack.pop();
     }
 
+    public void renderPotion(RenderPackage pack) {
+        if (pack.partialTicks > .3) return;
+        PotionLifeState item = (PotionLifeState) pack.lifeState;
+        int j = PotionUtils.getColor(item.getValue());
+        int k = j >> 16 & 255;
+        int l = j >> 8 & 255;
+        int i1 = j & 255;
+        pack.entity.world.addOptionalParticle(ParticleTypes.ENTITY_EFFECT
+                , pack.entity.getPosX() + MagickCore.rand.nextDouble() * 0.3
+                , pack.entity.getPosY() + MagickCore.rand.nextDouble() * 0.3
+                , pack.entity.getPosZ() + MagickCore.rand.nextDouble() * 0.3
+                , (double)((float)k / 255.0F), (double)((float)l / 255.0F), (double)((float)i1 / 255.0F));
+    }
+
     public void renderItem(RenderPackage pack) {
         ItemStackLifeState item = (ItemStackLifeState) pack.lifeState;
         pack.matrixStack.push();
@@ -76,7 +93,7 @@ public class LifeStateEntityRenderer extends EntityRenderer<LifeStateEntity> {
 
     public void renderParticle(LifeStateEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         ElementRenderer renderer = entityIn.getElementData().getElement().getRenderer();
-        //MagickCore.LOGGER.debug(entityIn.getElementData().getElement().getType());
+
         LitParticle par = new LitParticle(entityIn.world, renderer.getParticleTexture()
                 , new Vector3d(entityIn.getPosX()
                 , entityIn.getPosY() + entityIn.getHeight() / 2

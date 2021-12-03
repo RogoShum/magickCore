@@ -32,6 +32,8 @@
     "item.magickcore.mana_nether_wart": "Mana Nether Wart",
     "item.magickcore.mana_blaze_rod": "Mana Blaze Rod",
 
+    "item.magickcore.magick_core": "Core",
+
     //effect
     "effect.magickcore.shield_regen": "Shield Recovery",
     "effect.magickcore.shield_value": "Shield Capacity",
@@ -40,6 +42,17 @@
     "effect.magickcore.mana_consum_reduce": "Mana cost reduction",
     "effect.magickcore.mana_force": "Mana force",
     "effect.magickcore.mana_stasis": "Mana stasis",
+
+    "item.magickcore.repeater": "Repeater Sign",
+    "item.magickcore.selector": "Selector Sign",
+    "item.magickcore.entity_repeater": "§9Entities",
+    "item.magickcore.ordinary_repeater": "§9Ordinary",
+    "item.magickcore.item_repeater": "§9Items",
+    "item.magickcore.material_repeater": "§9Magick Materials",
+    "item.magickcore.potion_repeater": "§9Potions",
+    "item.magickcore.entity_selector": "§9Entities",
+    "item.magickcore.living_entity_selector": "§9Living Entities",
+    "item.magickcore.mana_extract_repeater": "§9Mana Extract",
 
     "item.minecraft.splash_potion.effect.shield_regen": "Shield Recovery Potion",
     "item.minecraft.splash_potion.effect.shield_value": "Shield Capacity Potion",
@@ -117,6 +130,9 @@
     "block.magickcore.magick_container": "Mana Container",
     "block.magickcore.element_crystal": "Element Crystal",
     "block.magickcore.element_wool": "Element Wool",
+    "block.magickcore.magick_barrier": "Magick Barrier",
+    "block.magickcore.magick_supplier": "Life Extractor",
+    "block.magickcore.magick_repeater": "Magick Repeater",
 
     //description
     "magickcore.description.element": "§dElement§7: %s",
@@ -134,6 +150,11 @@
     "magickcore.description.arc": "§bArc",
     "magickcore.description.wither": "§2Wither",
     "magickcore.description.taken": "§8Taken",
+
+    "magickcore.material.origin": "§9Origin",
+    "magickcore.material.thunder": "§9Thunder",
+    "magickcore.material.nether_star": "§9Nether Heart",
+    "magickcore.material.ender_dragon": "§9Ender Core",
 
     "magickcore.description.orb_staff": "§9Staff that can generate vortex",
     "magickcore.description.star_staff": "§9Staff that can generate star",
@@ -175,6 +196,7 @@
     "entity.magickcore.ascendant_realm": "Ascendant Realm",
     "entity.magickcore.element_orb": "Element Energy",
     "entity.magickcore.mana_power": "Origin Energy",
+    "entity.magickcore.life_state": "Life State",
     //book
     "magickcore.book.name": "MagickCore Guide Book",
     "magickcore.book.landing_text": "What this mod brings to the world and what this mod can make you to do, part of the content will be explained for you."

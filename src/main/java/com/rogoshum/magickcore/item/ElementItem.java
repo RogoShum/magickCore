@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class ElementItem extends BaseItem implements IManaMaterial {
     private final String element;
     public ElementItem(String element) {
-        super(BaseItem.properties.maxStackSize(8));
+        super(BaseItem.properties().maxStackSize(8));
         this.element = element;
     }
 
@@ -30,6 +30,11 @@ public class ElementItem extends BaseItem implements IManaMaterial {
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
+    }
+
+    @Override
+    public boolean hasEffect(ItemStack stack) {
+        return true;
     }
 
     @Override

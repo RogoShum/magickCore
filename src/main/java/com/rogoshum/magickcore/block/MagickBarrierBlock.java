@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.block.tileentity.MagickBarrierTileEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +20,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class MagickBarrierBlock extends BaseBlock{
+    protected static final VoxelShape AABB = Block.makeCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 12.0D, 12.0D);
+
     public MagickBarrierBlock(Properties properties) {
         super(properties);
     }
@@ -26,6 +29,11 @@ public class MagickBarrierBlock extends BaseBlock{
     @Override
     public boolean hasTileEntity(BlockState state) {
         return true;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return AABB;
     }
 
     @Nullable

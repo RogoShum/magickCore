@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.block;
 
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
 import net.minecraft.block.BlockState;
@@ -55,5 +56,14 @@ public class MagickContainerBlock extends BaseBlock {
             }
         }
         return ActionResultType.SUCCESS;
+    }
+
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if(tile instanceof ILightSourceEntity){
+            return ((ILightSourceEntity) tile).getSourceLight();
+        }
+        return 0;
     }
 }

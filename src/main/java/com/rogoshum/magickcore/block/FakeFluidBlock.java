@@ -1,8 +1,10 @@
 package com.rogoshum.magickcore.block;
 
+import com.rogoshum.magickcore.api.block.ILightingBlock;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.block.*;
 import net.minecraft.fluid.FlowingFluid;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -12,18 +14,17 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
 
-public class FakeFluidBlock extends FlowingFluidBlock {
-    public static final IntegerProperty LEVEL = IntegerProperty.create("light_level", 0, 15);
+public class FakeFluidBlock extends FlowingFluidBlock implements ILightingBlock {
 
     public FakeFluidBlock(FlowingFluid fluidIn, Properties builder) {
         super(fluidIn, builder);
-        this.setDefaultState(this.stateContainer.getBaseState().with(LEVEL, 0));
+        this.setDefaultState(this.stateContainer.getBaseState().with(LIGHT_LEVEL, 0));
     }
 
     @Override
     public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (!EntityLightSourceHandler.isPosLighting(pos))
-            worldIn.setBlockState(pos, Blocks.WATER.getDefaultState());
+        if (!EntityLightSourceHandler.isPosLighting(worldIn, pos))
+            worldIn.setBlockState(pos, Blocks.WATER.getDefaultState().with(LEVEL, state.get(LEVEL)));
     }
 
 
@@ -33,20 +34,21 @@ public class FakeFluidBlock extends FlowingFluidBlock {
     }
 
     protected int getLight(BlockState state) {
-        return state.get(LEVEL);
+        return state.get(LIGHT_LEVEL);
     }
 
-    public void changeLight(ServerWorld worldIn, BlockPos pos, int level) {
-        worldIn.setBlockState(pos, withLight(level), 2);
+    public void changeLight(ServerWorld worldIn, BlockPos pos, BlockState state, int level) {
+        worldIn.setBlockState(pos, withLightAndFluid(level, state.get(LEVEL)), 2);
     }
 
-    public BlockState withLight(int level) {
-        return this.getDefaultState().with(LEVEL, level);
+    public BlockState withLightAndFluid(int light, int fluid) {
+        return this.getDefaultState().with(LIGHT_LEVEL, light).with(LEVEL, fluid);
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(LEVEL);
+        builder.add(LIGHT_LEVEL);
+        builder.add(STATE);
     }
 }

@@ -6,7 +6,7 @@ import com.rogoshum.magickcore.lib.LibMaterial;
 public class EnderDragonMaterial implements IManaLimit {
     @Override
     public String getName() {
-        return LibMaterial.Ender_Dragon;
+        return LibMaterial.ENDER_DRAGON;
     }
 
     @Override

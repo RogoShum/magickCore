@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.block;
 
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.block.tileentity.ElementWoolTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.color.IBlockColor;
@@ -31,5 +32,14 @@ public class ElementWoolBlock extends BaseBlock{
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new ElementWoolTileEntity();
+    }
+
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if(tile instanceof ILightSourceEntity){
+            return ((ILightSourceEntity) tile).getSourceLight();
+        }
+        return 0;
     }
 }

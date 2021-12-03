@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -40,6 +41,7 @@ public class RenderHelper {
     private static final HashMap<ResourceLocation, RenderType> TexedOrb = new HashMap<ResourceLocation, RenderType>();
 
     public static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
+    public static final ResourceLocation DISSOVE = new ResourceLocation(MagickCore.MOD_ID + ":textures/dissove.png");
     public static final int renderLight = 15728880;
     public static final int halfLight = 7864440;
 
@@ -63,6 +65,15 @@ public class RenderHelper {
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
+
+    protected static final RenderState.TransparencyState NORMAL_LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("normal_lightning_transparency", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
+
     protected static final RenderState.TransparencyState GLINT_TRANSPARENCY = new RenderState.TransparencyState("glint_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
@@ -248,14 +259,22 @@ public class RenderHelper {
     }
 
     public static RenderType getTexedOrb(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
-        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
-        return type;
+        return getTexedOrb(locationIn, 0.003921569F);
     }
 
     public static RenderType getTexedOrbGlow(ResourceLocation locationIn) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
-        RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        return getTexedOrbGlow(locationIn, 0.003921569F);
+    }
+
+    public static RenderType getTexedOrb(ResourceLocation locationIn, float alpha) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(new RenderState.AlphaState(alpha)).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType type = RenderType.makeType("_Tex_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
+        return type;
+    }
+
+    public static RenderType getTexedOrbGlow(ResourceLocation locationIn, float alpha) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(new RenderState.AlphaState(alpha)).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
+        RenderType type = RenderType.makeType("_TexedOrbGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -316,10 +335,17 @@ public class RenderHelper {
         return type;
     }
 
+    public static RenderType getLineGlow(double width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
+        RenderType type = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, true, false, rendertype$state);
+        return type;
+    }
+
     public static final ResourceLocation TAKEN_LAYER = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
     public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/enchanted_item_glint.png");
     public static final ResourceLocation ripple_4 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_4.png");
     public static final ResourceLocation ripple_2 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_2.png");
+    public static final ResourceLocation ripple_5 = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_5.png");
     public static final RenderType POINTS = RenderType.makeType(MagickCore.MOD_ID + "_POINTS", DefaultVertexFormats.ENTITY, GL_POINTS, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).build(false));
     public static final RenderType LINES = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, true, RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).build(false));
     public static final RenderType ORB = RenderType.makeType(MagickCore.MOD_ID + "_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().transparency(LIGHTNING_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
@@ -327,6 +353,12 @@ public class RenderHelper {
     public static final RenderType CRUMBLING = RenderType.makeType(MagickCore.MOD_ID + "_CRUMBLING", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(CRUMBLING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
     public static final RenderType LIGHTING = RenderType.makeType(MagickCore.MOD_ID + "_Lighting", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(TRANSLUCENT_TARGET).build(false));
     public static final RenderType OUTLINE = RenderType.makeType(MagickCore.MOD_ID + "_OUTLINE", DefaultVertexFormats.POSITION, GL_QUADS, 256, true, true, RenderType.State.getBuilder().writeMask(COLOR_DEPTH_WRITE).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).target(OUTLINE_TARGET).build(true));
+
+    public static final RenderType GLOW_BLOCK = RenderType.makeType(MagickCore.MOD_ID + "_GLOW_BLOCK", DefaultVertexFormats.BLOCK, 7, 262144, false, true, getTranslucentState());
+
+    private static RenderType.State getTranslucentState() {
+        return RenderType.State.getBuilder().shadeModel(SHADE_ENABLED).lightmap(LIGHTMAP_ENABLED).texture(new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, true)).transparency(NORMAL_LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true);
+    }
 
     public static void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, float limit) {
         renderSphere(matrix4f, bufferIn, type, stacks, alpha, hitReaction, color, packedLightIn, false, null, limit);
@@ -359,12 +391,12 @@ public class RenderHelper {
                 float x = (float) (baseRadius * Math.cos(a));
                 float y = (float) (baseRadius * Math.sin(a));
 
-                float z0MidFactor =  Math.min(1f, Math.abs(z0) * 2 / height);
-                float z0EdgeFactor = 1 - z0MidFactor;
+                float z0MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z0) * 2 / height), 0.25);
+                float z0EdgeFactor = (1 - z0MidFactor);
                 float z0Alpha = z0MidFactor * alpha + z0EdgeFactor * alphaMid;
 
-                float z1MidFactor = Math.min(1f, Math.abs(z1) * 2 / height);
-                float z1EdgeFactor = 1 - z1MidFactor;
+                float z1MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z1) * 2 / height), 0.25);
+                float z1EdgeFactor = (1 - z1MidFactor);
                 float z1Alpha = z1MidFactor * alpha + z1EdgeFactor * alphaMid;
 
                 posCylinderVertex(matrix4f, buffer, x, z0, y, j / (float) stacks, i / (float) stacks, z0Alpha, color[0], color[1], color[2], RenderHelper.renderLight, hitReaction, limit);

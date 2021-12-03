@@ -84,11 +84,6 @@ public class PanelHelper {
 
         double d = ( 0-(a*p1.x+b*p1.y+c*p1.z) );
 
-        double distance = Math.abs(a*pt.x+b*pt.y+c*pt.z+d)/Math.sqrt(a*a+b*b+c*c);
-
-        Vector3d panelNormal = new Vector3d(a, b, c).normalize();
-        Vector3d pt2 = panelNormal.scale(distance * scale).add(pt);
-
         double q = a * pt.x + b * pt.y + c * pt.z + d;
         double t = q / (a * a + b * b + c * c);
         return new Vector3d(pt.x - a*t, pt.y - b*t, pt.z - c*t);

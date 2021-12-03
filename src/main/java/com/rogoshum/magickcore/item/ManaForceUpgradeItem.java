@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
     public ManaForceUpgradeItem() {
-        super(BaseItem.properties);
+        super(BaseItem.properties());
     }
 
     @Override

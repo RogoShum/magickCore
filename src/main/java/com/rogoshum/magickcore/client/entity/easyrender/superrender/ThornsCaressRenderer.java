@@ -27,8 +27,8 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
-                    , 1.0f, partialTicks, entityIn.world);
+            //EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 5.0f, entityIn.getElement().getRenderer().getColor()
+                    //, 1.0f, partialTicks, entityIn.world);
             matrixStackIn.scale(1.45f, 1.45f, 1.45f);
             matrixStackIn.push();
             matrixStackIn.scale(0.25f, 0.25f, 0.25f);

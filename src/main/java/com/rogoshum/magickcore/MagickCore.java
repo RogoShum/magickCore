@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.client.tileentity.MagickRepeaterRenderer;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.event.magickevent.ElementThingEvent;
+import com.rogoshum.magickcore.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -16,7 +17,6 @@ import com.rogoshum.magickcore.network.Networking;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,18 +24,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MagickCore.MOD_ID)
@@ -53,7 +46,7 @@ public class MagickCore
     public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "magickcore";
 	public static final String NAME = "MagickCore";
-	public static final String VERSION = "0.1";
+	public static final String VERSION = "0.6";
 	
 	public static final String Data = MOD_ID + ":data";
 	public static final UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
@@ -83,10 +76,6 @@ public class MagickCore
     public MagickCore() {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-        // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
@@ -103,6 +92,7 @@ public class MagickCore
         MinecraftForge.EVENT_BUS.register(new ElementThingEvent());
         MinecraftForge.EVENT_BUS.register(new ElementOrbEvent());
         MinecraftForge.EVENT_BUS.register(new AdvancementsEvent());
+        MinecraftForge.EVENT_BUS.register(new LivingLootsEvent());
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.BLOCKS.register(eventBus);
         ModEffects.EFFECTS.register(eventBus);
@@ -113,7 +103,6 @@ public class MagickCore
         ModEnchantments.ENCHANTMENTS.register(eventBus);
         ModBuff.initBuff();
         ManaMaterials.init();
-
         //GeckoLib.initialize();
     }
 
@@ -152,38 +141,10 @@ public class MagickCore
         RenderTypeLookup.setRenderLayer(ModBlocks.element_wool.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_repeater_tileentity.get(), (MagickRepeaterRenderer::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_repeater.get(), RenderType.getCutout());
-
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_barrier_tileentity.get(), (CanSeeTileEntityRenderer<MagickBarrierTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_barrier.get(), RenderType.getCutout());
-    }
 
-    private void enqueueIMC(final InterModEnqueueEvent event)
-    {
-        // some example code to dispatch IMC to another mod
-        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
-    }
-
-    private void processIMC(final InterModProcessEvent event)
-    {
-        // some example code to receive and process InterModComms from other mods
-        LOGGER.info("Got IMC {}", event.getIMCStream().
-                map(m->m.getMessageSupplier().get()).
-                collect(Collectors.toList()));
-    }
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting");
-    }
-
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            // register a new block here
-            LOGGER.info("HELLO from Register Block");
-        }
+        RenderTypeLookup.setRenderLayer(ModBlocks.magick_supplier.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.void_sphere.get(), RenderType.getTranslucent());
     }
 }

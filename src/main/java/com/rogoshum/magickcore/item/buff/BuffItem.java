@@ -8,7 +8,7 @@ import net.minecraft.item.*;
 public class BuffItem extends ManaItem {
 
     public BuffItem() {
-        super(properties);
+        super(properties());
     }
 
     @Override

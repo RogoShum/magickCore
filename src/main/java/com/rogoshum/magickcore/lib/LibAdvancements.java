@@ -24,4 +24,20 @@ public class LibAdvancements {
     public static final String SPIDER_EYE = "mana_spider_eye";
     public static final String WART = "mana_wart";
     public static final String RED_STONE = "mana_red";
+
+    public static final String SUPPLIER = "magick_supplier";
+    public static final String REPEATER = "magick_repeater";
+    public static final String BARRIER = "magick_barrier";
+
+    public static final String ENTITY_REPEATER = "entity_repeater";
+    public static final String ORDINARY_REPEATER = "ordinary_repeater";
+    public static final String ITEM_REPEATER = "item_repeater";
+    public static final String MATERIAL_REPEATER = "material_repeater";
+    public static final String POTION_REPEATER = "potion_repeater";
+    public static final String ENTITY_SELECTOR = "entity_selector";
+    public static final String LIVING_SELECTOR = "living_entity_selector";
+    public static final String MANA_EXTRACT_REPEATER = "mana_extract_repeater";
+
+    public static final String NETHER_STAR_MATERIAL = "nether_star_material";
+    public static final String ENDER_DRAGON_MATERIAL = "ender_dragon_material";
 }

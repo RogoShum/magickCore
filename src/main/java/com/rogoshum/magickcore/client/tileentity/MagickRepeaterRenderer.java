@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.event.RenderEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -93,9 +94,10 @@ public class MagickRepeaterRenderer extends CanSeeTileEntityRenderer<MagickRepea
     @Override
     public void render(MagickRepeaterTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         super.render(tileEntityIn, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-
+        matrixStackIn.push();
         matrixStackIn.translate(0.5f, -0.5f, 0.5f);
-        IVertexBuilder buffer = bufferIn.getBuffer(RenderHelper.getTexedOrbSolid(magick_repeater));
+        RenderType type = RenderHelper.getTexedOrbSolid(magick_repeater);
+        IVertexBuilder buffer = bufferIn.getBuffer(type);
         bone.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
         bone2.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
         bone3.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
@@ -112,6 +114,7 @@ public class MagickRepeaterRenderer extends CanSeeTileEntityRenderer<MagickRepea
             IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tileEntityIn.getLifeRepeater().dropItem(), tileEntityIn.getWorld(), (LivingEntity) null);
             Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getLifeRepeater().dropItem(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
+        matrixStackIn.pop();
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

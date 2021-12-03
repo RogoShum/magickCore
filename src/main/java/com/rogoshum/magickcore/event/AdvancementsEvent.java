@@ -12,6 +12,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,18 +44,37 @@ public class AdvancementsEvent {
                 else if(item.getItem() instanceof ManaItem)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MANA_ITEM);
 
-                else if(item.getItem().getRegistryName().equals(ModItems.mana_radstone.get().getRegistryName()))
+                else if(item.getItem().getRegistryName().equals(Items.REDSTONE.getRegistryName())) {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.RED_STONE);
-                else if(item.getItem() instanceof ManaNetherWartItem)
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.SUPPLIER);
+                }
+                else if(item.getItem().getRegistryName().equals(Items.NETHER_WART.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.WART);
-                else if(item.getItem() instanceof ManaDragonBreathItem)
+                else if(item.getItem().getRegistryName().equals(Items.DRAGON_BREATH.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.DRAGON_BREATH);
-                else if(item.getItem().getRegistryName().equals(ModItems.mana_glowstone.get().getRegistryName()))
+                else if(item.getItem().getRegistryName().equals(Items.GLOWSTONE_DUST.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.GLOW_STONE_DUST);
-                else if(item.getItem() instanceof ManaGunpowderItem)
+                else if(item.getItem().getRegistryName().equals(Items.GUNPOWDER.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.GUN_POWDER);
-                else if(item.getItem() instanceof ManaFermentedSpiderEyeItem)
+                else if(item.getItem().getRegistryName().equals(Items.SPIDER_EYE.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.SPIDER_EYE);
+                else if(item.getItem().getRegistryName().equals(ModItems.magick_supplier.get().getRegistryName()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.REPEATER);
+                else if(item.getItem().getRegistryName().equals(ModItems.magick_repeater.get().getRegistryName())) {
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.BARRIER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENTITY_REPEATER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ORDINARY_REPEATER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ITEM_REPEATER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENTITY_SELECTOR);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.LIVING_SELECTOR);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.POTION_REPEATER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MATERIAL_REPEATER);
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MANA_EXTRACT_REPEATER);
+                }
+                else if(item.getItem().getRegistryName().equals(ModItems.ender_dragon_material.get().getRegistryName()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENDER_DRAGON_MATERIAL);
+                else if(item.getItem().getRegistryName().equals(Items.NETHER_STAR.getRegistryName()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.NETHER_STAR_MATERIAL);
             });
 
             player.getActivePotionEffects().forEach((effectInstance) -> {

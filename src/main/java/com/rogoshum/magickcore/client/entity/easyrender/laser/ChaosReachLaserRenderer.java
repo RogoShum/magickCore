@@ -53,9 +53,8 @@ public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
                     matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
                     matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
                     matrixStackIn.push();
-                    matrixStackIn.scale(0.71f, 0.71f, 0.71f);
-                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getElcTexture(3), 1.0f, distance / 1.408f, 0.5f);
-                    matrixStackIn.scale(0.71f, 0.71f, 0.71f);
+                    matrixStackIn.scale(0.5f, 0.5f, 0.5f);
+                    entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getElcTexture(3), 1.0f, distance, 0.5f);
                     entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getWaveTexture(entityIn.getEntityId() % 2 == 0 ? 0 : 1), 1.0f, distance, 1.0f);
                     //entityIn.getElement().getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.getElement().getRenderer().getLaserbeamTexture(), 0.5f, distance, 1 / distance);
                     matrixStackIn.pop();

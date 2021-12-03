@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public class EyeItem extends ManaItem{
     public EyeItem() {
-        super(BaseItem.properties.maxStackSize(1));
+        super(BaseItem.properties().maxStackSize(1));
     }
 
     @Override

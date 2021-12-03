@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RuneItem extends BaseItem{
     public RuneItem() {
-        super(BaseItem.properties.maxStackSize(8));
+        super(BaseItem.properties().maxStackSize(8));
     }
 
     @Override

@@ -8,7 +8,10 @@ import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.capability.ManaDataHandler;
 import com.rogoshum.magickcore.capability.ManaItemDataHandler;
 import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.RenderEvent;
+import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import com.rogoshum.magickcore.magick.lifestate.repeater.LifeRepeater;
 import com.rogoshum.magickcore.tool.MagickReleaseHelper;
@@ -55,6 +58,14 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
         if (mana <= 0) {
             flag = true;
             this.mana = 0;
+            this.requiredMana = 0;
+            element_data.setElement(ModElements.getElement(LibElements.ORIGIN));
+            element_data.setRange(0);
+            element_data.setForce(0);
+            element_data.setManaType(EnumManaType.NONE);
+            element_data.setTickTime(0);
+            if(mana < 0 && !world.isRemote())
+                updateInfo();
         }
 
         if (this.panelOutputFirst != null && this.panelOutputFirst.removed)
@@ -211,8 +222,8 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
 
     @Override
     public void read(BlockState state, CompoundNBT compound) {
-        extractTag(compound);
         super.read(state, compound);
+        extractTag(compound);
     }
 
     @Override
@@ -223,7 +234,7 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
 
     public void extractTag(CompoundNBT compound) {
         this.requiredMana = compound.getFloat("requiredMana");
-        this.mana = compound.getFloat("requiredMana");
+        this.mana = compound.getFloat("mana");
         ManaDataHandler.deserializeData(compound, getElementData());
     }
 

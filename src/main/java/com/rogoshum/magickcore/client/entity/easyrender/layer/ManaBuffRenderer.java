@@ -69,7 +69,7 @@ public class ManaBuffRenderer extends EasyLayerRender<LivingEntity> {
         float[] newColor = new float[3];
         float scale = 0f;
         if(time > 0)
-            scale = (float)time / (float)time + 1.0f;
+            scale = (float)time / ((float)time + 1.0f);
         newColor[0] = scale * preColor[0];
         newColor[1] = scale * preColor[1];
         newColor[2] = scale * preColor[2];

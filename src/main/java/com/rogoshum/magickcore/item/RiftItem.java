@@ -25,7 +25,7 @@ import java.util.List;
 
 public class RiftItem extends BaseItem{
     public RiftItem() {
-        super(BaseItem.properties.maxStackSize(8));
+        super(BaseItem.properties().maxStackSize(8));
     }
 
     @Override

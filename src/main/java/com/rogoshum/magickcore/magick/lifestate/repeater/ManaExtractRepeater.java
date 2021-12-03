@@ -13,7 +13,7 @@ public class ManaExtractRepeater extends LifeRepeater {
 
     @Override
     public void input(MagickRepeaterTileEntity tile, LifeStateEntity oldLife, LifeStateEntity newLife, @Nullable Direction direction) {
-        newLife.getElementData().setMana(newLife.getElementData().getMana() + 1);
+        newLife.getElementData().setMana(newLife.getElementData().getMana() + newLife.getSupplierBlock().supplyMana(0.2f));
     }
 
     @Override

@@ -30,7 +30,7 @@ import java.util.List;
 
 public class SuperItem extends BaseItem {
     public SuperItem() {
-        super(BaseItem.properties.maxStackSize(1));
+        super(BaseItem.properties().maxStackSize(1));
     }
 
     @Override

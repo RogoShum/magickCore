@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.client.tileentity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.CanSeeTileEntity;
+import com.rogoshum.magickcore.block.tileentity.MagickBarrierTileEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
 import com.rogoshum.magickcore.event.RenderEvent;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

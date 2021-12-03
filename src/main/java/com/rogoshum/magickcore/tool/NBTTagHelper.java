@@ -21,6 +21,11 @@ public class NBTTagHelper {
         return stack.getTag();
     }
 
+    public static CompoundNBT getBlockTag(CompoundNBT tag)
+    {
+        return tag.getCompound("BlockEntityTag");
+    }
+
     public static CompoundNBT getEntityTag(Entity entity)
     {
         CompoundNBT nbt = new CompoundNBT();

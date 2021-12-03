@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "magickcore_repeater",
+  "ingredients": [
+    {
+      "item": "minecraft:quartz"
+    },
+    {
+      "item": "magickcore:mana_glowstone"
+    }
+  ],
+  "result": {
+    "item": "magickcore:material_repeater"
+  }
+}

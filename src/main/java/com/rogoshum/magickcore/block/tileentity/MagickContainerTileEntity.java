@@ -3,11 +3,13 @@ package com.rogoshum.magickcore.block.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.api.block.IManaTransable;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -16,13 +18,15 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaTransable {
+public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaTransable, ILightSourceEntity {
     private ItemStack mainItem;
     private int manaCapacity;
     public final int maxManaCapacity = 10000;
@@ -239,5 +243,41 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         compound.putInt("MANA", this.manaCapacity);
         compound.putString("TYPE", this.eType);
         return super.write(compound);
+    }
+
+    @Override
+    public int getSourceLight() {
+        return (manaCapacity / maxManaCapacity) * 15;
+    }
+
+    @Override
+    public boolean isAlive() {
+        return !this.removed;
+    }
+
+    @Override
+    public Vector3d getPositionVec() {
+        return Vector3d.copyCentered(this.getPos());
+    }
+
+    @Override
+    public World getEntityWorld() {
+        return this.getWorld();
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 0.5f;
+    }
+
+    @Override
+    public float[] getColor() {
+        return MagickCore.proxy.getElementRender(this.eType).getColor();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        EntityLightSourceHandler.addLightSource(this);
     }
 }

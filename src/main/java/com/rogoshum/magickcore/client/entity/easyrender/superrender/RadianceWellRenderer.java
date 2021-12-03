@@ -47,13 +47,12 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
                     , 1.0f, partialTicks, entityIn.world);
             matrixStackIn.translate(0, -entityIn.getHeight() / 2 + 0.005, 0);
             matrixStackIn.translate(0, entityIn.getHeight(), 0);
-            matrixStackIn.scale(0.7f, 0.7f, 0.7f);
+            matrixStackIn.scale(0.5f, 0.5f, 0.5f);
             float alphaS = Math.min(1f, (float)entityIn.ticksExisted / 5f);
             matrixStackIn.push();
-            matrixStackIn.scale(1.25f, 1.25f, 1.25f);
             entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 12, 0.9f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
             matrixStackIn.pop();
-
+            matrixStackIn.scale(1.4f, 1.4f, 1.4f);
             if(entityIn.initial) {
                 entityIn.setMotion(0, 1, 0);
                 if (entityIn.getTrail() == null)
@@ -94,7 +93,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
                 matrixStackIn.push();
                 matrixStackIn.translate(0, -entityIn.getHeight() * 2, 0);
                 matrixStackIn.scale(6.05f, 1.45f, 6.05f);
-                RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f), matrixStackIn, bufferIn, 0.0f, 0.75f * alphaC, entityIn.getElement().getRenderer().getColor()
+                RenderHelper.renderCylinder(RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f), matrixStackIn, bufferIn, 0.0f, alphaC, entityIn.getElement().getRenderer().getColor()
                         , 2f, 6.0f, 16, entityIn.getHitReactions(), 0.2f);
                 matrixStackIn.pop();
             }

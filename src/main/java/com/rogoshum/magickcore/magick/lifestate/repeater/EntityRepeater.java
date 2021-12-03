@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.magick.lifestate.LifeState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.Pose;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +28,7 @@ public class EntityRepeater extends LifeRepeater{
         List<Entity> list = tile.getWorld().getEntitiesWithinAABBExcludingEntity(null, bb);
         for (Entity entity : list) {
             EntitySize size = entity.getSize(entity.getPose());
-            if (entity.isNonBoss() && size.height + size.width <= 2) {
+            if (!(entity instanceof PlayerEntity) && entity.isNonBoss() && size.height + size.width <= 2.5) {
                 EntityLifeState state = (EntityLifeState) LifeState.createByName(LifeState.ENTITY);
                 state.setValue(entity);
                 newLife.getCarrier().addState(LifeState.ENTITY, state);

@@ -36,4 +36,8 @@ public class ModTileEntities {
     public static RegistryObject<TileEntityType<MagickRepeaterTileEntity>> magick_repeater_tileentity = TILE_ENTITY.register("magick_repeater_tileentity"
             , () -> TileEntityType.Builder.create(MagickRepeaterTileEntity::new
                     , ModBlocks.magick_repeater.get()).build(null));
+
+    public static RegistryObject<TileEntityType<VoidSphereTileEntity>> void_sphere_tileentity = TILE_ENTITY.register("void_sphere_tileentity"
+            , () -> TileEntityType.Builder.create(VoidSphereTileEntity::new
+                    , ModBlocks.void_sphere.get()).build(null));
 }

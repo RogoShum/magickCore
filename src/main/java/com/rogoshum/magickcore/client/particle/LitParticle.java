@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.client.particle;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -106,17 +108,23 @@ public class LitParticle {
         matrixStackIn.translate(x - camX, y - camY, z - camZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
 
-        if (shakeLimit > 0.0f) {
-            if (isGlow)
-                RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrbGlow(texture)), getAlpha(alpha), color, true, this.toString(), shakeLimit);
-            else
-                RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrb(texture)), getAlpha(alpha), color, true, this.toString(), shakeLimit);
-        } else {
-            if (isGlow)
-                RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrbGlow(texture)), getAlpha(alpha), color);
-            else
-                RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(RenderHelper.getTexedOrb(texture)), getAlpha(alpha), color);
+        float lifetime = (float) this.age / (float) this.maxAge;
+        float alphaTest = 0.7f;
+        if(lifetime >= alphaTest) {
+            lifetime -= alphaTest;
+            lifetime *= 2;
         }
+        else
+            lifetime = 0.003921569F;
+
+        RenderType type = RenderHelper.getTexedOrb(texture, lifetime);
+        if(isGlow)
+            type = RenderHelper.getTexedOrbGlow(texture, lifetime);
+        if (shakeLimit > 0.0f)
+            RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(type), getAlpha(alpha), color, true, this.toString(), shakeLimit);
+         else
+            RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(type), getAlpha(alpha), color);
+
         matrixStackIn.pop();
         buffer.finish();
     }
@@ -163,6 +171,8 @@ public class LitParticle {
 
     public float getAlpha(float alpha) {
         float f = ((float) this.age) / (float) this.maxAge;
+        if(f > .7)
+            f -= Math.pow(1-f, 1.1);
         f = Math.min(f, 1.0f);
         return alpha * f;
     }

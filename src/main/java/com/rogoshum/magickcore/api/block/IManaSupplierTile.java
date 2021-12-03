@@ -9,4 +9,6 @@ public interface IManaSupplierTile {
     public BlockPos getPos();
     public World getWorld();
     public boolean isRemoved();
+    public void spawnLifeState();
+    public boolean shouldSpawn(boolean powered);
 }

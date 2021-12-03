@@ -31,6 +31,7 @@ import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.ReleaseAttribute;
 import com.rogoshum.magickcore.network.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -70,9 +71,19 @@ public class MagickLogicEvent {
 	private static List<Entity> timeLords = new ArrayList<Entity>();
 
 	@SubscribeEvent
-	public void updateLightSource(TickEvent.WorldTickEvent event) {
-		if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START)
-			EntityLightSourceHandler.tick();
+	public void updateLightSource(TickEvent.ServerTickEvent event) {
+		if(event.phase == TickEvent.Phase.START)
+			EntityLightSourceHandler.tick(event.side);
+	}
+
+	@SubscribeEvent
+	public void updateLightSource(TickEvent.ClientTickEvent event) {
+		if(event.phase == TickEvent.Phase.START){
+			if(Minecraft.getInstance().player != null)
+				EntityLightSourceHandler.tick(event.side);
+			else
+				EntityLightSourceHandler.clear();
+		}
 	}
 
 	@SubscribeEvent

@@ -24,6 +24,8 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -189,17 +191,31 @@ public class ElementOrbEvent {
     }
 
 
+    public boolean testIfGenerateShield(LivingEntity livingEntity) {
+        for(PlayerEntity playerEntity : livingEntity.world.getPlayers()) {
+            if(playerEntity.getHeldItemOffhand().getItem() instanceof EnderPearlItem &&
+                    playerEntity.getEntityWorld() == livingEntity.getEntityWorld() &&
+                    playerEntity.getDistanceSq(livingEntity) <= 4096)
+                return true;
+        }
+
+        return false;
+    }
+
     @SubscribeEvent
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event)
     {
         IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
 
+        if(!state.allowElement())
+           return;
         if(!event.getEntityLiving().isNonBoss())
+            state.setElemented();
+        if(testIfGenerateShield(event.getEntityLiving()))
             state.setElemented();
 
         if(ElementOrbEvent.spawnElementMap.containsKey(event.getEntityLiving().getClass()))
         {
-
             LivingElementTable table = ElementOrbEvent.spawnElementMap.get(event.getEntityLiving().getClass());
 
             if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)

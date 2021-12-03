@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " X ",
+    "XFX",
+    " X "
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:quartz"
+    },
+	"X": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "result": {
+    "item": "magickcore:magick_repeater",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XFX",
+    "XRX"
+  ],
+  "key": {
+    "F": {
+      "item": "minecraft:rotten_flesh"
+    },
+	"X": {
+      "item": "minecraft:quartz"
+    },
+	"R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "magickcore:magick_supplier",
+    "count": 1
+  }
+}

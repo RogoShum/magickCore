@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.magick.lifestate;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.entity.LifeStateEntity;
@@ -24,7 +25,8 @@ public class PotionLifeState extends ItemStackLifeState {
         super.onHitEntity(lifeState, result);
         List<EffectInstance> effects = PotionUtils.getEffectsFromStack(this.value);
         if(result.getEntity() instanceof LivingEntity){
-            effects.forEach(effectInstance -> ((LivingEntity) result.getEntity()).addPotionEffect(effectInstance));
+            effects.forEach(effectinstance -> ((LivingEntity) result.getEntity())
+                    .addPotionEffect(new EffectInstance(effectinstance.getPotion(), effectinstance.getDuration(), effectinstance.getAmplifier(), effectinstance.isAmbient(), effectinstance.doesShowParticles())));
             lifeState.remove();
         }
     }

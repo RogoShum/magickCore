@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.init;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
+import com.rogoshum.magickcore.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
@@ -38,10 +39,8 @@ public class ModRecipes {
         }
     }
 
-    public static ItemStack findExplosionOutput(ItemStack stack)
-    {
-        for(IItemContainer container : ExplosionRecipesMap.keySet())
-        {
+    public static ItemStack findExplosionOutput(ItemStack stack) {
+        for(IItemContainer container : ExplosionRecipesMap.keySet()) {
             if(container.matches(stack)) {
                 return ExplosionRecipesMap.get(container);
             }
@@ -163,6 +162,7 @@ public class ModRecipes {
         putExplosionRecipe(TagMatchItemContainer.create(ModItems.stasis.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.STASIS));
         putExplosionRecipe(TagMatchItemContainer.create(ModItems.wither.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.WITHER));
         putExplosionRecipe(TagMatchItemContainer.create(ModItems.taken.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.TAKEN));
+        putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_STAR.toString()), new ItemStack(ModItems.nether_star_material.get()));
 
         Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
         if(book != null)
@@ -177,6 +177,7 @@ public class ModRecipes {
     public static void registerRecipes(final RegistryEvent.Register<IRecipeSerializer<?>> event)
     {
         init();
+        LivingLootsEvent.init();
         event.getRegistry().registerAll(
                 element_orb_recipe,
                 arc_element_recipe,

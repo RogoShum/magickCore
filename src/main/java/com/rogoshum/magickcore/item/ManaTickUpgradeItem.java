@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ManaTickUpgradeItem extends BaseItem implements IManaMaterial {
     public ManaTickUpgradeItem() {
-        super(BaseItem.properties);
+        super(BaseItem.properties());
     }
 
     @Override

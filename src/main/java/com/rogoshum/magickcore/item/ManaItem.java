@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.capability.ManaItemDataHandler;
 import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
@@ -139,14 +140,15 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         if(!nbt.contains("CAPABILITY"))
             nbt.put("CAPABILITY", new CompoundNBT());
         CompoundNBT tag = nbt.getCompound("CAPABILITY");
-        tag.putString("ELEMENT", this.getElement(stack).getType());
+        ManaItemDataHandler.serializeData(tag, this.getItemData(stack));
+        /*tag.putString("ELEMENT", this.getElement(stack).getType());
         tag.putBoolean("TRACE", this.getTrace(stack));
         tag.putString("TYPE", this.getManaType(stack).getLabel());
         tag.putFloat("RANGE", this.getRange(stack));
         tag.putFloat("FORCE", this.getForce(stack));
         tag.putFloat("MANA", this.getMana(stack));
         tag.putInt("TICK", this.getTickTime(stack));
-        tag.putString("MATERIAL", this.getMaterial(stack).getName());
+        tag.putString("MATERIAL", this.getMaterial(stack).getName());*/
         return nbt;
     }
 
@@ -156,7 +158,8 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
         CompoundNBT nbt1 = NBTTagHelper.getStackTag(stack);
         if(nbt1.contains("CAPABILITY")) {
             CompoundNBT tag = nbt1.getCompound("CAPABILITY");
-            this.setMaterial(stack, ManaMaterials.getMaterial(tag.getString("MATERIAL")));
+            ManaItemDataHandler.deserializeData(tag, this.getItemData(stack));
+            /*this.setMaterial(stack, ManaMaterials.getMaterial(tag.getString("MATERIAL")));
             this.setElement(stack, ModElements.getElement(tag.getString("ELEMENT")));
             this.setTrace(stack, tag.getBoolean("TRACE"));
             EnumManaType mana = EnumManaType.getEnum(tag.getString("TYPE"));
@@ -165,7 +168,7 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
             this.setRange(stack, tag.getFloat("RANGE"));
             this.setForce(stack, tag.getFloat("FORCE"));
             this.setMana(stack, tag.getFloat("MANA"));
-            this.setTickTime(stack, tag.getInt("TICK"));
+            this.setTickTime(stack, tag.getInt("TICK"));*/
         }
     }
 
