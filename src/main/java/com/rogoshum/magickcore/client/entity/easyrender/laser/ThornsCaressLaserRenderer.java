@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.superentity.ThornsCaressEntity;
 import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector2f;
@@ -17,7 +18,7 @@ import java.util.Iterator;
 
 public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> {
     @Override
-    public void preRender(ThornsCaressEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void preRender(ThornsCaressEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         matrixStackIn.push();
         double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
         double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
@@ -28,11 +29,11 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
         matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
 
         render(entity, matrixStackIn, bufferIn, partialTicks);
-        postRender(entity, matrixStackIn, bufferIn, partialTicks);
+        matrixStackIn.pop();
     }
 
     @Override
-    public void render(ThornsCaressEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(ThornsCaressEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             matrixStackIn.scale(0.75f, 0.75f, 0.75f);
             HashMap<Integer, TrailParticle> trace = entityIn.getTraceEntity();

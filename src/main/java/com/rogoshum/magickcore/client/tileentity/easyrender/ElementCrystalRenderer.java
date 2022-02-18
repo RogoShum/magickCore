@@ -5,11 +5,14 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.block.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -29,26 +32,27 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
         if(element != null)
             color = element.getRenderer().getColor();
 
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 0.5);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
+        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, -0.5);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
+        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -0.5);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
+        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, 0.5);
-        RenderHelper.renderStaticParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
+        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedOrbGlow(crystal)), 1.0f, color);
         matrixStackIn.pop();
     }
 }

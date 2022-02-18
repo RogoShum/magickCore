@@ -3,11 +3,13 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.capability.IEntityState;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -17,12 +19,12 @@ import net.minecraft.util.math.vector.Vector3d;
 public class ElementShieldRenderer extends EasyRenderer<Entity>{
 
     @Override
-    public void preRender(Entity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void preRender(Entity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         render(entity, matrixStackIn, bufferIn, partialTicks);
     }
 
     @Override
-    public void render(Entity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(Entity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         Entity player = Minecraft.getInstance().player;
 
         IEntityState state = entity.getCapability(MagickCore.entityState, null).orElse(null);
@@ -63,14 +65,13 @@ public class ElementShieldRenderer extends EasyRenderer<Entity>{
                     double camX = cam.x, camY = cam.y, camZ = cam.z;
                     matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getHeight() * 1.1f / 2 + offset.y, z - camZ + offset.z);
                     matrixStackIn.scale(entity.getWidth() * 1.7f, entity.getHeight() * 0.9f, entity.getWidth() * 1.7f);
-                    RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entity.ticksExisted % 10) + ".png"))), 0.9f * alpha, color);
+                    RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entity.ticksExisted % 10) + ".png"))), 0.9f * alpha, color);
                     //if(entity.ticksExisted % 2 == 0)
                     //RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/ripple/ripple_" + Integer.toString((entity.ticksExisted % 10) / 2) + ".png"))), 1.0f, RenderHelper.SOLAR);
                     matrixStackIn.scale(0.97f, 0.97f, 0.97f);
-                    RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png"))), 0.5f * alpha, color);
+                    RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png"))), 0.5f * alpha, color);
                 }
                 matrixStackIn.pop();
-                bufferIn.finish();
             }
         }
     }

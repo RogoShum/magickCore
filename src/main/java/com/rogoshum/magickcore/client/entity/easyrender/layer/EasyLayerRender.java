@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.entity.Entity;
@@ -25,13 +26,10 @@ public abstract class EasyLayerRender<T extends LivingEntity> extends EasyRender
     }
 
     @Override
-    public void preRender(LivingEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {}
+    public void preRender(LivingEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {}
 
     @Override
-    public void render(LivingEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {}
-
-    @Override
-    public void postRender(LivingEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {}
+    public void render(LivingEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {}
 
     public abstract void render(T entity, LivingRenderer renderer, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, float partialTicks);
 }

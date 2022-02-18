@@ -5,10 +5,13 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -29,10 +32,11 @@ public class MagickContainerRenderer extends EasyTileRenderer<MagickContainerTil
         matrixStackIn.push();
         float scale = (float) tileEntityIn.getManaCapacity() / (float)tileEntityIn.maxManaCapacity;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank, 0.32f, 0f), 4, 0.3f, color, RenderHelper.renderLight);
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 0.32f, 0f)), 4, 0.3f, color, RenderHelper.renderLight);
         matrixStackIn.pop();
 
-        RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.32f, 0f), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.32f, 0f)), 4, 1.0f, RenderHelper.ORIGIN, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         //RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(orbTex)), 0.5f, color);

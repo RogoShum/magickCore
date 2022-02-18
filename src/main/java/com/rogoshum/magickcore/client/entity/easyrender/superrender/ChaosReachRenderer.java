@@ -2,12 +2,16 @@ package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.ManaRiftEntity;
 import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
+import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,8 +26,7 @@ import java.util.Iterator;
 public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
 
     @Override
-    public void render(ChaoReachEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
-        Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
+    public void render(ChaoReachEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
 
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
@@ -34,15 +37,21 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
                 matrixStackIn.push();
                 float c = entityIn.ticksExisted % 11;
                 matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 10)));
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
+                entityIn.getElement().getRenderer().renderSphere(
+                        BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f))
+                        , 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
                 matrixStackIn.pop();
                 matrixStackIn.push();
                 matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
-                RenderHelper.renderParticle(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entityIn.ticksExisted % 10) + ".png"))), 1.0f, entityIn.getElement().getRenderer().getColor());
+                RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + Integer.toString(entityIn.ticksExisted % 10) + ".png"))), 1.0f, entityIn.getElement().getRenderer().getColor());
                 matrixStackIn.pop();
 
                 matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-                entityIn.getElement().getRenderer().renderSphere(positionMatrix, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
+                entityIn.getElement().getRenderer().renderSphere(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.9f, entityIn.getHitReactions(), 5.2f, packedLightIn);
+                matrixStackIn.scale(2.2f, 2.2f, 2.2f);
+                entityIn.getElement().getRenderer().renderSphere(
+                        BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)).useShader(LibShaders.slime)
+                        , 6, 0.5f, entityIn.getHitReactions(), 3.2f, packedLightIn);
             }
         }
     }

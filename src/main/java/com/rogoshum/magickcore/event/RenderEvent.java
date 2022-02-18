@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.AllEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.block.tileentity.CanSeeTileEntity;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.capability.IElementAnimalState;
@@ -19,6 +20,7 @@ import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
 import com.rogoshum.magickcore.proxy.ClientProxy;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElementTool;
@@ -27,9 +29,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.minecart.MinecartEntity;
-import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -41,12 +40,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.lwjgl.opengl.GL20;
 
 import java.util.*;
 
@@ -57,7 +56,9 @@ public class RenderEvent {
     private static final HashMap<Class, EasyLayerRender> layerRenderer = new HashMap<Class, EasyLayerRender>();
     private static final HashMap<Class, EasyRenderer> laserRenderer = new HashMap<Class, EasyRenderer>();
     private static final HashMap<Class, EasyTileRenderer> tileRenderer = new HashMap<Class, EasyTileRenderer>();
+    private static final HashMap<Class, EasyRenderer> outlineRenderer = new HashMap<Class, EasyRenderer>();
 
+    public static void putOutlineRender(Class clas, EasyRenderer renderer) { outlineRenderer.put(clas, renderer); }
     public static void addMagickParticle(LitParticle par)
     {
         particles.add(par);
@@ -115,7 +116,15 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void renderTileEntity(RenderWorldLastEvent event)
+    public void renderMagick(RenderWorldLastEvent event)
+    {
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
+    }
+
+    @SubscribeEvent
+    public void renderTileEntity(RenderWorldEvent.RenderMagickEvent event)
     {
         MatrixStack matrixStackIn = event.getMatrixStack();
         IRenderTypeBuffer.Impl bufferIn = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
@@ -129,10 +138,10 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void renderParticle(RenderWorldLastEvent event)
+    public void renderParticle(RenderWorldEvent.RenderMagickEvent event)
     {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        IRenderTypeBuffer.Impl bufferIn = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        BufferBuilder bufferIn = Tessellator.getInstance().getBuffer();
 
         Vector3d vector3d = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double d0 = vector3d.getX();
@@ -204,10 +213,19 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void renderEntity(RenderWorldLastEvent event)
+    public void renderLightColor(RenderWorldEvent.RenderMagickEvent event)
     {
         MatrixStack matrixStackIn = event.getMatrixStack();
-        IRenderTypeBuffer.Impl bufferIn = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        BufferBuilder bufferIn = Tessellator.getInstance().getBuffer();
+        EntityLightSourceHandler.renderLightColor(matrixStackIn, bufferIn);
+    }
+
+    @SubscribeEvent
+    public void renderEntity(RenderWorldEvent.RenderMagickEvent event)
+    {
+        GL20.glUseProgram(0);
+        MatrixStack matrixStackIn = event.getMatrixStack();
+        BufferBuilder bufferIn = Tessellator.getInstance().getBuffer();
 
         for(Entity entity : Minecraft.getInstance().world.getAllEntities())
         {
@@ -225,6 +243,15 @@ public class RenderEvent {
                 Class clas = it.next();
                 if(entity.getClass() == clas || clas == AllEntity.class) {
                     EasyRenderer renderer = laserRenderer.get(clas);
+                    renderer.preRender(entity, matrixStackIn, bufferIn, event.getPartialTicks());
+                }
+            }
+
+            Iterator<Class> itera = outlineRenderer.keySet().iterator();
+            while (itera.hasNext()) {
+                Class clas = itera.next();
+                if(entity.getClass() == clas || clas == AllEntity.class) {
+                    EasyRenderer renderer = outlineRenderer.get(clas);
                     renderer.preRender(entity, matrixStackIn, bufferIn, event.getPartialTicks());
                 }
             }

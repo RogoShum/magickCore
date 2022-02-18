@@ -50,8 +50,8 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 if(entity == null)
                     return;
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
-                    ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 2, false);
-                    ModBuff.applyBuff(entity, LibBuff.CRIPPLE, 100, 5, false);
+                    //ModBuff.applyBuff(entity, LibBuff.WITHER, 600, 2, false);
+                    ModBuff.applyBuff(entity, LibBuff.CRIPPLE, 100, 1, false);
                     //this.getElement().getAbility().damageEntity(this, null, entity, 10, 10);
                     if (this.rand.nextInt(10) == 0) {
                         TrailParticle trail = trace.get(id);

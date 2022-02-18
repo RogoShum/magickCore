@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector2f;
@@ -17,7 +18,7 @@ import java.util.Iterator;
 
 public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> {
     @Override
-    public void preRender(RadianceWellEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void preRender(RadianceWellEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         if(!entity.initial)
             return;
 
@@ -31,11 +32,11 @@ public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> 
         matrixStackIn.translate(x - camX, y - camY + entity.getHeight() + 0.005, z - camZ);
 
         render(entity, matrixStackIn, bufferIn, partialTicks);
-        postRender(entity, matrixStackIn, bufferIn, partialTicks);
+        matrixStackIn.pop();
     }
 
     @Override
-    public void render(RadianceWellEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(RadianceWellEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             matrixStackIn.scale(0.5f, 0.5f, 0.5f);
             HashMap<Integer, TrailParticle> trace = entityIn.getTraceEntity();

@@ -30,7 +30,7 @@ public abstract class MixinLivingEntity extends Entity {
         IEntityState state = this.getCapability(MagickCore.entityState).orElse(null);
         if(state != null && state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
             float force = state.getBuffList().get(LibBuff.CRIPPLE).getForce();
-            float maxHealth = Math.min(this.getMaxHealth() - (this.getMaxHealth() * force * 0.025f), getHealth());
+            float maxHealth = Math.min(this.getMaxHealth() - (this.getMaxHealth() * force * 0.05f), getHealth());
             if(health > maxHealth)
                 health = maxHealth;
         }

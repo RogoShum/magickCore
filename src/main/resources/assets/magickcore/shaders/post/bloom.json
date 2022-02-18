@@ -1,0 +1,17 @@
+{
+    "targets": [
+        "magickcore:bloom_swap",
+        "magickcore:bloom_final",
+        "magickcore:bloom_zbuffer",
+        "magickcore:bloom_shape"
+    ],
+    "passes": [{
+        "name": "magickcore:bloom",
+        "intarget": "magickcore:bloom_final",
+        "outtarget": "magickcore:bloom_swap"
+    },{
+        "name": "blit",
+        "intarget": "magickcore:bloom_swap",
+        "outtarget": "magickcore:bloom_final"
+    }]
+}

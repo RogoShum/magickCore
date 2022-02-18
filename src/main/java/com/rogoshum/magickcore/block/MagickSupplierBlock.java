@@ -1,16 +1,21 @@
 package com.rogoshum.magickcore.block;
 
+import com.google.common.collect.Lists;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.block.IManaSupplierTile;
 import com.rogoshum.magickcore.block.tileentity.MagickSupplierTileEntity;
+import com.rogoshum.magickcore.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class MagickSupplierBlock extends BaseBlock{
     public MagickSupplierBlock(Properties properties) {
@@ -42,5 +47,12 @@ public class MagickSupplierBlock extends BaseBlock{
         if (tile instanceof IManaSupplierTile && ((IManaSupplierTile) tile).shouldSpawn(powered)) {
             ((IManaSupplierTile) tile).spawnLifeState();
         }
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        List<ItemStack> list = Lists.newArrayList();
+        list.add(new ItemStack(ModItems.magick_supplier.get()));
+        return list;
     }
 }

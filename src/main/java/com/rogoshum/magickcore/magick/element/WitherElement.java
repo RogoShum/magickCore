@@ -1,9 +1,12 @@
 package com.rogoshum.magickcore.magick.element;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.ReleaseAttribute;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -56,7 +59,7 @@ public class WitherElement extends MagickElement{
 
         @Override
         public boolean applyDebuff(ReleaseAttribute attribute) {
-            return ModBuff.applyBuff(attribute.victim, LibBuff.CRIPPLE, attribute.tick, attribute.force, false);
+            return ModBuff.applyBuff(attribute.victim, LibBuff.CRIPPLE, attribute.tick, attribute.force, false) && ModBuff.applyBuff(attribute.victim, LibBuff.WITHER, attribute.tick, attribute.force, false);
         }
 
         @Override
@@ -64,10 +67,10 @@ public class WitherElement extends MagickElement{
 
         @Override
         public void applyToolElement(ItemStack stack, int level) {
-            /*if(stack.getDamage() > 0 && MagickCore.rand.nextInt(100) == 0) {
+            if(stack.getDamage() > 0 && MagickCore.rand.nextInt(100) == 0) {
                 stack.setDamage(stack.getDamage() - 1);
                 NBTTagHelper.consumeElementOnTool(stack, LibElements.WITHER);
-            }*/
+            }
         }
     }
 }

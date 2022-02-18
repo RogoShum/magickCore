@@ -20,9 +20,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
+    private float hue = 0;
+
     public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -31,9 +35,19 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
         super(entityTypeIn, worldIn, element);
     }
 
+    public float[] getColor() {
+        Color colorInstance = Color.getHSBColor(hue, 1, 1);
+        return new float[]{(float) colorInstance.getRed() / 255f, (float) colorInstance.getGreen() / 255f, (float) colorInstance.getBlue() / 255f};
+    }
+
     @Override
     public void tick() {
         super.tick();
+        if(hue < 1)
+            hue +=0.01;
+        else
+            hue = 0;
+
         if(this.ticksExisted <= 25)
             return;
         initial = true;

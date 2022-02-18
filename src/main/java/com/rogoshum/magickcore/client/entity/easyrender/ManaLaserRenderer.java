@@ -4,13 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.ManaLaserEntity;
 import com.rogoshum.magickcore.entity.ManaStarEntity;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity>{
 
     @Override
-    public void render(ManaLaserEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(ManaLaserEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         matrixStackIn.scale(entityIn.getWidth() / 6, entityIn.getHeight() / 6, entityIn.getWidth() / 6);
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             //entityIn.getElement().getRenderer().renderLaser(matrixStackIn, bufferIn, 0.8f);

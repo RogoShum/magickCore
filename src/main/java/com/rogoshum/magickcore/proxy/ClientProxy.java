@@ -4,20 +4,24 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.AllEntity;
 import com.rogoshum.magickcore.block.tileentity.*;
 import com.rogoshum.magickcore.client.entity.easyrender.*;
+import com.rogoshum.magickcore.client.entity.easyrender.bloom.DawnWardBloomRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
 import com.rogoshum.magickcore.client.element.*;
+import com.rogoshum.magickcore.client.entity.easyrender.bloom.ManaSphereBloomRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.*;
 import com.rogoshum.magickcore.client.entity.render.LifeStateEntityRenderer;
 import com.rogoshum.magickcore.client.entity.render.ManaEntityRenderer;
 import com.rogoshum.magickcore.client.entity.render.ManaObjectRenderer;
 import com.rogoshum.magickcore.client.item.MagickBakedModel;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.tileentity.easyrender.*;
 import com.rogoshum.magickcore.entity.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.event.RenderEvent;
-import com.rogoshum.magickcore.event.RenderOutlineEvent;
+import com.rogoshum.magickcore.event.ShaderEvent;
+import com.rogoshum.magickcore.init.ModShaders;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.init.ModItems;
@@ -28,7 +32,6 @@ import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.settings.ParticleStatus;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -50,7 +53,7 @@ import java.util.Map;
 public class ClientProxy implements IProxy
 {
 	private HashMap<String, ElementRenderer> renderers = new HashMap<String, ElementRenderer>();
-	private RenderOutlineEvent event = new RenderOutlineEvent();
+	private final ShaderEvent event = new ShaderEvent();
 	public static ErrorRenderer error = new ErrorRenderer();
 	public static int tick;
 
@@ -71,9 +74,11 @@ public class ClientProxy implements IProxy
 	public void registerHandlers()
 	{
 		MinecraftForge.EVENT_BUS.register(new RenderEvent());
-		//MinecraftForge.EVENT_BUS.addListener(event::onRenderWorldLast);
+		MinecraftForge.EVENT_BUS.register(new LightShaderManager());
+		MinecraftForge.EVENT_BUS.addListener(event::onSetupShaders);
+		MinecraftForge.EVENT_BUS.addListener(event::onRenderShaders);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
-		//FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
 		putEasyRenderer();
@@ -201,8 +206,9 @@ public class ClientProxy implements IProxy
 		RenderEvent.putLayerRender(AllEntity.class, new ManaBuffRenderer());
 		RenderEvent.putLayerRender(ClientPlayerEntity.class, new PlayerShieldRenderer());
 
-		//outline
-
+		//bloom
+		RenderEvent.putOutlineRender(ManaSphereEntity.class, new ManaSphereBloomRenderer());
+		RenderEvent.putOutlineRender(DawnWardEntity.class, new DawnWardBloomRenderer());
 
 		//laser
 		RenderEvent.putLaserRender(RadianceWellEntity.class, new RadianceWellLaserRenderer());

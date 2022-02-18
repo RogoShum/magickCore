@@ -51,21 +51,22 @@ public class ElementOrbEvent {
 
     public static void initElementMap()
     {
-        spawnElementMap.put(EndermanEntity.class, new LivingElementTable(5, LibElements.VOID));
-        spawnElementMap.put(BlazeEntity.class, new LivingElementTable(5, LibElements.SOLAR));
+        spawnElementMap.put(EndermanEntity.class, new LivingElementTable(4, LibElements.VOID));
+        spawnElementMap.put(BlazeEntity.class, new LivingElementTable(3, LibElements.SOLAR));
         spawnElementMap.put(CaveSpiderEntity.class, new LivingElementTable(1, LibElements.WITHER));
-        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(15, LibElements.WITHER));
-        spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(10, LibElements.VOID));
+        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(7, LibElements.WITHER));
+        spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(6, LibElements.VOID));
         spawnElementMap.put(MagmaCubeEntity.class, new LivingElementTable(2, LibElements.SOLAR));
         spawnElementMap.put(EvokerEntity.class, new LivingElementTable(1, LibElements.TAKEN));
+        spawnElementMap.put(VexEntity.class, new LivingElementTable(2, LibElements.TAKEN));
 
-        spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(7, LibElements.VOID));
-        spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(10, LibElements.SOLAR));
+        spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(5, LibElements.VOID));
+        spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(7, LibElements.SOLAR));
 
-        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(5, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(6, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(7, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(6, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(4, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(4, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(6, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(5, LibElements.STASIS));
 
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
@@ -222,6 +223,7 @@ public class ElementOrbEvent {
             {
                 state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
+                state.setMaxManaValue(state.getFinalMaxElementShield());
             }
 
             state.setElemented();
@@ -236,6 +238,7 @@ public class ElementOrbEvent {
             {
                 state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
+                state.setMaxManaValue(state.getFinalMaxElementShield());
             }
 
             state.setElemented();
@@ -250,6 +253,7 @@ public class ElementOrbEvent {
             {
                 state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
                 state.setElement(ModElements.getElement(table.element));
+                state.setMaxManaValue(state.getFinalMaxElementShield());
             }
 
             state.setElemented();

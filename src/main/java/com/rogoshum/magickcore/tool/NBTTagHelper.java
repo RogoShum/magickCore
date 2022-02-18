@@ -91,7 +91,7 @@ public class NBTTagHelper {
     public static boolean putElementOnTool(ItemStack stack, String element)
     {
         CompoundNBT tag = getToolElementTable(stack);
-        tag.putInt(element, 100);
+        tag.putInt(element, 300);
         CompoundNBT nbt = getStackTag(stack);
         nbt.put(LibElementTool.TOOL_ELEMENT, tag);
         stack.setTag(nbt);

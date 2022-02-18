@@ -4,12 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
@@ -85,63 +87,63 @@ public abstract class ElementRenderer
         wind[3] = wind_3;
     }
 
-    public void renderCycle(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getCycleTexture())), alpha, this.color);
+    public void renderCycle(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getCycleTexture())), alpha, this.color);
     }
 
-    public void renderMist(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getMistTexture())), alpha, this.color);
+    public void renderMist(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getMistTexture())), alpha, this.color);
     }
 
-    public void renderTrail(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha)
+    public void renderTrail(MatrixStack matrix, BufferBuilder bufferIn, float alpha)
     {
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getTrailTexture())), alpha, this.color);
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getTrailTexture())), alpha, this.color);
     }
 
-    public void renderTrail(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha, String shakeName, float limit)
+    public void renderTrail(MatrixStack matrix, BufferBuilder bufferIn, float alpha, String shakeName, float limit)
     {
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getTrailTexture())), alpha, this.color, true, shakeName, limit);
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getTrailTexture())), alpha, this.color, true, shakeName, limit);
     }
 
-    public void renderLaser(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getLaserTexture())), alpha, this.color);
+    public void renderLaser(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getLaserTexture())), alpha, this.color);
     }
 
-    public void renderLaserParticle(MatrixStack matrix, IRenderTypeBuffer bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
-        RenderHelper.renderLaserParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedLaserGlint(res, laserScale)), length, alpha, this.color, false, "", 0.0f);
+    public void renderLaserParticle(MatrixStack matrix, BufferBuilder bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
+        RenderHelper.renderLaserParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedLaserGlint(res, laserScale)), length, alpha, this.color, false, "", 0.0f);
     }
 
-    public void renderOrb(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getOrbTexture())), alpha, this.color);
+    public void renderOrb(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getOrbTexture())), alpha, this.color);
     }
 
-    public void renderOrb(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha, String shakeName, float limit){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getOrbTexture())), alpha, this.color, true, shakeName, limit);
+    public void renderOrb(MatrixStack matrix, BufferBuilder bufferIn, float alpha, String shakeName, float limit){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getOrbTexture())), alpha, this.color, true, shakeName, limit);
     }
 
-    public void renderStar(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha, String shakeName, float limit){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getStarTexture())), alpha, this.color, true, shakeName, limit);
+    public void renderStar(MatrixStack matrix, BufferBuilder bufferIn, float alpha, String shakeName, float limit){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getStarTexture())), alpha, this.color, true, shakeName, limit);
     }
 
-    public void renderStar(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getStarTexture())), alpha, this.color);
+    public void renderStar(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getStarTexture())), alpha, this.color);
     }
 
-    public void renderParticle(MatrixStack matrix, IRenderTypeBuffer bufferIn, float alpha){
-        RenderHelper.renderParticle(matrix, bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(this.getParticleTexture())), alpha, this.color);
+    public void renderParticle(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
+        RenderHelper.renderParticle(BufferPackage.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getParticleTexture())), alpha, this.color);
     }
 
-    public void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, boolean shake, String name, int packedLightIn) {
-        RenderHelper.renderSphere(matrix4f, bufferIn, type, stacks, alpha, hitReaction, this.color, packedLightIn, shake, name, 0);
+    public void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, boolean shake, String name, int packedLightIn) {
+        RenderHelper.renderSphere(pack, stacks, alpha, hitReaction, this.color, packedLightIn, shake, name, 0);
     }
 
-    public void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, float limit, int packedLightIn) {
-        RenderHelper.renderSphere(matrix4f, bufferIn, type, stacks, alpha, hitReaction, this.color, packedLightIn, limit);
+    public void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float limit, int packedLightIn) {
+        RenderHelper.renderSphere(pack, stacks, alpha, hitReaction, this.color, packedLightIn, limit);
     }
 
-    public void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, int packedLightIn)
+    public void renderSphere(BufferPackage pack, int stacks, float alpha, int packedLightIn)
     {
-        RenderHelper.renderSphere(matrix4f, bufferIn, type, stacks, alpha, this.color, packedLightIn);
+        RenderHelper.renderSphere(pack, stacks, alpha, this.color, packedLightIn);
     }
 
     public ResourceLocation getRingTexture() {

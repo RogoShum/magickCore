@@ -102,7 +102,7 @@ public class MagickRepeaterRenderer extends CanSeeTileEntityRenderer<MagickRepea
         bone2.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
         bone3.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
         bone4.render(matrixStackIn, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY);
-
+        ((IRenderTypeBuffer.Impl)bufferIn).finish(type);
         if (tileEntityIn.getLifeRepeater() != null && tileEntityIn.getLifeRepeater().dropItem() != null) {
             matrixStackIn.translate(0, 0.875, 0);
             Vector3d vec = Minecraft.getInstance().player.getPositionVec()

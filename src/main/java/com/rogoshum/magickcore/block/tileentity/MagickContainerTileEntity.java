@@ -192,7 +192,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT compoundNBT = super.getUpdateTag();
-        if(mainItem != null) {
+        if(mainItem != null && !mainItem.getItem().hasEffect(mainItem)) {
             CompoundNBT tag = new CompoundNBT();
             mainItem.write(tag);
             compoundNBT.put("MAIN_ITEM", tag);
@@ -209,6 +209,8 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         if(tag.contains("MAIN_ITEM")) {
             mainItem = ItemStack.read(tag.getCompound("MAIN_ITEM"));
+            if(mainItem.getItem().hasEffect(mainItem))
+                mainItem = null;
         }
         this.eType = tag.getString("TYPE");
         this.transMana = tag.getBoolean("TRANS");

@@ -3,9 +3,11 @@ package com.rogoshum.magickcore.client.particle;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
@@ -97,7 +99,7 @@ public class LitParticle {
         return this;
     }
 
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl buffer) {
+    public void render(MatrixStack matrixStackIn, BufferBuilder buffer) {
         if (this.texture == null) return;
         matrixStackIn.push();
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
@@ -121,12 +123,11 @@ public class LitParticle {
         if(isGlow)
             type = RenderHelper.getTexedOrbGlow(texture, lifetime);
         if (shakeLimit > 0.0f)
-            RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(type), getAlpha(alpha), color, true, this.toString(), shakeLimit);
+            RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, buffer, type), getAlpha(alpha), color, true, this.toString(), shakeLimit);
          else
-            RenderHelper.renderParticle(matrixStackIn, buffer.getBuffer(type), getAlpha(alpha), color);
+            RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, buffer, type), getAlpha(alpha), color);
 
         matrixStackIn.pop();
-        buffer.finish();
     }
 
     protected void setSize(float particleWidth, float particleHeight) {

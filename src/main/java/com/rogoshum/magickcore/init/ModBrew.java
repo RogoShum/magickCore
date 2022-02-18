@@ -11,6 +11,8 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 
@@ -21,24 +23,45 @@ public class ModBrew {
 
     public static void registryBrewing()
     {
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe("potion", "element_crystal", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "disc", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "shulker", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_I.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_REGEN, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "scute", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_I.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.SHIELD_VALUE, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "prismarine", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_CONSUM_REDUCE, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_I.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_CONSUM_REDUCE, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "nautilus", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_REGEN, "redstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_I.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.MANA_REGEN, "glowstone", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_II.get())));
-        BrewingRecipeRegistry.addRecipe(new BrewingRecipe(LibEffect.NOTHING, "netherite", PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get())));
+        Ingredient nothing = Ingredient.fromStacks(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.NOTHING.get()));
+        ItemStack SHIELD_REGEN = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get());
+        ItemStack SHIELD_VALUE = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get());
+        ItemStack MANA_REGEN = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P.get());
+        ItemStack MANA_CONSUM_REDUCE = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get());
+
+        Registry.ITEM.forEach( item -> {
+            String name = item.getRegistryName().toString();
+            Ingredient ingredient = Ingredient.fromItems(item);
+            if(name.contains("element_crystal"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromItems(Items.POTION), Ingredient.fromItems(item), PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
+            else if(name.contains("disc"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
+            else if(name.contains("shulker"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, SHIELD_REGEN));
+            else if(name.contains("scute"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, SHIELD_VALUE));
+            else if(name.contains("prismarine"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_CONSUM_REDUCE));
+            else if(name.contains("nautilus"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_REGEN));
+            else if(name.contains("netherite"))
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get())));
+            else if(name.contains("redstone")) {
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(SHIELD_REGEN), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_I.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(SHIELD_VALUE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_I.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(MANA_CONSUM_REDUCE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_I.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(MANA_REGEN), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_I.get())));
+            }
+            else if(name.contains("glowstone")) {
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(SHIELD_REGEN), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_II.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(SHIELD_VALUE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_II.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(MANA_CONSUM_REDUCE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_II.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(Ingredient.fromStacks(MANA_REGEN), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_II.get())));
+            }
+        });
     }
 
-    public static class BrewingRecipe implements IBrewingRecipe
+    /*public static class BrewingRecipe implements IBrewingRecipe
     {
         @Nonnull
         private final String input;
@@ -83,5 +106,5 @@ public class ModBrew {
 
             return other.getTranslationKey().toString().contains(this.input);
         }
-    }
+    }*/
 }

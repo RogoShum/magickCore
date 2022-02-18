@@ -60,23 +60,19 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
         entity.setPickupDelay(20);
         world.addEntity(entity);
 
-        if(world.rand.nextBoolean()) {
-            if(world.rand.nextBoolean()) {
-                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, world);
-                orb.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
-                orb.setElement(ModElements.getElement(eType));
-                orb.setTickTime(200);
-                world.addEntity(orb);
-            }
-            else {
-                ManaPowerEntity orb2 = new ManaPowerEntity(ModEntites.mana_power, world);
-                orb2.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
-                orb2.setElement(ModElements.getElement(LibElements.ORIGIN));
-                orb2.setTickTime(100);
-                orb2.setMana(10);
-                world.addEntity(orb2);
-           }
+        if(world.rand.nextInt(4) > 0) {
+            spawnElementOrb();
+            if(world.rand.nextBoolean())
+                spawnElementOrb();
         }
+    }
+
+    private void spawnElementOrb() {
+        ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, world);
+        orb.setPosition(this.pos.getX() + 0.5 * world.rand.nextFloat(), this.pos.getY() + 0.5, this.pos.getZ() + 0.5 * world.rand.nextFloat());
+        orb.setElement(ModElements.getElement(eType));
+        orb.setTickTime(200);
+        world.addEntity(orb);
     }
 
     private void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }

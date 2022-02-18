@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
@@ -169,7 +170,10 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
         }
 
         if(living.getMaxHealth() >= mana) {
-            living.getAttribute(Attributes.MAX_HEALTH).setBaseValue(living.getMaxHealth() - mana);
+            if(living instanceof PlayerEntity)
+                living.setHealth(living.getHealth() - mana);
+            else
+                living.getAttribute(Attributes.MAX_HEALTH).setBaseValue(living.getMaxHealth() - mana);
             if (living.getHealth() > living.getMaxHealth())
                 living.setHealth(living.getMaxHealth());
 

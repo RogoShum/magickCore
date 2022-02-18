@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
 import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector2f;
@@ -17,7 +18,7 @@ import java.util.Iterator;
 
 public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
     @Override
-    public void preRender(ChaoReachEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void preRender(ChaoReachEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         if(!entity.initial)
             return;
         matrixStackIn.push();
@@ -30,11 +31,11 @@ public class ChaosReachLaserRenderer extends EasyRenderer<ChaoReachEntity> {
         matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
 
         render(entity, matrixStackIn, bufferIn, partialTicks);
-        postRender(entity, matrixStackIn, bufferIn, partialTicks);
+        matrixStackIn.pop();
     }
 
     @Override
-    public void render(ChaoReachEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(ChaoReachEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             matrixStackIn.scale(2f, 2f, 2f);
             HashMap<Integer, TrailParticle> trace = entityIn.getTraceEntity();

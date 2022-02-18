@@ -132,7 +132,7 @@ public class CapabilityEntityState{
 
 		 @Override
 		 public void setManaValue(float mana) {
-		 	this.manaValue = Math.min(mana, this.getMaxManaValue());
+		 	this.manaValue = Math.min(Math.max(0, mana), this.getMaxManaValue());
 		 }
 
 		 @Override

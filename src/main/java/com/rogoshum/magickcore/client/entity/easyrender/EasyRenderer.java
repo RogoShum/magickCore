@@ -2,20 +2,27 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.VertexShakerHelper;
 import com.rogoshum.magickcore.entity.ManaRiftEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
 import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
+import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +36,8 @@ import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +50,8 @@ public abstract class EasyRenderer<T extends Entity> {
     protected final ResourceLocation sphere_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_rotate.png");
     protected final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_rotate.png");
     protected final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
-    public EasyRenderer(){};
 
-    public void preRender(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks)
+    public void preRender(T entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks)
     {
         if(entity instanceof ManaEntity && !((ManaEntity) entity).cansee)
             return;
@@ -59,8 +67,9 @@ public abstract class EasyRenderer<T extends Entity> {
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
+
         render(entity, matrixStackIn, bufferIn, partialTicks);
-        postRender(entity, matrixStackIn, bufferIn, partialTicks);
+        matrixStackIn.pop();
     }
 
     public static Vector2f getRotationFromVector(Vector3d dirc)
@@ -84,15 +93,9 @@ public abstract class EasyRenderer<T extends Entity> {
         return new Vector3d(x, y, z);
     }
 
-    public abstract void render(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks);
+    public abstract void render(T entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks);
 
-    public void postRender(T entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks)
-    {
-        matrixStackIn.pop();
-        bufferIn.finish();
-    }
-
-    public static void renderRift(MatrixStack matrixStackIn, IVertexBuilder bufferIn, ManaEntity entityIn, float sizeIn, float[] color, float alphaIn, float partialTicks, IWorldReader worldIn) {
+    public static void renderRift(MatrixStack matrixStackIn, BufferBuilder bufferIn, RenderType type, ManaEntity entityIn, float sizeIn, float[] color, float alphaIn, float partialTicks, IWorldReader worldIn) {
         double d2 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosX, entityIn.getPosX());
         double d0 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosY + entityIn.getHeight() / 2, entityIn.getPosY() + entityIn.getHeight() / 2);
         double d1 = MathHelper.lerp((double)partialTicks, entityIn.lastTickPosZ, entityIn.getPosZ());
@@ -102,9 +105,13 @@ public abstract class EasyRenderer<T extends Entity> {
         int l = MathHelper.floor(d0);
         int i1 = MathHelper.floor(d1 - (double)sizeIn);
         int j1 = MathHelper.floor(d1 + (double)sizeIn);
-
+        BufferPackage pack = BufferPackage.create(matrixStackIn, bufferIn, type);
         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(i, k - sizeIn, i1), new BlockPos(j, l + sizeIn, j1))) {
+            RenderHelper.setup(pack);
+            RenderHelper.begin(pack);
             getBlockShadow(entityIn, matrixStackIn, bufferIn, worldIn, blockpos, d2, d0, d1, color, alphaIn, sizeIn);
+            RenderHelper.finish(pack);
+            RenderHelper.end(pack);
         }
     }
 

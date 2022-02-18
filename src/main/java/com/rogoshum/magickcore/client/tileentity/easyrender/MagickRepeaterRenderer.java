@@ -7,9 +7,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Direction;
@@ -69,7 +69,8 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
         if (entity.getLifeRepeater() != null && entity.getLifeRepeater().useDirection()) {
             matrixStackIn.push();
             matrixStackIn.translate(0, -1, 0);
-            IVertexBuilder bufferGlow = bufferIn.getBuffer(RenderHelper.getTexedEntityGlow(magick_repeater));
+            RenderType type = RenderHelper.getTexedEntityGlow(magick_repeater);
+            IVertexBuilder bufferGlow = bufferIn.getBuffer(type);
 
             if (entity.isPortTurnOn(Direction.WEST))
                 bb_main.render(matrixStackIn, bufferGlow, light, OverlayTexture.NO_OVERLAY);
@@ -89,7 +90,7 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
 
             if (entity.isPortTurnOn(Direction.NORTH))
                 north_r1.render(matrixStackIn, bufferGlow, light, OverlayTexture.NO_OVERLAY);
-
+            bufferIn.finish(type);
             matrixStackIn.pop();
         }
         float[] color = RenderHelper.ORIGIN;
@@ -99,19 +100,20 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
         if (entity.getTouchMode() == MagickRepeaterTileEntity.TouchMode.OUTPUT)
             color = RenderHelper.RED;
         light = WorldRenderer.getCombinedLight(entity.getWorld(), entity.getPos());
+        BufferBuilder buffer = BufferHelper.getBuffer(bufferIn);
         if (!entity.getDirection().equals(Vector3d.ZERO) && entity.getLifeRepeater() != null && entity.getLifeRepeater().useTileVector()) {
             matrixStackIn.push();
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-entity.getRotation().getY()));
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(entity.getRotation().getX()));
             matrixStackIn.scale(0.2f, 0.5f, 0.2f);
             matrixStackIn.translate(0.0, -0.5, -0.0);
-            RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank, 0.2f, 0f), 4, 0.5f, color, light);
-            RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.2f, 0f), 4, 1.0f, color, RenderHelper.renderLight);
+            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 0.2f, 0f)), 4, 0.5f, color, light);
+            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.2f, 0f)), 4, 1.0f, color, RenderHelper.renderLight);
             matrixStackIn.pop();
         } else {
             matrixStackIn.push();
             matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-            RenderHelper.renderSphere(matrixStackIn.getLast().getMatrix(), bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f), 4, 0.75f, color, RenderHelper.renderLight);
+            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.75f, color, RenderHelper.renderLight);
             matrixStackIn.pop();
         }
     }

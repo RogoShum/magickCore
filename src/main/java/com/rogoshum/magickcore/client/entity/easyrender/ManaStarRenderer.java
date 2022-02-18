@@ -5,13 +5,14 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.particle.TrailParticle;
 import com.rogoshum.magickcore.entity.ManaOrbEntity;
 import com.rogoshum.magickcore.entity.ManaStarEntity;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class ManaStarRenderer extends EasyRenderer<ManaStarEntity>{
 
     @Override
-    public void render(ManaStarEntity entityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(ManaStarEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
         matrixStackIn.scale(entityIn.getWidth(), entityIn.getHeight(), entityIn.getWidth());
         if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
             entityIn.getElement().getRenderer().renderStar(matrixStackIn, bufferIn, 0.8f, Integer.toString(entityIn.getEntityId()), 2f);

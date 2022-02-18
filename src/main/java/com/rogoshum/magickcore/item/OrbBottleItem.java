@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
 import com.rogoshum.magickcore.enums.EnumManaType;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
+import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.tool.MagickReleaseHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModElements;
@@ -99,5 +100,15 @@ public class OrbBottleItem extends BaseItem{
         if(tag.contains("ELEMENT")) {
             tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
         }
+    }
+
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getContainerItem(ItemStack itemStack) {
+        return new ItemStack(ModItems.orb_bottle.get());
     }
 }

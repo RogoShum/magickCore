@@ -5,19 +5,26 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.event.ShaderEvent;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.OptionalDouble;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -46,15 +53,6 @@ public class RenderHelper {
     public static final int halfLight = 7864440;
 
     protected static final RenderState.TransparencyState NO_TRANSPARENCY = new RenderState.TransparencyState("no_transparency", RenderSystem::disableBlend, () -> {
-    });
-    protected static final RenderState.TransparencyState ADDITIVE_TRANSPARENCY = new RenderState.TransparencyState("additive_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-        RenderSystem.depthMask(false);
-    }, () -> {
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
     });
     protected static final RenderState.TransparencyState LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("lightning_transparency", () -> {
         RenderSystem.enableBlend();
@@ -254,7 +252,7 @@ public class RenderHelper {
 
     public static RenderType getTexedOrbSolid(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(NO_TRANSPARENCY).alpha(DEFAULT_ALPHA).shadeModel(SHADE_ENABLED).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
-        RenderType type = RenderType.makeType("_Tex_Orb_Solid", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_Tex_Orb_Solid", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -282,19 +280,19 @@ public class RenderHelper {
         RenderHelper.glintScale = glintScale;
         RenderHelper.glintRotate = glintRotate;
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).transparency(GLINT_TRANSPARENCY).target(TRANSLUCENT_TARGET).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).writeMask(COLOR_DEPTH_WRITE).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
-        RenderType type = RenderType.makeType("_TexedOrbGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedOrbGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedEntityGlow(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(true);
-        RenderType type = RenderType.makeType("_TexedEntityGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedEntityGlow", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedEntity(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).depthTest(DEPTH_LEQUAL).build(true);
-        RenderType type = RenderType.makeType("_TexedEntity", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedEntity", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -302,20 +300,20 @@ public class RenderHelper {
         RenderHelper.glintScale = glintScale;
         RenderHelper.glintRotate = glintRotate;
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(true);
-        RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedLaserGlint(ResourceLocation locationIn, float glintScale) {
         RenderHelper.glintScale = glintScale;
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(LASER_GLINT_TEXTURING).build(true);
-        RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, true, true, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedEntityGlint", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
         return type;
     }
 
     public static RenderType getTexedCylinderGlow(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
-        RenderType type = RenderType.makeType("_TexedCylinderGlow", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, true, false, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedCylinderGlow", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -323,7 +321,7 @@ public class RenderHelper {
         RenderHelper.glintScale = glintScale;
         RenderHelper.glintRotate = glintRotate;
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(CYLINDER_GLINT_TEXTURING).build(false);
-        RenderType type = RenderType.makeType("_TexedCylinderGlint", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, true, false, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedCylinderGlint", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -331,13 +329,19 @@ public class RenderHelper {
         RenderHelper.glintScale = glintScale;
         RenderHelper.glintRotate = glintRotate;
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).shadeModel(SHADE_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
-        RenderType type = RenderType.makeType("_TexedSphereGlow", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, true, false, rendertype$state);
+        RenderType type = RenderType.makeType("_TexedSphereGlow", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, false, false, rendertype$state);
+        return type;
+    }
+
+    public static RenderType getTexedSphere(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).target(TRANSLUCENT_TARGET).writeMask(COLOR_DEPTH_WRITE).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).texturing(ENTITY_GLINT_TEXTURING).build(false);
+        RenderType type = RenderType.makeType("_TexedSphere", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, false, false, rendertype$state);
         return type;
     }
 
     public static RenderType getLineGlow(double width) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().writeMask(COLOR_WRITE).shadeModel(SHADE_ENABLED).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).target(TRANSLUCENT_TARGET).overlay(OVERLAY_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
-        RenderType type = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, true, false, rendertype$state);
+        RenderType type = RenderType.makeType(MagickCore.MOD_ID + "_LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, false, rendertype$state);
         return type;
     }
 
@@ -360,32 +364,34 @@ public class RenderHelper {
         return RenderType.State.getBuilder().shadeModel(SHADE_ENABLED).lightmap(LIGHTMAP_ENABLED).texture(new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, true)).transparency(NORMAL_LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true);
     }
 
-    public static void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, float limit) {
-        renderSphere(matrix4f, bufferIn, type, stacks, alpha, hitReaction, color, packedLightIn, false, null, limit);
+    public static void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, float limit) {
+        renderSphere(pack, stacks, alpha, hitReaction, color, packedLightIn, false, null, limit);
     }
 
-    public static void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, float[] color, int packedLightIn) {
-        renderSphere(matrix4f, bufferIn, type, stacks, alpha, null, color, packedLightIn, 0);
+    public static void renderSphere(BufferPackage pack, int stacks, float alpha, float[] color, int packedLightIn) {
+        renderSphere(pack, stacks, alpha, null, color, packedLightIn, 0);
     }
 
     public static final Vector3f[] QuadVector = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
 
-    public static void renderParticle(MatrixStack matrixStackIn, IVertexBuilder buffer, float alpha, float[] color) {
-        renderParticle(matrixStackIn, buffer, alpha, color, false, null, 0f);
+    public static void renderParticle(BufferPackage pack, float alpha, float[] color) {
+        renderParticle(pack, alpha, color, false, null, 0f);
     }
 
-    public static void renderCylinder(RenderType type, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float alpha, float alphaMid, float[] color, float baseRadius, float height, int stacks, VectorHitReaction[] hitReaction, float limit) {
+    public static void renderCylinder(BufferPackage pack, float alpha, float alphaMid, float[] color, float baseRadius, float height, int stacks, VectorHitReaction[] hitReaction, float limit) {
         double majorStep = height / stacks;
         double minorStep = 2.0 * Math.PI / stacks;
         int i, j;
 
-        matrixStackIn.push();
-        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
         for (i = 0; i < stacks; ++i) {
             float z0 = (float) (0.5 * height - i * majorStep);
             float z1 = (float) (z0 - majorStep);
-            matrixStackIn.push();
-            IVertexBuilder buffer = bufferIn.getBuffer(type);
+            pack.matrixStack.push();
+            begin(pack);
             for (j = 0; j <= stacks; ++j) {
                 double a = j * minorStep;
                 float x = (float) (baseRadius * Math.cos(a));
@@ -404,17 +410,20 @@ public class RenderHelper {
                 //buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
                 //buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
             }
-            bufferIn.finish(type);
-            matrixStackIn.pop();
+            finish(pack);
+            pack.matrixStack.pop();
         }
-
-        matrixStackIn.pop();
+        end(pack);
+        pack.matrixStack.pop();
     }
 
-    public static void renderLaserParticle(MatrixStack matrixStackIn, IVertexBuilder buffer, float length, float alpha, float[] color, boolean shake, String shakeName, float limit) {
-        matrixStackIn.push();
-        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+    public static void renderLaserParticle(BufferPackage pack, float length, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
         //matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+        setup(pack);
+        begin(pack);
         int light = renderLight;
         if (shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
@@ -443,16 +452,21 @@ public class RenderHelper {
             buffer.pos(matrix4f, 0.0F, length, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, 1.0F).endVertex();
             buffer.pos(matrix4f, 0.0F, 0.0F, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, 1.0F).endVertex();
         }
-        matrixStackIn.pop();
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
     }
 
-    public static void renderStaticParticle(MatrixStack matrixStackIn, IVertexBuilder buffer, float alpha, float[] color) {
-        renderStaticParticle(matrixStackIn, buffer, alpha, color, false, "", 0.0f);
+    public static void renderStaticParticle(BufferPackage pack, float alpha, float[] color) {
+        renderStaticParticle(pack, alpha, color, false, "", 0.0f);
     }
 
-    public static void renderStaticParticle(MatrixStack matrixStackIn, IVertexBuilder buffer, float alpha, float[] color, boolean shake, String shakeName, float limit) {
-        matrixStackIn.push();
-        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+    public static void renderStaticParticle(BufferPackage pack, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
         int light = renderLight;
         if (shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
@@ -476,13 +490,18 @@ public class RenderHelper {
             buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
             buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
         }
-        matrixStackIn.pop();
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
     }
 
-    public static void renderParticle(MatrixStack matrixStackIn, IVertexBuilder buffer, float alpha, float[] color, boolean shake, String shakeName, float limit) {
-        matrixStackIn.push();
-        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
-        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+    public static void renderParticle(BufferPackage pack, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        pack.matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
         int light = renderLight;
         if (shake) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(shakeName);
@@ -506,10 +525,12 @@ public class RenderHelper {
             buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
             buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
         }
-        matrixStackIn.pop();
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
     }
 
-    public static void renderSphere(Matrix4f matrix4f, IRenderTypeBuffer.Impl bufferIn, RenderType type, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, boolean shake, String name, float limit) {
+    public static void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, boolean shake, String name, float limit) {
         if (color == null)
             color = ORIGIN;
         if (stacks <= 2)
@@ -517,15 +538,18 @@ public class RenderHelper {
 
         if (stacks % 2 != 0)
             stacks++;
-
+        IVertexBuilder buffer = pack.buffer;
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        setup(pack);
         if (sphereVertex.containsKey(stacks) && sphereUV.containsKey(stacks)) {
             ArrayList<Vector3d> vertexList = sphereVertex.get(stacks);
             ArrayList<Vector2f> uvList = sphereUV.get(stacks);
 
             if (vertexList.size() == uvList.size()) {
                 int order = 0;
+
                 for (int i = 0; i < stacks / 2; i++) {
-                    IVertexBuilder buffer = bufferIn.getBuffer(type);
+                    begin(pack);
                     for (int j = 0; j <= stacks; j++) {
                         Vector3d vector3d = vertexList.get(order);
                         Vector2f uv = uvList.get(order++);
@@ -541,10 +565,9 @@ public class RenderHelper {
                         else
                             posVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
                     }
-                    bufferIn.finish(type);
+                    finish(pack);
                 }
             }
-
         } else {
             ArrayList<Vector3d> vertex = new ArrayList<>();
             ArrayList<Vector2f> uv = new ArrayList<>();
@@ -565,7 +588,7 @@ public class RenderHelper {
             // draw intermediate stacks as quad strips
             for (i = imin; i < imax; i++) {
                 rho = i * drho;
-                IVertexBuilder buffer = bufferIn.getBuffer(type);
+                begin(pack);
                 s = 0.0f;
                 for (j = 0; j <= stacks; j++) {
                     theta = (j == stacks) ? 0.0f : j * dtheta;
@@ -584,13 +607,15 @@ public class RenderHelper {
                     uv.add(new Vector2f(s, t - dt));
                     s += ds;
                 }
-                bufferIn.finish(type);
+                finish(pack);
                 t -= dt;
             }
 
             sphereVertex.put(stacks, vertex);
             sphereUV.put(stacks, uv);
         }
+
+        end(pack);
     }
 
     private static void posVertex(Matrix4f matrix4f, IVertexBuilder bufferIn, float x, float y, float z, float texU, float TexV, float alhpa, float red, float green, float blue, int packedLightIn, VectorHitReaction[] hitReaction, float limit) {
@@ -687,5 +712,35 @@ public class RenderHelper {
             }
 
         bufferIn.pos(matrix4f, x, y, -z).color(red, green, blue, alhpa + maxAlhpa).normal(x, y, -z).tex(texU, TexV).endVertex();
+    }
+
+    public static void begin(BufferPackage bufferPackage) {
+        bufferPackage.buffer.begin(bufferPackage.type.getDrawMode(), bufferPackage.type.getVertexFormat());
+    }
+
+    public static void finish(BufferPackage bufferPackage) {
+        bufferPackage.type.finish(bufferPackage.buffer, 0, 0, 0);
+    }
+
+    public static void setup(BufferPackage bufferPackage) {
+        if(bufferPackage.renderShader != null) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferPackage.renderShader));
+            if(shader != null) {
+                Framebuffer framebuffer = shader.getFramebufferRaw(
+                        Objects.requireNonNull(ShaderEvent.getShaderFrameName(bufferPackage.renderShader)));
+                framebuffer.func_237506_a_(Minecraft.getInstance().getFramebuffer());
+                framebuffer.bindFramebuffer(false);
+                ShaderEvent.pushRender(bufferPackage.renderShader);
+            }
+        }
+    }
+
+    public static void end(BufferPackage bufferPackage) {
+        if(bufferPackage.renderShader != null) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferPackage.renderShader));
+            if(shader != null) {
+                Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+            }
+        }
     }
 }

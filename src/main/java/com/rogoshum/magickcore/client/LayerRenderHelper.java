@@ -6,7 +6,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -118,7 +120,6 @@ public class LayerRenderHelper extends LivingRenderer {
         RenderType type = RenderHelper.getTexedEntityGlint(tex, 0.32f, 10f);
         if(!tex.toString().contains(MagickCore.MOD_ID))
             type = getEntityRenderType(renderer, entityIn);
-
         if(type != null && this.entityModel != null) {
             this.entityModel.setLivingAnimations(entityIn, f5, f8, partialTicks);
             this.entityModel.setRotationAngles(entityIn, f5, f8, f7, f2, f6);

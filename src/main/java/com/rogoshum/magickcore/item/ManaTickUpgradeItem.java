@@ -26,7 +26,7 @@ public class ManaTickUpgradeItem extends BaseItem implements IManaMaterial {
     public boolean upgradeManaItem(IManaItemData data) {
         if(data.getTickTime() >= data.getMaterial().getTick())
             return false;
-        data.setTickTime(Math.min(data.getMaterial().getTick(), data.getTickTime() + 1));
+        data.setTickTime(Math.min(data.getMaterial().getTick(), data.getTickTime() + 10));
         return true;
     }
 

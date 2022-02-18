@@ -1,0 +1,56 @@
+{
+    "targets": [
+        "magickcore:light_swap",
+        "magickcore:light_final",
+        "magickcore:light_zbuffer"
+    ],
+    "passes": [{
+        "name": "magickcore:depths_equal",
+        "intarget": "magickcore:light_final",
+        "outtarget": "magickcore:light_zbuffer",
+        "auxtargets": [
+            {
+                "name": "DiffuseSampler",
+                "id": "minecraft:main"
+            },
+            {
+                "name": "DiffuseDepthSampler",
+                "id": "minecraft:main:depth"
+            },
+            {
+                "name": "BloomSampler",
+                "id": "magickcore:light_final"
+            },
+            {
+                "name": "BloomDepthSampler",
+                "id": "magickcore:light_final:depth"
+            }
+        ]
+    },{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:light_zbuffer",
+        "outtarget": "magickcore:light_swap",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [2.0, 0.0]
+        }, {
+            "name": "Radius",
+            "values": [8.0]
+        }]
+    },{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:light_swap",
+        "outtarget": "magickcore:light_zbuffer",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [0.0, 2.0]
+        }, {
+            "name": "Radius",
+            "values": [8.0]
+        }]
+    },{
+        "name": "blit",
+        "intarget": "magickcore:light_zbuffer",
+        "outtarget": "magickcore:light_final"
+    }]
+}

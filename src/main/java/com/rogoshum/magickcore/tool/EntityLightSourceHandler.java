@@ -1,16 +1,20 @@
 package com.rogoshum.magickcore.tool;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.block.FakeAirBlock;
 import com.rogoshum.magickcore.block.FakeFluidBlock;
+import com.rogoshum.magickcore.client.BufferPackage;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.init.ModBlocks;
+import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -93,7 +97,7 @@ public class EntityLightSourceHandler {
                 if(side.isClient() && flag)
                     notifyBlockUpdate(entity.world(), pos, entity.getSourceLight());
 
-                 */
+               */
             }
         }
 
@@ -114,8 +118,8 @@ public class EntityLightSourceHandler {
 
                     boolean flag = tryRemoveLightSource(entity, pos);
 
-                    if(side.isClient() && flag)
-                        notifyBlockUpdate(entity.world(), pos, entity.getSourceLight());
+                    //if(side.isClient() && flag)
+                        //notifyBlockUpdate(entity.world(), pos, entity.getSourceLight());
                     posIterator.remove();
                 }
             }
@@ -142,6 +146,26 @@ public class EntityLightSourceHandler {
             }
         }
     }*/
+
+    public static void renderLightColor(MatrixStack matrixStack, BufferBuilder builder) {
+        /*for (int i = 0; i < lightList.size(); ++i) {
+            ILightSourceEntity entity = lightList.get(i);
+            matrixStack.push();
+            double x = entity.positionVec().x;
+            double y = entity.positionVec().y;
+            double z = entity.positionVec().z;
+
+            Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+            double camX = cam.x, camY = cam.y, camZ = cam.z;
+            matrixStack.translate(x - camX, y - camY + entity.eyeHeight() / 2, z - camZ);
+
+            matrixStack.scale(-entity.getSourceLight(), -entity.getSourceLight(), -entity.getSourceLight());
+            RenderHelper.renderSphere(BufferPackage.create(matrixStack, builder,
+                    RenderHelper.getTexedSphere(RenderHelper.blankTex)).useShader(LibShaders.bloom)
+                    , 8, 1.0f, entity.getColor(), RenderHelper.renderLight);
+            matrixStack.pop();
+        }*/
+    }
 
     @OnlyIn(Dist.CLIENT)
     public static void notifyBlockUpdate(World world, BlockPos pos, int range){
@@ -286,6 +310,10 @@ public class EntityLightSourceHandler {
             if (!posMap.containsKey(entity.world().getDimensionType()))
                 posMap.put(entity.world().getDimensionType(), new ConcurrentHashMap<>());
         }
+    }
+
+    public static List<ILightSourceEntity> getLightList() {
+        return lightList;
     }
 
     public static void clear(){

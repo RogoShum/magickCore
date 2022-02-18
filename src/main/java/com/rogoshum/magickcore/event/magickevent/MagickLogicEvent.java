@@ -380,7 +380,7 @@ public class MagickLogicEvent {
 
 		if(state != null && state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
 			float force = state.getBuffList().get(LibBuff.CRIPPLE).getForce();
-			float maxHealth = event.getEntityLiving().getMaxHealth() - (event.getEntityLiving().getMaxHealth() * force * 0.025f);
+			float maxHealth = event.getEntityLiving().getMaxHealth() - (event.getEntityLiving().getMaxHealth() * force * 0.05f);
 			if(event.getEntityLiving().getHealth() > maxHealth)
 				event.getEntityLiving().setHealth(maxHealth);
 		}
@@ -478,10 +478,11 @@ public class MagickLogicEvent {
 
 			if(!(entity instanceof PlayerEntity)) {
 				IEntityState attacker = entity.getCapability(MagickCore.entityState).orElse(null);
-				if (attacker != null && attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= event.getAmount() || MagickCore.rand.nextBoolean())) {
-					ReleaseAttribute attribute = new ReleaseAttribute(entity, event.getSource().getImmediateSource(), event.getEntityLiving(), (int) event.getAmount() * 10, event.getAmount() / 3);
-					if(MagickReleaseHelper.applyElementFunction(attacker.getElement(), EnumManaType.DEBUFF, attribute) || state.getManaValue() >= event.getAmount())
-						state.setManaValue(state.getManaValue() - event.getAmount());
+				float manaNeed = event.getAmount() + 1;
+				if (attacker != null && attacker.getElement().getType() != LibElements.ORIGIN && (state.getManaValue() >= manaNeed || MagickCore.rand.nextBoolean())) {
+					ReleaseAttribute attribute = new ReleaseAttribute(entity, event.getSource().getImmediateSource(), event.getEntityLiving(), (int) manaNeed * 40, manaNeed);
+					if(MagickReleaseHelper.applyElementFunction(attacker.getElement(), EnumManaType.DEBUFF, attribute) && state.getManaValue() >= manaNeed)
+						state.setManaValue(state.getManaValue() - manaNeed);
 				}
 			}
 

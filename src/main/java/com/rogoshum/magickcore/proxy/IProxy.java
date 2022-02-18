@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.event.ShaderEvent;
 
 public interface IProxy {
     public void init();
