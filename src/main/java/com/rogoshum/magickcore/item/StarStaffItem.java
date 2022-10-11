@@ -1,15 +1,18 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaItem;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.lib.LibContext;
+import com.rogoshum.magickcore.magick.context.MagickContext;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.init.ModEntities;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-
-import java.util.UUID;
 
 public class StarStaffItem extends ManaItem {
     public StarStaffItem() {
@@ -17,15 +20,19 @@ public class StarStaffItem extends ManaItem {
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, IEntityState state, ItemStack stack) {
-        IManaItem item = (IManaItem) stack.getItem();
-        UUID trace = MagickCore.emptyUUID;
-        if(this.getTrace(stack))
-            trace = MagickReleaseHelper.getTraceEntity(playerIn);
-        IManaElement element = item.getMana(stack) > 0 ? item.getElement(stack) : state.getElement();
-        MagickReleaseHelper.releaseProjectileEntity(ModEntites.mana_star, playerIn, element, trace, this.getForce(stack), this.getTickTime(stack)
-                    , this.getRange(stack), this.getManaType(stack));
-
-        return false;
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+        ItemManaData data = ExtraDataHelper.itemManaData(stack);
+        MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
+        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickContext context = magickContext.caster(playerIn).element(element);
+        SpawnContext spawnContext = SpawnContext.create(ModEntities.mana_star.get());
+        context.addChild(spawnContext);
+        context.post(data.spellContext().copy().element(element));
+        if(context.postContext.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
+            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
+        }
+        context.applyType(EnumApplyType.SPAWN_ENTITY);
+        return MagickReleaseHelper.releaseMagick(context);
     }
 }

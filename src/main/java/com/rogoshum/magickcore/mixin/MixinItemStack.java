@@ -1,38 +1,217 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.event.ExtraDataEvent;
+import com.rogoshum.magickcore.api.itemstack.IItemData;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.extradata.EntityExtraData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.magick.extradata.ItemExtraData;
+import com.rogoshum.magickcore.registry.ObjectRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.IItemProvider;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 @Mixin(ItemStack.class)
-public abstract class MixinItemStack{
+public class MixinItemStack implements IItemData {
+    private final HashMap<String, ItemExtraData> extraData = new HashMap<>();
 
     @Shadow
-    public abstract int getMaxDamage();
+    public int getMaxDamage() { return 0; }
 
     @Shadow
-    public abstract int getDamage();
+    public int getDamage() {return 0;}
 
     @Shadow
-    public abstract void setDamage(int damage);
+    public void setDamage(int damage) {}
+
+    @Inject(method = "getTag", at = @At("HEAD"))
+    public void onGetTag(CallbackInfoReturnable<CompoundNBT> cir) {
+        if(extraData().isEmpty()) return;
+        saveItemData();
+    }
+
+    @Inject(method = "hasTag", at = @At("HEAD"))
+    public void onHasTag(CallbackInfoReturnable<Boolean> cir) {
+        if(extraData().isEmpty()) return;
+        saveItemData();
+    }
+
+    @Inject(method = "isItemStackEqual", at = @At("HEAD"))
+    public void onEqual(ItemStack other, CallbackInfoReturnable<Boolean> cir) {
+        if(extraData().isEmpty()) return;
+        saveItemData();
+    }
+
+    @Inject(method = "areItemStackTagsEqual", at = @At("HEAD"))
+    private static void onTagsEqual(ItemStack stackA, ItemStack stackB, CallbackInfoReturnable<Boolean> cir) {
+        IItemData dataA = ExtraDataHelper.itemData(stackA);
+        if(!dataA.extraData().isEmpty())
+            saveItemData(stackA);
+
+        IItemData dataB = ExtraDataHelper.itemData(stackB);
+        if(!dataB.extraData().isEmpty())
+            saveItemData(stackA);
+    }
 
     @Shadow
-    public abstract CompoundNBT getTag();
+    public CompoundNBT getTag() { return new CompoundNBT(); }
+
+    public CompoundNBT originTag() {
+        ItemStack thisStack = (ItemStack)(Object)this;
+        return ObfuscationReflectionHelper.getPrivateValue(ItemStack.class, thisStack, "field_77990_d");
+    }
+
+    @Shadow
+    public void setTag(@Nullable CompoundNBT nbt) { }
+
+    @Override
+    public HashMap<String, ItemExtraData> extraData() {
+        return extraData;
+    }
+
+    @Inject(method = "copy", at = @At("RETURN"))
+    public void onCopy(CallbackInfoReturnable<ItemStack> stack) {
+        if(stack.getReturnValue().isEmpty()) return;
+        copyItemData(stack.getReturnValue());
+    }
+
+    @Inject(method = "write", at = @At("HEAD"))
+    public void onWrite(CompoundNBT nbt, CallbackInfoReturnable<CompoundNBT> tag) {
+        saveItemData();
+    }
+
+    @Inject(method = "write", at = @At("RETURN"))
+    public void onWriteEnd(CompoundNBT nbt, CallbackInfoReturnable<CompoundNBT> old) {
+        CompoundNBT tag = originTag();
+        if(tag == null) return;
+        if(tag.contains(ItemExtraData.ITEM_DATA)) {
+            CompoundNBT itemData = tag.getCompound(ItemExtraData.ITEM_DATA);
+            if(itemData.isEmpty())
+                tag.remove(ItemExtraData.ITEM_DATA);
+        }
+        if(tag.isEmpty())
+            setTag(null);
+    }
+
+    /*
+    @Inject(method = "setTag", at = @At("RETURN"))
+    public void onSetTag(@Nullable CompoundNBT nbt, CallbackInfo info) {
+        initItemData();
+    }
+     */
+
+    @Inject(method = "<init>(Lnet/minecraft/util/IItemProvider;ILnet/minecraft/nbt/CompoundNBT;)V", at = @At("RETURN"), cancellable = true)
+    protected void onConstructor(CallbackInfo info) {
+        initItemData();
+    }
+
+    @Inject(method = "<init>(Lnet/minecraft/nbt/CompoundNBT;)V", at = @At("RETURN"), cancellable = true)
+    protected void onConstructorCompoundNBT(CallbackInfo info) {
+        initItemData();
+    }
+
+    private void copyItemData(ItemStack stack) {
+        CompoundNBT itemData = new CompoundNBT();
+        extraData.forEach((key, func) -> {
+            CompoundNBT dataTag = new CompoundNBT();
+            func.write(dataTag);
+            itemData.put(key, dataTag);
+        });
+        ((IItemData)(Object)stack).extraData().forEach((key, func) -> {
+            if(itemData.contains(key))
+                func.read(itemData.getCompound(key));
+        });
+    }
+
+    private void saveItemData() {
+        if(extraData().isEmpty()) return;
+        ItemStack thisStack = (ItemStack)(Object)this;
+        CompoundNBT tag = thisStack.getOrCreateTag();
+        CompoundNBT itemData = new CompoundNBT();
+        extraData.forEach((key, func) -> {
+            if(func.isItemSuitable(thisStack)) {
+                CompoundNBT dataTag = new CompoundNBT();
+                func.write(dataTag);
+                itemData.put(key, dataTag);
+            }
+        });
+        if(!itemData.isEmpty())
+            tag.put(ItemExtraData.ITEM_DATA, itemData);
+    }
+
+    private static void saveItemData(ItemStack stack) {
+        IItemData data = ExtraDataHelper.itemData(stack);
+        if(data.extraData().isEmpty()) return;
+        CompoundNBT tag = stack.getOrCreateTag();
+        CompoundNBT itemData = new CompoundNBT();
+        data.extraData().forEach((key, func) -> {
+            if(func.isItemSuitable(stack)) {
+                CompoundNBT dataTag = new CompoundNBT();
+                func.write(dataTag);
+                itemData.put(key, dataTag);
+            }
+        });
+        if(!itemData.isEmpty())
+            tag.put(ItemExtraData.ITEM_DATA, itemData);
+    }
+
+    private void initItemData() {
+        ItemStack thisStack = (ItemStack)(Object)this;
+        HashMap<String, Callable<ItemExtraData>> dataMap = new HashMap<>();
+        ExtraDataEvent.ItemStack event = new ExtraDataEvent.ItemStack(dataMap);
+        MinecraftForge.EVENT_BUS.post(event);
+        dataMap.forEach((key, value) -> {
+            try {
+                ItemExtraData itemExtraData = value.call();
+                if(itemExtraData.isItemSuitable(thisStack))
+                    extraData.put(key, value.call());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        readData();
+    }
+
+    private void readData() {
+        if(extraData().isEmpty()) return;
+        ItemStack thisStack = (ItemStack)(Object)this;
+        if(originTag() == null || !originTag().contains(ItemExtraData.ITEM_DATA)) {
+            saveItemData();
+            return;
+        }
+        CompoundNBT itemData = originTag().getCompound(ItemExtraData.ITEM_DATA);
+        extraData.forEach((key, func) -> {
+            if(func.isItemSuitable(thisStack) && itemData.contains(key)) {
+                CompoundNBT data = itemData.getCompound(key);
+                func.read(data);
+                func.fixData(thisStack);
+            }
+        });
+
+        if(itemData.isEmpty())
+            originTag().remove(ItemExtraData.ITEM_DATA);
+    }
 
     @Inject(method = "attemptDamageItem", at = @At("RETURN"), cancellable = true)
     public void onAttemptDamageItem(int amount, Random rand, @Nullable ServerPlayerEntity damager, CallbackInfoReturnable<Boolean> cir) {
-        if(cir.getReturnValueZ() && getTag() != null && getTag().contains(LibElementTool.TOOL_ELEMENT))
-        {
+        if(cir.getReturnValueZ() && getTag() != null && getTag().contains(LibElementTool.TOOL_ELEMENT)) {
             CompoundNBT tag = getTag();
             if(tag.getCompound(LibElementTool.TOOL_ELEMENT).contains(LibElements.WITHER)) {
                 CompoundNBT elements = tag.getCompound(LibElementTool.TOOL_ELEMENT);

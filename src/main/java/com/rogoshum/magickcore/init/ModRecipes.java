@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
 import com.rogoshum.magickcore.event.magickevent.LivingLootsEvent;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
@@ -29,7 +30,7 @@ public class ModRecipes {
     //Explosion Recipes(easy recipe)
     private static final HashMap<IItemContainer, ItemStack> ExplosionRecipesMap = new HashMap<>();
 
-    public static void putExplosionRecipe(IItemContainer input, ItemStack output) {
+    public static void registerExplosionRecipe(IItemContainer input, ItemStack output) {
         if(!ExplosionRecipesMap.containsKey(input))
             ExplosionRecipesMap.put(input, output);
         else try {
@@ -95,6 +96,8 @@ public class ModRecipes {
     public static SpecialRecipeSerializer<?> wither_element_recipe;
     public static SpecialRecipeSerializer<?> taken_element_recipe;
 
+    public static final SpecialRecipeSerializer<?> context_tool_recipe = (SpecialRecipeSerializer<?>)new SpecialRecipeSerializer<>(ManaItemContextRecipe::new).setRegistryName("context_tool_recipe");
+
     public static void init()
     {
         TagMatchItemContainer arcContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.ARC));
@@ -145,31 +148,39 @@ public class ModRecipes {
             }
         }).setRegistryName("taken_element_recipe");
 
-        putExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), new ItemStack(ModItems.mana_glowstone.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.BLAZE_ROD.toString()), new ItemStack(ModItems.mana_blaze_rod.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), new ItemStack(ModItems.mana_radstone.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
+        ItemStack manaEnergy = new ItemStack(ModItems.MANA_ENERGY.get());
+        ItemStack rangeEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemManaData(rangeEnergy, (data) -> data.spellContext().range(0.5f));
 
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.solar.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.SOLAR));
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.arc.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.ARC));
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.voidE.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.VOID));
+        ItemStack forceEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemManaData(forceEnergy, (data) -> data.spellContext().force(0.5f));
 
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.stasis.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.STASIS));
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.wither.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.WITHER));
-        putExplosionRecipe(TagMatchItemContainer.create(ModItems.taken.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.TAKEN));
-        putExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_STAR.toString()), new ItemStack(ModItems.nether_star_material.get()));
+        ItemStack tickEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemManaData(tickEnergy, (data) -> data.spellContext().tick(20));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.BLAZE_ROD.toString()), rangeEnergy);
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.mana_gunpowder.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.REDSTONE.toString()), tickEnergy);
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
+
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.solar.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.SOLAR));
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.arc.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.ARC));
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.voidE.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.VOID));
+
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.stasis.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.STASIS));
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.wither.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.WITHER));
+        registerExplosionRecipe(TagMatchItemContainer.create(ModItems.taken.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.TAKEN));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_STAR.toString()), new ItemStack(ModItems.nether_star_material.get()));
 
         Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
-        if(book != null)
-        {
+        if(book != null) {
             ItemStack stack = new ItemStack(book);
             NBTTagHelper.getStackTag(stack).putString("patchouli:book", "magickcore:magickcore");
-            putExplosionRecipe(TagMatchItemContainer.create(Items.BOOK.toString()), stack);
+            registerExplosionRecipe(TagMatchItemContainer.create(Items.BOOK.toString()), stack);
         }
     }
 
@@ -179,6 +190,7 @@ public class ModRecipes {
         init();
         LivingLootsEvent.init();
         event.getRegistry().registerAll(
+                context_tool_recipe,
                 element_orb_recipe,
                 arc_element_recipe,
                 solar_element_recipe,

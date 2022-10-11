@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.init.ManaMaterials;
-import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -23,19 +22,27 @@ public class ManaMaterialsItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public int getManaNeed() {
+    public boolean disappearAfterRead() {
+        return false;
+    }
+
+    @Override
+    public int getManaNeed(ItemStack stack) {
         return 0;
     }
 
     @Override
     public boolean hasEffect(ItemStack stack) {
-        return true;
+        return false;
     }
 
     @Override
-    public boolean upgradeManaItem(IManaItemData data) {
-        data.setMaterial(ManaMaterials.getMaterial(material));
-        return true;
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
+        if(data instanceof IMaterialLimit) {
+            ((IMaterialLimit) data).setMaterial(ManaMaterials.getMaterial(material));
+            return true;
+        }
+        return false;
     }
 
     @Override

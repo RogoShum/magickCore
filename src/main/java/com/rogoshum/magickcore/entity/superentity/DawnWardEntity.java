@@ -4,27 +4,32 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.entity.baseEntity.ManaPointEntity;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.magick.element.MagickElement;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/dawn_ward.png");
     private float hue = 0;
 
     public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -33,11 +38,6 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn, MagickElement element) {
         super(entityTypeIn, worldIn, element);
-    }
-
-    public float[] getColor() {
-        Color colorInstance = Color.getHSBColor(hue, 1, 1);
-        return new float[]{(float) colorInstance.getRed() / 255f, (float) colorInstance.getGreen() / 255f, (float) colorInstance.getBlue() / 255f};
     }
 
     @Override
@@ -51,23 +51,16 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
         if(this.ticksExisted <= 25)
             return;
         initial = true;
+    }
 
-        Iterator<Integer> iter = hitReactions.keySet().iterator();
-        while (iter.hasNext()) {
-            VectorHitReaction reaction = hitReactions.get(iter.next());
-            //MagickCore.LOGGER.info("isInvalid " + reaction.isInvalid());
-            if (reaction.isInvalid()) {
-                iter.remove();
-            }
-            reaction.tick();
-        }
-
+    @Override
+    protected void applyParticle() {
         if(this.ticksExisted % 2 == 0 && this.world.isRemote) {
-            LitParticle par = new LitParticle(this.world, this.getElement().getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                    , 0.2f, 0.2f, 0.9f, 50, this.getElement().getRenderer());
+                    , 0.2f, 0.2f, 0.9f, 50, this.spellContext().element.getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
         }
@@ -151,7 +144,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
             return;
         }
 
-        Vector3d vec = new Vector3d(entityIn.getPosX() - this.getPosX(), (entityIn.getPosY() + entityIn.getHeight() / 2) - (this.getPosY() + this.getHeight() / 2), entityIn.getPosZ() - this.getPosZ());
+        Vector3d vec = new Vector3d(this.getPosX() - entityIn.getPosX(), (this.getPosY() + this.getHeight() / 2) - (entityIn.getPosY() + entityIn.getHeight() / 2), this.getPosZ() - entityIn.getPosZ());
         hitReactions.put(entityIn.getEntityId(), new VectorHitReaction(vec.normalize()));
         double d0 = entityIn.getPosX() - this.getPosX();
         double d1 = entityIn.getPosZ() - this.getPosZ();
@@ -183,12 +176,23 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    public int getSourceLight() {
+    public float getSourceLight() {
         return 15;
     }
 
     @Override
     protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
         return sizeIn.height * 0.5F;
+    }
+
+    @Nonnull
+    @Override
+    public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public ResourceLocation getEntityIcon() {
+        return ICON;
     }
 }

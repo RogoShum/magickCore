@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.lib.LibShaders;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -28,7 +29,7 @@ import java.lang.reflect.*;
 import java.util.List;
 
 public class LayerRenderHelper extends LivingRenderer {
-    private float[] color;
+    private Color color;
     private float alpha;
     public LayerRenderHelper(EntityRendererManager rendererManager, EntityModel entityModelIn) {
         super(rendererManager, entityModelIn, 0);
@@ -38,7 +39,7 @@ public class LayerRenderHelper extends LivingRenderer {
         this.alpha = alpha;
     }
 
-    public void setColor(float[] color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
@@ -125,7 +126,7 @@ public class LayerRenderHelper extends LivingRenderer {
             this.entityModel.setRotationAngles(entityIn, f5, f8, f7, f2, f6);
             IVertexBuilder ivertexbuilder = bufferIn.getBuffer(type);
             int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
-            this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, color[0], color[1], color[2], this.alpha);
+            this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), this.alpha);
         }
 
         if(renderer instanceof LivingRenderer) {

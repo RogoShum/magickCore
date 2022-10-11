@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.shader.ShaderUniform;
 import net.minecraft.entity.player.PlayerEntity;
 
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,6 +28,7 @@ import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
@@ -40,8 +42,7 @@ public class LightShaderManager {
     }
 
     @SubscribeEvent
-    public void preRenderChunk(PreRenderChunkEvent e)
-    {
+    public void preRenderChunk(PreRenderChunkEvent e) {
         //Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
         //RenderSystem.activeTexture(33984);
         //RenderSystem.bindTexture(5);
@@ -54,9 +55,9 @@ public class LightShaderManager {
     @SubscribeEvent
     public void onProfilerChange(ProfilerChangeEvent event)
     {
-        //if(true) return;
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         PlayerEntity player = Minecraft.getInstance().player;
+
         if(event.getName().equals("terrain"))
         {
             shader.useShader();
@@ -66,21 +67,37 @@ public class LightShaderManager {
             if(!postedLights)
             {
                 postedLights = true;
-                setLightSource(EntityLightSourceHandler.getLightList());
+                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
             }
-        }
-        if(event.getName().equals("sky"))
-        {
+        } else if(event.getName().equals("translucent")) {
+            shader.useShader();
+            //shader.setUniform("sampler", 0);
+            //shader.setUniform("lightmap", 0);
+            shader.setUniform("sampler", 33984 - '\u84c0');
+            shader.setUniform("lightmap", 33986 - '\u84c0');
+
+            if(!postedLights)
+            {
+                postedLights = true;
+                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
+            }
+        } else {
             shader.stopShader();
+            return;
         }
-        if(event.getName().equals("litParticles"))
-        {
+
+        if(event.getName().equals("litParticles")) {
             shader.useShader();
             shader.setUniform("sampler", 0);
             shader.setUniform("lightmap", 0);
             shader.setUniform("chunkX", 0);
             shader.setUniform("chunkY", 0);
             shader.setUniform("chunkZ", 0);
+        }
+
+        if(event.getName().equals("sky"))
+        {
+            shader.stopShader();
         }
         if(event.getName().equals("particles"))
         {
@@ -109,12 +126,6 @@ public class LightShaderManager {
         if(event.getName().equals("destroyProgress"))
         {
             shader.stopShader();
-        }
-        if(event.getName().equals("translucent"))
-        {
-            shader.useShader();
-            shader.setUniform("sampler", 0);
-            shader.setUniform("lightmap", 0);
         }
         if(event.getName().equals("hand"))
         {
@@ -145,10 +156,14 @@ public class LightShaderManager {
         int minCount = Math.min(lightSource.size(), 256);
         for(int i = 0; i < minCount; i++) {
             ILightSourceEntity light = lightSource.get(i);
-            float r = light.getColor()[0];
-            float g = light.getColor()[1];
-            float b = light.getColor()[2];
-            float alpha = 1.0f;
+            if(light == null) continue;
+            float r = light.getColor().r() * 0.75f;
+            float g = light.getColor().g() * 0.5f;
+            float b = light.getColor().b();
+            float alpha = (r + g + b) / 2.25f;
+            alpha = 1f - alpha;
+            alpha *= 2f;
+            //alpha += 1 - (Math.max(15f, light.getSourceLight()) / 30f);
             int pos = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].position");
             GL20.glUniform3f(pos, (float)light.positionVec().x, (float)light.positionVec().y, (float)light.positionVec().z);
             int color = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].color");

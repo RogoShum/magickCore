@@ -1,12 +1,10 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
-import com.rogoshum.magickcore.client.BufferPackage;
+import com.rogoshum.magickcore.client.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -15,9 +13,6 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileEntity>{
@@ -34,7 +29,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-degree));
         matrixStackIn.scale(0.1f, length, 0.1f);
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.translate(-offset1, 0.0, -offset1);
 
@@ -42,7 +37,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(45f));
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(degree));
         matrixStackIn.scale(0.1f, length, 0.1f);
-        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.translate(0.0, 0.0, offset1);
 
@@ -50,7 +45,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(45f));
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-degree));
         matrixStackIn.scale(0.1f, length, 0.1f);
-        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.translate(offset1, 0.0, -offset1);
 
@@ -58,7 +53,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(45f));
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(degree));
         matrixStackIn.scale(0.1f, length, 0.1f);
-        RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, RenderHelper.ORIGIN, RenderHelper.renderLight);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.pop();
         float height = (float) (tileEntityIn.ticksExisted % 120) / 60f;

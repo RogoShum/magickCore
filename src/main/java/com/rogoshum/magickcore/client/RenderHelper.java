@@ -1,18 +1,17 @@
 package com.rogoshum.magickcore.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.event.ShaderEvent;
-import net.minecraft.client.MainWindow;
+import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.util.ResourceLocation;
@@ -20,7 +19,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,17 +29,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderHelper {
-    public static final float[] ORIGIN = {1.0f, 1.0f, 1.0f};
-    public static final float[] GREEN = {0.2f, 1.0f, 0.2f};
-    public static final float[] RED = {1.0f, 0.2f, 0.2f};
-
-    public static final float[] SOLAR = {1.0f, 0.6f, 0.3f};
-    public static final float[] VOID = {0.25f, 0.0f, 1.0f};
-    public static final float[] ARC = {0.68f, 1.0f, 1.0f};
-
-    public static final float[] STASIS = {0.6f, 0.6f, 1.0f};
-    public static final float[] WITHER = {0.3f, 0.7f, 0.2f};
-    public static final float[] TAKEN = {0.5f, 0.5f, 0.5f};
+    public static final Color GREEN = Color.create(0.2f, 1.0f, 0.2f);
+    public static final Color RED = Color.create(1.0f, 0.2f, 0.2f);
 
     private static final HashMap<Integer, ArrayList<Vector3d>> sphereVertex = new HashMap<Integer, ArrayList<Vector3d>>();
     private static final HashMap<Integer, ArrayList<Vector2f>> sphereUV = new HashMap<Integer, ArrayList<Vector2f>>();
@@ -204,7 +193,7 @@ public class RenderHelper {
         float f1 = (float) (i % 30000L) / 30000.0F;
         RenderSystem.translatef(0.0f, f1, 0.0F);
         RenderSystem.rotatef(glintRotate, 0.0F, 1.0F, 0.0F);
-        RenderSystem.scalef(glintScale, glintScale, glintScale);
+        RenderSystem.scalef(1.0f, glintScale, 1.0f);
         RenderSystem.matrixMode(GL_MODELVIEW);
     }
 
@@ -360,25 +349,42 @@ public class RenderHelper {
 
     public static final RenderType GLOW_BLOCK = RenderType.makeType(MagickCore.MOD_ID + "_GLOW_BLOCK", DefaultVertexFormats.BLOCK, 7, 262144, false, true, getTranslucentState());
 
+    public static final float[][] vertex_list = {
+            {-0.5f, -0.5f, -0.5f},
+            {0.5f, -0.5f, -0.5f},
+            {-0.5f,  0.5f, -0.5f},
+            {0.5f,  0.5f, -0.5f},
+            {-0.5f, -0.5f,  0.5f},
+            {0.5f, -0.5f,  0.5f},
+            {-0.5f,  0.5f,  0.5f},
+            {0.5f,  0.5f,  0.5f}};
+    public static final int[][] index_list = {
+            {0, 2, 3, 1},
+            {0, 4, 6, 2},
+            {0, 1, 5, 4},
+            {4, 5, 7, 6},
+            {1, 3, 7, 5},
+            {2, 6, 7, 3}};
+
     private static RenderType.State getTranslucentState() {
         return RenderType.State.getBuilder().shadeModel(SHADE_ENABLED).lightmap(LIGHTMAP_ENABLED).texture(new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, true)).transparency(NORMAL_LIGHTNING_TRANSPARENCY).target(TRANSLUCENT_TARGET).build(true);
     }
 
-    public static void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, float limit) {
+    public static void renderSphere(BufferContext pack, int stacks, float alpha, VectorHitReaction[] hitReaction, Color color, int packedLightIn, float limit) {
         renderSphere(pack, stacks, alpha, hitReaction, color, packedLightIn, false, null, limit);
     }
 
-    public static void renderSphere(BufferPackage pack, int stacks, float alpha, float[] color, int packedLightIn) {
+    public static void renderSphere(BufferContext pack, int stacks, float alpha, Color color, int packedLightIn) {
         renderSphere(pack, stacks, alpha, null, color, packedLightIn, 0);
     }
 
     public static final Vector3f[] QuadVector = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
 
-    public static void renderParticle(BufferPackage pack, float alpha, float[] color) {
+    public static void renderParticle(BufferContext pack, float alpha, Color color) {
         renderParticle(pack, alpha, color, false, null, 0f);
     }
 
-    public static void renderCylinder(BufferPackage pack, float alpha, float alphaMid, float[] color, float baseRadius, float height, int stacks, VectorHitReaction[] hitReaction, float limit) {
+    public static void renderCylinder(BufferContext pack, float alpha, float alphaMid, Color color, float baseRadius, float height, int stacks, VectorHitReaction[] hitReaction, float limit) {
         double majorStep = height / stacks;
         double minorStep = 2.0 * Math.PI / stacks;
         int i, j;
@@ -397,18 +403,18 @@ public class RenderHelper {
                 float x = (float) (baseRadius * Math.cos(a));
                 float y = (float) (baseRadius * Math.sin(a));
 
-                float z0MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z0) * 2 / height), 0.25);
+                float z0MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z0) * 2 / height), 0.3);
                 float z0EdgeFactor = (1 - z0MidFactor);
                 float z0Alpha = z0MidFactor * alpha + z0EdgeFactor * alphaMid;
 
-                float z1MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z1) * 2 / height), 0.25);
+                float z1MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z1) * 2 / height), 0.3);
                 float z1EdgeFactor = (1 - z1MidFactor);
                 float z1Alpha = z1MidFactor * alpha + z1EdgeFactor * alphaMid;
 
-                posCylinderVertex(matrix4f, buffer, x, z0, y, j / (float) stacks, i / (float) stacks, z0Alpha, color[0], color[1], color[2], RenderHelper.renderLight, hitReaction, limit);
-                posCylinderVertex(matrix4f, buffer, x, z1, y, j / (float) stacks, (i + 1) / (float) stacks, z1Alpha, color[0], color[1], color[2], RenderHelper.renderLight, hitReaction, limit);
-                //buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
-                //buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color[0], color[1], color[2], alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
+                posCylinderVertex(matrix4f, buffer, x, z0, y, j / (float) stacks, i / (float) stacks, z0Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
+                posCylinderVertex(matrix4f, buffer, x, z1, y, j / (float) stacks, (i + 1) / (float) stacks, z1Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
+                //buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color.r(), color.g(), color.b(), alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
+                //buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color.r(), color.g(), color.b(), alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
             }
             finish(pack);
             pack.matrixStack.pop();
@@ -417,7 +423,7 @@ public class RenderHelper {
         pack.matrixStack.pop();
     }
 
-    public static void renderLaserParticle(BufferPackage pack, float length, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+    public static void renderLaserParticle(BufferContext pack, float length, float alpha, Color color, boolean shake, String shakeName, float limit) {
         pack.matrixStack.push();
         Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
         IVertexBuilder buffer = pack.buffer;
@@ -437,31 +443,31 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(1.0F, length, 0.0F).getPositionVec();
             Vector3d V3 = group.getVertex(1.0F, 0.0F, 0.0F).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         } else {
-            buffer.pos(matrix4f, -1.0F, 0.0F, 0.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
-            buffer.pos(matrix4f, -1.0F, length, 0.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 1.0F * length, 0.0F).endVertex();
-            buffer.pos(matrix4f, 1.0F, length, 0.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 1.0F * length, 0.0F).endVertex();
-            buffer.pos(matrix4f, 1.0F, 0.0F, 0.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 0.0F, 0.0F).endVertex();
+            buffer.pos(matrix4f, -1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
+            buffer.pos(matrix4f, -1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 1.0F * length, 0.0F).endVertex();
+            buffer.pos(matrix4f, 1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 1.0F * length, 0.0F).endVertex();
+            buffer.pos(matrix4f, 1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 0.0F, 0.0F).endVertex();
 
-            buffer.pos(matrix4f, 0.0F, 0.0F, -1.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, -1.0F).endVertex();
-            buffer.pos(matrix4f, 0.0F, length, -1.0F).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, -1.0F).endVertex();
-            buffer.pos(matrix4f, 0.0F, length, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, 1.0F).endVertex();
-            buffer.pos(matrix4f, 0.0F, 0.0F, 1.0F).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, 1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, 0.0F, -1.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, -1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, length, -1.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, -1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, length, 1.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 1.0F * length, 1.0F).endVertex();
+            buffer.pos(matrix4f, 0.0F, 0.0F, 1.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.0F, 0.0F, 1.0F).endVertex();
         }
         finish(pack);
         end(pack);
         pack.matrixStack.pop();
     }
 
-    public static void renderStaticParticle(BufferPackage pack, float alpha, float[] color) {
+    public static void renderStaticParticle(BufferContext pack, float alpha, Color color) {
         renderStaticParticle(pack, alpha, color, false, "", 0.0f);
     }
 
-    public static void renderStaticParticle(BufferPackage pack, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+    public static void renderStaticParticle(BufferContext pack, float alpha, Color color, boolean shake, String shakeName, float limit) {
         pack.matrixStack.push();
         Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
         IVertexBuilder buffer = pack.buffer;
@@ -480,22 +486,22 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
             Vector3d V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V0.x, (float) V0.y, (float) V0.z).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V1.x, (float) V1.y, (float) V1.z).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V2.x, (float) V2.y, (float) V2.z).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal((float) V3.x, (float) V3.y, (float) V3.z).endVertex();
         } else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1, 1, 1).endVertex();
         }
         finish(pack);
         end(pack);
         pack.matrixStack.pop();
     }
 
-    public static void renderParticle(BufferPackage pack, float alpha, float[] color, boolean shake, String shakeName, float limit) {
+    public static void renderParticle(BufferContext pack, float alpha, Color color, boolean shake, String shakeName, float limit) {
         pack.matrixStack.push();
         Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
         pack.matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
@@ -515,24 +521,47 @@ public class RenderHelper {
             Vector3d V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
             Vector3d V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
 
-            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V0.x, (float) V0.y, (float) V0.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V1.x, (float) V1.y, (float) V1.z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V2.x, (float) V2.y, (float) V2.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, (float) V3.x, (float) V3.y, (float) V3.z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
         } else {
-            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color[0], color[1], color[2], alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
-            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color[0], color[1], color[2], alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
+            buffer.pos(matrix4f, QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5f, 0.5f, 0.5f).endVertex();
         }
         finish(pack);
         end(pack);
         pack.matrixStack.pop();
     }
 
-    public static void renderSphere(BufferPackage pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float[] color, int packedLightIn, boolean shake, String name, float limit) {
+    public static void renderCube(BufferContext context, Color color, int packedLightIn, float alpha) {
+        context.matrixStack.push();
+        Matrix4f matrix4f = context.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = context.buffer;
+        setup(context);
+        begin(context);
+        int light = renderLight;
+        for(int i=0; i<6; ++i)
+            for(int j=0; j<4; ++j) {
+                float[] pos = vertex_list[index_list[i][j]];
+                float u = 1.0f;
+                float v = 1.0f;
+                if(j == 2 || j == 3)
+                    u = 0.0f;
+                if(j == 1 || j == 2)
+                    v = 0.0f;
+                buffer.pos(matrix4f, pos[0], pos[1], pos[2]).color(color.r(), color.g(), color.b(), alpha).tex(u, v).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(pos[0], pos[1], pos[2]).endVertex();
+            }
+        finish(context);
+        end(context);
+        context.matrixStack.pop();
+    }
+
+    public static void renderSphere(BufferContext pack, int stacks, float alpha, VectorHitReaction[] hitReaction, Color color, int packedLightIn, boolean shake, String name, float limit) {
         if (color == null)
-            color = ORIGIN;
+            color = ModElements.ORIGIN_COLOR;
         if (stacks <= 2)
             stacks = 2;
 
@@ -554,16 +583,16 @@ public class RenderHelper {
                         Vector3d vector3d = vertexList.get(order);
                         Vector2f uv = uvList.get(order++);
                         if(shake)
-                            posBlendVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                            posBlendVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
                         else
-                            posVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                            posVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
 
                         vector3d = vertexList.get(order);
                         uv = uvList.get(order++);
                         if(shake)
-                            posBlendVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                            posBlendVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
                         else
-                            posVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                            posVertex(matrix4f, buffer, (float) vector3d.x, (float) vector3d.y, (float) vector3d.z, uv.x, uv.y, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
                     }
                     finish(pack);
                 }
@@ -596,13 +625,13 @@ public class RenderHelper {
                     y = (float) (Math.cos(theta) * Math.sin(rho));
                     z = (float) Math.cos(rho);
 
-                    posVertex(matrix4f, buffer, x * radius, y * radius, z * radius, s, t, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                    posVertex(matrix4f, buffer, x * radius, y * radius, z * radius, s, t, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
                     vertex.add(new Vector3d(x * radius, z * radius, y * radius));
                     uv.add(new Vector2f(s, t));
                     x = (float) (-Math.sin(theta) * Math.sin(rho + drho));
                     y = (float) (Math.cos(theta) * Math.sin(rho + drho));
                     z = (float) (Math.cos(rho + drho));
-                    posVertex(matrix4f, buffer, x * radius, y * radius, z * radius, s, t - dt, alpha, color[0], color[1], color[2], packedLightIn, hitReaction, limit);
+                    posVertex(matrix4f, buffer, x * radius, y * radius, z * radius, s, t - dt, alpha, color.r(), color.g(), color.b(), packedLightIn, hitReaction, limit);
                     vertex.add(new Vector3d(x * radius, z * radius, y * radius));
                     uv.add(new Vector2f(s, t - dt));
                     s += ds;
@@ -622,8 +651,7 @@ public class RenderHelper {
         float maxAlhpa = 0;
 
         if (hitReaction != null)
-            for (int c = 0; c < hitReaction.length; c++) {
-                VectorHitReaction reaction = hitReaction[c];
+            for (VectorHitReaction reaction : hitReaction) {
                 float add = reaction.IsHit(new Vector3d(x, y, z));
                 if (add > maxAlhpa)
                     maxAlhpa = add;
@@ -642,7 +670,8 @@ public class RenderHelper {
         }
 
         float scale = 1f - maxAlhpa * limit;
-
+        if(scale > 0)
+            scale = -scale;
         bufferIn.pos(matrix4f, x * scale, y * scale, z * scale).color(redScale, greenScale, blueScale, alhpa + maxAlhpa).tex(texU, TexV).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(x * scale, y * scale, z * scale).endVertex();
     }
 
@@ -680,7 +709,8 @@ public class RenderHelper {
         }
 
         float scale = 1f - maxAlhpa * limit;
-
+        if(scale > 0)
+            scale = -scale;
         bufferIn.pos(matrix4f, x * scale, y * scale, z * scale).color(red, green, blue, alhpa).tex(texU, TexV).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(x * scale, y * scale, z * scale).endVertex();
     }
 
@@ -714,30 +744,30 @@ public class RenderHelper {
         bufferIn.pos(matrix4f, x, y, -z).color(red, green, blue, alhpa + maxAlhpa).normal(x, y, -z).tex(texU, TexV).endVertex();
     }
 
-    public static void begin(BufferPackage bufferPackage) {
-        bufferPackage.buffer.begin(bufferPackage.type.getDrawMode(), bufferPackage.type.getVertexFormat());
+    public static void begin(BufferContext bufferContext) {
+        bufferContext.buffer.begin(bufferContext.type.getDrawMode(), bufferContext.type.getVertexFormat());
     }
 
-    public static void finish(BufferPackage bufferPackage) {
-        bufferPackage.type.finish(bufferPackage.buffer, 0, 0, 0);
+    public static void finish(BufferContext bufferContext) {
+        bufferContext.type.finish(bufferContext.buffer, 0, 0, 0);
     }
 
-    public static void setup(BufferPackage bufferPackage) {
-        if(bufferPackage.renderShader != null) {
-            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferPackage.renderShader));
+    public static void setup(BufferContext bufferContext) {
+        if(bufferContext.renderShader != null) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader));
             if(shader != null) {
                 Framebuffer framebuffer = shader.getFramebufferRaw(
-                        Objects.requireNonNull(ShaderEvent.getShaderFrameName(bufferPackage.renderShader)));
+                        Objects.requireNonNull(ShaderEvent.getShaderFrameName(bufferContext.renderShader)));
                 framebuffer.func_237506_a_(Minecraft.getInstance().getFramebuffer());
                 framebuffer.bindFramebuffer(false);
-                ShaderEvent.pushRender(bufferPackage.renderShader);
+                ShaderEvent.pushRender(bufferContext.renderShader);
             }
         }
     }
 
-    public static void end(BufferPackage bufferPackage) {
-        if(bufferPackage.renderShader != null) {
-            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferPackage.renderShader));
+    public static void end(BufferContext bufferContext) {
+        if(bufferContext.renderShader != null) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader));
             if(shader != null) {
                 Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
             }

@@ -1,15 +1,15 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.enums.EnumTargetType;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.entity.ManaRuneEntity;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.magick.context.MagickContext;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,14 +37,12 @@ public class RiftItem extends BaseItem{
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
         if(!worldIn.isRemote) {
-            List<Entity> list = playerIn.world.getEntitiesWithinAABB(ManaRuneEntity.class, playerIn.getBoundingBox().grow(16));
-            IEntityState state = playerIn.getCapability(MagickCore.entityState).orElse(null);
-            if(list.size() >= 1) {
-                MagickReleaseHelper.releasePointEntity(ModEntites.mana_rift, playerIn, list.get(0).getPositionVec().add(0, 0, 0), state.getElement(), null
-                        , Math.min(state.getManaValue() / 200f, 1f), (int) Math.min(state.getManaValue(), 900)
-                        , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                list.get(0).remove();
-            }
+            EntityStateData state = ExtraDataHelper.entityStateData(playerIn);
+            MagickContext magickContext = MagickContext.create(worldIn).<MagickContext>applyType(EnumApplyType.SPAWN_ENTITY)
+                    .caster(playerIn).element(state.getElement()).tick(10000).force(Math.min(state.getManaValue() / 200f, 1f)).tick((int) Math.min(state.getManaValue(), 900));
+            magickContext.addChild(PositionContext.create(playerIn.getPositionVec().add(0, 0, 0)));
+            //magickContext.addChild(SpawnContext.create(EnumApplyType.NONE, ModEntities.mana_rift.get()));
+            MagickReleaseHelper.releaseMagick(magickContext);
         }
         return super.onItemUseFinish(stack, worldIn, playerIn);
     }

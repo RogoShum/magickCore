@@ -4,21 +4,98 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class NBTTagHelper {
     private static final String TAG_ITEM_DAMAGE = "Damege";
     private static final String TAG_ITEM_COUNT = "Count";
     private static final String TAG_ITEM_TAG = "tag";
     private static final String TAG_ITEM_ID = "id";
+    private final CompoundNBT tag;
+
+    public NBTTagHelper(CompoundNBT tag) {
+        this.tag = tag;
+    }
 
     public static CompoundNBT getStackTag(ItemStack stack)
     {
         if(!stack.hasTag())
             stack.setTag(new CompoundNBT());
         return stack.getTag();
+    }
+
+    public static Entity createEntityByItem(ItemStack stack, World world) {
+        if(!stack.hasTag() || !stack.getTag().contains("Magick_Store_Entity")) return null;
+        CompoundNBT tag = stack.getTag().getCompound("Magick_Store_Entity");
+        Optional<EntityType<?>> type = EntityType.readEntityType(tag);
+        if(type.isPresent()) {
+            Entity entity = type.get().create(world);
+            tag.remove("UUID");
+            entity.read(tag);
+            return entity;
+        } else
+            return null;
+    }
+
+    public static ItemStack createItemWithEntity(Entity entity, Item item, int count) {
+        ItemStack stack = new ItemStack(item, count);
+        storeEntityToItem(entity, stack);
+        return stack;
+    }
+
+    public static void storeEntityToItem(Entity entity, ItemStack item) {
+        CompoundNBT tag = new CompoundNBT();
+        entity.writeUnlessRemoved(tag);
+        item.getOrCreateTag().put("Magick_Store_Entity", tag);
+    }
+
+    public void ifContain(String s, Runnable runnable) {
+        if(tag.contains(s))
+            runnable.run();
+    }
+
+    public void ifContainString(String s, Consumer<String> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getString(s));
+    }
+
+    public void ifContainInt(String s, Consumer<Integer> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getInt(s));
+    }
+
+    public void ifContainFloat(String s, Consumer<Float> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getFloat(s));
+    }
+
+    public void ifContainNBT(String s, Consumer<CompoundNBT> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getCompound(s));
+    }
+
+    public void ifContainDouble(String s, Consumer<Double> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getDouble(s));
+    }
+
+    public void ifContainBoolean(String s, Consumer<Boolean> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getBoolean(s));
+    }
+
+    public void ifContainUUID(String s, Consumer<UUID> consumer) {
+        if(tag.contains(s))
+            consumer.accept(tag.getUniqueId(s));
     }
 
     public static CompoundNBT getBlockTag(CompoundNBT tag)

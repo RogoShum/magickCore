@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.tool;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.ITakenState;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.extradata.entity.TakenEntityData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.server.ServerWorld;
@@ -13,13 +14,13 @@ public class TakenTargetHelper {
     {
         List<Entity> list = mob.world.getEntitiesWithinAABBExcludingEntity(mob, mob.getBoundingBox().grow(range));
         if(!mob.world.isRemote) {
-            ITakenState state = mob.getCapability(MagickCore.takenState).orElse(null);
+            TakenEntityData state = ExtraDataHelper.takenEntityData(mob);
             if(state != null && mob.world != null) {
                 LivingEntity victim = null;
                 LivingEntity owner = (LivingEntity) ((ServerWorld) mob.world).getEntityByUuid(state.getOwnerUUID());
                 if(owner != null && owner != mob) {
                     for (Entity entity : list) {
-                        ITakenState takenEntity = entity.getCapability(MagickCore.takenState).orElse(null);
+                        TakenEntityData takenEntity = ExtraDataHelper.takenEntityData(entity);
                         boolean sameOwner = false;
                         if (takenEntity == null || !takenEntity.getOwnerUUID().equals(state.getOwnerUUID()))
                             sameOwner = true;

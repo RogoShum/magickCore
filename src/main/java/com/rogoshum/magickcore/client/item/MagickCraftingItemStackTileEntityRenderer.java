@@ -2,11 +2,8 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.init.ModBlocks;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

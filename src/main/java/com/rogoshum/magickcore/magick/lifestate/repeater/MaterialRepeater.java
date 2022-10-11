@@ -2,10 +2,8 @@ package com.rogoshum.magickcore.magick.lifestate.repeater;
 
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.item.ElementItem;
-import com.rogoshum.magickcore.magick.lifestate.ItemStackLifeState;
 import com.rogoshum.magickcore.magick.lifestate.LifeState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.LockableLootTileEntity;
@@ -25,9 +23,9 @@ public class MaterialRepeater extends LifeRepeater{
                 ItemStack stack = loots.getStackInSlot(i);
                 if(!stack.isEmpty() && stack.getItem() instanceof IManaMaterial){
                     IManaMaterial material = (IManaMaterial) stack.getItem();
-                    float manaNeed = material.getManaNeed() / 500f;
+                    float manaNeed = material.getManaNeed(stack) / 500f;
                     if(oldLife.getSupplierBlock().supplyMana(manaNeed) >= manaNeed)
-                        material.upgradeManaItem(newLife.getElementData());
+                        material.upgradeManaItem(stack, newLife);
 
                     if(!newLife.getCarrier().hasState(LifeState.MANA_STATE))
                         newLife.getCarrier().addState(LifeState.MANA_STATE, LifeState.createByName(LifeState.MANA_STATE));

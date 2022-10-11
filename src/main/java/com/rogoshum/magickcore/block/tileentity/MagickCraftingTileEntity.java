@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.api.IManaCapacity;
 import com.rogoshum.magickcore.api.IManaMaterial;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -10,6 +10,10 @@ import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -17,18 +21,18 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITickableTileEntity {
     private ItemStack mainItem;
@@ -52,11 +56,16 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
             return;
         }
 
+        AtomicReference<ItemManaData> manaDataRef = new AtomicReference<>(null);
+        ExtraDataHelper.itemManaData(getMainItem(), manaDataRef::set);
+        ItemManaData data = manaDataRef.get();
+        if(data == null) return;
+
         ItemStack material = null;
         MagickContainerTileEntity tileEntity = null;
         List<MagickContainerTileEntity> container = new ArrayList<>();
         world.tickableTileEntities.forEach((tile) -> { if(tile instanceof MagickContainerTileEntity && ((MagickContainerTileEntity) tile).getPlayerUniqueId().equals(this.getPlayerUniqueId())) { container.add((MagickContainerTileEntity) tile); }});
-        container.sort((MagickContainerTileEntity o1, MagickContainerTileEntity o2)->o2.getManaCapacity() - o1.getManaCapacity());
+        container.sort((MagickContainerTileEntity o1, MagickContainerTileEntity o2)-> (int) (o2.manaCapacity().getMana() - o1.manaCapacity().getMana()));
 
         for(MagickContainerTileEntity tile : container)
         {
@@ -68,15 +77,15 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
 
         for(MagickContainerTileEntity tile : container)
         {
-            if(tile.getManaCapacity() <= 0)
+            if(tile.manaCapacity().getMana() <= 0)
                 continue;
 
             //upgradeAction
             if(material != null && tile == tileEntity) {
-                if(manaCapacity < ((IManaMaterial)material.getItem()).getManaNeed())
+                if(manaCapacity < ((IManaMaterial)material.getItem()).getManaNeed(material))
                 {
                     if(!this.world.isRemote) {
-                        manaCapacity += tile.outputManaCapacity(1);
+                        manaCapacity += tile.manaCapacity().extractMana(1);
                         updateInfo();
                         if(this.ticksExisted % 20 == 0)
                         {
@@ -88,9 +97,8 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                 }
                 else
                 {
-                    boolean flag = ((IManaMaterial)material.getItem()).upgradeManaItem(((ManaItem)getMainItem().getItem()).getItemData(getMainItem()));
-                    if(flag && !this.world.isRemote)
-                    {
+                    boolean flag = ((IManaMaterial) material.getItem()).upgradeManaItem(material, data);
+                    if(flag && !this.world.isRemote) {
                         material.setCount(material.getCount() - 1);
                         if(material.getCount() <= 0) {
                             tileEntity.updateInfo();
@@ -100,19 +108,18 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                         updateInfo();
                         this.world.playSound(null, this.getPos(), SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F + MagickCore.rand.nextFloat());
                     }
-                    else if(!flag && this.world.isRemote)
-                    {
+                    else if(!flag && this.world.isRemote) {
                         makeErrorParticle();
                     }
                 }
             }
-            else if(material == null && ((ManaItem) getMainItem().getItem()).getMana(getMainItem()) < ((ManaItem) getMainItem().getItem()).getMaxMana(getMainItem()))    //transManaAction
+            else if(material == null && data.manaCapacity().getMana() < data.manaCapacity().getMaxMana())    //transManaAction
             {
                 if(!this.world.isRemote) {
-                    int manaGet = tile.outputManaCapacity(5);
-                    float back = ((ManaItem) getMainItem().getItem()).receiveMana(getMainItem(), manaGet);
-                    tile.receiveManaCapacity((int) back);
-                    ((ManaItem) getMainItem().getItem()).setElement(getMainItem(), ModElements.getElement(tile.eType));
+                    float manaGet = tile.manaCapacity().extractMana(5);
+                    float back = data.manaCapacity().receiveMana(manaGet);
+                    tile.manaCapacity().receiveMana(back);
+                    data.spellContext().element(MagickRegistry.getElement(tile.eType));
                     updateInfo();
                     if(this.ticksExisted % 20 == 0)
                     {
@@ -214,9 +221,8 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
         updateInfo();
     }
 
-    public boolean putManaItem(ItemStack item)
-    {
-        if((mainItem == null || mainItem.isEmpty()) && item.getItem() instanceof IManaItem)
+    public boolean putManaItem(ItemStack item) {
+        if((mainItem == null || mainItem.isEmpty()))
         {
             mainItem = item;
             updateInfo();
@@ -316,10 +322,9 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
         return super.write(compound);
     }
 
-    public class ErrorRenderer extends ElementRenderer
-    {
+    public class ErrorRenderer extends ElementRenderer {
         public ErrorRenderer() {
-            super(new float[]{1f, 0, 0});
+            super(Color.create(1f, 0, 0));
         }
     }
 }

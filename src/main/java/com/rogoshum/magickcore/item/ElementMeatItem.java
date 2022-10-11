@@ -1,10 +1,11 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.magick.ReleaseAttribute;
+import com.rogoshum.magickcore.magick.context.MagickContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -21,8 +22,9 @@ public class ElementMeatItem extends ElementContainerItem{
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if (tag.contains("ELEMENT")) {
-            ReleaseAttribute attribute = new ReleaseAttribute(null, null, entityLiving, 300, 2);
-            MagickReleaseHelper.applyElementFunction(ModElements.getElement(tag.getString("ELEMENT")), EnumManaType.BUFF, attribute);
+            MagickContext attribute = new MagickContext(worldIn).applyType(EnumApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(300).force(2);
+            attribute.addChild(TraceContext.create(entityLiving));
+            MagickReleaseHelper.releaseMagick(attribute);
         }
         return super.onItemUseFinish(stack, worldIn, entityLiving);
     }

@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.mixin;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.ITakenState;
+import com.rogoshum.magickcore.magick.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.tool.TakenTargetHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -40,7 +41,7 @@ public abstract class MixinMobEntity extends Entity {
     public void onTick(CallbackInfo info)
     {
         LivingEntity entity = null;
-        ITakenState taken = this.getCapability(MagickCore.takenState).orElse(null);
+        TakenEntityData taken = ExtraDataHelper.takenEntityData(this);
         if(taken != null && taken.getTime() > 0 && this.world instanceof ServerWorld)
         {
             range = taken.getRange();

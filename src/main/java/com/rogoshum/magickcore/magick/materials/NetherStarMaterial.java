@@ -1,9 +1,12 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.api.IMaterialLimit;
+import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibMaterial;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 
-public class NetherStarMaterial implements IManaLimit {
+public class NetherStarMaterial extends Material {
     @Override
     public String getName() {
         return LibMaterial.NETHER_STAR;
@@ -20,12 +23,17 @@ public class NetherStarMaterial implements IManaLimit {
     }
 
     @Override
-    public int getRange() {
-        return 32;
+    public float getRange() {
+        return 6f;
     }
 
     @Override
     public int getMana() {
         return 5000;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.nether_star_material.orElse(Items.AIR);
     }
 }

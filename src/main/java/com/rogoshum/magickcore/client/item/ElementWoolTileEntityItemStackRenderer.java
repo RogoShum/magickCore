@@ -2,18 +2,14 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.client.BufferPackage;
+import com.rogoshum.magickcore.client.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibElements;
-import net.minecraft.client.Minecraft;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -38,7 +34,7 @@ public class ElementWoolTileEntityItemStackRenderer extends ItemStackTileEntityR
             matrixStackIn.scale(0.4f, 0.4f, 0.4f);
         else
             matrixStackIn.scale(0.6f, 0.6f, 0.6f);
-        float[] color = RenderHelper.ORIGIN;
+        Color color = Color.ORIGIN_COLOR;
 
         if(stack.hasTag())
         {
@@ -52,37 +48,37 @@ public class ElementWoolTileEntityItemStackRenderer extends ItemStackTileEntityR
         if(transformType != ItemCameraTransforms.TransformType.GUI) {
             matrixStackIn.push();
             matrixStackIn.translate(0.0, 0.0, -1.0);
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
             matrixStackIn.pop();
 
             matrixStackIn.push();
             matrixStackIn.translate(1.0, 0.0, 0.0);
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270));
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
             matrixStackIn.pop();
 
             matrixStackIn.push();
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(270));
             matrixStackIn.translate(0.0, 0.0, -1.0);
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
             matrixStackIn.pop();
         }
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 1.0);
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbSolid(wool)), alpha, color);
         matrixStackIn.pop();
         ////////////////////////////////////////////////////////////////////////////////
 
@@ -90,37 +86,37 @@ public class ElementWoolTileEntityItemStackRenderer extends ItemStackTileEntityR
         matrixStackIn.push();
         matrixStackIn.translate(0.0, 0.0, 1.0);
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         if(transformType != ItemCameraTransforms.TransformType.GUI) {
             matrixStackIn.push();
             matrixStackIn.translate(0.0, 0.0, -1.0);
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
             matrixStackIn.pop();
 
             matrixStackIn.push();
             matrixStackIn.translate(1.0, 0.0, 0.0);
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270));
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
             matrixStackIn.pop();
 
             matrixStackIn.push();
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(270));
             matrixStackIn.translate(0.0, 0.0, -1.0);
-            RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+            RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
             matrixStackIn.pop();
         }
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -1.0);
-        RenderHelper.renderStaticParticle(BufferPackage.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlint(cylinder_rotate, 1f, 0f)), alpha, color);
         matrixStackIn.pop();
 
         matrixStackIn.pop();

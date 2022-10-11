@@ -1,10 +1,6 @@
 package com.rogoshum.magickcore.block;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaItem;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
-import com.rogoshum.magickcore.entity.ManaItemEntity;
-import com.rogoshum.magickcore.item.ManaItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

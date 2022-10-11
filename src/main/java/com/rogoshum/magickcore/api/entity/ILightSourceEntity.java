@@ -1,10 +1,11 @@
 package com.rogoshum.magickcore.api.entity;
 
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public interface ILightSourceEntity {
-    public int getSourceLight();
+    public float getSourceLight();
 
     public boolean alive();
 
@@ -14,5 +15,5 @@ public interface ILightSourceEntity {
 
     public float eyeHeight();
 
-    public float[] getColor();
+    public Color getColor();
 }

@@ -1,16 +1,13 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.api.IManaElement;
 import com.rogoshum.magickcore.buff.ManaBuff;
+import com.rogoshum.magickcore.magick.context.MagickContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-
-import java.util.UUID;
 
 public class EntityEvents {
     public static class HitEntityEvent extends EntityEvent
@@ -38,19 +35,6 @@ public class EntityEvents {
         {
             super(entity);
         }
-    }
-
-    public static class MagickPreReleaseEvent extends EntityEvent
-    {
-        private float mana;
-        public MagickPreReleaseEvent(Entity entity, float mana)
-        {
-            super(entity);
-            this.mana = mana;
-        }
-
-        public float getMana() { return mana; }
-        public void setMana(float mana) { this.mana = mana; }
 
         @Override
         public boolean isCancelable() {
@@ -58,73 +42,39 @@ public class EntityEvents {
         }
     }
 
-    public static class MagickReleaseEvent extends EntityEvent
+    public static class MagickPreReleaseEvent extends EntityEvent
     {
-        private IManaElement element;
-        private float force;
-        private int tick;
-        private EnumManaType type;
-        private UUID trace;
-        private float range;
-        private String magickType;
-        public MagickReleaseEvent(Entity entity, IManaElement element, float force, int tick, EnumManaType type, UUID trace, float range, String magickType)
+        private float mana;
+        private MagickContext context;
+        public MagickPreReleaseEvent(MagickContext context, float mana)
         {
-            super(entity);
-            this.force = force;
-            this.element = element;
-            this.tick = tick;
-            this.trace = trace;
-            this.type = type;
-            this.range = range;
-            this.magickType = magickType;
+            super(context.caster);
+            this.mana = mana;
+            this.context = context;
         }
 
-        public float getForce() { return force; }
+        public float getMana() { return mana; }
+        public void setMana(float mana) { this.mana = mana; }
+        public MagickContext getContext() { return context; }
+        public void setContext(MagickContext context) { this.context = context; }
 
-        public EnumManaType getType() {
-            return type;
+        @Override
+        public boolean isCancelable() {
+            return true;
+        }
+    }
+
+    public static class MagickReleaseEvent extends EntityEvent {
+        private MagickContext context;
+        public MagickReleaseEvent(MagickContext context) {
+            super(context.caster);
+            this.context = context;
         }
 
-        public IManaElement getElement() {
-            return element;
-        }
+        public MagickContext getContext() { return context; }
 
-        public float getRange() {
-            return range;
-        }
-
-        public int getTick() {
-            return tick;
-        }
-
-        public UUID getTrace() {
-            return trace;
-        }
-
-        public void setForce(float force) { this.force = force; }
-
-        public void setElement(IManaElement element) {
-            this.element = element;
-        }
-
-        public void setRange(float range) {
-            this.range = range;
-        }
-
-        public void setTick(int tick) {
-            this.tick = tick;
-        }
-
-        public void setTrace(UUID trace) {
-            this.trace = trace;
-        }
-
-        public void setType(EnumManaType type) {
-            this.type = type;
-        }
-
-        public String getMagickType() {
-            return magickType;
+        public void setContext(MagickContext context) {
+             this.context = context;
         }
 
         @Override
@@ -235,5 +185,29 @@ public class EntityEvents {
 
         public void setCapacity(int capacity) { this.capacity = capacity; }
         public int getCapacity() { return capacity; }
+    }
+
+    public static class EntityVelocity extends EntityEvent {
+        private float velocity = 1.0f;
+        private float inaccuracy = 0.5f;
+        public EntityVelocity(Entity entity) {
+            super(entity);
+        }
+
+        public void setVelocity(float velocity) {
+            this.velocity = velocity;
+        }
+
+        public float getVelocity() {
+            return velocity;
+        }
+
+        public float getInaccuracy() {
+            return inaccuracy;
+        }
+
+        public void setInaccuracy(float inaccuracy) {
+            this.inaccuracy = inaccuracy;
+        }
     }
 }

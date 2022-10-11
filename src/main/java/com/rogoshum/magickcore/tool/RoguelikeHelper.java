@@ -1,18 +1,21 @@
 package com.rogoshum.magickcore.tool;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModEffects;
-import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.lib.LibMaterial;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.magick.materials.Material;
+import com.rogoshum.magickcore.registry.MagickRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -96,12 +99,10 @@ public class RoguelikeHelper {
                 item = ModItems.orb_staff.get();
             else if(chance < 6)
                 item = ModItems.star_staff.get();
-            else if(chance < 8)
-                item = ModItems.laser_staff.get();
             else
-                item = ModItems.eye.get();
+                item = ModItems.laser_staff.get();
 
-           IManaLimit material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
+           Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
            if(lucky > 7)
                 material = ManaMaterials.getMaterialRandom();
             boolean trace = MagickCore.rand.nextInt(lucky) > 3;
@@ -116,15 +117,23 @@ public class RoguelikeHelper {
        }
     }
 
-    public static ItemStack createRandomManaItem(ManaItem item, IManaLimit material, float force, int tick, int mana, boolean trace)
-    {
+    public static ItemStack createRandomManaItem(ManaItem item, Material material, float force, int tick, int mana, boolean trace) {
         ItemStack stack = new ItemStack(item);
 
-        IManaElement element = ModElements.getElementRandom();
-        EnumManaType manaType = EnumManaType.getRandomEnum();
-        if(element.getType() == LibElements.ORIGIN)
-            manaType = EnumManaType.ATTACK;
-        ManaItemHelper.putDataIn(stack, material, element, Math.max(1, force) , tick, mana , MagickCore.rand.nextInt(4) + 1, trace , manaType);
+        MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
+        EnumApplyType manaType = EnumApplyType.getRandomEnum();
+        if(element.type().equals(LibElements.ORIGIN))
+            manaType = EnumApplyType.ATTACK;
+        ItemManaData data = ExtraDataHelper.itemManaData(stack);
+        //data.manaData().setMaterial(stack, material);
+        data.spellContext().element(element);
+        data.spellContext().force(Math.max(1, force));
+        data.spellContext().applyType(manaType);
+        data.spellContext().tick(tick);
+        data.manaCapacity().setMana(mana);
+        data.spellContext().range(MagickCore.rand.nextInt(4) + 1);
+        if(trace)
+            data.spellContext().addChild(new TraceContext());
         return stack;
     }
 }

@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -19,18 +19,19 @@ public class ManaFermentedSpiderEyeItem extends BaseItem implements IManaMateria
     }
 
     @Override
-    public int getManaNeed() {
+    public boolean disappearAfterRead() {
+        return false;
+    }
+
+    @Override
+    public int getManaNeed(ItemStack stack) {
         return 400;
     }
 
     @Override
-    public boolean upgradeManaItem(IManaItemData data) {
-        if(data.getManaType().equals(EnumManaType.BUFF) || data.getManaType().equals(EnumManaType.NONE)) {
-            data.setManaType(EnumManaType.DEBUFF);
-            return true;
-        }
-
-        return false;
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
+        data.spellContext().applyType(EnumApplyType.DE_BUFF);
+        return true;
     }
 
     @Override

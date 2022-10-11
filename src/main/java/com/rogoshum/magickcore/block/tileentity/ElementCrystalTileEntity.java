@@ -4,14 +4,13 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
-import com.rogoshum.magickcore.entity.ManaPowerEntity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.entity.projectile.ManaElementOrbEntity;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
+import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.registry.MagickRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.item.ItemEntity;
@@ -68,10 +67,10 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     }
 
     private void spawnElementOrb() {
-        ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, world);
+        ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), world);
         orb.setPosition(this.pos.getX() + 0.5 * world.rand.nextFloat(), this.pos.getY() + 0.5, this.pos.getZ() + 0.5 * world.rand.nextFloat());
-        orb.setElement(ModElements.getElement(eType));
-        orb.setTickTime(200);
+        orb.spellContext().element(MagickRegistry.getElement(eType));
+        orb.spellContext().tick(200);
         world.addEntity(orb);
     }
 
@@ -130,7 +129,7 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     }
 
     @Override
-    public int getSourceLight() {
+    public float getSourceLight() {
         return age;
     }
 
@@ -155,7 +154,7 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     }
 
     @Override
-    public float[] getColor() {
+    public Color getColor() {
         return MagickCore.proxy.getElementRender(this.eType).getColor();
     }
 

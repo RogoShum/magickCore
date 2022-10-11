@@ -1,8 +1,10 @@
 package com.rogoshum.magickcore.item;
 
+import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.magick.context.child.TraceContext;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -18,14 +20,19 @@ public class ManaDragonBreathItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public int getManaNeed() {
+    public boolean disappearAfterRead() {
+        return false;
+    }
+
+    @Override
+    public int getManaNeed(ItemStack stack) {
         return 1000;
     }
 
     @Override
-    public boolean upgradeManaItem(IManaItemData data) {
-        if(!data.getTrace()) {
-            data.setTrace(true);
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
+        if(!data.spellContext().containChild(LibContext.TRACE)) {
+            data.spellContext().addChild(new TraceContext());
             return true;
         }
 

@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class VoidRenderer extends ElementRenderer {
@@ -12,7 +13,7 @@ public class VoidRenderer extends ElementRenderer {
     private ResourceLocation[] mist = new ResourceLocation[3];
 
     public VoidRenderer() {
-        super(RenderHelper.VOID);
+        super(ModElements.VOID_COLOR);
 
         mist[0] = mist_0;
         mist[1] = mist_1;

@@ -42,7 +42,7 @@ public class LifeRepeaterItem extends BaseItem {
         try{
             repeater = this.repeater.call();
         }
-        catch(Exception e){
+        catch(Exception ignored){
 
         }
         return repeater;

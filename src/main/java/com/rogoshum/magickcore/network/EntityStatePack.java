@@ -1,12 +1,13 @@
 package com.rogoshum.magickcore.network;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
@@ -63,9 +64,9 @@ public class EntityStatePack extends EntityPack{
         Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
         if(entity == null || entity.removed)
             return;
-        IEntityState state = entity.getCapability(MagickCore.entityState).orElse(null);
+        EntityStateData state = ExtraDataHelper.entityStateData(entity);
         if(state != null) {
-            state.setElement(ModElements.getElement(this.element));
+            state.setElement(MagickRegistry.getElement(this.element));
             state.setElementShieldMana(this.shield);
             state.setManaValue(this.mana);
             state.setMaxManaValue(this.maxMana);

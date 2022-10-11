@@ -1,20 +1,10 @@
 package com.rogoshum.magickcore.magick.lifestate;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.magick.lifestate.ItemStackLifeState;
-import com.rogoshum.magickcore.magick.lifestate.LifeState;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.StringNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.world.World;
 
 import java.util.List;
 

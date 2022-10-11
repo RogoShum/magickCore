@@ -1,11 +1,20 @@
 {
-	"required": true,
-	"package": "com.rogoshum.magickcore.mixin",
-	"mixins": ["MixinMobEntity", "MixinLivingEntity", "MixinItemStack", "MixinChunkRenderer", "MixinLivingRender", "MixinProfilerChange"],
-	"minVersion": "0.8",
-	"compatibilityLevel": "JAVA_8",
-	"refmap": "magickcore.refmap.json",
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "com.rogoshum.magickcore.mixin",
+  "mixins": [
+    "MixinChunkRenderer",
+    "MixinEntity",
+    "MixinItemStack",
+    "MixinLivingEntity",
+    "MixinLivingRender",
+    "MixinMobEntity",
+    "MixinProfilerChange",
+    "MixinWorld"
+  ],
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "magickcore.refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

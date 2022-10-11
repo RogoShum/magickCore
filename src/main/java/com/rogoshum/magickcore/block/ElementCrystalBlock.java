@@ -42,7 +42,7 @@ public class ElementCrystalBlock extends CropsBlock{
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
         if(tile instanceof ILightSourceEntity){
-            return ((ILightSourceEntity) tile).getSourceLight();
+            return (int) ((ILightSourceEntity) tile).getSourceLight();
         }
         return 0;
     }

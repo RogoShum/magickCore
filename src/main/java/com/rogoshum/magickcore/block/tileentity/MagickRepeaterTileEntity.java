@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.magick.lifestate.repeater.LifeRepeater;
 import net.minecraft.block.BlockState;

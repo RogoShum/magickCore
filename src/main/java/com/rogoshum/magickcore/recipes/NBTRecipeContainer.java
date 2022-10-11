@@ -33,8 +33,7 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
 
     public boolean matches(CraftingInventory inv)
     {
-        List<IItemContainer> copy = new ArrayList<>();
-        copy.addAll(containers);
+        List<IItemContainer> copy = new ArrayList<>(containers);
 
         int invSize = 0;
         if(shapeless)
@@ -54,10 +53,7 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
                 }
             }
 
-            if(matchTable.size() < copy.size() || invSize > copy.size())
-                return false;
-
-            return true;
+            return matchTable.size() >= copy.size() && invSize <= copy.size();
         }
         else
         {

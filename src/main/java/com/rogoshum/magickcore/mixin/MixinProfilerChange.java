@@ -94,6 +94,16 @@ public class MixinProfilerChange{
             at = @At(
                     value = "INVOKE",
                     target = "net/minecraft/profiler/IProfiler.endStartSection (Ljava/lang/String;)V",
+                    ordinal = 14)
+    )
+    private void onStringSection(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci1) {
+        MinecraftForge.EVENT_BUS.post(new ProfilerChangeEvent("string"));
+    }
+
+    @Inject(method = "updateCameraAndRender",
+            at = @At(
+                    value = "INVOKE",
+                    target = "net/minecraft/profiler/IProfiler.endStartSection (Ljava/lang/String;)V",
                     ordinal = 12)
     )
     private void onOutlineSection(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci1) {
@@ -108,6 +118,16 @@ public class MixinProfilerChange{
     )
     private void onTranslucentSection1(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci1) {
         MinecraftForge.EVENT_BUS.post(new ProfilerChangeEvent("translucent"));
+    }
+
+    @Inject(method = "updateCameraAndRender",
+            at = @At(
+                    value = "INVOKE",
+                    target = "net/minecraft/profiler/IProfiler.endStartSection (Ljava/lang/String;)V",
+                    ordinal = 17)
+    )
+    private void onStringSection1(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci1) {
+        MinecraftForge.EVENT_BUS.post(new ProfilerChangeEvent("string"));
     }
 
     @Inject(method = "updateCameraAndRender",

@@ -1,8 +1,9 @@
 package com.rogoshum.magickcore.mixin;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.lib.LibBuff;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +28,7 @@ public abstract class MixinLivingEntity extends Entity {
 
     @Inject(method = "setHealth", at = @At("HEAD"))
     public void onSetHealth(float health, CallbackInfo info) {
-        IEntityState state = this.getCapability(MagickCore.entityState).orElse(null);
+        EntityStateData state = ExtraDataHelper.entityStateData(this);
         if(state != null && state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
             float force = state.getBuffList().get(LibBuff.CRIPPLE).getForce();
             float maxHealth = Math.min(this.getMaxHealth() - (this.getMaxHealth() * force * 0.05f), getHealth());

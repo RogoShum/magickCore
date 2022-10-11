@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class TakenRenderer extends ElementRenderer {
@@ -14,7 +15,7 @@ public class TakenRenderer extends ElementRenderer {
     private ResourceLocation particle = new ResourceLocation(MagickCore.MOD_ID +":textures/element/taken/particle.png");
 
     public TakenRenderer() {
-        super(RenderHelper.TAKEN);
+        super(ModElements.TAKEN_COLOR);
         mist[0] = mist_0;
         mist[1] = mist_1;
         mist[2] = mist_2;

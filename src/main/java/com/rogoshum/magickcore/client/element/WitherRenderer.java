@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class WitherRenderer extends ElementRenderer {
@@ -24,7 +25,7 @@ public class WitherRenderer extends ElementRenderer {
     private ResourceLocation[] particle = new ResourceLocation[3];
 
     public WitherRenderer() {
-        super(RenderHelper.WITHER);
+        super(ModElements.WITHER_COLOR);
         mist[0] = mist_0;
         mist[1] = mist_1;
         mist[2] = mist_2;

@@ -8,7 +8,7 @@ public enum EnumManaLimit {
     TICK(200),
     MAX_MANA(5000);
 
-    private int value;
+    private final int value;
 
     private EnumManaLimit(int value) {
         this.value = value;

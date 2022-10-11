@@ -1,52 +1,54 @@
 package com.rogoshum.magickcore.init;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.api.event.ElementEvent;
 import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.magick.element.*;
+import com.rogoshum.magickcore.lib.LibRegistry;
+import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.registry.ObjectRegistry;
+import com.rogoshum.magickcore.registry.elementmap.ElementFunctions;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.common.MinecraftForge;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModElements {
-    private static HashMap<String, IManaElement> elements = new HashMap<String, IManaElement>();
-    private static MagickElement ORIGIN = new OriginElement(LibElements.ORIGIN, new OriginElement.OriginAbility(DamageSource.MAGIC));
+    public static final Color ORIGIN_COLOR = Color.create(1.0f, 1.0f, 1.0f);
+    public static final Color SOLAR_COLOR = Color.create(1.0f, 0.6f, 0.3f);
+    public static final Color VOID_COLOR = Color.create(0.25f, 0.0f, 1.0f);
+    public static final Color ARC_COLOR = Color.create(0.68f, 1.0f, 1.0f);
 
-    private static MagickElement SOLAR = new SolarElement(LibElements.SOLAR, new SolarElement.SolarAbility(ModDamage.getSolarDamage()));
-    private static MagickElement ARC = new ArcElement(LibElements.ARC, new ArcElement.ArcAbility(ModDamage.getArcDamage()));
-    private static MagickElement VOID = new VoidElement(LibElements.VOID, new VoidElement.VoidAbility(ModDamage.getVoidDamage()));
+    public static final Color STASIS_COLOR = Color.create(0.6f, 0.6f, 1.0f);
+    public static final Color WITHER_COLOR = Color.create(0.3f, 0.7f, 0.2f);
+    public static final Color TAKEN_COLOR = Color.create(0.5f, 0.5f, 0.5f);
 
-    private static MagickElement STASIS = new StasisElement(LibElements.STASIS, new StasisElement.StasisAbility(ModDamage.getStasisDamage()));
-    private static MagickElement WITHER = new WitherElement(LibElements.WITHER, new WitherElement.WitherAbility(ModDamage.getWitherDamage()));
-    private static MagickElement TAKEN = new TakenElement(LibElements.TAKEN, new TakenElement.TakenAbility(ModDamage.getTakenDamage()));
+    public static final MagickElement ORIGIN = new MagickElement(LibElements.ORIGIN, ORIGIN_COLOR, DamageSource.MAGIC);
 
-    public static void registryElement()
-    {
-        ModElements.putElement(LibElements.ORIGIN, ORIGIN);
-        ModElements.putElement(LibElements.SOLAR, SOLAR);
-        ModElements.putElement(LibElements.ARC, ARC);
-        ModElements.putElement(LibElements.VOID, VOID);
-        ModElements.putElement(LibElements.STASIS, STASIS);
-        ModElements.putElement(LibElements.WITHER, WITHER);
-        ModElements.putElement(LibElements.TAKEN, TAKEN);
-    }
+    private static final MagickElement SOLAR = new MagickElement(LibElements.SOLAR, SOLAR_COLOR, ModDamage.getSolarDamage());
+    private static final MagickElement ARC = new MagickElement(LibElements.ARC, ARC_COLOR, ModDamage.getArcDamage());
+    private static final MagickElement VOID = new MagickElement(LibElements.VOID, VOID_COLOR, ModDamage.getVoidDamage());
 
-    public static void putElement(String name, IManaElement element)
-    {
-        elements.put(name, element);
-    }
+    private static final MagickElement STASIS = new MagickElement(LibElements.STASIS, STASIS_COLOR, ModDamage.getStasisDamage());
+    private static final MagickElement WITHER = new MagickElement(LibElements.WITHER, WITHER_COLOR, ModDamage.getWitherDamage());
+    private static final MagickElement TAKEN = new MagickElement(LibElements.TAKEN, TAKEN_COLOR, ModDamage.getTakenDamage());
 
-    public static IManaElement getElement(String name)
-    {
-        if (elements.containsKey(name))
-            return elements.get(name);
-            return elements.get(LibElements.ORIGIN);
-    }
+    public static final List<String> elements = new ArrayList<>();
 
-    public static IManaElement getElementRandom()
-    {
-        IManaElement[] els = new IManaElement[elements.size()];
-        elements.values().toArray(els);
-        return els[MagickCore.rand.nextInt(els.length)];
+    public static void registerElement() {
+        ObjectRegistry<MagickElement> elements = new ObjectRegistry<>(LibRegistry.ELEMENT);
+        elements.register(ORIGIN.type(), ORIGIN);
+        elements.register(SOLAR.type(), SOLAR);
+        elements.register(ARC.type(), ARC);
+        elements.register(VOID.type(), VOID);
+        elements.register(STASIS.type(), STASIS);
+        elements.register(WITHER.type(), WITHER);
+        elements.register(TAKEN.type(), TAKEN);
+
+        ObjectRegistry<ElementFunctions> function = new ObjectRegistry<>(LibRegistry.ELEMENT_FUNCTION);
+        elements.registry().forEach( (elementType,v) -> {
+            ModElements.elements.add(elementType);
+            function.register(elementType, ElementFunctions.create());
+        });
     }
 }

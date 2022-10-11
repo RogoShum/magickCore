@@ -1,13 +1,19 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.api.IManaItem;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.api.IManaCapacity;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.ManaData;
+import com.rogoshum.magickcore.magick.context.SpellContext;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -15,48 +21,26 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class ManaItemDataPack extends EntityPack{
-    private float range;
-    private float force;
-    private float mana;
-    private String manaType;
-    private int tick;
-    private int slot;
-    private boolean trace;
-    private String element;
+    private final CompoundNBT nbt;
+    private final int slot;
 
     public ManaItemDataPack(PacketBuffer buffer) {
         super(buffer);
-        element = buffer.readString();
-        manaType = buffer.readString();
-        range = buffer.readFloat();
-        force = buffer.readFloat();
-        tick = buffer.readInt();
-        mana = buffer.readFloat();
-        trace = buffer.readBoolean();
+        nbt = buffer.readCompoundTag();
         slot = buffer.readInt();
     }
 
-    public ManaItemDataPack(int id, int slot, String element, boolean trace, String manaType, float range, float force, float mana, int tick) {
+    public ManaItemDataPack(int id, int slot, SpellContext spellContext) {
         super(id);
-        this.element = element;
-        this.manaType = manaType;
-        this.range = range;
-        this.force = force;
-        this.tick = tick;
+        CompoundNBT nbt = new CompoundNBT();
+        spellContext.serialize(nbt);
+        this.nbt = nbt;
         this.slot = slot;
-        this.trace = trace;
-        this.mana = mana;
     }
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(this.element);
-        buf.writeString(this.manaType);
-        buf.writeFloat(this.range);
-        buf.writeFloat(this.force);
-        buf.writeInt(this.tick);
-        buf.writeFloat(this.mana);
-        buf.writeBoolean(this.trace);
+        buf.writeCompoundTag(nbt);
         buf.writeInt(this.slot);
     }
 
@@ -75,18 +59,12 @@ public class ManaItemDataPack extends EntityPack{
         if(entity instanceof ItemEntity)
             stack = ((ItemEntity)entity).getItem();
 
-        if(stack == ItemStack.EMPTY || !(stack.getItem() instanceof IManaItem))
+        if(stack == ItemStack.EMPTY)
             return;
 
-        IManaItem data = (IManaItem) stack.getItem();
+        ItemManaData data = ExtraDataHelper.itemManaData(stack);
         if(data != null) {
-            data.setElement(stack, ModElements.getElement(this.element));
-            data.setTrace(stack, this.trace);
-            data.setManaType(stack, EnumManaType.getEnum(this.manaType));
-            data.setTickTime(stack, this.tick);
-            data.setForce(stack, this.force);
-            data.setRange(stack, this.range);
-            data.setMana(stack, this.mana);
+            data.spellContext().deserialize(nbt);
         }
     }
 }

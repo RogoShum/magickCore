@@ -1,9 +1,8 @@
 package com.rogoshum.magickcore.magick.lifestate.repeater;
 
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nullable;

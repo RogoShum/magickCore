@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.block;
 
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

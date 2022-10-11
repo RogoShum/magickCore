@@ -1,20 +1,17 @@
 package com.rogoshum.magickcore.magick.lifestate.repeater;
 
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.magick.lifestate.EntitySelectorLifeState;
 import com.rogoshum.magickcore.magick.lifestate.LifeState;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Predicate;
 
 public class LivingEntitySelector extends EntitySelector{
     @Override

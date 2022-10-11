@@ -1,14 +1,15 @@
 package com.rogoshum.magickcore.client.particle;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.BufferPackage;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.client.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.lib.LibShaders;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.Entity;
@@ -21,16 +22,16 @@ import net.minecraft.world.World;
 
 import java.util.stream.Stream;
 
-public class LitParticle {
+public class LitParticle implements ILightSourceEntity {
     protected double posX;
     protected double posY;
     protected double posZ;
     protected double lPosX;
     protected double lPosY;
     protected double lPosZ;
-    private float[] color;
+    private Color color;
     private float alpha;
-    private int age;
+    private int age = 1;
     private int maxAge;
     private float scaleWidth;
     private float scaleHeight;
@@ -49,7 +50,10 @@ public class LitParticle {
     private ElementRenderer renderer;
     private float shakeLimit;
     private boolean limitScale;
+
+    private boolean noScale;
     private Entity traceTarget;
+    private String shader;
 
     public LitParticle(World world, ResourceLocation texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, ElementRenderer renderer) {
         this.world = world;
@@ -64,13 +68,13 @@ public class LitParticle {
         this.renderer = renderer;
     }
 
-    public LitParticle setColor(float[] color) {
+    public LitParticle setColor(Color color) {
         this.color = color;
         return this;
     }
 
     public LitParticle setColor(float r, float g, float b) {
-        this.color = new float[]{r, g, b};
+        this.color = Color.create(r, g, b);
         return this;
     }
 
@@ -89,6 +93,11 @@ public class LitParticle {
         return this;
     }
 
+    public LitParticle setNoScale() {
+        this.noScale = true;
+        return this;
+    }
+
     public LitParticle setShakeLimit(float shakeLimit) {
         this.shakeLimit = shakeLimit;
         return this;
@@ -99,14 +108,24 @@ public class LitParticle {
         return this;
     }
 
+    public LitParticle useShader(String shader) {
+        this.shader = shader;
+        return this;
+    }
+
     public void render(MatrixStack matrixStackIn, BufferBuilder buffer) {
+        //if(true) return;
         if (this.texture == null) return;
         matrixStackIn.push();
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        double x = this.lPosX + (this.posX - this.lPosX) * (double) Minecraft.getInstance().getRenderPartialTicks();
-        double y = this.lPosY + (this.posY - this.lPosY) * (double) Minecraft.getInstance().getRenderPartialTicks();
-        double z = this.lPosZ + (this.posZ - this.lPosZ) * (double) Minecraft.getInstance().getRenderPartialTicks();
+        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
+        if(Minecraft.getInstance().isGamePaused()) {
+            partialTicks = 0;
+        }
+        double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
+        double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
+        double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
         matrixStackIn.translate(x - camX, y - camY, z - camZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
 
@@ -122,10 +141,15 @@ public class LitParticle {
         RenderType type = RenderHelper.getTexedOrb(texture, lifetime);
         if(isGlow)
             type = RenderHelper.getTexedOrbGlow(texture, lifetime);
+
         if (shakeLimit > 0.0f)
-            RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, buffer, type), getAlpha(alpha), color, true, this.toString(), shakeLimit);
-         else
-            RenderHelper.renderParticle(BufferPackage.create(matrixStackIn, buffer, type), getAlpha(alpha), color);
+            RenderHelper.renderParticle(shader == null ?
+                    BufferContext.create(matrixStackIn, buffer, type) : BufferContext.create(matrixStackIn, buffer, type).useShader(shader)
+                    , getAlpha(alpha), color, true, this.toString(), shakeLimit);
+        else
+            RenderHelper.renderParticle(shader == null ?
+                    BufferContext.create(matrixStackIn, buffer, type) : BufferContext.create(matrixStackIn, buffer, type).useShader(shader)
+                    , getAlpha(alpha), color);
 
         matrixStackIn.pop();
     }
@@ -158,6 +182,9 @@ public class LitParticle {
         this.posX = x;
         this.posY = y;
         this.posZ = z;
+        this.lPosX = this.posX;
+        this.lPosY = this.posY;
+        this.lPosZ = this.posZ;
         float f = this.scaleWidth / 2.0F;
         float f1 = this.scaleHeight;
         this.setBoundingBox(new AxisAlignedBB(x - (double) f, y, z - (double) f, x + (double) f, y + (double) f1, z + (double) f));
@@ -179,6 +206,8 @@ public class LitParticle {
     }
 
     public float getScale(float scale) {
+        if(noScale)
+            return scale;
         float f = (float) this.age / (float) this.maxAge;
         if (f <= 0.5f)
             f = 1.0f - f;
@@ -291,5 +320,35 @@ public class LitParticle {
 
     public boolean shouldRender(ClippingHelper camera) {
         return camera.isBoundingBoxInFrustum(this.boundingBox);
+    }
+
+    @Override
+    public float getSourceLight() {
+        return getScale(scaleHeight) * 10;
+    }
+
+    @Override
+    public boolean alive() {
+        return !isDead();
+    }
+
+    @Override
+    public Vector3d positionVec() {
+        return new Vector3d(getPosX(), getPosY(), getPosZ());
+    }
+
+    @Override
+    public World world() {
+        return this.world;
+    }
+
+    @Override
+    public float eyeHeight() {
+        return getScale(scaleHeight) / 2;
+    }
+
+    @Override
+    public Color getColor() {
+        return renderer.getColor();
     }
 }

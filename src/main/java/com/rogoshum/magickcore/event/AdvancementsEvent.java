@@ -2,12 +2,12 @@ package com.rogoshum.magickcore.event;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.advancements.StringTrigger;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.item.*;
 import com.rogoshum.magickcore.lib.LibAdvancements;
 import com.rogoshum.magickcore.lib.LibEffect;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,10 +24,11 @@ public class AdvancementsEvent {
     public void onLivingDeath(LivingDeathEvent event)
     {
         if(event.getSource().getTrueSource() instanceof LivingEntity) {
-            IEntityState state = event.getSource().getTrueSource().getCapability(MagickCore.entityState).orElse(null);
-            if (!state.getElement().getType().equals(LibElements.ORIGIN) && event.getEntityLiving() instanceof PlayerEntity) {
-                STRING_TRIGGER.trigger((ServerPlayerEntity) event.getEntityLiving(), LibAdvancements.UNLOCK_ROOT);
-            }
+            ExtraDataHelper.entityStateData(event.getSource().getTrueSource(), state -> {
+                if (!state.getElement().type().equals(LibElements.ORIGIN) && event.getEntityLiving() instanceof PlayerEntity) {
+                    STRING_TRIGGER.trigger((ServerPlayerEntity) event.getEntityLiving(), LibAdvancements.UNLOCK_ROOT);
+                }
+            });
         }
     }
 
@@ -92,9 +93,11 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.TRACE);
             });
 
-            IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
-            if(state != null)
-                AdvancementsEvent.STRING_TRIGGER.trigger(player, state.getElement().getType());
+            ExtraDataHelper.entityStateData(player, state -> {
+                if (!state.getElement().type().equals(LibElements.ORIGIN) && event.getEntityLiving() instanceof PlayerEntity) {
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, state.getElement().type());
+                }
+            });
         }
     }
 }

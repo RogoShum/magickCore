@@ -26,8 +26,8 @@ public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
         //Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
         //entityIn.setGlowing(true);
-        if(entityIn.getElement() != null && entityIn.getElement().getRenderer() != null) {
-            EasyRenderer.renderRift(matrixStackIn, bufferIn, RenderHelper.CRUMBLING, entityIn, 7.0f, entityIn.getElement().getRenderer().getColor()
+        if(entityIn.spellContext().element != null && entityIn.spellContext().element.getRenderer() != null) {
+            EasyRenderer.renderRift(matrixStackIn, bufferIn, RenderHelper.CRUMBLING, entityIn, 7.0f, entityIn.spellContext().element.getRenderer().getColor()
                     , 1.0f, partialTicks, entityIn.world);
         }
     }

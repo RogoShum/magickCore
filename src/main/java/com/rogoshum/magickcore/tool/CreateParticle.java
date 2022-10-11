@@ -51,7 +51,7 @@ public class CreateParticle {
         return this;
     }
 
-    public CreateParticle create (World world, EnumParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element)
+    public static CreateParticle create (World world, EnumParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element)
     {
         return new CreateParticle(world, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element);
     }

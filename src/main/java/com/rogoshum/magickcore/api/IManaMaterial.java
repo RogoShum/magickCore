@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.api;
 
-import com.rogoshum.magickcore.capability.IManaItemData;
+import net.minecraft.item.ItemStack;
 
 public interface IManaMaterial {
-    public int getManaNeed();
+    boolean disappearAfterRead();
 
-    public boolean upgradeManaItem(IManaItemData data);
+    public int getManaNeed(ItemStack stack);
+
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data);
 }

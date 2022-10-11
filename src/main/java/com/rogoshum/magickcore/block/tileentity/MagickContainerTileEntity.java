@@ -1,15 +1,20 @@
 package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IManaCapacity;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.api.block.IManaTransable;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.lib.LibEntityData;
+import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.magick.ManaCapacity;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -18,21 +23,21 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaTransable, ILightSourceEntity {
+public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaCapacity, ILightSourceEntity {
     private ItemStack mainItem;
-    private int manaCapacity;
-    public final int maxManaCapacity = 10000;
     private UUID playerUniqueId = MagickCore.emptyUUID;
     private boolean transMana;
     public String eType = LibElements.ORIGIN;
+    private final ManaCapacity capacity = ManaCapacity.create(10000);
     public MagickContainerTileEntity() {
         super(ModTileEntities.magick_container_tileentity.get());
     }
@@ -42,20 +47,20 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         if(this.playerUniqueId != MagickCore.emptyUUID)
         {
             LivingEntity player = this.world.getPlayerByUuid(this.playerUniqueId);
-
+            AtomicReference<EntityStateData> state = new AtomicReference<>();
             if(player == null)
                 eType = LibElements.ORIGIN;
             else {
-                IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
-                if(state != null)
-                    eType = state.getElement().getType();
+                ExtraDataHelper.entityData(player).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
+                    eType = data.getElement().type();
+                    state.set(data);
+                });
             }
 
             if(transMana && player != null)
             {
                 double dis = Math.sqrt(player.getDistanceSq(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
-                IEntityState state = player.getCapability(MagickCore.entityState).orElse(null);
-                if(state == null)
+                if(state.get() == null)
                     return;
 
                 if(dis > 16)
@@ -66,8 +71,8 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
                 if(!this.world.isRemote)
                 {
                     int manaTrans = 5;
-                    if(manaCapacity < maxManaCapacity && state.getManaValue() >= manaTrans)
-                        state.setManaValue(state.getManaValue() - manaTrans + this.receiveManaCapacity(manaTrans));
+                    if(manaCapacity().getMana() < manaCapacity().getMaxMana() && state.get().getManaValue() >= manaTrans)
+                        state.get().setManaValue(state.get().getManaValue() - manaTrans + capacity.receiveMana(manaTrans));
                     else
                         transMana = false;
                     updateInfo();
@@ -90,8 +95,8 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
                         double tx = player.getPosX() + (this.pos.getX() + offset - player.getPosX()) * trailFactor + world.rand.nextGaussian() * 0.005;
                         double ty = player.getPosY() + player.getHeight() / 2 + ((this.pos.getY() + offset) - (player.getPosY() + player.getHeight() / 2)) * trailFactor + world.rand.nextGaussian() * 0.005;
                         double tz = player.getPosZ() + (this.pos.getZ() + offset - player.getPosZ()) * trailFactor + world.rand.nextGaussian() * 0.005;
-                        LitParticle par = new LitParticle(this.world, state.getElement().getRenderer().getParticleTexture()
-                                , new Vector3d(tx, ty, tz), scale, scale, 1.0f, 5, state.getElement().getRenderer());
+                        LitParticle par = new LitParticle(this.world, state.get().getElement().getRenderer().getParticleTexture()
+                                , new Vector3d(tx, ty, tz), scale, scale, 1.0f, 5, state.get().getElement().getRenderer());
                         par.setParticleGravity(0);
                         par.setLimitScale();
                         par.setGlow();
@@ -134,31 +139,6 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     public void setPlayerUniqueId(UUID uuid){this.playerUniqueId = uuid; updateInfo();}
     public UUID getPlayerUniqueId(){return this.playerUniqueId;}
 
-    public int getManaCapacity(){
-        return manaCapacity;
-    }
-
-    public int outputManaCapacity(int mana){
-        int out = Math.min(manaCapacity, mana);
-        manaCapacity = Math.max(0, manaCapacity - mana);
-        updateInfo();
-        return out;
-    }
-
-    public int receiveManaCapacity(int mana)
-    {
-        int remaining = 0;
-        int addUp = mana + manaCapacity;
-        if(addUp > maxManaCapacity) {
-            remaining = addUp - maxManaCapacity;
-            manaCapacity = maxManaCapacity;
-        }
-        else
-            manaCapacity = addUp;
-        updateInfo();
-        return remaining;
-    }
-
     protected void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
 
     public ItemStack getMaterialItem() { return mainItem; }
@@ -169,8 +149,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
 
     public boolean putMaterialItem(ItemStack item)
     {
-        if((mainItem == null || mainItem.isEmpty()) && item.getItem() instanceof IManaMaterial)
-        {
+        if((mainItem == null || mainItem.isEmpty()) && item.getItem() instanceof IManaMaterial) {
             mainItem = item;
             updateInfo();
             return true;
@@ -200,7 +179,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         if(!this.playerUniqueId.equals(MagickCore.emptyUUID))
             compoundNBT.putUniqueId("playerUUID", this.playerUniqueId);
         compoundNBT.putBoolean("TRANS", this.transMana);
-        compoundNBT.putInt("MANA", this.manaCapacity);
+        capacity.serialize(compoundNBT);
         compoundNBT.putString("TYPE", this.eType);
         return compoundNBT;
     }
@@ -214,7 +193,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         }
         this.eType = tag.getString("TYPE");
         this.transMana = tag.getBoolean("TRANS");
-        this.manaCapacity = tag.getInt("MANA");
+        capacity.deserialize(tag);
         if(tag.contains("playerUUID"))
             this.playerUniqueId = tag.getUniqueId("playerUUID");
     }
@@ -226,7 +205,7 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         }
         this.eType = compound.getString("TYPE");
         this.transMana = compound.getBoolean("TRANS");
-        this.manaCapacity = compound.getInt("MANA");
+        capacity.deserialize(compound);
         if(compound.contains("playerUUID"))
             this.playerUniqueId = compound.getUniqueId("playerUUID");
         super.read(state, compound);
@@ -242,14 +221,14 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
         if(!this.playerUniqueId.equals(MagickCore.emptyUUID))
             compound.putUniqueId("playerUUID", this.playerUniqueId);
         compound.putBoolean("TRANS", this.transMana);
-        compound.putInt("MANA", this.manaCapacity);
+        capacity.serialize(compound);
         compound.putString("TYPE", this.eType);
         return super.write(compound);
     }
 
     @Override
-    public int getSourceLight() {
-        return (manaCapacity / maxManaCapacity) * 15;
+    public float getSourceLight() {
+        return (manaCapacity().getMana() / manaCapacity().getMaxMana()) * 15;
     }
 
     @Override
@@ -273,12 +252,18 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     }
 
     @Override
-    public float[] getColor() {
-        return MagickCore.proxy.getElementRender(this.eType).getColor();
+    public Color getColor() {
+        return MagickRegistry.getElement(this.eType).color();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
+        EntityLightSourceHandler.addLightSource(this);
+    }
+
+    @Override
+    public ManaCapacity manaCapacity() {
+        return capacity;
     }
 }

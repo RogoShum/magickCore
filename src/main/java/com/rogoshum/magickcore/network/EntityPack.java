@@ -23,9 +23,7 @@ public abstract class EntityPack {
     }
 
     public void handler(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            doWork(ctx);
-        });
+        ctx.get().enqueueWork(() -> doWork(ctx));
         ctx.get().setPacketHandled(true);
     }
 

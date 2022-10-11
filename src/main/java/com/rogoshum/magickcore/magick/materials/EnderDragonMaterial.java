@@ -1,9 +1,12 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.api.IMaterialLimit;
+import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibMaterial;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 
-public class EnderDragonMaterial implements IManaLimit {
+public class EnderDragonMaterial extends Material {
     @Override
     public String getName() {
         return LibMaterial.ENDER_DRAGON;
@@ -20,12 +23,17 @@ public class EnderDragonMaterial implements IManaLimit {
     }
 
     @Override
-    public int getRange() {
-        return 8;
+    public float getRange() {
+        return 1.5f;
     }
 
     @Override
     public int getMana() {
         return 5000;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.ender_dragon_material.orElse(Items.AIR);
     }
 }

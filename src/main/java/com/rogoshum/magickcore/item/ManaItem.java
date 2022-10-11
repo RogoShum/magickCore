@@ -2,19 +2,18 @@ package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.*;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.capability.IManaItemData;
-import com.rogoshum.magickcore.capability.ManaItemDataHandler;
-import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
+import com.rogoshum.magickcore.lib.*;
+import com.rogoshum.magickcore.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.magick.extradata.ItemExtraData;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.tool.RoguelikeHelper;
 import com.rogoshum.magickcore.init.ManaMaterials;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibAdvancements;
-import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.lib.LibItem;
-import com.rogoshum.magickcore.lib.LibMaterial;
 import com.rogoshum.magickcore.network.ManaItemDataPack;
 import com.rogoshum.magickcore.network.Networking;
 import net.minecraft.client.util.ITooltipFlag;
@@ -41,8 +40,10 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class ManaItem extends BaseItem implements IManaItem {
+public abstract class ManaItem extends BaseItem implements IManaData {
     public ManaItem(Properties properties) {
         super(properties);
     }
@@ -60,23 +61,20 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
 
     @Override
     public int getRGBDurabilityForDisplay(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem) {
-            IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
-            float[] color = data.getElement().getRenderer().getColor();
-            float[] hsv = Color.RGBtoHSB((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), null);
+        AtomicInteger i = new AtomicInteger(MathHelper.hsvToRGB(0.0f, 0.0F, 1.0F));
+        ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+            com.rogoshum.magickcore.magick.Color color = data.spellContext().element.getRenderer().getColor();
+            float[] hsv = Color.RGBtoHSB((int)(color.r() * 255), (int)(color.g() * 255), (int)(color.b() * 255), null);
 
-            return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
-        }
-        return MathHelper.hsvToRGB(0.0f, 0.0F, 1.0F);
+            i.set(MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]));
+        });
+        return i.get();
     }
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem) {
-            IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
-            return 1f - data.getMana() / data.getMaxMana();
-        }
-        return 0;
+        ItemManaData data = ExtraDataHelper.itemManaData(stack);
+        return 1f - data.manaCapacity().getMana() / data.manaCapacity().getMaxMana();
     }
 
     @Override
@@ -86,90 +84,61 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
 
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
-        IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
-        if(data != null)
-            return new TranslationTextComponent(MagickCore.MOD_ID + ".material." + data.getMaterial().getName()).appendString(" ").append(new TranslationTextComponent(super.getTranslationKey(stack)));
-        return new TranslationTextComponent(this.getTranslationKey(stack));
+        AtomicReference<TranslationTextComponent> transText = new AtomicReference<>(new TranslationTextComponent(this.getTranslationKey(stack)));
+        /*
+        ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+            transText.set(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + data.spellContext().getMaterial().getName()).appendString(" ").append(new TranslationTextComponent(super.getTranslationKey(stack))));
+        });
+        */
+        return transText.get();
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if(stack.getItem() instanceof IManaItem) {
-            IManaItemData data = ((IManaItem) stack.getItem()).getItemData(stack);
-            if(data != null) {
-                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + data.getElement().getType()))));
-                tooltip.add((new TranslationTextComponent(LibItem.FORCE)).appendString(" ").append((new StringTextComponent(Float.toString(data.getForce())))));
-                tooltip.add((new TranslationTextComponent(LibItem.RANGE)).appendString(" ").append((new StringTextComponent(Float.toString(data.getRange())+"M"))));
-                tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append((new StringTextComponent(Float.toString((float) data.getTickTime() / 20f) + "s"))));
-                tooltip.add((new TranslationTextComponent(LibItem.MANA_TYPE)).appendString(" ").append((new StringTextComponent(data.getManaType().getLabel()))));
-
-                if (data.getTrace()) {
-                    tooltip.add((new TranslationTextComponent("")));
-                    tooltip.add((new TranslationTextComponent(LibItem.TRACE)));
+        ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+            String information = data.spellContext().toString();
+            if(!information.isEmpty()) {
+                String[] tips = information.split("\n");
+                for (String tip : tips) {
+                    tooltip.add(new StringTextComponent(tip));
                 }
-
-                if (RoguelikeHelper.isRogueItem(stack))
-                    tooltip.add((new TranslationTextComponent(LibItem.ROGUE_TICK)).appendString(" ").append((new StringTextComponent(Integer.toString(RoguelikeHelper.getItemRemainTime(stack))))));
             }
-        }
+        });
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+        /*if (this.isInGroup(group)) {
             ItemStack stack = new ItemStack(this);
-            IManaItemData data = stack.getCapability(MagickCore.manaItemData).orElse(null);
-            if(data != null) {
-                data.setTrace(true);
-                data.setMaterial(ManaMaterials.getLastMaterial());
-                data.setTickTime(data.getMaterial().getTick());
-                data.setRange(data.getMaterial().getRange());
-                data.setForce(data.getMaterial().getForce());
-                data.setManaType(EnumManaType.ATTACK);
-                //data.setMana(data.getMaxMana());
-                items.add(stack);
-            }
+
         }
+
+         */
+        super.fillItemGroup(group, items);
     }
 
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        super.getShareTag(stack);
-        CompoundNBT nbt = NBTTagHelper.getStackTag(stack);
-        if(!nbt.contains("CAPABILITY"))
-            nbt.put("CAPABILITY", new CompoundNBT());
-        CompoundNBT tag = nbt.getCompound("CAPABILITY");
-        ManaItemDataHandler.serializeData(tag, this.getItemData(stack));
-        /*tag.putString("ELEMENT", this.getElement(stack).getType());
-        tag.putBoolean("TRACE", this.getTrace(stack));
-        tag.putString("TYPE", this.getManaType(stack).getLabel());
-        tag.putFloat("RANGE", this.getRange(stack));
-        tag.putFloat("FORCE", this.getForce(stack));
-        tag.putFloat("MANA", this.getMana(stack));
-        tag.putInt("TICK", this.getTickTime(stack));
-        tag.putString("MATERIAL", this.getMaterial(stack).getName());*/
+        CompoundNBT nbt = super.getShareTag(stack);
+        if(nbt == null)
+            nbt = new CompoundNBT();
+        CompoundNBT tag = new CompoundNBT();
+        ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> data.write(tag));
+        nbt.put(ItemExtraData.ITEM_DATA, tag);
+
         return nbt;
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        super.readShareTag(stack, nbt);
-        CompoundNBT nbt1 = NBTTagHelper.getStackTag(stack);
-        if(nbt1.contains("CAPABILITY")) {
-            CompoundNBT tag = nbt1.getCompound("CAPABILITY");
-            ManaItemDataHandler.deserializeData(tag, this.getItemData(stack));
-            /*this.setMaterial(stack, ManaMaterials.getMaterial(tag.getString("MATERIAL")));
-            this.setElement(stack, ModElements.getElement(tag.getString("ELEMENT")));
-            this.setTrace(stack, tag.getBoolean("TRACE"));
-            EnumManaType mana = EnumManaType.getEnum(tag.getString("TYPE"));
-            if (mana != null)
-                this.setManaType(stack, EnumManaType.getEnum(tag.getString("TYPE")));
-            this.setRange(stack, tag.getFloat("RANGE"));
-            this.setForce(stack, tag.getFloat("FORCE"));
-            this.setMana(stack, tag.getFloat("MANA"));
-            this.setTickTime(stack, tag.getInt("TICK"));*/
+        if(nbt != null && nbt.contains(ItemExtraData.ITEM_DATA)) {
+            CompoundNBT tag = nbt.getCompound(ItemExtraData.ITEM_DATA);
+            ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> data.read(tag));
+            nbt.remove(ItemExtraData.ITEM_DATA);
         }
+
+        super.readShareTag(stack, nbt);
     }
 
     @Override
@@ -186,15 +155,18 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
 
     private void updateData(ItemStack stack, Entity entityIn, int slot)
     {
+        /*
         if(!entityIn.world.isRemote())
         {
-            IManaItem data = (IManaItem)stack.getItem();
+            IManaCapacity data = (IManaCapacity)stack.getItem();
             Networking.INSTANCE.send(
                     PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entityIn),
                     new ManaItemDataPack(entityIn.getEntityId(), slot, data.getElement(stack).getType(), data.getTrace(stack)
                             , data.getManaType(stack).getLabel(), data.getRange(stack), data.getForce(stack)
                             , data.getMana(stack), data.getTickTime(stack)));
         }
+        *
+         */
     }
 
     @Override
@@ -208,18 +180,8 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
     }
 
     @Override
-    public float getMaxMana(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getMaxMana();
-        return 0;
-    }
-
-    @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        IEntityState state = entityLiving.getCapability(MagickCore.entityState).orElse(null);
         if(entityLiving instanceof ServerPlayerEntity) {
-            if (stack.getItem() instanceof EyeItem)
-                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.EYE);
             if (stack.getItem() instanceof OrbStaffItem)
                 AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.ORB_STAFF);
             if (stack.getItem() instanceof StarStaffItem)
@@ -227,133 +189,10 @@ public abstract class ManaItem extends BaseItem implements IManaItem {
             if (stack.getItem() instanceof LaserStaffItem)
                 AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.LASER_STAFF);
         }
-        releaseMagick(entityLiving, state, stack);
+        ExtraDataHelper.entityData(entityLiving).<EntityStateData>execute(LibEntityData.ENTITY_STATE, data -> releaseMagick(entityLiving, data, stack));
+
         return super.onItemUseFinish(stack, worldIn, entityLiving);
     }
 
-    public abstract boolean releaseMagick(LivingEntity playerIn, IEntityState state, ItemStack stack);
-
-    @Override
-    public boolean getTrace(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getTrace();
-        return false;
-    }
-
-    @Override
-    public void setTrace(ItemStack stack, boolean trace) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setTrace(trace);
-    }
-
-    @Nullable
-    @Override
-    public IManaItemData getItemData(ItemStack stack) {
-        return stack.getCapability(MagickCore.manaItemData).orElse(null);
-    }
-
-    @Override
-    public float getMana(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getMana();
-        return 0;
-    }
-
-    @Override
-    public void setMana(ItemStack stack, float mana) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setMana(mana);
-    }
-
-    @Override
-    public float receiveMana(ItemStack stack, float mana) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).receiveMana(mana);
-
-        return mana;
-    }
-
-    @Override
-    public IManaElement getElement(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getElement();
-
-        return ModElements.getElement(LibElements.ORIGIN);
-    }
-
-    @Override
-    public void setElement(ItemStack stack, IManaElement manaElement) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setElement(manaElement);
-    }
-
-    @Override
-    public float getRange(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getRange();
-
-        return 0;
-    }
-
-    @Override
-    public void setRange(ItemStack stack, float range) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setRange(range);
-    }
-
-    @Override
-    public float getForce(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getForce();
-
-        return 0;
-    }
-
-    @Override
-    public void setForce(ItemStack stack, float force) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setForce(force);
-    }
-
-    @Override
-    public EnumManaType getManaType(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getManaType();
-
-        return EnumManaType.NONE;
-    }
-
-    @Override
-    public void setManaType(ItemStack stack, EnumManaType manaType) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setManaType(manaType);
-    }
-
-    @Override
-    public int getTickTime(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getTickTime();
-
-        return 0;
-    }
-
-    @Override
-    public void setTickTime(ItemStack stack, int tick) {
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setTickTime(tick);
-    }
-
-    @Override
-    public IManaLimit getMaterial(ItemStack stack) {
-        if(stack.getItem() instanceof IManaItem)
-            return ((IManaItem)stack.getItem()).getItemData(stack).getMaterial();
-
-        return ManaMaterials.getMaterial(LibMaterial.ORIGIN);
-    }
-
-    @Override
-    public void setMaterial(ItemStack stack, IManaLimit limit){
-        if(stack.getItem() instanceof IManaItem)
-            ((IManaItem)stack.getItem()).getItemData(stack).setMaterial(limit);
-    }
+    public abstract boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack);
 }

@@ -49,10 +49,10 @@ void main()
         Light l = lights[i];
         float radius = pow(l.radius, 2);
         float intensity = pow(max(0, 1.0f - distance(l.position, position) / l.radius), 2);
-        sumR += l.color.r * (intensity / totalIntens);
-        sumG += l.color.g * (intensity / totalIntens);
-        sumB += l.color.b * (intensity / totalIntens);
+        sumR += l.color.r * (intensity / totalIntens) * l.color.a;
+        sumG += l.color.g * (intensity / totalIntens) * l.color.a;
+        sumB += l.color.b * (intensity / totalIntens) * l.color.a;
     }
-    lcolor = vec4(max(sumR * 1.5f, 0.0f), max(sumG * 1.5f, 0.0f), max(sumB * 1.5f, 0.0f), 1.0f);
+    lcolor = vec4(max(sumR, 0.0f), max(sumG, 0.0f), max(sumB, 0.0f), 1.0f);
     intens = min(1.0f, maxIntens);
 }

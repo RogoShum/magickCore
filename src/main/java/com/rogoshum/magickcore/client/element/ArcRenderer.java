@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class ArcRenderer extends ElementRenderer {
@@ -21,7 +22,7 @@ public class ArcRenderer extends ElementRenderer {
     private ResourceLocation[] mist = new ResourceLocation[8];
 
     public ArcRenderer() {
-        super(RenderHelper.ARC);
+        super(ModElements.ARC_COLOR);
         mist[0] = elec_0;
         mist[1] = elec_1;
         mist[2] = elec_2;

@@ -4,14 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ManaBarGUI extends AbstractGui {
     private final int width;
@@ -23,9 +23,9 @@ public class ManaBarGUI extends AbstractGui {
     private final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_rotate.png");
     private final ResourceLocation sphere_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_rotate.png");
     private MatrixStack matrixStack;
-    private IEntityState state;
+    private EntityStateData state;
 
-    public ManaBarGUI(MatrixStack matrixStack, IEntityState state) {
+    public ManaBarGUI(MatrixStack matrixStack, EntityStateData state) {
         this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
         this.height = Minecraft.getInstance().getMainWindow().getScaledHeight();
         this.minecraft = Minecraft.getInstance();
@@ -48,14 +48,14 @@ public class ManaBarGUI extends AbstractGui {
         int bar_width = (int) (leng * (state.getManaValue() / state.getMaxManaValue()));
 
         matrixStack.push();
-        float[] bar_color = state.getElement().getRenderer().getColor();
-        RenderSystem.color4f(bar_color[0], bar_color[1], bar_color[2], 1.0F);
+        Color bar_color = state.getElement().getRenderer().getColor();
+        RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 1.0F);
         this.minecraft.getTextureManager().bindTexture(mana_element);
         blit(matrixStack, (int) (width * 0.75), (int) (height * 0.95), 0, 0, bar_width, 5, bar_width, 5);
         matrixStack.pop();
 
         matrixStack.push();
-        RenderSystem.color4f(bar_color[0], bar_color[1], bar_color[2], 1.0F);
+        RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 1.0F);
         RenderSystem.matrixMode(5890);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();

@@ -1,18 +1,14 @@
 package com.rogoshum.magickcore.magick.lifestate.repeater;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.magick.lifestate.EntityLifeState;
 import com.rogoshum.magickcore.magick.lifestate.LifeState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;

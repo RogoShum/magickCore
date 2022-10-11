@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.magick.lifestate.repeater;
 
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
@@ -13,7 +12,7 @@ public class ManaExtractRepeater extends LifeRepeater {
 
     @Override
     public void input(MagickRepeaterTileEntity tile, LifeStateEntity oldLife, LifeStateEntity newLife, @Nullable Direction direction) {
-        newLife.getElementData().setMana(newLife.getElementData().getMana() + newLife.getSupplierBlock().supplyMana(0.2f));
+        newLife.manaCapacity().setMana(newLife.manaCapacity().getMana() + newLife.getSupplierBlock().supplyMana(0.2f));
     }
 
     @Override

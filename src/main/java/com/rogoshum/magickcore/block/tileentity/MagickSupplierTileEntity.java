@@ -3,15 +3,15 @@ package com.rogoshum.magickcore.block.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
 import com.rogoshum.magickcore.api.block.IManaSupplierTile;
-import com.rogoshum.magickcore.capability.CapabilityEntityState;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.lib.LibEntityData;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,11 +23,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MagickSupplierTileEntity extends TileEntity implements ITickableTileEntity, IManaSupplierTile {
@@ -75,7 +73,7 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
 
             if(targetTile.get() != null && this.distanceTile(targetTile.get()) <= 16)
             {
-                LifeStateEntity life = new LifeStateEntity(ModEntites.life_state, world);
+                LifeStateEntity life = new LifeStateEntity(ModEntities.life_state.get(), world);
                 life.setPosition(this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
                 Vector3d tilePos = new Vector3d(targetTile.get().getPos().getX(), targetTile.get().getPos().getY(), targetTile.get().getPos().getZ());
                 Vector3d selfPos = new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ());
@@ -143,31 +141,36 @@ public class MagickSupplierTileEntity extends TileEntity implements ITickableTil
     }
 
     private float livingBeExploited(LivingEntity living, float mana) {
-        LazyOptional<IEntityState> capa = living.getCapability(MagickCore.entityState);
-
-        if(capa.isPresent()){
-            IEntityState state = capa.orElse(new CapabilityEntityState.Implementation(ModElements.getElement(LibElements.ORIGIN)));
+        AtomicBoolean executed = new AtomicBoolean(false);
+        ExtraDataHelper.entityData(living).<EntityStateData>execute(LibEntityData.ENTITY_STATE, data -> {
             float shieldMana = 0;
 
-            if(state.getElementShieldMana() >= mana){
-                state.setElementShieldMana(mana - state.getElementShieldMana());
-                return mana;
+            if(data.getElementShieldMana() >= mana){
+                data.setElementShieldMana(mana - data.getElementShieldMana());
+                executed.set(true);
+                return;
             }
             else
-                shieldMana = state.getElementShieldMana();
+                shieldMana = data.getElementShieldMana();
 
-            if(state.getManaValue() >= mana){
-                state.setManaValue(mana - state.getManaValue());
-                return mana;
+            if(data.getManaValue() >= mana){
+                data.setManaValue(mana - data.getManaValue());
+                executed.set(true);
+                return;
             }
-            else if(state.getManaValue() + shieldMana >= mana){
-                state.setManaValue(mana - (state.getManaValue() + shieldMana));
-                state.setElementShieldMana(0);
-                return mana;
+            else if(data.getManaValue() + shieldMana >= mana){
+                data.setManaValue(mana - (data.getManaValue() + shieldMana));
+                data.setElementShieldMana(0);
+                executed.set(true);
+                return;
             }
             else
-                state.setManaValue(0);
-        }
+                data.setManaValue(0);
+        });
+
+        if(executed.get())
+            return mana;
+
 
         if(living.getMaxHealth() >= mana) {
             if(living instanceof PlayerEntity)

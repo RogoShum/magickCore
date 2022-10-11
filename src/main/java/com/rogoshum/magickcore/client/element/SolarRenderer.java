@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class SolarRenderer extends ElementRenderer {
@@ -24,7 +25,7 @@ public class SolarRenderer extends ElementRenderer {
     private ResourceLocation[] particle_sprite = new ResourceLocation[3];
 
     public SolarRenderer() {
-        super(RenderHelper.SOLAR);
+        super(ModElements.SOLAR_COLOR);
         fire[0] = fire_0;
         fire[1] = fire_1;
         fire[2] = fire_2;

@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.item;
 
+import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.capability.IManaItemData;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -18,15 +18,20 @@ public class ManaTickUpgradeItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public int getManaNeed() {
+    public boolean disappearAfterRead() {
+        return false;
+    }
+
+    @Override
+    public int getManaNeed(ItemStack stack) {
         return 200;
     }
 
     @Override
-    public boolean upgradeManaItem(IManaItemData data) {
-        if(data.getTickTime() >= data.getMaterial().getTick())
-            return false;
-        data.setTickTime(Math.min(data.getMaterial().getTick(), data.getTickTime() + 10));
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
+        //if(data.getTickTime() >= data.getMaterial().getTick())
+            //return false;
+        data.spellContext().tick(data.spellContext().tick + 10);
         return true;
     }
 

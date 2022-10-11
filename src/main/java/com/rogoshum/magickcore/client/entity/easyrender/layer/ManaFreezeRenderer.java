@@ -2,11 +2,10 @@ package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IEntityState;
 import com.rogoshum.magickcore.client.LayerRenderHelper;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.LivingRenderer;
@@ -21,7 +20,7 @@ public class ManaFreezeRenderer extends EasyLayerRender<LivingEntity> {
 
         helper.setEntityModel(renderer.getEntityModel());
         //helper.setAlpha(1f);
-        helper.setColor(RenderHelper.ORIGIN);
+        helper.setColor(Color.ORIGIN_COLOR);
         helper.render(entity, renderer, renderer.getEntityTexture(entity), entity.rotationYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 
         matrixStackIn.translate(0, -0.05f * entity.getHeight(), 0);

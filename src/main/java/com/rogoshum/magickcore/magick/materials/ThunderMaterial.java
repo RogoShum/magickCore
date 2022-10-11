@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IManaLimit;
+import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.lib.LibMaterial;
 
-public class ThunderMaterial implements IManaLimit {
+public class ThunderMaterial extends Material {
     @Override
     public String getName() {
         return LibMaterial.THUNDER;
@@ -20,8 +20,8 @@ public class ThunderMaterial implements IManaLimit {
     }
 
     @Override
-    public int getRange() {
-        return 16;
+    public float getRange() {
+        return 3;
     }
 
     @Override

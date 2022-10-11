@@ -9,11 +9,17 @@ public class LibItem {
 
     public static final String LASER_STAFF = "laser_staff";
     public static final String ORB_STAFF = "orb_staff";
+    public static final String WAND = "wand";
     public static final String STAR_STAFF = "star_staff";
     public static final String SUPER_SPAWNER = "super_spawner";
     public static final String RUNE = "rune";
     public static final String RIFT = "rift";
     public static final String EYE = "eye";
+    public static final String CONTEXT_CORE = "context_core";
+    public static final String MAGICK_CONTEXT = "magick_context";
+    public static final String CONTEXT_POINTER = "context_pointer";
+    public static final String STAFF = "staff";
+    public static final String ENTITY_TYPE_ITEM = "entity_type";
 
     public static final String ARC = "arc";
     public static final String SOLAR = "solar";
@@ -21,6 +27,7 @@ public class LibItem {
     public static final String STASIS = "stasis";
     public static final String WITHER = "wither";
     public static final String TAKEN = "taken";
+    public static final String MANA_ENERGY = "mana_energy";
 
     public static final String ELEMENT = MagickCore.MOD_ID + ".description.element";
     public static final String FORCE = MagickCore.MOD_ID + ".description.force";
@@ -30,6 +37,8 @@ public class LibItem {
     public static final String TICK = MagickCore.MOD_ID + ".description.tick";
     public static final String MATERIAL = MagickCore.MOD_ID + ".description.material";
     public static final String TRACE = MagickCore.MOD_ID + ".description.trace";
+    public static final String ENTITY_TYPE = MagickCore.MOD_ID + ".description.entity_type";
+    public static final String SPELL_CONTEXT = MagickCore.MOD_ID + ".description.spell_context";
 
     public static final String ORB_STAFF_D = MagickCore.MOD_ID + ".description.orb_staff";
     public static final String STAR_STAFF_D = MagickCore.MOD_ID + ".description.star_staff";

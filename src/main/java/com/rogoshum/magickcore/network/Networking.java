@@ -17,7 +17,7 @@ public class Networking {
 
     public static void registerMessage() {
         INSTANCE = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(MagickCore.MOD_ID, "entity_state"),
+                new ResourceLocation(MagickCore.MOD_ID, "network"),
                 () -> VERSION,
                 (version) -> version.equals(VERSION),
                 (version) -> version.equals(VERSION)
@@ -33,6 +33,12 @@ public class Networking {
                 .encoder(ManaDataPack::toBytes)
                 .decoder(ManaDataPack::new)
                 .consumer(ManaDataPack::handler)
+                .add();
+
+        INSTANCE.messageBuilder(ManaCapacityPack.class, nextID())
+                .encoder(ManaCapacityPack::toBytes)
+                .decoder(ManaCapacityPack::new)
+                .consumer(ManaCapacityPack::handler)
                 .add();
 
         INSTANCE.messageBuilder(ManaItemDataPack.class, nextID())

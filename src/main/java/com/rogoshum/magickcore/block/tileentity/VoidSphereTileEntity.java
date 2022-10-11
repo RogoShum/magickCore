@@ -1,10 +1,9 @@
 package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

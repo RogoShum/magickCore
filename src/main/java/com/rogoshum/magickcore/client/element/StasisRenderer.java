@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class StasisRenderer extends ElementRenderer {
@@ -17,7 +18,7 @@ public class StasisRenderer extends ElementRenderer {
     private ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID +":textures/element/stasis/wind_center.png");
 
     public StasisRenderer() {
-        super(RenderHelper.STASIS);
+        super(ModElements.STASIS_COLOR);
         mist[0] = mist_0;
         mist[1] = mist_1;
         mist[2] = mist_2;

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.client.item.MagickCraftingItemStackTileEntityRend
 import com.rogoshum.magickcore.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
+import net.minecraft.world.server.ServerWorld;
 
 public class MagickCraftingItem extends BlockItem {
     public MagickCraftingItem() {

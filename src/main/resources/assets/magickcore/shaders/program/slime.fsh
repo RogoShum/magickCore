@@ -10,6 +10,8 @@ uniform vec2 InSize;
 uniform vec2 BlurDir;
 uniform float Radius;
 
+#define SCREENEDGE 0.01
+
 vec3 rgb2hsv(vec3 c)
 {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -28,30 +30,78 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float max_value( vec3 color ) {
-    float alpha = 0.0;
-    if ( color.r > alpha ) {
-        alpha = color.r;
+vec3 calibration( vec3 color ) {
+    float r = clamp(color.r, 0.0, 1.0);
+    float g = clamp(color.g, 0.0, 1.0);
+    float b = clamp(color.b, 0.0, 1.0);
+    return vec3(r, g, b);
+}
+
+vec3 boost(vec3 color, int type) {
+    vec3 hsv = rgb2hsv(color.rgb);
+    float s = hsv.y;
+    float v = 1.0;
+
+    if(type == 0) {
+        s *= 5.0;
+        if (s > 1.0)
+        s = 1.0;
+    } else {
+        s *= 1.2;
+        if (s > 1.0)
+        s = 1.0;
     }
 
-    if ( color.g > alpha ) {
-        alpha = color.g;
-    }
-
-    if ( color.b > alpha ) {
-        alpha = color.b;
-    }
-
-    return alpha * alpha;
+    return hsv2rgb(vec3(hsv.x, s, v));
 }
 
 void main() {
+    vec4 center = texture2D(DiffuseSampler, texCoord);
     vec4 blurred = vec4(0.0);
+    float totalStrength = 0.0;
+    float totalAlpha = 0.0;
+    float totalSamples = 0.0;
+    float count = 1.0;
+    float countAlpha = 1.0;
+
+    blurred = center;
+    totalAlpha = center.a;
+    totalSamples = 1.0;
     for(float r = -Radius; r <= Radius; r += 1.0) {
-        vec4 sampleValue = texture2D(DiffuseSampler, texCoord + oneTexel * r * BlurDir);
-        blurred = blurred + sampleValue;
+        vec4 sampleValue0 = texture2D(DiffuseSampler, texCoord + oneTexel * r * BlurDir);
+        vec4 sampleValue1 = texture2D(DiffuseSampler, texCoord + oneTexel * -r * BlurDir);
+
+        countAlpha += 2.0;
+        if (sampleValue0.a <= 0.0) {
+            if(center.a > 0.0) {
+                count += 1.0;
+                blurred += vec4(boost(center.rgb, 0), 0.0);
+            }
+        } else {
+            count += 1.0;
+            totalAlpha += sampleValue0.a;
+            if(center.a > 0.0) {
+                blurred += vec4(boost(sampleValue0.rgb, 1), 0.0);
+            } else {
+                blurred += vec4(boost(sampleValue0.rgb, 0), 0.0);
+            }
+        }
+
+        if (sampleValue1.a <= 0.0) {
+            if(center.a > 0.0) {
+                count += 1.0;
+                blurred += vec4(boost(center.rgb, 0), 0.0);
+            }
+        } else {
+            count += 1.0;
+            totalAlpha += sampleValue1.a;
+            if(center.a > 0.0) {
+                blurred += vec4(boost(sampleValue1.rgb, 1), 0.0);
+            } else {
+                blurred += vec4(boost(sampleValue1.rgb, 0), 0.0);
+            }
+        }
     }
 
-    vec3 colour = blurred.rgb / (Radius * 2.0 + 1.0);
-    gl_FragColor = vec4(colour.rgb, max_value(colour.rgb));
+    gl_FragColor = vec4(blurred.rgb / count, clamp(totalAlpha / countAlpha, 0.0, 1.0));
 }

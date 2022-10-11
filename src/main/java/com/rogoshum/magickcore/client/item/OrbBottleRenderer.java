@@ -42,8 +42,8 @@ public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
         CompoundNBT nbt = stack.getTag();
         if(stack.hasTag() && nbt.contains("ELEMENT") && nbt.getString("ELEMENT") != LibElements.ORIGIN) {
             ItemStack potion = new ItemStack(Items.POTION);
-            float[] color = MagickCore.proxy.getElementRender(nbt.getString("ELEMENT")).getColor();
-            float[] hsv = Color.RGBtoHSB((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), null);
+            com.rogoshum.magickcore.magick.Color color = MagickCore.proxy.getElementRender(nbt.getString("ELEMENT")).getColor();
+            float[] hsv = Color.RGBtoHSB((int)(color.r() * 255), (int)(color.g() * 255), (int)(color.b() * 255), null);
             CompoundNBT tag = NBTTagHelper.getStackTag(potion);
             tag.putInt("CustomPotionColor", MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]));
             potion.setTag(tag);

@@ -1,9 +1,8 @@
 package com.rogoshum.magickcore.network;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IElementAnimalState;
-import com.rogoshum.magickcore.capability.ITakenState;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
@@ -41,7 +40,7 @@ public class TakenStatePack extends EntityPack{
         Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
         if(entity == null || entity.removed)
             return;
-        ITakenState state = entity.getCapability(MagickCore.takenState).orElse(null);
+        TakenEntityData state = ExtraDataHelper.takenEntityData(entity);
         if(state != null) {
             state.setTime(this.time);
             state.setOwner(this.uuid);

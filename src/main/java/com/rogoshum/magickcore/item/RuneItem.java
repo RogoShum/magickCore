@@ -1,9 +1,5 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.entity.ManaRuneEntity;
-import com.rogoshum.magickcore.init.ModEntites;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -23,16 +19,7 @@ public class RuneItem extends BaseItem{
 
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
-        if(!context.getWorld().isRemote) {
-            IEntityState state = context.getPlayer().getCapability(MagickCore.entityState).orElse(null);
-            ManaRuneEntity orb = new ManaRuneEntity(ModEntites.mana_rune, context.getWorld());
-            orb.setPosition(context.getHitVec().x, context.getHitVec().y, context.getHitVec().z);
-            orb.setElement(state.getElement());
-            orb.setTickTime(10000);
-            orb.setOwner(context.getPlayer());
-            context.getWorld().addEntity(orb);
-            context.getItem().shrink(1);
-        }
+
         return super.onItemUse(context);
     }
 

@@ -1,18 +1,19 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.capability.IElementAnimalState;
 import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
-import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
-import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.entity.projectile.ManaElementOrbEntity;
+import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibItem;
-import com.rogoshum.magickcore.magick.ReleaseAttribute;
+import com.rogoshum.magickcore.magick.context.MagickContext;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -41,9 +42,9 @@ public class OrbBottleItem extends BaseItem{
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")){
-            IManaElement element = ModElements.getElement(tag.getString("ELEMENT"));
-            ReleaseAttribute attribute = new ReleaseAttribute(null, null, entityLiving, 60, 2);
-            MagickReleaseHelper.applyElementFunction(element, EnumManaType.DEBUFF, attribute);
+            MagickElement element = MagickRegistry.getElement(tag.getString("ELEMENT"));
+            MagickContext attribute = new MagickContext(worldIn).tick(60).<MagickContext>force(2).victim(entityLiving).element(element).applyType(EnumApplyType.DE_BUFF);
+            MagickReleaseHelper.releaseMagick(attribute);
             return ItemStack.EMPTY;
         }
         return super.onItemUseFinish(stack, worldIn, entityLiving);
@@ -64,8 +65,8 @@ public class OrbBottleItem extends BaseItem{
         if(!playerIn.world.isRemote) {
             CompoundNBT tag = NBTTagHelper.getStackTag(stack);
             if (tag.contains("ELEMENT") && (ElementOrbEvent.containAnimalType(target.getType()) || target instanceof AnimalEntity)) {
-                IElementAnimalState state = target.getCapability(MagickCore.elementAnimal).orElse(null);
-                state.setElement(ModElements.getElement(tag.getString("ELEMENT")));
+                EntityStateData state = ExtraDataHelper.entityStateData(target);
+                state.setElement(MagickRegistry.getElement(tag.getString("ELEMENT")));
                 tag.remove("ELEMENT");
                 playerIn.setHeldItem(hand,stack);
             }
@@ -79,12 +80,11 @@ public class OrbBottleItem extends BaseItem{
         for (Entity entity : list)
         {
             boolean flag = false;
-            if(entity instanceof ManaElementOrbEntity)
-            {
+            if(entity instanceof ManaElementOrbEntity) {
                 ManaElementOrbEntity orb = (ManaElementOrbEntity) entity;
                 ItemStack stack = playerIn.getHeldItem(handIn);
                 CompoundNBT tag = NBTTagHelper.getStackTag(stack);
-                tag.putString("ELEMENT", orb.getElement().getType());
+                tag.putString("ELEMENT", orb.spellContext().element.type());
                 entity.remove();
                 flag = true;
             }

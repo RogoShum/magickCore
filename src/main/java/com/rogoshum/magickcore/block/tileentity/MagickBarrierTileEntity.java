@@ -1,24 +1,14 @@
 package com.rogoshum.magickcore.block.tileentity;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.block.IElementDataTile;
+import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
-import com.rogoshum.magickcore.capability.IManaData;
-import com.rogoshum.magickcore.capability.IManaItemData;
-import com.rogoshum.magickcore.capability.ManaDataHandler;
-import com.rogoshum.magickcore.capability.ManaItemDataHandler;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
-import com.rogoshum.magickcore.enums.EnumManaType;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.event.RenderEvent;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.magick.ReleaseAttribute;
-import com.rogoshum.magickcore.magick.lifestate.repeater.LifeRepeater;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
+import com.rogoshum.magickcore.magick.context.MagickContext;
+import com.rogoshum.magickcore.magick.context.SpellContext;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.tool.PanelHelper;
-import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModTileEntities;
-import com.rogoshum.magickcore.lib.LibBuff;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,7 +19,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -38,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IPanelTileEntity, ILifeStateTile, IElementDataTile {
+public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IPanelTileEntity, ILifeStateTile, ISpellContext {
     private MagickBarrierTileEntity panelOutputFirst;
     private MagickBarrierTileEntity panelOutputSecond;
     public AxisAlignedBB center;
@@ -46,7 +35,7 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
     public float requiredMana;
     public LifeStateEntity lifeState;
     private static final float REQUIRE = 0.01f;
-    private final IManaData element_data = ManaDataHandler.createDate();
+    private final SpellContext spellContext = SpellContext.create();
 
     public MagickBarrierTileEntity() {
         super(ModTileEntities.magick_barrier_tileentity.get());
@@ -61,11 +50,8 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
             flag = true;
             this.mana = 0;
             this.requiredMana = 0;
-            element_data.setElement(ModElements.getElement(LibElements.ORIGIN));
-            element_data.setRange(0);
-            element_data.setForce(0);
-            element_data.setManaType(EnumManaType.NONE);
-            element_data.setTickTime(0);
+            CompoundNBT tag = new CompoundNBT();
+            spellContext().deserialize(tag);
             if(mana < 0 && !world.isRemote())
                 updateInfo();
         }
@@ -155,8 +141,8 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
 
         entityList.forEach((entity -> {
             if (PanelHelper.isEntityTouchPanel(entity, this.pos, this.panelOutputFirst.pos, this.panelOutputSecond.pos, 0.5f)) {
-                ReleaseAttribute attribute = new ReleaseAttribute(null, null, entity, element_data.getTickTime(), element_data.getForce());
-                MagickReleaseHelper.applyElementFunction(element_data.getElement(), element_data.getManaType(), attribute);
+                MagickContext context = MagickContext.create(world, spellContext()).victim(entity);
+                MagickReleaseHelper.releaseMagick(context);
             }
         }));
 
@@ -199,14 +185,12 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
 
     @Override
     public void touch(@Nonnull LifeStateEntity entity) {
-        requiredMana = entity.getElementData().getMana() + mana;
+        requiredMana = entity.manaCapacity().getMana() + mana;
         mana = requiredMana;
         lifeState = entity;
-        element_data.setElement(entity.getElementData().getElement());
-        element_data.setRange(entity.getElementData().getRange());
-        element_data.setForce(entity.getElementData().getForce());
-        element_data.setManaType(entity.getElementData().getManaType());
-        element_data.setTickTime(entity.getElementData().getTickTime());
+        CompoundNBT tag = new CompoundNBT();
+        spellContext().serialize(tag);
+        entity.spellContext().deserialize(tag);
         updateInfo();
     }
 
@@ -252,17 +236,17 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
     public void extractTag(CompoundNBT compound) {
         this.requiredMana = compound.getFloat("requiredMana");
         this.mana = compound.getFloat("mana");
-        ManaDataHandler.deserializeData(compound, getElementData());
+        spellContext().deserialize(compound);
     }
 
     public void storageTag(CompoundNBT compound) {
         compound.putFloat("requiredMana", this.requiredMana);
         compound.putFloat("mana", this.mana);
-        ManaDataHandler.serializeData(compound, getElementData());
+        spellContext().serialize(compound);
     }
 
     @Override
-    public IManaData getElementData() {
-        return element_data;
+    public SpellContext spellContext() {
+        return spellContext;
     }
 }

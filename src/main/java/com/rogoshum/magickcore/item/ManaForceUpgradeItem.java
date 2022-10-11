@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.item;
 
+import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.capability.IManaItemData;
+import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -18,16 +19,27 @@ public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public int getManaNeed() {
+    public boolean disappearAfterRead() {
+        return false;
+    }
+
+    @Override
+    public int getManaNeed(ItemStack stack) {
         return 500;
     }
 
     @Override
-    public boolean upgradeManaItem(IManaItemData data) {
-        if(data.getForce() >= data.getMaterial().getForce())
-            return false;
-        data.setForce(Math.min(data.getMaterial().getForce(), data.getForce() + 0.5f));
-        return true;
+    public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
+        if(data instanceof IMaterialLimit) {
+            if(data.spellContext().force < ((IMaterialLimit) data).getMaterial().getForce()) {
+                data.spellContext().force(data.spellContext().force + 0.5f);
+                return true;
+            } else
+                return false;
+        } else {
+            data.spellContext().force(data.spellContext().force + 0.5f);
+            return true;
+        }
     }
 
     @Override

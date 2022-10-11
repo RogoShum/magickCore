@@ -1,44 +1,30 @@
 package com.rogoshum.magickcore.event;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaElement;
-import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.capability.IElementAnimalState;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.entity.ManaElementOrbEntity;
-import com.rogoshum.magickcore.entity.ManaPowerEntity;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.entity.projectile.ManaElementOrbEntity;
+import com.rogoshum.magickcore.entity.pointed.ManaPowerEntity;
 import com.rogoshum.magickcore.init.ModEnchantments;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.item.ManaItem;
 import com.rogoshum.magickcore.lib.LibElements;
-import com.rogoshum.magickcore.lib.LibEnchantment;
-import net.minecraft.client.Minecraft;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnderPearlItem;
-import net.minecraft.item.Food;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
@@ -118,70 +104,66 @@ public class ElementOrbEvent {
     @SubscribeEvent
     public void onDrops(LivingDropsEvent event)
     {
-        IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-        if(state != null && event.getEntityLiving() instanceof IMob && !event.getEntityLiving().world.isRemote)
-        {
-            if(!state.getElement().getType().equals(LibElements.ORIGIN) && state.getIsDeprived())
+        ExtraDataHelper.entityStateData(event.getEntityLiving(), state -> {
+            if(event.getEntityLiving() instanceof IMob && !event.getEntityLiving().world.isRemote)
             {
-                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntites.element_orb, event.getEntityLiving().world);
-                Vector3d vec = event.getEntityLiving().getPositionVec();
-                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                orb.setElement(state.getElement());
-                orb.setTickTime(200);
-                orb.setShooter(event.getEntityLiving());
-                event.getEntityLiving().world.addEntity(orb);
-            }
-            else
-            {
-                ManaPowerEntity orb = new ManaPowerEntity(ModEntites.mana_power, event.getEntityLiving().world);
-                Vector3d vec = event.getEntityLiving().getPositionVec();
-                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                orb.setTickTime(100);
-                orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
-                event.getEntityLiving().world.addEntity(orb);
-            }
-        }
-
-        IElementAnimalState animalState = event.getEntityLiving().getCapability(MagickCore.elementAnimal).orElse(null);
-        if(animalState != null && animalState.getElement().getType() != LibElements.ORIGIN && !event.getEntityLiving().world.isRemote)
-        {
-            Collection<ItemEntity> loots = event.getDrops();
-            loots.stream().forEach((e) -> {
-                if(e.getItem().isFood())
+                if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived())
                 {
-                    int count = e.getItem().getCount();
-                    ItemStack stack = new ItemStack(ModItems.element_meat.get());
-                    CompoundNBT tag = new CompoundNBT();
-                    tag.putString("ELEMENT", animalState.getElement().getType());
-                    stack.setCount(count);
-                    stack.setTag(tag);
-                    e.setItem(stack);
+                    ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
+                    Vector3d vec = event.getEntityLiving().getPositionVec();
+                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                    orb.spellContext().element(state.getElement());
+                    orb.spellContext().tick(200);
+                    orb.setShooter(event.getEntityLiving());
+                    event.getEntityLiving().world.addEntity(orb);
                 }
-
-                if(e.getItem().getItem().getRegistryName().toString().contains("wool"))
+                else
                 {
-                    int count = e.getItem().getCount();
-                    ItemStack stack = new ItemStack(ModItems.element_wool.get());
-                    CompoundNBT tag = new CompoundNBT();
-                    tag.putString("ELEMENT", animalState.getElement().getType());
-                    stack.setCount(count);
-                    stack.setTag(tag);
-                    e.setItem(stack);
+                    ManaPowerEntity orb = new ManaPowerEntity(ModEntities.mana_power.get(), event.getEntityLiving().world);
+                    Vector3d vec = event.getEntityLiving().getPositionVec();
+                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                    orb.spellContext().tick(100);
+                    orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
+                    event.getEntityLiving().world.addEntity(orb);
                 }
-            });
-        }
+            }
+        });
+
+
+        ExtraDataHelper.entityStateData(event.getEntityLiving(), state -> {
+            if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote) {
+                Collection<ItemEntity> loots = event.getDrops();
+                loots.forEach((e) -> {
+                    if (e.getItem().isFood()) {
+                        int count = e.getItem().getCount();
+                        ItemStack stack = new ItemStack(ModItems.element_meat.get());
+                        CompoundNBT tag = new CompoundNBT();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        e.setItem(stack);
+                    }
+
+                    if (e.getItem().getItem().getRegistryName().toString().contains("wool")) {
+                        int count = e.getItem().getCount();
+                        ItemStack stack = new ItemStack(ModItems.element_wool.get());
+                        CompoundNBT tag = new CompoundNBT();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        e.setItem(stack);
+                    }
+                });
+            }
+        });
     }
 
     @SubscribeEvent
-    public void onDeath(LivingDeathEvent event)
-    {
-        if(event.getSource().getTrueSource() == event.getSource().getImmediateSource() && event.getSource().getTrueSource() instanceof LivingEntity)
-        {
+    public void onDeath(LivingDeathEvent event) {
+        if(event.getSource().getTrueSource() == event.getSource().getImmediateSource() && event.getSource().getTrueSource() instanceof LivingEntity) {
             ItemStack stack = ((LivingEntity) event.getSource().getTrueSource()).getHeldItemMainhand();
-            if(EnchantmentHelper.getEnchantmentLevel(ModEnchantments.ELEMENT_DEPRIVATION.get(), stack) > 0)
-            {
-                IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
-                state.setDeprived();
+            if(EnchantmentHelper.getEnchantmentLevel(ModEnchantments.ELEMENT_DEPRIVATION.get(), stack) > 0) {
+                ExtraDataHelper.entityStateData(event.getEntityLiving(), EntityStateData::setDeprived);
             }
         }
     }
@@ -206,58 +188,59 @@ public class ElementOrbEvent {
     @SubscribeEvent
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event)
     {
-        IEntityState state = event.getEntityLiving().getCapability(MagickCore.entityState).orElse(null);
+        ExtraDataHelper.entityStateData(event.getEntityLiving(), state -> {
+            if(!state.allowElement())
+                return;
+            if(!event.getEntityLiving().isNonBoss())
+                state.setElemented();
+            if(testIfGenerateShield(event.getEntityLiving()))
+                state.setElemented();
 
-        if(!state.allowElement())
-           return;
-        if(!event.getEntityLiving().isNonBoss())
-            state.setElemented();
-        if(testIfGenerateShield(event.getEntityLiving()))
-            state.setElemented();
-
-        if(ElementOrbEvent.spawnElementMap.containsKey(event.getEntityLiving().getClass()))
-        {
-            LivingElementTable table = ElementOrbEvent.spawnElementMap.get(event.getEntityLiving().getClass());
-
-            if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+            if(ElementOrbEvent.spawnElementMap.containsKey(event.getEntityLiving().getClass()))
             {
-                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
-                state.setElement(ModElements.getElement(table.element));
-                state.setMaxManaValue(state.getFinalMaxElementShield());
+                LivingElementTable table = ElementOrbEvent.spawnElementMap.get(event.getEntityLiving().getClass());
+
+                if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+                {
+                    state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
+                    state.setElement(MagickRegistry.getElement(table.element));
+                    state.setMaxManaValue(state.getFinalMaxElementShield());
+                }
+
+                state.setElemented();
             }
 
-            state.setElemented();
-        }
-
-        String dimension_name = event.getEntityLiving().world.getDimensionKey().getLocation().toString();
-        if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_dimension.containsKey(dimension_name))
-        {
-            LivingElementTable table = ElementOrbEvent.spawnElementMap_dimension.get(dimension_name);
-
-            if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+            String dimension_name = event.getEntityLiving().world.getDimensionKey().getLocation().toString();
+            if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_dimension.containsKey(dimension_name))
             {
-                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
-                state.setElement(ModElements.getElement(table.element));
-                state.setMaxManaValue(state.getFinalMaxElementShield());
+                LivingElementTable table = ElementOrbEvent.spawnElementMap_dimension.get(dimension_name);
+
+                if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+                {
+                    state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
+                    state.setElement(MagickRegistry.getElement(table.element));
+                    state.setMaxManaValue(state.getFinalMaxElementShield());
+                }
+
+                state.setElemented();
             }
 
-            state.setElemented();
-        }
-
-        String biome_type = event.getEntityLiving().world.getBiome(event.getEntityLiving().getPosition()).getCategory().getString();
-        if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_biome.containsKey(biome_type))
-        {
-            LivingElementTable table = ElementOrbEvent.spawnElementMap_biome.get(biome_type);
-
-            if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+            String biome_type = event.getEntityLiving().world.getBiome(event.getEntityLiving().getPosition()).getCategory().getString();
+            if(event.getEntityLiving() instanceof IMob && ElementOrbEvent.spawnElementMap_biome.containsKey(biome_type))
             {
-                state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
-                state.setElement(ModElements.getElement(table.element));
-                state.setMaxManaValue(state.getFinalMaxElementShield());
-            }
+                LivingElementTable table = ElementOrbEvent.spawnElementMap_biome.get(biome_type);
 
-            state.setElemented();
-        }
+                if(state.allowElement() && MagickCore.rand.nextInt(table.getChance()) == 0)
+                {
+                    state.setFinalMaxElementShield(getShieldCapacity(event.getEntityLiving()));
+                    state.setElement(MagickRegistry.getElement(table.element));
+                    state.setMaxManaValue(state.getFinalMaxElementShield());
+                }
+
+                state.setElemented();
+            }
+        });
+
     }
 
     public static class LivingElementTable{

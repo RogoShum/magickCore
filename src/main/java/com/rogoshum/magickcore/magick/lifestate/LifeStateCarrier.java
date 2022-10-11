@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.magick.lifestate;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.entity.LifeStateEntity;
+import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.math.BlockRayTraceResult;

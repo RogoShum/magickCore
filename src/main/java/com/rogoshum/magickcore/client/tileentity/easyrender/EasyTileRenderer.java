@@ -1,33 +1,12 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.tileentity.CanSeeTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
-import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
-import com.rogoshum.magickcore.client.VertexShakerHelper;
-import com.rogoshum.magickcore.entity.baseEntity.ManaEntity;
-import com.rogoshum.magickcore.entity.baseEntity.ManaProjectileEntity;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorldReader;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class EasyTileRenderer<T extends TileEntity> {
     protected final ResourceLocation sphereOrb = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png");

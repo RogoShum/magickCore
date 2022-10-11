@@ -33,7 +33,9 @@ void main()
     if (vanillaTracing == 1) lcolor_2 = lcolor_2 * pow(luma(lightdark), 2);
 
     if (colMix == 1) lightdark = lightdark + lcolor_2;//More washed-out, but more physically correct
-    else lightdark = max(lightdark, lcolor_2);//Vivid but unrealistic
+    else if(intens > 1.0) {
+        lightdark = lcolor_2;
+    }
 
     vec4 baseColor = gl_Color * texture2D(sampler, gl_TexCoord[0].st);
     baseColor = baseColor * vec4(mix(vec3(1.0f), worldTint, worldTintIntensity), 1.0f);

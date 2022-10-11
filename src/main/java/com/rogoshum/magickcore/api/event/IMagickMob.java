@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.api.IManaElement;
+import com.rogoshum.magickcore.magick.MagickElement;
 
 public interface IMagickMob {
-    public IManaElement getElement();
-    public void setElement(IManaElement manaElement);
+    public MagickElement getElement();
+    public void setElement(MagickElement manaElement);
     public void hitMixing(IMagickMob a);
 }

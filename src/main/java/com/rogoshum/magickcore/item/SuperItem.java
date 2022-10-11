@@ -2,18 +2,19 @@ package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
-import com.rogoshum.magickcore.enums.EnumManaType;
-import com.rogoshum.magickcore.enums.EnumTargetType;
-import com.rogoshum.magickcore.capability.IEntityState;
-import com.rogoshum.magickcore.entity.ManaRuneEntity;
-import com.rogoshum.magickcore.entity.superentity.*;
-import com.rogoshum.magickcore.tool.MagickReleaseHelper;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModEntites;
+import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.magick.MagickElement;
+import com.rogoshum.magickcore.magick.context.MagickContext;
+import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
+import com.rogoshum.magickcore.magick.context.SpellContext;
+import com.rogoshum.magickcore.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -36,38 +37,56 @@ public class SuperItem extends BaseItem {
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
         if(!worldIn.isRemote) {
-            List<Entity> list = playerIn.world.getEntitiesWithinAABB(ManaRuneEntity.class, playerIn.getBoundingBox().grow(16));
-
-            if(list.size() >= 3) {
-                Vector3d position = list.get(0).getPositionVec().scale(1d / 3d).add(list.get(1).getPositionVec().scale(1d / 3d)).add(list.get(2).getPositionVec().scale(1d / 3d));
-                list.get(0).remove();
-                list.get(1).remove();
-                list.get(2).remove();
-                IEntityState state = playerIn.getCapability(MagickCore.entityState).orElse(null);
-                int mana = (int) state.getManaValue();
-                if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
-                    mana = EnumManaLimit.MAX_MANA.getValue();
-                if (state.getElement().getType() == LibElements.SOLAR) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.radiance_wall, playerIn, position, ModElements.getElement(LibElements.SOLAR), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                } else if (state.getElement().getType() == LibElements.ARC) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.chaos_reach, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.ARC), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                } else if (state.getElement().getType() == LibElements.VOID) {
-                    DawnWardEntity orb = new DawnWardEntity(ModEntites.mana_shield, worldIn);
-                    MagickReleaseHelper.releasePointEntity(ModEntites.mana_shield, playerIn, position.add(0, -orb.getHeight() / 2, 0), ModElements.getElement(LibElements.VOID), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                } else if (state.getElement().getType() == LibElements.STASIS) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.silence_squall, playerIn, position.add(0, 2, 0), ModElements.getElement(LibElements.STASIS), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                } else if (state.getElement().getType() == LibElements.WITHER) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.thorns_caress, playerIn, position.add(0, 1, 0), ModElements.getElement(LibElements.WITHER), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
-                } else if (state.getElement().getType() == LibElements.TAKEN) {
-                    MagickReleaseHelper.releasePointEntity(ModEntites.ascendant_realm, playerIn, position.add(0, 0, 0), ModElements.getElement(LibElements.TAKEN), null, 0, mana
-                            , 0, EnumTargetType.NONE, EnumManaType.NONE);
+            EntityStateData state = ExtraDataHelper.entityStateData(playerIn);
+            int mana = (int) state.getManaValue();
+            if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
+                mana = EnumManaLimit.MAX_MANA.getValue();
+            Vector3d position = playerIn.getPositionVec();
+            PositionContext positionContext = PositionContext.create(playerIn.getPositionVec());
+            SpawnContext spawnContext = new SpawnContext();
+            MagickElement element = ExtraDataHelper.entityStateData(playerIn).getElement();
+            MagickContext context = MagickContext.create(worldIn).caster(playerIn).applyType(EnumApplyType.SPAWN_ENTITY);
+            context.addChild(spawnContext);
+            context.tick(mana).element(element);
+            switch (state.getElement().type()) {
+                case LibElements.SOLAR: {
+                    positionContext.pos = position;
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.radiance_wall.get();
+                    break;
+                }
+                case LibElements.ARC: {
+                    positionContext.pos = position.add(0, 1, 0);
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.chaos_reach.get();
+                    break;
+                }
+                case LibElements.VOID: {
+                    positionContext.pos = position.add(0, -4, 0);
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.mana_shield.get();
+                    break;
+                }
+                case LibElements.STASIS: {
+                    positionContext.pos = position.add(0, 2, 0);
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.silence_squall.get();
+                    break;
+                }
+                case LibElements.WITHER: {
+                    positionContext.pos = position.add(0, 1, 0);
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.thorns_caress.get();
+                    break;
+                }
+                case LibElements.TAKEN: {
+                    positionContext.pos = position;
+                    context.addChild(positionContext);
+                    spawnContext.entityType = ModEntities.ascendant_realm.get();
+                    break;
                 }
             }
+            MagickReleaseHelper.releaseMagick(context);
         }
         return super.onItemUseFinish(stack, worldIn, playerIn);
     }

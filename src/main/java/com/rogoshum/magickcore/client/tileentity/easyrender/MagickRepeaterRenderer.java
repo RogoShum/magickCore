@@ -7,8 +7,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.client.BufferPackage;
+import com.rogoshum.magickcore.client.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -93,7 +95,7 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
             bufferIn.finish(type);
             matrixStackIn.pop();
         }
-        float[] color = RenderHelper.ORIGIN;
+        Color color = ModElements.ORIGIN_COLOR;
         if (entity.getTouchMode() == MagickRepeaterTileEntity.TouchMode.INPUT)
             color = RenderHelper.GREEN;
 
@@ -107,13 +109,13 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(entity.getRotation().getX()));
             matrixStackIn.scale(0.2f, 0.5f, 0.2f);
             matrixStackIn.translate(0.0, -0.5, -0.0);
-            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 0.2f, 0f)), 4, 0.5f, color, light);
-            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.2f, 0f)), 4, 1.0f, color, RenderHelper.renderLight);
+            RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 0.2f, 0f)), 4, 0.5f, color, light);
+            RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.2f, 0f)), 4, 1.0f, color, RenderHelper.renderLight);
             matrixStackIn.pop();
         } else {
             matrixStackIn.push();
             matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-            RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.75f, color, RenderHelper.renderLight);
+            RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.75f, color, RenderHelper.renderLight);
             matrixStackIn.pop();
         }
     }

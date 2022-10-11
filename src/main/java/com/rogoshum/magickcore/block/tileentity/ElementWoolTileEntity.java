@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModTileEntities;
 import com.rogoshum.magickcore.lib.LibElements;
+import com.rogoshum.magickcore.magick.Color;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
@@ -84,7 +85,7 @@ public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSou
     }
 
     @Override
-    public int getSourceLight() {
+    public float getSourceLight() {
         return 5;
     }
 
@@ -109,7 +110,7 @@ public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSou
     }
 
     @Override
-    public float[] getColor() {
+    public Color getColor() {
         return MagickCore.proxy.getElementRender(this.eType).getColor();
     }
 
