@@ -65,33 +65,29 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         }
     }
 
-    protected void applyParticle()
-    {
-        if(this.world.isRemote() && this.spellContext().element != null)
-        {
-            if(this.ticksExisted % 2 == 0){
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(this.getPosX()
-                        , this.getPosY() + this.getHeight() / 2
-                        , this.getPosZ())
-                        , 0.45f, 0.45f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
-                par.setGlow();
-                //par.setParticleGravity(0);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05);
-                MagickCore.addMagickParticle(par);
-            }
-            if(this.ticksExisted % 5 == 0){
-                LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                        , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.6f + 0.4f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
-                litPar.setGlow();
-                litPar.setParticleGravity(0f);
-                litPar.setShakeLimit(35.0f);
-                litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
-                MagickCore.addMagickParticle(litPar);
-            }
+    protected void applyParticle() {
+        if(this.ticksExisted % 2 == 0){
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(this.getPosX()
+                    , this.getPosY() + this.getHeight() / 2
+                    , this.getPosZ())
+                    , 0.45f, 0.45f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
+            par.setGlow();
+            //par.setParticleGravity(0);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05);
+            MagickCore.addMagickParticle(par);
+        }
+        if(this.ticksExisted % 5 == 0){
+            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
+                    , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.6f + 0.4f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.setShakeLimit(35.0f);
+            litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
+            MagickCore.addMagickParticle(litPar);
         }
     }
 

@@ -125,20 +125,6 @@ public class MagickReleaseHelper {
         if(pro == null)
             return false;
 
-        if(context.containChild(LibContext.POSITION)) {
-            PositionContext positionContext = context.getChild(LibContext.POSITION);
-            pro.setPosition(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
-        } else if(context.projectile != null) {
-            pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + pro.getEyeHeight(), context.projectile.getPosZ());
-        } else if(context.caster != null) {
-            if(pro instanceof ProjectileEntity)
-                pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * 1.5,
-                        context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * 1.5,
-                        context.caster.getPosZ() + context.caster.getLookVec().z * 1.5);
-            else
-                pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + context.caster.getHeight() / 2, context.caster.getPosZ());
-        }
-
         TraceContext traceContext = null;
         if(context.containChild(LibContext.TRACE))
             traceContext = context.getChild(LibContext.TRACE);
@@ -166,6 +152,20 @@ public class MagickReleaseHelper {
             else if(context.caster instanceof LivingEntity || context.caster instanceof IManaMob)
                 element = ExtraDataHelper.entityStateData(context.caster).getElement();
             spellContext.spellContext().element(element);
+        }
+
+        if(context.containChild(LibContext.POSITION)) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            pro.setPosition(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
+        } else if(context.projectile != null) {
+            pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + pro.getEyeHeight(), context.projectile.getPosZ());
+        } else if(context.caster != null) {
+            if(pro instanceof ProjectileEntity)
+                pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * 1.5,
+                        context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * 1.5,
+                        context.caster.getPosZ() + context.caster.getLookVec().z * 1.5);
+            else
+                pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + context.caster.getHeight() / 2, context.caster.getPosZ());
         }
 
         if(context.caster != null && pro instanceof ProjectileEntity) {

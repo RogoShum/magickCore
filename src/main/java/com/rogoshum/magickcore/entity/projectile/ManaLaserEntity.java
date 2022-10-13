@@ -54,7 +54,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        int count = 15;
+        int count = (int) (20 * getWidth());
         double scaleX = (this.getPosX() - this.lastTickPosX)/count;
         double scaleY = (this.getPosY() - this.lastTickPosY)/count;
         double scaleZ = (this.getPosZ() - this.lastTickPosZ)/count;
@@ -63,7 +63,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
                     , new Vector3d(this.lastTickPosX + scaleX * i
                     , this.lastTickPosY + scaleY * i + this.getHeight() / 2
                     , this.lastTickPosZ + scaleZ * i)
-                    , 0.05f, 0.05f, 1.0f, 4, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.3f * getWidth(), 0.3f * getWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setNoScale();
@@ -75,7 +75,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
                 , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
                 , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                , 0.15f, 0.15f, 1.0f, 10, this.spellContext().element.getRenderer());
+                , 0.15f * getWidth(), 0.15f * getWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
         par.setGlow();
         MagickCore.addMagickParticle(par);
     }

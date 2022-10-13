@@ -62,6 +62,6 @@ public class PotionRepeater extends LifeRepeater{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.potion_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

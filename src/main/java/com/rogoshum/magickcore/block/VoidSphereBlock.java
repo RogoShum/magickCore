@@ -48,7 +48,7 @@ public class VoidSphereBlock extends BaseBlock{
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         List<ItemStack> list = Lists.newArrayList();
-        list.add(new ItemStack(ModItems.void_sphere.get()));
+        //list.add(new ItemStack(ModItems.void_sphere.get()));
         return list;
     }
 }

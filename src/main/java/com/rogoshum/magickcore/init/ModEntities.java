@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.entity.pointed.*;
 import com.rogoshum.magickcore.entity.projectile.*;
 import com.rogoshum.magickcore.entity.radiated.*;
@@ -48,7 +47,7 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<RayEntity>> ray = Entities.register(LibEntities.RAY, () -> EntityType.Builder.create(RayEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.RAY));
 	public static final RegistryObject<EntityType<BloodBubbleEntity>> blood_bubble = Entities.register(LibEntities.BLOOD_BUBBLE, () -> EntityType.Builder.create(BloodBubbleEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.BLOOD_BUBBLE));
 	public static final RegistryObject<EntityType<LampEntity>> lamp = Entities.register(LibEntities.LAMP, () -> EntityType.Builder.create(LampEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.LAMP));
-	public static final RegistryObject<EntityType<ArrowEntity>> arrow = Entities.register(LibEntities.ARROW, () -> EntityType.Builder.create(ArrowEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.ARROW));
+	public static final RegistryObject<EntityType<ManaArrowEntity>> arrow = Entities.register(LibEntities.ARROW, () -> EntityType.Builder.create(ManaArrowEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.ARROW));
 	public static final RegistryObject<EntityType<BubbleEntity>> bubble = Entities.register(LibEntities.BUBBLE, () -> EntityType.Builder.create(BubbleEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.BUBBLE));
 	public static final RegistryObject<EntityType<LeafEntity>> leaf = Entities.register(LibEntities.LEAF, () -> EntityType.Builder.create(LeafEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.LEAF));
 	public static final RegistryObject<EntityType<RedStoneEntity>> red_stone = Entities.register(LibEntities.RED_STONE, () -> EntityType.Builder.create(RedStoneEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.RED_STONE));

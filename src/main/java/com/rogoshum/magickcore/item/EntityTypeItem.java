@@ -87,7 +87,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         if(playerIn.world.isRemote) return false;
         SpellContext item = ExtraDataHelper.itemManaData(stack).spellContext();
-        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(100).force(5.0f).range(10f).addChild(new TraceContext()));
+        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(100).force(5.0f).range(5f).addChild(new TraceContext()));
         return false;
     }
 }

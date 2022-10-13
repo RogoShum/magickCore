@@ -21,7 +21,8 @@ import java.util.function.Predicate;
 public class ConeEntity extends ManaRadiateEntity {
     public final Predicate<Entity> inCone = (entity -> {
         Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
-        return this.getDistanceSq(pos) <= spellContext().range * spellContext().range && rightDirection(pos);
+        double range = spellContext().range * 1.75;
+        return this.getDistanceSq(pos) <= range * range && rightDirection(pos);
     });
 
     public ConeEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -36,7 +37,7 @@ public class ConeEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range),
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range * 1.75),
                 predicate != null ? predicate.and(inCone)
                         : inCone);
     }
@@ -56,11 +57,8 @@ public class ConeEntity extends ManaRadiateEntity {
         }
         if(direction == null) return;
 
-        if(range > 0 && range < 2)
-            range = 2;
-
         for (int i = 1; i <= range; ++i) {
-            Vector3d[] vectors = ParticleHelper.drawCone(this.getPositionVec(), direction.normalize().scale(range), 9 * i, i * 3);
+            Vector3d[] vectors = ParticleHelper.drawCone(this.getPositionVec(), direction.normalize().scale(range * 1.75), 4.5 * i, i * 2);
             for (Vector3d vector : vectors) {
                 Vector3d dir = this.getPositionVec().subtract(vector);
                 LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()

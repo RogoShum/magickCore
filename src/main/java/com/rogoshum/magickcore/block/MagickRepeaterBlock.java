@@ -71,7 +71,7 @@ public class MagickRepeaterBlock extends BaseBlock{
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         List<ItemStack> list = Lists.newArrayList();
-        list.add(new ItemStack(ModItems.magick_repeater.get()));
+        //list.add(new ItemStack(ModItems.magick_repeater.get()));
         return list;
     }
 }

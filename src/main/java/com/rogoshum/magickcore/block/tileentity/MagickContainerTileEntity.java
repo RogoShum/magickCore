@@ -43,6 +43,11 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     }
 
     @Override
+    public boolean spawnGlowBlock() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         if(this.playerUniqueId != MagickCore.emptyUUID)
         {

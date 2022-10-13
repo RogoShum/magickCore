@@ -31,6 +31,6 @@ public class ManaExtractRepeater extends LifeRepeater {
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.mana_extract_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

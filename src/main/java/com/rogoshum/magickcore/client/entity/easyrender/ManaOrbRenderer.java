@@ -10,7 +10,7 @@ public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity>{
 
     @Override
     public void render(ManaOrbEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        matrixStackIn.scale(entityIn.getWidth() / 4, entityIn.getHeight() / 4, entityIn.getWidth() / 4);
-        entityIn.spellContext().element.getRenderer().renderOrb(matrixStackIn, bufferIn, 0.8f, Integer.toString(entityIn.getEntityId()), 2f);
+        matrixStackIn.scale(entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f);
+        entityIn.spellContext().element.getRenderer().renderOrb(matrixStackIn, bufferIn, 0.8f);
     }
 }

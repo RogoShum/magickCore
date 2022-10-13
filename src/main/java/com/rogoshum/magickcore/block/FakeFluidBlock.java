@@ -22,13 +22,6 @@ public class FakeFluidBlock extends FlowingFluidBlock implements ILightingBlock 
     }
 
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (!EntityLightSourceHandler.isPosLighting(worldIn, pos))
-            worldIn.setBlockState(pos, Blocks.WATER.getDefaultState().with(LEVEL, state.get(LEVEL)));
-    }
-
-
-    @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return getLight(state);
     }

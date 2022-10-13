@@ -38,23 +38,30 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
         float c = MagickCore.proxy.getRunTick() % 30;
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 29)));
 
+        float height = 0.2f + pointer.getHeight();
+        float radius = 0.25f;
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , 0, alpha, pointer.spellContext().element.color()
-                , 0.25f, 0.2f + pointer.getHeight(), 16, pointer.getHitReactions(), 0f);
+                , pointer.spellContext().element.color()
+                , context, pointer.getHitReactions(), 0f);
 
-        float height = pointer.getHeight() - 0.2f;
+        height = pointer.getHeight() - 0.2f;
         alpha = 1.0f;
         matrixStackIn.translate(0, 0.2, 0);
+        radius = 0.5f;
+        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , 0, alpha, pointer.spellContext().element.color()
-                , 0.5f, height, 16, pointer.getHitReactions(), 0f);
+                , pointer.spellContext().element.color()
+                , context, pointer.getHitReactions(), 0f);
         matrixStackIn.translate(0, -0.2, 0);
+        radius = 0.4f;
+        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , 0, alpha, pointer.spellContext().element.color()
-                , 0.4f, height, 16, pointer.getHitReactions(), 0f);
+                , pointer.spellContext().element.color()
+                , context, pointer.getHitReactions(), 0f);
         matrixStackIn.pop();
     }
 }

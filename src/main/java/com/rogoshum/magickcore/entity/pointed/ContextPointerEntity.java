@@ -83,6 +83,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
                 item.getItem().shrink(1);
             }
         });
+    }
+
+    @Override
+    public void reSize() {
         float height = stacks.size() + this.getType().getHeight();
         if(this.getHeight() > height)
             this.setHeight(getHeight() - 0.1f);

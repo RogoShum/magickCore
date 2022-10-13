@@ -60,7 +60,7 @@ public class LitParticle implements ILightSourceEntity {
         this.texture = texture;
         this.setSize(scaleWidth, scaleHeight);
         this.setPosition(position.x, position.y, position.z);
-        this.maxAge = maxAge;
+        this.maxAge = Math.max(maxAge, 2);
         this.alpha = alpha;
         this.color = renderer.getColor();
         this.particleGravity = renderer.getParticleGravity();
@@ -350,5 +350,10 @@ public class LitParticle implements ILightSourceEntity {
     @Override
     public Color getColor() {
         return renderer.getColor();
+    }
+
+    @Override
+    public boolean spawnGlowBlock() {
+        return false;
     }
 }

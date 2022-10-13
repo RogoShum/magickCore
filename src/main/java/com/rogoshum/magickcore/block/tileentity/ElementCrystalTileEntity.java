@@ -46,6 +46,11 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
         super.remove();
     }
 
+    @Override
+    public boolean spawnGlowBlock() {
+        return true;
+    }
+
     private void dropCrystal()
     {
         if(this.world.isRemote) return;

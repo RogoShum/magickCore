@@ -12,8 +12,10 @@ import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.entity.pointed.ManaRiftEntity;
+import com.rogoshum.magickcore.entity.projectile.ManaArrowEntity;
 import com.rogoshum.magickcore.entity.projectile.LampEntity;
-import com.rogoshum.magickcore.entity.projectile.WindEntity;
+import com.rogoshum.magickcore.entity.projectile.RayEntity;
+import com.rogoshum.magickcore.entity.projectile.ShadowEntity;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.ManaCapacity;
@@ -78,9 +80,8 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ServerTickEvent event) {
 		if(event.phase == TickEvent.Phase.END) {
-			//EntityLightSourceHandler.tick(event.side);
-			MagickCore.proxy.tick(LogicalSide.SERVER);
-			EntityLightSourceHandler.updateBlockState();
+			EntityLightSourceHandler.tick(event.side);
+			//MagickCore.proxy.tick(LogicalSide.SERVER);
 		}
 	}
 
@@ -88,6 +89,7 @@ public class MagickLogicEvent {
 	public void updateLightSource(TickEvent.ClientTickEvent event) {
 		if(!Minecraft.getInstance().isGamePaused() && event.phase == TickEvent.Phase.END) {
 			MagickCore.proxy.tick(LogicalSide.CLIENT);
+			EntityLightSourceHandler.tick(LogicalSide.CLIENT);
 		}
 	}
 
@@ -168,13 +170,26 @@ public class MagickLogicEvent {
 			event.setVelocity(0.2f);
 			event.setInaccuracy(((LampEntity) event.getEntity()).spellContext().range);
 		}
+
+		if(event.getEntity() instanceof ManaArrowEntity) {
+			event.setVelocity(0.3f);
+			event.setInaccuracy(0);
+		}
+
+		if(event.getEntity() instanceof RayEntity) {
+			RayEntity ray = (RayEntity) event.getEntity();
+			float velocity = ray.spellContext().force * 0.5f - ray.spellContext().range * 0.5f;
+			event.setVelocity(0.3f + velocity);
+			event.setInaccuracy(velocity);
+		}
+
+		if(event.getEntity() instanceof ShadowEntity) {
+			event.setVelocity(0.3f);
+		}
 	}
 
 	@SubscribeEvent
 	public void onMagickRelease(EntityEvents.MagickReleaseEvent event) {
-		if(event.getEntity() instanceof LivingEntity && ((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null)))
-			event.getContext().addChild(TraceContext.create(MagickReleaseHelper.getEntityLookedAt(event.getEntity())));
-
 		if(event.getContext().containChild(LibContext.SPAWN)) {
 			SpawnContext spawnContext = event.getContext().getChild(LibContext.SPAWN);
 			Entity spawnEntity = spawnContext.entityType.create(event.getContext().world);
@@ -198,6 +213,15 @@ public class MagickLogicEvent {
 		if(!(event.getEntity() instanceof LivingEntity) || event.getMana() <= 0 || !event.getContext().consumeMana)
 			return;
 
+		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null))
+			&& !event.getContext().containChild(LibContext.TRACE)) {
+			Entity entity = MagickReleaseHelper.getEntityLookedAt(event.getEntity());
+			if(entity != null)
+				event.getContext().addChild(TraceContext.create(entity));
+			else
+				event.getContext().addChild(new TraceContext());
+		}
+		
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_CONSUM_REDUCE.orElse(null))) {
 			float amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_CONSUM_REDUCE.orElse(null)).getAmplifier() + 2;
 			event.setMana(event.getMana() / amplifier);

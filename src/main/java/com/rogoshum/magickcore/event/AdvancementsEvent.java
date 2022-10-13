@@ -59,6 +59,7 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.GUN_POWDER);
                 else if(item.getItem().getRegistryName().equals(Items.SPIDER_EYE.getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.SPIDER_EYE);
+                /*
                 else if(item.getItem().getRegistryName().equals(ModItems.magick_supplier.get().getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.REPEATER);
                 else if(item.getItem().getRegistryName().equals(ModItems.magick_repeater.get().getRegistryName())) {
@@ -72,6 +73,8 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MATERIAL_REPEATER);
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MANA_EXTRACT_REPEATER);
                 }
+                
+                 */
                 else if(item.getItem().getRegistryName().equals(ModItems.ender_dragon_material.get().getRegistryName()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENDER_DRAGON_MATERIAL);
                 else if(item.getItem().getRegistryName().equals(Items.NETHER_STAR.getRegistryName()))

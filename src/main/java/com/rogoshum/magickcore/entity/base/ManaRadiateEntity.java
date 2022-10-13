@@ -65,6 +65,11 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         }
     }
 
+    @Override
+    public void reSize() {
+
+    }
+
     abstract public void successFX();
 
     @Override

@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.*;
+import com.rogoshum.magickcore.client.VertexShakerHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.*;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
@@ -102,21 +103,28 @@ public class ClientProxy implements IProxy
 		}
 		magickThread = new Thread(() -> {
 			while (!magickThread.isInterrupted()) {
+				boolean vertexShaker = false;
+				boolean tickParticle = false;
+				boolean tickTask = false;
 				try {
 					if(clientTick > clientPreTick) {
-						RenderEvent.tickParticle();
-
-						if(Minecraft.getInstance().player != null)
-							EntityLightSourceHandler.tick(LogicalSide.CLIENT);
-						else
-							EntityLightSourceHandler.clear();
-
 						clientPreTick = clientTick;
+						if(Minecraft.getInstance().player == null) {
+							EntityLightSourceHandler.clear();
+							RenderEvent.clearParticle();
+							VertexShakerHelper.clear();
+						}
+
+						VertexShakerHelper.tickGroup();
+						vertexShaker = true;
+						RenderEvent.tickParticle();
+						tickParticle = true;
 						MagickPoint.points.forEach(MagickPoint::tick);
 
 						for (int i = 0; i < taskList.size(); ++i) {
 							taskList.get(i).run();
 						}
+						tickTask = true;
 						taskList.clear();
 					}
 
@@ -126,7 +134,19 @@ public class ClientProxy implements IProxy
 					}
 				} catch (Exception e) {
 					MagickCore.LOGGER.info("MagickCore Client Thread Crashed!");
+					MagickCore.LOGGER.info("happened: ");
+					if(!vertexShaker)
+						MagickCore.LOGGER.info("vertexShaker");
+					else if(!tickParticle)
+						MagickCore.LOGGER.info("tickParticle");
+					else if(!tickTask)
+						MagickCore.LOGGER.info("tickTask");
+					else
+						MagickCore.LOGGER.info("other");
+
 					MagickCore.LOGGER.debug(e);
+					RenderEvent.clearParticle();
+					VertexShakerHelper.clear();
 					taskList.clear();
 					createThread();
 				}
@@ -213,7 +233,7 @@ public class ClientProxy implements IProxy
 
 	public void onModelBaked(ModelBakeEvent event) {
 		Map<ResourceLocation, IBakedModel> modelRegistry = event.getModelRegistry();
-		ModelResourceLocation location = new ModelResourceLocation(ModItems.magick_crafting.get().getRegistryName(), "inventory");
+		ModelResourceLocation location = new ModelResourceLocation(ModItems.orb_bottle.get().getRegistryName(), "inventory");
 		IBakedModel existingModel = modelRegistry.get(location);
 		if (existingModel == null) {
 			throw new RuntimeException("Did not find magick_crafting in registry");
@@ -222,34 +242,7 @@ public class ClientProxy implements IProxy
 			event.getModelRegistry().put(location, magickBakedModel);
 		}
 
-		location = new ModelResourceLocation(ModItems.orb_bottle.get().getRegistryName(), "inventory");
-		existingModel = modelRegistry.get(location);
-		if (existingModel == null) {
-			throw new RuntimeException("Did not find magick_crafting in registry");
-		} else {
-			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
-			event.getModelRegistry().put(location, magickBakedModel);
-		}
-
 		location = new ModelResourceLocation(ModItems.element_wool.get().getRegistryName(), "inventory");
-		existingModel = modelRegistry.get(location);
-		if (existingModel == null) {
-			throw new RuntimeException("Did not find magick_crafting in registry");
-		} else {
-			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
-			event.getModelRegistry().put(location, magickBakedModel);
-		}
-
-		location = new ModelResourceLocation(ModItems.magick_barrier.get().getRegistryName(), "inventory");
-		existingModel = modelRegistry.get(location);
-		if (existingModel == null) {
-			throw new RuntimeException("Did not find magick_crafting in registry");
-		} else {
-			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
-			event.getModelRegistry().put(location, magickBakedModel);
-		}
-
-		location = new ModelResourceLocation(ModItems.magick_repeater.get().getRegistryName(), "inventory");
 		existingModel = modelRegistry.get(location);
 		if (existingModel == null) {
 			throw new RuntimeException("Did not find magick_crafting in registry");
@@ -285,9 +278,7 @@ public class ClientProxy implements IProxy
 		RenderEvent.registerEasyRender(BloodBubbleEntity.class, new BloodBubbleRenderer());
 		RenderEvent.registerEasyRender(EntityHunterEntity.class, new EntityHunterRenderer());
 		RenderEvent.registerEasyRender(GravityLiftEntity.class, new GravityLiftRenderer());
-		RenderEvent.registerEasyRender(LampEntity.class, new LampRenderer());
 		RenderEvent.registerEasyRender(LeafEntity.class, new LeafRenderer());
-		RenderEvent.registerEasyRender(ArrowEntity.class, new ManaArrowRenderer());
 		RenderEvent.registerEasyRender(RedStoneEntity.class, new RedStoneRenderer());
 		RenderEvent.registerEasyRender(WindEntity.class, new WindRenderer());
 		RenderEvent.registerEasyRender(RayEntity.class, new RayRenderer());

@@ -45,23 +45,32 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity>{
 
         float c = entityIn.ticksExisted % 30;
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 29)));
-
+        RenderHelper.CylinderContext context =
+                new RenderHelper.CylinderContext(0.25f, 0.25f, 1
+                        , 0.2f + entityIn.getHeight(), 16
+                        , 0.5f * alpha, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.slime)
-                , 0.5f * alpha, alpha, entityIn.spellContext().element.color()
-                , 0.25f, 0.2f + entityIn.getHeight(), 16, entityIn.getHitReactions(), 0f);
+                , entityIn.spellContext().element.color()
+                , context, entityIn.getHitReactions(), 0f);
 
         float height = entityIn.getHeight() - 0.2f;
         alpha = 1.0f;
         matrixStackIn.translate(0, 0.2, 0);
+        context = new RenderHelper.CylinderContext(0.5f, 0.3f, 1.5f
+                        , height, 16
+                        , 0.3f * alpha, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.opacity)
-                , 0.3f * alpha, alpha, entityIn.spellContext().element.color()
-                , 0.5f, height, 16, entityIn.getHitReactions(), 0f);
+                , entityIn.spellContext().element.color()
+                , context, entityIn.getHitReactions(), 0f);
         matrixStackIn.translate(0, -0.2, 0);
+        context = new RenderHelper.CylinderContext(0.4f, 0.25f, 1.5f
+                , height, 16
+                , 0.2f * alpha, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.opacity)
-                , 0.2f * alpha, alpha, entityIn.spellContext().element.color()
-                , 0.4f, height, 16, entityIn.getHitReactions(), 0f);
+                , entityIn.spellContext().element.color()
+                , context, entityIn.getHitReactions(), 0f);
     }
 }

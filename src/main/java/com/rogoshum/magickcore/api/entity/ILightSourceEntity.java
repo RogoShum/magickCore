@@ -16,4 +16,6 @@ public interface ILightSourceEntity {
     public float eyeHeight();
 
     public Color getColor();
+
+    public boolean spawnGlowBlock();
 }

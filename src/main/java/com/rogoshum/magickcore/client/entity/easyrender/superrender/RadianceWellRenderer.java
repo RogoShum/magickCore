@@ -43,58 +43,42 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
             matrixStackIn.scale(0.5f, 0.5f, 0.5f);
             float alphaS = Math.min(1f, (float)entityIn.ticksExisted / 5f);
             matrixStackIn.push();
-
-            entityIn.spellContext().element.getRenderer().renderSphere(
-                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f))
-                    , 12, 0.7f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
-
-            matrixStackIn.push();
-            float scale = 1.1f;
+            float scale = 1.4f;
             matrixStackIn.scale(scale, scale, scale);
             entityIn.spellContext().element.getRenderer().renderSphere(
                     BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)).useShader(LibShaders.slime)
-                    , 12, 0.6f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
-            scale = 0.6f;
+                    , 12, 0.5f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
+            scale = 0.7f;
+            matrixStackIn.scale(scale, scale, scale);
+            entityIn.spellContext().element.getRenderer().renderSphere(
+                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)).useShader(LibShaders.slime)
+                    , 12, 0.5f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
             matrixStackIn.scale(scale, scale, scale);
             ModElements.ORIGIN.getRenderer().renderSphere(
                     BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)).useShader(LibShaders.slime)
-                    , 12, 0.4f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
-            matrixStackIn.pop();
+                    , 12, 0.6f * alphaS, entityIn.getHitReactions(), 0.0f, packedLightIn);
 
             matrixStackIn.pop();
             matrixStackIn.scale(1.4f, 1.4f, 1.4f);
             if(entityIn.initial) {
-                matrixStackIn.push();
-                matrixStackIn.scale(0.25f, 0.25f, 0.25f);
-                entityIn.getTrail().tick();
-                float alpha = (float) (entityIn.getMotion().length()) * 1.5f;
-
-                for (int i = 0; i < 40; ++i) {
-                    matrixStackIn.push();
-                    matrixStackIn.translate(entityIn.getPositionVec().x, entityIn.getPositionVec().y + i * 0.01, entityIn.getPositionVec().z);
-                    entityIn.spellContext().element.getRenderer().renderTrail(matrixStackIn, bufferIn, alpha *= 0.9f, Integer.toString(entityIn.getEntityId()), 0f);
-                    matrixStackIn.pop();
-                    matrixStackIn.scale(0.98f, 0.98f, 0.98f);
-                }
-                matrixStackIn.pop();
                 matrixStackIn.scale(0.7142f, 0.7142f, 0.7142f);
                 float alphaC = Math.min(1f, (float) entityIn.ticksExisted / 20f);
 
                 matrixStackIn.push();
                 matrixStackIn.translate(0, -entityIn.getHeight() * 2, 0);
                 matrixStackIn.scale(6.05f, 1.45f, 6.05f);
-                //RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f)), 0.0f, alphaC, entityIn.spellContext().element.getRenderer().getColor()
-                        //, 2f, 6.0f, 16, entityIn.getHitReactions(), 0.2f);
+                RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16, 0, alphaC * 0.8f, 0.3f);
                 RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn,
-                        RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f)).useShader(LibShaders.slime),
-                        0f, alphaC, ModElements.ORIGIN.getRenderer().getColor()
-                        , 2f, 6.0f, 16, entityIn.getHitReactions(), 0.2f);
+                        RenderHelper.getTexedCylinderGlint(cylinder_bloom, 2f, 0f)).useShader(LibShaders.slime)
+                        , ModElements.ORIGIN.getRenderer().getColor()
+                        , context, entityIn.getHitReactions(), 0.2f);
                 scale = 1.01f;
                 matrixStackIn.scale(scale, scale, scale);
+                context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16, 0, alphaC, 0.3f);
                 RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn,
-                        RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f)).useShader(LibShaders.slime),
-                        0f, alphaC, entityIn.spellContext().element.getRenderer().getColor()
-                        , 2f, 6.0f, 16, entityIn.getHitReactions(), 0.2f);
+                        RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f)).useShader(LibShaders.slime)
+                        , entityIn.spellContext().element.getRenderer().getColor()
+                        , context, entityIn.getHitReactions(), 0.2f);
                 matrixStackIn.pop();
             }
         }

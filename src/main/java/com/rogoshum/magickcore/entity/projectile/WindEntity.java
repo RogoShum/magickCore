@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WindEntity extends ManaProjectileEntity {
-    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_orb.png");
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/wind.png");
     public WindEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
     }
@@ -36,6 +36,7 @@ public class WindEntity extends ManaProjectileEntity {
     public void tick() {
         super.tick();
         //this.setNoGravity(true);
+        this.noClip = true;
         List<Entity> entityList = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range), null);
         for(int i = 0; i < entityList.size(); ++i) {
             Entity entity = entityList.get(i);
@@ -72,7 +73,6 @@ public class WindEntity extends ManaProjectileEntity {
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(context);
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
     }
 
     @Override

@@ -239,7 +239,7 @@ public class RenderEvent {
         MatrixStack matrixStackIn = event.getMatrixStack();
 
         for(Entity entity : Minecraft.getInstance().world.getAllEntities()) {
-            if(entity instanceof IManaEntity) {
+            if(entity instanceof IManaEntity && !Minecraft.getInstance().isGamePaused()) {
                 ((IManaEntity) entity).renderFrame(event.getPartialTicks());
             }
             if(easyRenderer.containsKey(entity.getClass())) {
@@ -275,7 +275,6 @@ public class RenderEvent {
 
     public static void tickParticle() {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        VertexShakerHelper.tickGroup();
         for(int i = 0; i < particles.size(); ++i) {
             LitParticle par = particles.get(i);
             if(par != null) {
@@ -289,6 +288,10 @@ public class RenderEvent {
             else
                 particles.remove(i);
         }
+    }
+
+    public static void clearParticle() {
+        particles.clear();
     }
 
     @SubscribeEvent

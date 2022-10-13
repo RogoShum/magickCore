@@ -57,7 +57,7 @@ public class RayEntity extends ManaProjectileEntity {
                 , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
                 , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
                 , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.1f, 0.1f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.2f * this.getWidth(), 0.2f * this.getWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

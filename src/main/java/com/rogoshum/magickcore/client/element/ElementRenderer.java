@@ -20,7 +20,7 @@ public abstract class ElementRenderer
     private ResourceLocation cycleTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/cycle.png");
     private ResourceLocation mistTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/mist.png");
     private ResourceLocation trailTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/trail.png");
-    private ResourceLocation particleSprite = new ResourceLocation(MagickCore.MOD_ID + ":element/base/magick_particle");
+    private ResourceLocation particleSprite = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/magick_particle.png");
     private ResourceLocation particleTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/magick_particle.png");
 
     private ResourceLocation ring_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/ring/ring_0.png");

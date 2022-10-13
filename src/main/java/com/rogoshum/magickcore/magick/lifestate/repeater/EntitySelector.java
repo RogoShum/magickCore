@@ -53,7 +53,7 @@ public class EntitySelector extends LifeRepeater{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.entity_selector.get());
+        return ItemStack.EMPTY;
     }
 
     public Entity getClosestEntityFrom(LifeStateEntity newLife, Predicate<? super Entity> predicate){

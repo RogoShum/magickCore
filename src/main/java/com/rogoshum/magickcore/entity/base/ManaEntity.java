@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ManaEntity extends Entity implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
     protected final ConcurrentHashMap<Integer, VectorHitReaction> hitReactions = new ConcurrentHashMap<>();
     public boolean cansee;
-    protected TrailParticle trail;
     public boolean initial;
     private final SpellContext spellContext = SpellContext.create();
     private UUID owner_uuid;
@@ -67,6 +66,11 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
             this.recalculateSize();
         }
         super.notifyDataManagerChange(key);
+    }
+
+    @Override
+    public boolean spawnGlowBlock() {
+        return true;
     }
 
     @Override
@@ -151,9 +155,6 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
             return null;
         }
     }
-
-    public TrailParticle getTrail() {return trail;}
-    public void setTrail(TrailParticle trail) {this.trail = trail;}
 
     @Override
     protected void registerData() {
@@ -240,8 +241,17 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
             MagickCore.proxy.addTask(this::doServerTask);
         if(getDamage() < 3 && this.ticksExisted - lastDamageTick > 200)
             setDamage(getDamage() + 1);
-
+        reSize();
         releaseMagick();
+    }
+
+    public void reSize() {
+        float height = getType().getHeight() + spellContext().range * 0.1f;
+        if(getHeight() != height)
+            this.setHeight(height);
+        float width = getType().getWidth() + spellContext().range * 0.1f;
+        if(getWidth() != width)
+            this.setWidth(width);
     }
 
     protected abstract void applyParticle();

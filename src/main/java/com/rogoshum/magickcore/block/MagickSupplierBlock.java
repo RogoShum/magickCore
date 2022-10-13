@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,7 +53,7 @@ public class MagickSupplierBlock extends BaseBlock{
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         List<ItemStack> list = Lists.newArrayList();
-        list.add(new ItemStack(ModItems.magick_supplier.get()));
+        //list.add(new ItemStack(ModItems.magick_supplier.get()));
         return list;
     }
 }

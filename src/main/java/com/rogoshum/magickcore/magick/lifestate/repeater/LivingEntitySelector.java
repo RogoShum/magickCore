@@ -51,6 +51,6 @@ public class LivingEntitySelector extends EntitySelector{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.living_entity_selector.get());
+        return ItemStack.EMPTY;
     }
 }

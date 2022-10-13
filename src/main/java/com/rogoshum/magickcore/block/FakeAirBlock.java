@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.block;
 
 import com.rogoshum.magickcore.api.block.ILightingBlock;
+import com.rogoshum.magickcore.block.tileentity.GlowAirTileEntity;
+import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -10,10 +12,12 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class FakeAirBlock extends AirBlock implements ILightingBlock {
@@ -25,10 +29,19 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
         defaultState = state;
     }
 
+    public BlockState getDefault() {
+        return defaultState;
+    }
+
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (!EntityLightSourceHandler.isPosLighting(worldIn, pos))
-            worldIn.setBlockState(pos, defaultState);
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new GlowAirTileEntity();
     }
 
     @Override
@@ -45,6 +58,7 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
     }
 
     public BlockState withLight(int level) {
+        level = Math.min(level, 15);
         return this.getDefaultState().with(LIGHT_LEVEL, level);
     }
 

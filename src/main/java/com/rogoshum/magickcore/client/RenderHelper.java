@@ -384,35 +384,70 @@ public class RenderHelper {
         renderParticle(pack, alpha, color, false, null, 0f);
     }
 
-    public static void renderCylinder(BufferContext pack, float alpha, float alphaMid, Color color, float baseRadius, float height, int stacks, VectorHitReaction[] hitReaction, float limit) {
-        double majorStep = height / stacks;
-        double minorStep = 2.0 * Math.PI / stacks;
+    public static class CylinderContext {
+        final float baseRadius;
+        final float midRadius;
+        final float midFactor;
+        final float height;
+        final int stacks;
+        final float alpha;
+        final float midAlpha;
+        final float alphaFactor;
+        public CylinderContext(float baseRadius, float midRadius, float midFactor, float height, int stacks, float alpha, float midAlpha, float alphaFactor) {
+
+            this.baseRadius = baseRadius;
+            this.midRadius = midRadius;
+            this.midFactor = midFactor;
+            this.height = height;
+            this.stacks = stacks;
+            this.alpha = alpha;
+            this.midAlpha = midAlpha;
+            this.alphaFactor = alphaFactor;
+        }
+    }
+
+    public static void renderCylinder(BufferContext pack, Color color, CylinderContext context, VectorHitReaction[] hitReaction, float limit) {
+        double majorStep = context.height / context.stacks;
+        double minorStep = 2.0 * Math.PI / context.stacks;
         int i, j;
 
         pack.matrixStack.push();
         Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
         IVertexBuilder buffer = pack.buffer;
         setup(pack);
-        for (i = 0; i < stacks; ++i) {
-            float z0 = (float) (0.5 * height - i * majorStep);
+        for (i = 0; i < context.stacks; ++i) {
+            float z0 = (float) (0.5 * context.height - i * majorStep);
             float z1 = (float) (z0 - majorStep);
             pack.matrixStack.push();
             begin(pack);
-            for (j = 0; j <= stacks; ++j) {
+            for (j = 0; j <= context.stacks; ++j) {
                 double a = j * minorStep;
-                float x = (float) (baseRadius * Math.cos(a));
-                float y = (float) (baseRadius * Math.sin(a));
+                float min = Math.min(1f, Math.abs(z0) * 2 / context.height);
+                float min1 = Math.min(1f, Math.abs(z1) * 2 / context.height);
 
-                float z0MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z0) * 2 / height), 0.3);
+                float z0MidFactor = (float) Math.pow(min, context.alphaFactor);
                 float z0EdgeFactor = (1 - z0MidFactor);
-                float z0Alpha = z0MidFactor * alpha + z0EdgeFactor * alphaMid;
+                float z0Alpha = z0MidFactor * context.alpha + z0EdgeFactor * context.midAlpha;
 
-                float z1MidFactor = (float) Math.pow(Math.min(1f, Math.abs(z1) * 2 / height), 0.3);
+
+                float z1MidFactor = (float) Math.pow(min1, context.alphaFactor);
                 float z1EdgeFactor = (1 - z1MidFactor);
-                float z1Alpha = z1MidFactor * alpha + z1EdgeFactor * alphaMid;
+                float z1Alpha = z1MidFactor * context.alpha + z1EdgeFactor * context.midAlpha;
 
-                posCylinderVertex(matrix4f, buffer, x, z0, y, j / (float) stacks, i / (float) stacks, z0Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
-                posCylinderVertex(matrix4f, buffer, x, z1, y, j / (float) stacks, (i + 1) / (float) stacks, z1Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
+                float z0Radius = (float) Math.pow(min, context.midFactor);
+                z0Radius = z0Radius * context.baseRadius + (1 - z0Radius) * context.midRadius;
+
+                float z1Radius = (float) Math.pow(min1, context.midFactor);
+                z1Radius = z1Radius * context.baseRadius + (1 - z1Radius) * context.midRadius;
+
+                float z0X = (float) (z0Radius * Math.cos(a));
+                float z0Y = (float) (z0Radius * Math.sin(a));
+
+                float z1X = (float) (z1Radius * Math.cos(a));
+                float z1Y = (float) (z1Radius * Math.sin(a));
+
+                posCylinderVertex(matrix4f, buffer, z0X, z0, z0Y, j / (float) context.stacks, i / (float) context.stacks, z0Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
+                posCylinderVertex(matrix4f, buffer, z1X, z1, z1Y, j / (float) context.stacks, (i + 1) / (float) context.stacks, z1Alpha, color.r(), color.g(), color.b(), RenderHelper.renderLight, hitReaction, limit);
                 //buffer.pos(matrix4f, (float)V0.x, (float)V0.y, (float)V0.z).color(color.r(), color.g(), color.b(), alpha).tex(j / (float) stacks, i / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
                 //buffer.pos(matrix4f, (float)V1.x, (float)V1.y, (float)V1.z).color(color.r(), color.g(), color.b(), alpha).tex(j / (float) stacks, (i + 1) / (float) stacks).overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(x / baseRadius, 0.0f, y / baseRadius).endVertex();
             }

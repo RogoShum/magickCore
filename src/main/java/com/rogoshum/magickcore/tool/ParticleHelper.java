@@ -1,16 +1,68 @@
 package com.rogoshum.magickcore.tool;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static java.lang.Math.PI;
 
 public class ParticleHelper {
+    public static List<Vector3d> drawSector(Vector3d center, Vector3d direction, double degrees, int frequency) {
+        if(frequency < 2)
+            frequency = 2;
+
+        degrees = degrees/frequency;
+        List<Vector3d> vectors = new ArrayList<>();
+        for (int i = 1; i <= frequency; ++i) {
+            List<Vector3d> part = new ArrayList<>(drawSectorPart(center, direction, degrees * i, i));
+            vectors.addAll(part);
+        }
+        return vectors;
+    }
+
+    public static List<Vector3d> drawSectorPart(Vector3d center, Vector3d direction, double degrees, int frequency) {
+        List<Vector3d> vectors = new ArrayList<>();
+
+        degrees = MathHelper.abs((float) degrees);
+
+        if(degrees >= 90) {
+            direction = direction.scale(-1);
+            degrees = 179 - degrees;
+            if(degrees < 0) {
+                Vector3d vec = center.add(direction);
+                List<Vector3d> list = new ArrayList<>();
+                list.add(vec);
+                return list;
+            }
+        }
+        if(frequency < 3)
+            frequency = 3;
+        double length = direction.length();
+        Vector3d forward = center.add(direction);
+        Vector2f pitchYaw = getRotationForVector(direction);
+        float part = 360f / frequency;
+        for (int i = 1; i < frequency; ++i) {
+            float ratio = i * part * ((float)Math.PI / 180F);
+            Vector3d pitchTransform = getVectorForRotation(pitchYaw.x, pitchYaw.y).scale(MathHelper.cos(ratio));
+            Vector3d yawTransform = getVectorForRotation(0, pitchYaw.y-90).scale(MathHelper.sin(ratio));
+            Vector3d rotate = pitchTransform.add(yawTransform).normalize();
+            rotate = rotate.scale(Math.tan(degrees * Math.PI / 180F) * length);
+
+            vectors.add(forward.add(rotate).subtract(center).normalize().scale(length).add(center));//
+        }
+        return vectors;
+    }
     public static Vector3d[] drawCone(Vector3d center, Vector3d direction, double degrees, int frequency) {
         degrees = MathHelper.abs((float) degrees);
         if(degrees >= 90) {
@@ -20,8 +72,8 @@ public class ParticleHelper {
                 return new Vector3d[]{center.add(direction)};
             }
         }
-        if(frequency < 2)
-            frequency = 2;
+        if(frequency < 3)
+            frequency = 3;
         double length = direction.length();
         Vector3d forward = center.add(direction);
         Vector3d[] vector = new Vector3d[frequency];
@@ -37,6 +89,24 @@ public class ParticleHelper {
             vector[i] = forward.add(rotate).subtract(center).normalize().scale(length).add(center);//
         }
         return vector;
+    }
+
+    public static List<Vector3d> drawRectangle(Vector3d center, float space, double length, double width, double height) {
+        Vector3d axisMin = center.subtract(length / 2, width / 2, height / 2);
+        List<Vector3d> list = new ArrayList<>();
+        for (double x = 0; x <= length; x+=space) {
+            for (double y = 0; y <= height; y+=space) {
+                for (double z = 0; z <= width; z+=space) {
+                    boolean xPass = (x == 0 || x + space > length);
+                    boolean yPass = (y == 0 || y + space > height);
+                    boolean zPass = (z == 0 || z + space > width);
+                    if((xPass && yPass) || (zPass && yPass) || (xPass && zPass)) {
+                        list.add(axisMin.add(x, y, z));
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     public static Vector3d rotateVector(Vector3f axis, float angle, Vector3d direction) {

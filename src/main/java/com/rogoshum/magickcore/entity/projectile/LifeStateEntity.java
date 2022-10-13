@@ -52,6 +52,11 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
         this.noClip = true;
     }
 
+    @Override
+    public boolean spawnGlowBlock() {
+        return true;
+    }
+
     public LifeStateCarrier getCarrier() {
         return carrier;
     }

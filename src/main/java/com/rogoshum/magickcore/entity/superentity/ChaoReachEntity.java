@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModSounds;
 import com.rogoshum.magickcore.magick.context.MagickContext;
@@ -83,31 +84,42 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
     protected void applyParticle()
     {
-        if(this.world.isRemote() && this.spellContext().element != null)
-        {
-            for(int i = 0; i < 2; ++i) {
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                        , 0.15f, 0.15f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2);
-                MagickCore.addMagickParticle(par);
-            }
-            for(int i = 0; i < 1; ++i) {
-                LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                        , this.rand.nextFloat() * this.getWidth() * this.getWidth(), this.rand.nextFloat() * this.getWidth() * this.getWidth(), 0.8f + 0.2f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
-                litPar.setGlow();
-                litPar.setParticleGravity(0f);
-                litPar.setShakeLimit(35.0f);
-                litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
-                MagickCore.addMagickParticle(litPar);
-            }
+        for(int i = 0; i < 2; ++i) {
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
+                    , 0.15f, 0.15f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2);
+            MagickCore.addMagickParticle(par);
+        }
+        for(int i = 0; i < 1; ++i) {
+            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
+                    , this.rand.nextFloat() * this.getWidth() * this.getWidth(), this.rand.nextFloat() * this.getWidth() * this.getWidth(), 0.8f + 0.2f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.setShakeLimit(35.0f);
+            litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
+            MagickCore.addMagickParticle(litPar);
+        }
+
+        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        for (int i = 0; i < 2; ++i) {
+            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
+                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par.setGlow();
+            par.setParticleGravity(0f);
+            par.setLimitScale();
+            par.setShakeLimit(15f);
+            MagickCore.addMagickParticle(par);
         }
     }
 

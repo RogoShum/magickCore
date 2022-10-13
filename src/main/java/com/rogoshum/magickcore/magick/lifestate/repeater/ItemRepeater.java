@@ -61,6 +61,6 @@ public class ItemRepeater extends LifeRepeater{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.item_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

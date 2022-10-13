@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LampEntity extends ManaProjectileEntity implements IExistTick {
-    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_orb.png");
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/lamp.png");
     public LampEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
     }
@@ -97,11 +97,12 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + x
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + y + this.getHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + z)
-                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , scale, scale * 1.2f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);
             par.addMotion(0, 0.1 * getWidth(), 0);
             par.setLimitScale();
+            par.setShakeLimit(15f);
             MagickCore.addMagickParticle(par);
         }
     }
@@ -118,7 +119,6 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
         Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
         this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length()));
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
     }
 
     @Override

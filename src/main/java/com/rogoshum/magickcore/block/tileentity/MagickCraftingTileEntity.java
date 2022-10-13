@@ -244,6 +244,7 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
 
     @Override
     public void remove() {
+        /*
         CompoundNBT tag = new CompoundNBT();
         CompoundNBT tileTag = new CompoundNBT();
         this.write(tileTag);
@@ -263,6 +264,8 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                 world.addEntity(newItem);
 
         }
+
+         */
         super.remove();
     }
 

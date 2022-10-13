@@ -5,6 +5,8 @@ import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
@@ -81,34 +83,45 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     protected void applyParticle()
     {
-        if(this.world.isRemote() && this.spellContext().element != null)
-        {
-            if(this.ticksExisted % 5 ==0) {
-                LitParticle cc = new LitParticle(this.world, this.spellContext().element.getRenderer().getRingTexture()
-                        , new Vector3d(this.getPosX()
-                        , this.getPosY() + this.getHeight()
-                        , this.getPosZ())
-                        , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
-                cc.setGlow();
-                cc.setParticleGravity(0);
-                MagickCore.addMagickParticle(cc);
-            }
-            for(int i = 0; i < 5; ++i) {
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                        , this.getPosY() + this.getHeight() / 5
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                        , 0.1f, 0.1f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
-                par.setGlow();
-                par.setParticleGravity(-0.15f);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.01);
-                MagickCore.addMagickParticle(par);
-            }
+        if(this.ticksExisted % 5 ==0) {
+            LitParticle cc = new LitParticle(this.world, this.spellContext().element.getRenderer().getRingTexture()
+                    , new Vector3d(this.getPosX()
+                    , this.getPosY() + this.getHeight()
+                    , this.getPosZ())
+                    , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
+            cc.setGlow();
+            cc.setParticleGravity(0);
+            MagickCore.addMagickParticle(cc);
+        }
+        for(int i = 0; i < 5; ++i) {
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
+                    , this.getPosY() + this.getHeight() / 5
+                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
+                    , 0.1f, 0.1f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(-0.15f);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.01);
+            MagickCore.addMagickParticle(par);
+        }
+
+        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        for (int i = 0; i < 3; ++i) {
+            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(this.getPosX()
+                    , this.getPosY() + this.getHeight()
+                    , this.getPosZ())
+                    , 0.2f, 0.2f, 1.0f, 18, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par.setGlow();
+            par.setParticleGravity(0.5f);
+            par.setLimitScale();
+            par.setShakeLimit(15f);
+            MagickCore.addMagickParticle(par);
         }
     }
 
     @Override
     public float getSourceLight() {
-        return 15;
+        return 20;
     }
 }

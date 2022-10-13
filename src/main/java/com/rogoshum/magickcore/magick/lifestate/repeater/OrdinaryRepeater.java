@@ -37,6 +37,6 @@ public class OrdinaryRepeater extends LifeRepeater {
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.ordinary_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

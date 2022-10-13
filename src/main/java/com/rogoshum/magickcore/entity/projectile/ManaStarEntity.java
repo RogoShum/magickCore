@@ -53,7 +53,7 @@ public class ManaStarEntity extends ManaProjectileEntity {
                 , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
                 , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
                 , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.05f, 0.05f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.1f * getWidth(), 0.1f * getWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

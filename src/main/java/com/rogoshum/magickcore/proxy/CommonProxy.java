@@ -35,7 +35,6 @@ public class CommonProxy implements IProxy
 
 	@Override
 	public void tick(LogicalSide side) {
-		if(side == LogicalSide.CLIENT) return;
 		int pre = tick;
 		tick = 1 + pre;
 	}
@@ -65,7 +64,7 @@ public class CommonProxy implements IProxy
 			while (!magickThread.isInterrupted()) {
 				try {
 					if(tick > preTick) {
-						EntityLightSourceHandler.tick(LogicalSide.SERVER);
+						//EntityLightSourceHandler.tick(LogicalSide.SERVER);
 
 						for (int i = 0; i < taskList.size(); ++i) {
 							taskList.get(i).run();

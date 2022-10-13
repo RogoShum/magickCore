@@ -55,6 +55,6 @@ public class EntityRepeater extends LifeRepeater{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.entity_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

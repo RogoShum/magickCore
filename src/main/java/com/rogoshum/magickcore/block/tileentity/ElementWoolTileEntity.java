@@ -35,6 +35,10 @@ public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSou
         super.remove();
     }
 
+    @Override
+    public boolean spawnGlowBlock() {
+        return true;
+    }
     private void dropWoolItem()
     {
         if(this.world.isRemote) return;

@@ -46,6 +46,6 @@ public class MaterialRepeater extends LifeRepeater{
 
     @Override
     public ItemStack dropItem() {
-        return new ItemStack(ModItems.material_repeater.get());
+        return ItemStack.EMPTY;
     }
 }

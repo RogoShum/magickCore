@@ -22,31 +22,46 @@ public class WindRenderer extends EasyRenderer<WindEntity>{
         matrixStackIn.translate(0, -0.2, 0);
         matrixStackIn.push();
         matrixStackIn.translate(0, 0.2, 0);
+        RenderHelper.CylinderContext context =
+                new RenderHelper.CylinderContext(entityIn.getWidth() * 0.4f, entityIn.getWidth() * 0.4f, 1
+                        , entityIn.getHeight() / 2, 16
+                        , 0.1f * alpha, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.slime)
-                , 0.2f * alpha, alpha, ModElements.ORIGIN.color()
-                , entityIn.getWidth() * 0.4f, entityIn.getHeight(), 16, null, 0f);
+                , ModElements.ORIGIN.color()
+                , context, null, 0f);
         matrixStackIn.pop();
         matrixStackIn.translate(0, 0.2, 0);
+        context = new RenderHelper.CylinderContext(entityIn.getWidth() * 0.5f, entityIn.getWidth() * 0.5f, 1
+                        , 0.2f + entityIn.getHeight(), 16
+                        , 0.1f * alpha, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.slime)
-                , 0.1f * alpha, alpha, entityIn.spellContext().element.color()
-                , entityIn.getWidth() * 0.5f, 0.2f + entityIn.getHeight(), 16, null, 0f);
+                , entityIn.spellContext().element.color()
+                , context, null, 0f);
         float height = entityIn.getHeight() - 0.2f;
 
+        context = new RenderHelper.CylinderContext(entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f, 1
+                , height, 16
+                , 0.0f, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.opacity)
-                , 0.4f, alpha, ModElements.ORIGIN.color()
-                , entityIn.getWidth() * 0.6f, height, 16, null, 0f);
+                , ModElements.ORIGIN.color()
+                , context, null, 0f);
         matrixStackIn.translate(0, 0.2, 0);
+        context = new RenderHelper.CylinderContext(entityIn.getWidth() * 0.7f, entityIn.getWidth() * 0.7f, 1
+                , height, 16
+                , 0.0f, alpha, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.opacity)
-                , 0.0f, alpha, entityIn.spellContext().element.color()
-                , entityIn.getWidth() * 0.7f, height, 16, null, 0f);
-
+                , entityIn.spellContext().element.color()
+                , context, null, 0f);
+        context = new RenderHelper.CylinderContext(entityIn.getWidth() * 2f, entityIn.getWidth() * 2f, 1
+                , height / 2, 16
+                , 0, 0.8f, 0.3f);
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedCylinderGlint(
                         wind, entityIn.getHeight(), 0f)).useShader(LibShaders.slime)
-                , 0.1f, alpha, entityIn.spellContext().element.color()
-                , entityIn.getWidth() * 2f, height, 16, null, 0f);
+                , entityIn.spellContext().element.color()
+                , context, null, 0f);
     }
 }

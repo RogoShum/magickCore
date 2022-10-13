@@ -1,13 +1,19 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Consumer;
 
@@ -19,5 +25,12 @@ public class MixinWorld {
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())
             info.cancel();
+    }
+
+    @Inject(method = "getRedstonePower", at = @At("RETURN"), cancellable = true)
+    public void onGetRedstonePower(BlockPos pos, Direction facing, CallbackInfoReturnable<Integer> cir) {
+        ILightSourceEntity entity = EntityLightSourceHandler.getPosLighting((World) (Object)this, pos);
+        if(entity instanceof IRedStoneEntity)
+            cir.setReturnValue(((IRedStoneEntity) entity).getPower());
     }
 }

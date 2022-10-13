@@ -10,13 +10,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class VertexShakerHelper {
-    private static ConcurrentHashMap<String, VertexGroup> Groups = new ConcurrentHashMap<String, VertexGroup>();
+    private static final ConcurrentHashMap<String, VertexGroup> Groups = new ConcurrentHashMap<String, VertexGroup>();
 
     private static void newGroup(String s)
     {
         Groups.put(s, new VertexGroup());
     }
 
+    public static void clear() {
+        Groups.clear();
+    }
     public static VertexGroup getGroup(String s) {
         if(Groups.containsKey(s)) {
             Groups.get(s).reTick();

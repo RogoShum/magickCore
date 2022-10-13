@@ -16,7 +16,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity>{
 
     @Override
     public void render(ManaSphereEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        if(entityIn.spellContext().element != null && entityIn.spellContext().element.getRenderer() != null) {
+        if(true) {
             //EasyRenderer.renderRift(matrixStackIn, bufferIn, RenderHelper.ORB, entityIn, 3.0f, entityIn.getElement().getRenderer().getColor()
                     //, 1.0f, partialTicks, entityIn.world);
             float scale = entityIn.getWidth() * 1.6f;
@@ -31,15 +31,18 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity>{
             int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
             matrixStackIn.scale(scale, scale, scale);
             entityIn.spellContext().element.getRenderer().renderSphere(
-                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(RenderHelper.blankTex, 1.2f, 0f))
+                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(sphere_rotate, 1.2f, 0f)).useShader(LibShaders.slime)
                     , 8, 0.6f, entityIn.getHitReactions(), 2.10f, packedLightIn);
+            /*
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
             scale = 0.4f;
             matrixStackIn.scale(scale, scale, scale);
             ModElements.ORIGIN.getRenderer().renderSphere(
-                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(RenderHelper.blankTex, 1.2f, 0f))
-                    , 8, 0.6f, entityIn.getHitReactions(), 2.10f, packedLightIn);
+                    BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedSphereGlow(RenderHelper.blankTex, 1.2f, 0f)).useShader(LibShaders.slime)
+                    , 8, 0.3f, entityIn.getHitReactions(), 2.10f, packedLightIn);
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+
+             */
         }
     }
 }
