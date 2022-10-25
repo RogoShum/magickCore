@@ -14,6 +14,7 @@ public class ModDamage {
     private static final DamageSource stasis = new DamageSource(MagickCore.MOD_ID + "-stasis").setDamageBypassesArmor().setMagicDamage();
     private static final DamageSource wither = new DamageSource(MagickCore.MOD_ID + "-wither").setDamageBypassesArmor().setMagicDamage();
     private static final DamageSource taken = new DamageSource(MagickCore.MOD_ID + "-taken").setDamageBypassesArmor().setMagicDamage();
+    private static final DamageSource air = new DamageSource(MagickCore.MOD_ID + "-air").setDamageBypassesArmor().setMagicDamage();
 
     public static DamageSource getArcDamage() { return arc; }
     public static DamageSource applyEntityArcDamage(Entity entity) { return new EntityDamageSource(arc.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage().setDamageIsAbsolute(); }
@@ -38,4 +39,8 @@ public class ModDamage {
     public static DamageSource getTakenDamage() { return taken; }
     public static DamageSource applyEntityTakenDamage(Entity entity) { return new EntityDamageSource(taken.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
     public static DamageSource applyProjectileTakenDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(taken.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
+
+    public static DamageSource getAirDamage() { return air; }
+    public static DamageSource applyEntityAirDamage(Entity entity) { return new EntityDamageSource(air.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
+    public static DamageSource applyProjectileAirDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(air.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
 }

@@ -7,8 +7,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.renderer.*;
@@ -16,8 +15,6 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 
 public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileEntity> {
     private ResourceLocation magick_repeater = new ResourceLocation(MagickCore.MOD_ID + ":textures/tileentity/magick_repeater.png");
@@ -103,6 +100,7 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
             color = RenderHelper.RED;
         light = WorldRenderer.getCombinedLight(entity.getWorld(), entity.getPos());
         BufferBuilder buffer = BufferHelper.getBuffer(bufferIn);
+        /*
         if (!entity.getDirection().equals(Vector3d.ZERO) && entity.getLifeRepeater() != null && entity.getLifeRepeater().useTileVector()) {
             matrixStackIn.push();
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-entity.getRotation().getY()));
@@ -118,6 +116,8 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
             RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.75f, color, RenderHelper.renderLight);
             matrixStackIn.pop();
         }
+
+         */
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

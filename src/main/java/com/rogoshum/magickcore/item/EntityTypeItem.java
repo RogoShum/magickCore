@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.api.ISpellContext;
-import com.rogoshum.magickcore.api.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModGroup;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
@@ -16,13 +15,11 @@ import com.rogoshum.magickcore.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class EntityTypeItem extends ManaItem implements IManaMaterial {
@@ -87,7 +84,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         if(playerIn.world.isRemote) return false;
         SpellContext item = ExtraDataHelper.itemManaData(stack).spellContext();
-        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(100).force(5.0f).range(5f).addChild(new TraceContext()));
+        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(200).force(10.0f).range(10f).addChild(new TraceContext()));
         return false;
     }
 }

@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.entity.projectile;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.client.entity.easyrender.RedStoneRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
@@ -11,7 +12,6 @@ import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.context.child.PositionContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -30,6 +29,12 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         super(type, worldIn);
     }
     public Vector3d clientMotion = Vector3d.ZERO;
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new RedStoneRenderer(this));
+    }
 
     @Override
     public void tick() {
@@ -52,7 +57,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
         MinecraftForge.EVENT_BUS.post(event);
         if(!suitableEntity(p_213868_1_.getEntity())) return;
-        MagickContext context = MagickContext.create(world, spellContext().postContext).saveMana().caster(this.getOwner()).projectile(this).victim(p_213868_1_.getEntity()).force(this.spellContext().force);
+        MagickContext context = MagickContext.create(world, spellContext().postContext).noCost().caster(this.getOwner()).projectile(this).victim(p_213868_1_.getEntity()).force(this.spellContext().force);
         MagickReleaseHelper.releaseMagick(context);
     }
 
@@ -79,7 +84,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
         BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
         blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(EnumApplyType.HIT_BLOCK).saveMana().caster(this.func_234616_v_()).projectile(this);
+        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(EnumApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(context);

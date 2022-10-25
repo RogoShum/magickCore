@@ -1,8 +1,10 @@
 package com.rogoshum.magickcore.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.init.ModItems;
@@ -53,6 +55,12 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public boolean canBeCollidedWith() {
         return true;
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ManaCapacityRenderer(this));
     }
 
     @Override

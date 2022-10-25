@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.client.entity.easyrender.laser;
 
+import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
-import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.vector.Vector2f;
@@ -14,46 +16,62 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.function.Consumer;
 
 public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> {
-    @Override
-    public void preRender(RadianceWellEntity entity, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        if(!entity.initial)
-            return;
+    Queue<Vector3d> DIRECTION;
 
-        matrixStackIn.push();
-        double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
-        double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
-        double z = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * (double) partialTicks;
-
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        double camX = cam.x, camY = cam.y, camZ = cam.z;
-        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() + 0.005, z - camZ);
-
-        render(entity, matrixStackIn, bufferIn, partialTicks);
-        matrixStackIn.pop();
+    public RadianceWellLaserRenderer(RadianceWellEntity entity) {
+        super(entity);
     }
 
     @Override
-    public void render(RadianceWellEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        if(entityIn.spellContext().element != null && entityIn.spellContext().element.getRenderer() != null) {
-            matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-            List<Entity> livings = entityIn.findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(entityIn.getOwner(), living));
+    public void baseOffset(MatrixStack matrixStackIn) {
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() + 0.005, z - camZ);
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        if(entity.initial) {
+            DIRECTION = Queues.newArrayDeque();
+            List<Entity> livings = entity.findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(entity.getOwner(), living));
             for (Entity entity : livings) {
-                Vector3d dirc = entityIn.getPositionVec().add(0, entityIn.getHeight(), 0).subtract(getEntityRenderVector(entity, partialTicks).add(0, entity.getHeight() / 2, 0));
+                Vector3d me = getEntityRenderVector(Minecraft.getInstance().getRenderPartialTicks()).add(0, this.entity.getHeight(), 0);
+                Vector3d it = getEntityRenderVector(entity, Minecraft.getInstance().getRenderPartialTicks()).add(0, entity.getHeight() * 0.5, 0);
+                Vector3d dirc = me.subtract(it);
                 float distance = (float) dirc.length();
                 dirc = dirc.normalize();
                 Vector2f rota = getRotationFromVector(dirc);
-                matrixStackIn.push();
-                //matrixStackIn.translate(0, distance, 0);
-                //matrixStackIn.rotate(Vector3f.XP.rotationDegrees(30));
-                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
-                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
-                entityIn.spellContext().element.getRenderer().renderLaserParticle(matrixStackIn, bufferIn, entityIn.spellContext().element.getRenderer().getWaveTexture(1), 0.35f, distance * 2, 2.0f);
-                matrixStackIn.pop();
+                DIRECTION.add(new Vector3d(rota.x, rota.y, distance));
             }
         }
+    }
+
+    public void render(RenderParams params) {
+        MatrixStack matrixStackIn = params.matrixStack;
+        baseOffset(matrixStackIn);
+        matrixStackIn.scale(0.5f, 0.5f, 0.5f);
+        Queue<Vector3d> direction = DIRECTION;
+        for (Vector3d vector3d : direction) {
+            matrixStackIn.push();
+            matrixStackIn.rotate(Vector3f.YP.rotationDegrees((float) vector3d.x));
+            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees((float) vector3d.y));
+            entity.spellContext().element.getRenderer().renderLaserParticle(
+                    matrixStackIn, params.buffer, entity.spellContext().element.getRenderer().getWaveTexture(1), 0.35f, (float) (vector3d.z * 2), 2.0f);
+            matrixStackIn.pop();
+        }
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        if(entity.initial)
+            map.put(RenderMode.ORIGIN_RENDER, this::render);
+        return map;
     }
 }

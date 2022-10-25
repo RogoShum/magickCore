@@ -4,20 +4,22 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.buff.ManaBuff;
-import com.rogoshum.magickcore.entity.pointed.ManaRiftEntity;
+import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.entity.projectile.ManaArrowEntity;
 import com.rogoshum.magickcore.entity.projectile.LampEntity;
 import com.rogoshum.magickcore.entity.projectile.RayEntity;
 import com.rogoshum.magickcore.entity.projectile.ShadowEntity;
+import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibContext;
+import com.rogoshum.magickcore.magick.MagickPoint;
 import com.rogoshum.magickcore.magick.ManaCapacity;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.SpawnContext;
@@ -76,7 +78,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagickLogicEvent {
-	private static List<Entity> timeLords = new ArrayList<Entity>();
+	private static final List<Entity> timeLords = new ArrayList<Entity>();
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ServerTickEvent event) {
 		if(event.phase == TickEvent.Phase.END) {
@@ -88,6 +90,20 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ClientTickEvent event) {
 		if(!Minecraft.getInstance().isGamePaused() && event.phase == TickEvent.Phase.END) {
+			MagickCore.proxy.addAdditionTask(() -> {
+				if(Minecraft.getInstance().player == null) {
+					EntityLightSourceHandler.clear();
+					RenderEvent.clearParticle();
+					VertexShakerHelper.clear();
+				}
+
+				VertexShakerHelper.tickGroup();
+				RenderEvent.tickParticle();
+				MagickPoint.points.forEach(MagickPoint::tick);
+			}, () -> {
+				RenderEvent.clearParticle();
+				VertexShakerHelper.clear();
+			});
 			MagickCore.proxy.tick(LogicalSide.CLIENT);
 			EntityLightSourceHandler.tick(LogicalSide.CLIENT);
 		}
@@ -196,9 +212,6 @@ public class MagickLogicEvent {
 			if(spawnEntity instanceof ISuperEntity) {
 				event.getContext().tick(event.getContext().tick / 4);
 			}
-
-			if(spawnEntity instanceof ManaRiftEntity)
-				event.getContext().tick(event.getContext().tick * 2);
 		}
 	}
 
@@ -210,7 +223,7 @@ public class MagickLogicEvent {
 				return;
 		}
 
-		if(!(event.getEntity() instanceof LivingEntity) || event.getMana() <= 0 || !event.getContext().consumeMana)
+		if(!(event.getEntity() instanceof LivingEntity) || event.getMana() <= 0 || !event.getContext().noCost)
 			return;
 
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null))
@@ -268,8 +281,7 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onShieldCapacity(EntityEvents.ShieldCapacityEvent event)
-	{
+	public void onShieldCapacity(EntityEvents.ShieldCapacityEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.SHIELD_VALUE.orElse(null)))
 			mana += 25 * (event.getEntityLiving().getActivePotionEffect(ModEffects.SHIELD_VALUE.orElse(null)).getAmplifier() + 1);
@@ -278,8 +290,7 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onShieldRegen(EntityEvents.ShieldRegenerationEvent event)
-	{
+	public void onShieldRegen(EntityEvents.ShieldRegenerationEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.SHIELD_REGEN.orElse(null)))
 			mana = (event.getEntityLiving().getActivePotionEffect(ModEffects.SHIELD_REGEN.orElse(null)).getAmplifier() + 1);
@@ -326,14 +337,12 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void HitEntity(EntityEvents.HitEntityEvent event)
-	{
+	public void HitEntity(EntityEvents.HitEntityEvent event) {
 		if(event.getEntity() instanceof ISpellContext) {
 			SpellContext mana = ((ISpellContext) event.getEntity()).spellContext();
-
-			MagickContext attribute = new MagickContext(event.getEntity().world).saveMana().caster(event.getEntity()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(EnumApplyType.HIT_ENTITY);
+			MagickContext attribute = new MagickContext(event.getEntity().world).noCost().caster(event.getEntity()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(EnumApplyType.HIT_ENTITY);
 			if(event.getEntity() instanceof IOwnerEntity)
-				attribute = new MagickContext(event.getEntity().world).saveMana().caster(((IOwnerEntity) event.getEntity()).getOwner()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(EnumApplyType.HIT_ENTITY);
+				attribute = new MagickContext(event.getEntity().world).noCost().caster(((IOwnerEntity) event.getEntity()).getOwner()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(EnumApplyType.HIT_ENTITY);
 			MagickReleaseHelper.releaseMagick(attribute);
 		}
 	}

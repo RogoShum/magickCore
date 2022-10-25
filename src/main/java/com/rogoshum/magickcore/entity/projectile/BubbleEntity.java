@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.BubbleRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaStarRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import net.minecraft.client.Minecraft;
@@ -20,6 +22,12 @@ public class BubbleEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new BubbleRenderer(this));
     }
 
     @Override

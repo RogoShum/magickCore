@@ -3,14 +3,11 @@ package com.rogoshum.magickcore.entity.base;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.magick.Color;
 import com.rogoshum.magickcore.magick.MagickElement;
-import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
-import com.rogoshum.magickcore.client.VectorHitReaction;
-import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,6 +20,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -350,5 +348,10 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     @Override
     public Color getColor() {
         return this.spellContext().element.color();
+    }
+
+    @Override
+    public AxisAlignedBB boundingBox() {
+        return getBoundingBox();
     }
 }

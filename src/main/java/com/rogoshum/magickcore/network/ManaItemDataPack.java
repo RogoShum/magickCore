@@ -1,12 +1,7 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.magick.ManaData;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;

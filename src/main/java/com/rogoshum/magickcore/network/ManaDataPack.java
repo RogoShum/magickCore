@@ -1,10 +1,7 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.api.ISpellContext;
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.magick.ManaData;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.magick.context.SpellContext;
-import com.rogoshum.magickcore.registry.MagickRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,7 +9,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ManaDataPack extends EntityPack{

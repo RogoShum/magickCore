@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.api.ISpellContext;
-import com.rogoshum.magickcore.api.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.lib.LibEntityData;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.registry.MagickRegistry;

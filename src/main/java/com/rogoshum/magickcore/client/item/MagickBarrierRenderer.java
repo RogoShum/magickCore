@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.block.tileentity.MagickBarrierTileEntity;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.init.ModBlocks;
 import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.block.BlockState;

@@ -27,6 +27,7 @@ public class LibItem {
     public static final String STASIS = "stasis";
     public static final String WITHER = "wither";
     public static final String TAKEN = "taken";
+    public static final String AIR = "air";
     public static final String MANA_ENERGY = "mana_energy";
 
     public static final String ELEMENT = MagickCore.MOD_ID + ".description.element";

@@ -1,10 +1,12 @@
 package com.rogoshum.magickcore.magick;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaMob;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -35,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -70,7 +71,7 @@ public class MagickReleaseHelper {
     }
 
     public static EntityEvents.MagickPreReleaseEvent preReleaseMagickEvent(MagickContext context) {
-        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.consumeMana ? manaNeed(context) : 0);
+        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.noCost ? manaNeed(context) : 0);
         MinecraftForge.EVENT_BUS.post(event);
         return event;
     }
@@ -154,6 +155,9 @@ public class MagickReleaseHelper {
             spellContext.spellContext().element(element);
         }
 
+        if(pro instanceof ManaProjectileEntity)
+            ((ManaProjectileEntity) pro).reSize();
+
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             pro.setPosition(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
@@ -161,9 +165,9 @@ public class MagickReleaseHelper {
             pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + pro.getEyeHeight(), context.projectile.getPosZ());
         } else if(context.caster != null) {
             if(pro instanceof ProjectileEntity)
-                pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * 1.5,
-                        context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * 1.5,
-                        context.caster.getPosZ() + context.caster.getLookVec().z * 1.5);
+                pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * (1.25 + pro.getWidth() * 0.5),
+                        context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * (1.25 + pro.getHeight() * 0.5),
+                        context.caster.getPosZ() + context.caster.getLookVec().z * (1.25 + pro.getWidth() * 0.5));
             else
                 pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + context.caster.getHeight() / 2, context.caster.getPosZ());
         }
@@ -182,6 +186,8 @@ public class MagickReleaseHelper {
             else
                 ((ProjectileEntity)pro).shoot(context.caster.getLookVec().x, context.caster.getLookVec().y, context.caster.getLookVec().z, getVelocity(pro), getInaccuracy(pro));
         }
+        if(pro instanceof IManaEntity)
+            ((IManaEntity) pro).beforeJoinWorld(context);
 
         context.world.addEntity(pro);
         return true;

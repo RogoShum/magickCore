@@ -2,11 +2,10 @@ package com.rogoshum.magickcore.network;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumParticleType;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;

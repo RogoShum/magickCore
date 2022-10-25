@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.block.tileentity;
 
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
 import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
 import com.rogoshum.magickcore.event.RenderEvent;
@@ -145,10 +145,6 @@ public class MagickBarrierTileEntity extends CanSeeTileEntity implements ITickab
                 MagickReleaseHelper.releaseMagick(context);
             }
         }));
-
-        if (this.world.isRemote && !RenderEvent.isTileEntityActivated(this)) {
-            RenderEvent.activeTileEntityRender(this);
-        }
 
         this.mana -= REQUIRE;
     }

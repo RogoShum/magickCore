@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntity {
+public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntity{
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ascendant_realm.png");
     public AscendantRealmEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -42,33 +42,31 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
         }
     }
 
-    protected void applyParticle()
-    {
-        if(this.world.isRemote() && this.spellContext().element != null)
-        {
-            for(int i = 0; i < 5; ++i) {
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                        , 0.15f, 0.15f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2);
-                MagickCore.addMagickParticle(par);
-            }
-            for(int i = 0; i < 1; ++i) {
-                LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY()
-                        , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                        , this.rand.nextFloat(), this.rand.nextFloat(), 0.3f + 0.3f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
-                litPar.setGlow();
-                litPar.setParticleGravity(0f);
-                litPar.setShakeLimit(35.0f);
-                litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.1);
-                MagickCore.addMagickParticle(litPar);
-            }
+    protected void applyParticle() {
+        double width = this.getWidth() * 0.5;
+        double height = this.getHeight() * 0.5;
+        for(int i = 0; i < 1; ++i) {
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getPosX()
+                    , MagickCore.getNegativeToOne() * height + this.getPosY() + this.getHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * width + this.getPosZ())
+                    , 0.15f, 0.15f, 1.0f, 60, this.spellContext().element.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2);
+            MagickCore.addMagickParticle(par);
+        }
+        for(int i = 0; i < 1; ++i) {
+            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getPosX()
+                    , MagickCore.getNegativeToOne() * height + this.getPosY() + this.getHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * width + this.getPosZ())
+                    , this.rand.nextFloat(), this.rand.nextFloat(), 0.7f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.setShakeLimit(15.0f);
+            litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.1);
+            MagickCore.addMagickParticle(litPar);
         }
     }
 
@@ -82,9 +80,9 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
                 continue;
             TakenEntityData state = ExtraDataHelper.takenEntityData(living);
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
-                MagickContext context = new MagickContext(this.world).saveMana().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.HIT_ENTITY);
+                MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(this.world).saveMana().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.ATTACK);
+                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.ATTACK);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }
@@ -98,5 +96,10 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(1), predicate);
+    }
+
+    @Override
+    public float getSourceLight() {
+        return -15f;
     }
 }

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.registry.elementmap;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.ElementEvent;
 import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.magick.context.MagickContext;

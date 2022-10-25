@@ -11,4 +11,5 @@ public class LibElements {
     public static final String STASIS = "stasis";
     public static final String WITHER = "wither";
     public static final String TAKEN = "taken";
+    public static final String AIR = "air";
 }

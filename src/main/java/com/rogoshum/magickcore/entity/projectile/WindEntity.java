@@ -1,15 +1,14 @@
 package com.rogoshum.magickcore.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.enums.EnumTargetType;
-import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.MagickContext;
-import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.magick.context.child.PositionContext;
 import net.minecraft.block.BlockState;
@@ -30,6 +29,12 @@ public class WindEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/wind.png");
     public WindEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new WindRenderer(this));
     }
 
     @Override
@@ -66,13 +71,8 @@ public class WindEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
-        BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(EnumApplyType.HIT_BLOCK).saveMana().caster(this.func_234616_v_()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
-        context.addChild(positionContext);
-        MagickReleaseHelper.releaseMagick(context);
+    public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+        return false;
     }
 
     @Override

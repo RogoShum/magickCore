@@ -3,24 +3,15 @@ package com.rogoshum.magickcore.client.item;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISpellContext;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.api.entity.IManaMob;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.particle.TrailParticle;
-import com.rogoshum.magickcore.entity.base.ManaEntity;
-import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
-import com.rogoshum.magickcore.event.RenderEvent;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.item.MagickContextItem;
 import com.rogoshum.magickcore.lib.LibContext;
-import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.magick.Color;
-import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -32,16 +23,22 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+
+import java.util.Queue;
 
 public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation TAKEN = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphere(blank);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.15f, ModElements.ORIGIN_COLOR, RenderHelper.halfLight);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_1 = RenderHelper.drawSphere(12, RENDER_CONTEXT_1 , RenderHelper.EmptyVertexContext);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_0 = RenderHelper.drawSphere(12, RENDER_CONTEXT_0 , RenderHelper.EmptyVertexContext);
 
     @Override
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
@@ -50,12 +47,17 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.translate(0.5, 0.5, 0.5);
         SpellContext spellContext = ExtraDataHelper.itemManaData(stack).spellContext();
         matrixStack.scale(1.1f, 1.1f, 1.1f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphere(blank)), 12, 0.1f, spellContext.element.color(), RenderHelper.halfLight);
+        matrixStack.push();
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
+                , RenderHelper.drawSphere(12, new RenderHelper.RenderContext(0.1f, spellContext.element.color(), RenderHelper.halfLight)
+                        , RenderHelper.EmptyVertexContext));
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         if(stack.getItem() instanceof MagickContextItem)
-            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphereGlow(TAKEN, 1.0f, 0)), 12, 0.5f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
+            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphere(TAKEN)), INNER_SPHERE_1);
         else
-            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphere(blank)), 12, 0.15f, ModElements.ORIGIN_COLOR, RenderHelper.halfLight);
+            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0), INNER_SPHERE_0);
+        matrixStack.pop();
 
         //tick
         int tick = spellContext.tick;
@@ -135,8 +137,9 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.push();
         matrixStack.scale(scale, scale, scale);
         RenderHelper.renderSphere(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer()
-                , RenderHelper.getTexedSphereGlow(blank, 1f, 0f))
-                , 4, alpha, color, combinedLight);
+                , RENDER_TYPE_1)
+                , RenderHelper.drawSphere(4, new RenderHelper.RenderContext(alpha, color, combinedLight)
+                        , RenderHelper.EmptyVertexContext));
         matrixStack.pop();
         scale = 1.5f;
         matrixStack.scale(scale, scale, scale);

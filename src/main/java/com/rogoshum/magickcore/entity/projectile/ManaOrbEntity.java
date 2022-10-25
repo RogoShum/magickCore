@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaOrbRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaStarRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.lib.LibShaders;
@@ -19,6 +21,12 @@ public class ManaOrbEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ManaOrbRenderer(this));
     }
 
     @Override

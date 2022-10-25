@@ -35,6 +35,7 @@ public class FakeFluidBlock extends FlowingFluidBlock implements ILightingBlock 
     }
 
     public BlockState withLightAndFluid(int light, int fluid) {
+        light = Math.min(Math.max(light, 0), 15);
         return this.getDefaultState().with(LIGHT_LEVEL, light).with(LEVEL, fluid);
     }
 

@@ -1,7 +1,5 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IMaterialLimit;
-import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.lib.LibMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

@@ -1,19 +1,16 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.api.IMaterialLimit;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IMaterialLimit;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModItems;
-import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.magick.materials.Material;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -21,12 +18,8 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ManaEnergyItem extends ManaItem implements IManaMaterial {

@@ -58,7 +58,7 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
     }
 
     public BlockState withLight(int level) {
-        level = Math.min(level, 15);
+        level = Math.min(Math.max(level, 0), 15);
         return this.getDefaultState().with(LIGHT_LEVEL, level);
     }
 

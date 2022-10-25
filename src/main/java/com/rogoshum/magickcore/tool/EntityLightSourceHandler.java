@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.tool;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.block.tileentity.GlowAirTileEntity;
+import com.rogoshum.magickcore.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.entity.superentity.AscendantRealmEntity;
 import com.rogoshum.magickcore.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -83,7 +86,7 @@ public class EntityLightSourceHandler {
     }
 
     public static void addLightSource(ILightSourceEntity entity) {
-        if (!lightList.contains(entity) && entity.getSourceLight() > 0) {
+        if (!lightList.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
             lightList.add(entity);
         }
     }

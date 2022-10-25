@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IExistTick;
-import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
@@ -12,7 +11,6 @@ import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.magick.context.child.TraceContext;
 import net.minecraft.block.BlockState;
@@ -21,13 +19,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -111,7 +106,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
         BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
         blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(EnumApplyType.HIT_BLOCK).saveMana().caster(this.func_234616_v_()).projectile(this);
+        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(EnumApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(context);

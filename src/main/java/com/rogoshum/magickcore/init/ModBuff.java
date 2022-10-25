@@ -1,8 +1,7 @@
 package com.rogoshum.magickcore.init;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.buff.ManaBuff;
+import com.rogoshum.magickcore.client.buff.ManaBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibEntityData;

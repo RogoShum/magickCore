@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.*;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.init.ModItems;
@@ -15,16 +18,14 @@ import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.tool.ParticleHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -35,10 +36,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ContextPointerEntity extends ManaPointEntity implements IManaCapacity {
+public class ContextPointerEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/context_pointer.png");
     private final List<PosItem> stacks = Collections.synchronizedList(new ArrayList<>());
-    private final List<Entity> suppliers = Util.make(ArrayList::new);
     private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
     private final SpellContext spellContext = SpellContext.create();
 
@@ -46,6 +46,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
     public ContextPointerEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ContextPointerRenderer(this));
     }
 
     @Override
@@ -64,9 +70,6 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
 
     @Override
     public void releaseMagick() {
-        suppliers.clear();
-        List<Entity> manaCapacityEntities = this.world.getEntitiesWithinAABB(Entity.class, this.getBoundingBox().grow(16), (entity) -> entity instanceof IManaCapacity && entity != this);
-        suppliers.addAll(manaCapacityEntities);
         List<Entity> items = this.findEntity((entity -> entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem));
         //items = new ArrayList<>();
         items.forEach(entity -> {
@@ -113,17 +116,25 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
     }
 
     @Override
+    public boolean canBeAttackedWithItem() {
+        return true;
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if(!world.isRemote && source.getTrueSource() instanceof LivingEntity) {
+            damageEntity();
+            return true;
+        }
+        else
+            return false;
+    }
+
+    @Override
     protected void doClientTask() {
         //MagickCore.LOGGER.debug(suppliers);
         super.doClientTask();
         stacks.forEach(PosItem::tick);
-        List<Entity> suppliers = new ArrayList<>(this.suppliers);
-        for (int i = 0; i < suppliers.size(); ++i) {
-            IManaCapacity supplier = (IManaCapacity) suppliers.get(i);
-            if(supplier.manaCapacity().getMana() > 0) {
-                this.spawnSupplierParticle((Entity) supplier);
-            }
-        }
     }
 
     @Override
@@ -219,7 +230,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
                 }
                 getStacks().clear();
             } else
-                this.remove();
+                dropItem();
             return ActionResultType.CONSUME;
         }
         return ActionResultType.PASS;
@@ -258,8 +269,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
         this.manaCapacity().serialize(compound);
     }
 
-    @Override
-    public void remove() {
+    public void dropItem() {
         if(!world.isRemote) {
             getStacks().forEach((posItem) -> {
                 Vector3d pos = posItem.pos.add(this.getPositionVec());
@@ -267,7 +277,16 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
                 world.addEntity(entity);
             });
         }
+        getStacks().clear();
+    }
 
+    @Override
+    public void remove() {
+        dropItem();
+        ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_POINTER.get(), 1);
+        ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
+        if(!this.world.isRemote)
+            world.addEntity(entity);
         super.remove();
     }
 
@@ -297,6 +316,11 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0.5, getStacks().size() + 0.5, 0.5), predicate);
+    }
+
+    @Override
+    public boolean refraction(SpellContext context) {
+        return true;
     }
 
     public static class PosItem {

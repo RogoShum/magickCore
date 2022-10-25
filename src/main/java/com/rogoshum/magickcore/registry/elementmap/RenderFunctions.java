@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.registry.elementmap;
 
-import com.rogoshum.magickcore.client.RenderParams;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.registry.ElementMap;
 
 import java.util.function.Consumer;

@@ -10,8 +10,8 @@ import net.minecraft.world.server.ServerWorld;
 import java.util.List;
 
 public class TakenTargetHelper {
-    public static LivingEntity getTakenTarget(Entity mob, double range)
-    {
+    public static LivingEntity getTakenTarget(Entity mob, double range) {
+        if(mob.ticksExisted % 5 != 0) return null;
         List<Entity> list = mob.world.getEntitiesWithinAABBExcludingEntity(mob, mob.getBoundingBox().grow(range));
         if(!mob.world.isRemote) {
             TakenEntityData state = ExtraDataHelper.takenEntityData(mob);
@@ -40,8 +40,7 @@ public class TakenTargetHelper {
 
     public static LivingEntity decideChangeTarget(Entity taken, LivingEntity host, LivingEntity target, double range)
     {
-        if(host != null)
-        {
+        if(host != null) {
             LivingEntity newTarget = target;
             if(host.getUniqueID().equals(target.getUniqueID()))
                 newTarget = TakenTargetHelper.getTakenTarget(taken, range);

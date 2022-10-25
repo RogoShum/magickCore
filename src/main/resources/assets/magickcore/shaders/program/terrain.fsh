@@ -4,10 +4,12 @@ varying vec3 position;
 varying vec4 lcolor;
 varying float intens;
 varying float dist2Obj;
+varying float darkElement;
 
 uniform vec3 worldTint;
 uniform float worldTintIntensity;
 uniform float saturation;
+uniform float negative;
 
 uniform sampler2D sampler;
 uniform sampler2D lightmap;
@@ -31,9 +33,14 @@ void main()
     lightdark = clamp(lightdark, 0.0f, 1.0f);
     vec3 lcolor_2 = clamp(lcolor.rgb * intens, 0.0f, 1.0f);
     if (vanillaTracing == 1) lcolor_2 = lcolor_2 * pow(luma(lightdark), 2);
+    lcolor_2 = negative * lcolor_2.rgb;
 
-    if (colMix == 1) lightdark = lightdark + lcolor_2;//More washed-out, but more physically correct
-    else if(intens > 1.0) {
+    if(darkElement < 1.0) {
+        lightdark = vec3(min(lightdark.x, darkElement), min(lightdark.y, darkElement), min(lightdark.z, darkElement));
+        lightdark = clamp(lightdark - lcolor_2, 0.0f, 1.0f);
+    } else if (colMix == 1) {
+        lightdark = lightdark + lcolor_2;
+    } else if(intens > 1.0) {
         lightdark = lcolor_2;
     }
 

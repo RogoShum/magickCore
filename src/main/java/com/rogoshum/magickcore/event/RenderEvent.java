@@ -2,29 +2,24 @@ package com.rogoshum.magickcore.event;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.block.tileentity.CanSeeTileEntity;
-import com.rogoshum.magickcore.buff.ManaBuff;
-import com.rogoshum.magickcore.client.VertexShakerHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.layer.EasyLayerRender;
+import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaFreezeRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaTakenRenderer;
 import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
-import com.rogoshum.magickcore.lib.LibEntityData;
+import com.rogoshum.magickcore.lib.*;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.magick.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.lib.LibBuff;
-import com.rogoshum.magickcore.lib.LibElementTool;
-import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ClippingHelper;
@@ -33,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
@@ -46,75 +42,26 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.opengl.GL20;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
-    private static final List<LitParticle> particles = new ArrayList<>();
-    private static final HashMap<Class<? extends Entity>, EasyRenderer<? extends Entity>> easyRenderer = new HashMap<Class<? extends Entity>, EasyRenderer<? extends Entity>>();
-    private static final HashMap<Class<? extends Entity>, EasyLayerRender<? extends Entity>> layerRenderer = new HashMap<Class<? extends Entity>, EasyLayerRender<? extends Entity>>();
-    private static final HashMap<Class<? extends Entity>, EasyRenderer<? extends Entity>> laserRenderer = new HashMap<Class<? extends Entity>, EasyRenderer<? extends Entity>>();
-    private static final HashMap<Class<? extends TileEntity>, EasyTileRenderer<? extends TileEntity>> tileRenderer = new HashMap<Class<? extends TileEntity>, EasyTileRenderer<? extends TileEntity>>();
+    private static final HashMap<ResourceLocation, List<LitParticle>> particles = new HashMap<>();
 
     public static void addMagickParticle(LitParticle par) {
-        particles.add(par);
-        EntityLightSourceHandler.addLightSource(par);
-    }
-    public static <T extends Entity> void registerEasyRender(Class<T> clas, EasyRenderer<T> renderer) {
-        easyRenderer.put(clas, renderer);
-    }
+        if(par.getTexture() == null) return;
+        if(!particles.containsKey(par.getTexture())) {
+            particles.put(par.getTexture(), new ArrayList<>());
+        }
+        particles.get(par.getTexture()).add(par);
+        MagickCore.proxy.addRenderer(par);
 
-    public static <T extends LivingEntity> void registerLayerRender(Class<T> clas, EasyLayerRender<T> renderer) {
-        layerRenderer.put(clas, renderer);
-    }
-
-    public static <T extends Entity> void registerLaserRender(Class<T> clas, EasyRenderer<T> renderer) {
-        laserRenderer.put(clas, renderer);
-    }
-
-    public static <T extends TileEntity> void registerTileRender(Class<T> clas, EasyTileRenderer<T> renderer) {
-        tileRenderer.put(clas, renderer);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends TileEntity> EasyTileRenderer<T> getTileRenderer(T tile){
-        if(tileRenderer.containsKey(tile.getClass()))
-            return (EasyTileRenderer<T>) tileRenderer.get(tile.getClass());
-        return null;
+        //EntityLightSourceHandler.addLightSource(par);
     }
 
     private static final HashMap<CanSeeTileEntity, Integer> tileRenderTick = new HashMap<CanSeeTileEntity, Integer>();
-    private static final ManaFreezeRenderer freezeRender = new ManaFreezeRenderer();
-    private static final ManaTakenRenderer takenRenderer = new ManaTakenRenderer();
-
-    public static void activeTileEntityRender(CanSeeTileEntity entity)
-    {
-        tileRenderTick.put(entity, 5);
-    }
-
-    public static boolean isTileEntityActivated(TileEntity entity)
-    {
-        return entity instanceof CanSeeTileEntity && tileRenderTick.containsKey(entity);
-    }
-
-    public static void renderEasyRenderer(Entity entity, MatrixStack matrixStack) {
-        if(easyRenderer.containsKey(entity.getClass())) {
-            EasyRenderer<Entity> renderer = (EasyRenderer<Entity>) easyRenderer.get(entity.getClass());
-            matrixStack.push();
-            renderer.render(entity, matrixStack, Tessellator.getInstance().getBuffer(), 0);
-            matrixStack.pop();
-        }
-    }
-
-    public void tickTileRender(CanSeeTileEntity entity)
-    {
-            tileRenderTick.put(entity, tileRenderTick.get(entity) - 1);
-            if(tileRenderTick.get(entity) <= 0)
-                tileRenderTick.remove(entity);
-    }
 
     @SubscribeEvent
     public void onOverlayRender(RenderGameOverlayEvent event) {
@@ -133,130 +80,72 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void renderMagick(RenderWorldLastEvent event) {
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(event.getContext(), event.getMatrixStack(), event.getPartialTicks(), event.getProjectionMatrix()));
-    }
-
-    @SuppressWarnings("unchecked")
-    @SubscribeEvent
-    public void renderTileEntity(RenderWorldEvent.RenderMagickEvent event) {
+    public void renderEntity(RenderWorldEvent.RenderMagickEvent event) {
         MatrixStack matrixStackIn = event.getMatrixStack();
-        IRenderTypeBuffer.Impl bufferIn = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        for(TileEntity entity : Minecraft.getInstance().world.loadedTileEntityList) {
-            if(isTileEntityActivated(entity) && tileRenderer.containsKey(entity.getClass())) {
-                EasyTileRenderer<TileEntity> renderer = (EasyTileRenderer<TileEntity>) tileRenderer.get(entity.getClass());
-                renderer.preRender(entity, matrixStackIn, bufferIn, event.getPartialTicks());
-                tickTileRender((CanSeeTileEntity) entity);
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+
+        HashMap<RenderMode, Queue<Consumer<RenderParams>>> renderer = MagickCore.proxy.getGlFunction();
+        RenderParams renderParams = new RenderParams();
+        renderParams.matrixStack(matrixStackIn);
+        renderParams.buffer(builder);
+        renderParams.partialTicks(event.getPartialTicks());
+        for (RenderMode bufferMode : renderer.keySet()) {
+            matrixStackIn.push();
+            if (bufferMode.originRender) {
+                Queue<Consumer<RenderParams>> render = renderer.get(bufferMode);
+                Iterator<Consumer<RenderParams>> it = render.iterator();
+                while (it.hasNext()) {
+                    Consumer<RenderParams> consumer = it.next();
+                    matrixStackIn.push();
+                    consumer.accept(renderParams);
+                    matrixStackIn.pop();
+                }
+            } else {
+                BufferContext context = BufferContext.create(matrixStackIn, builder, bufferMode.renderType);
+                if (bufferMode.useShader != null && !bufferMode.useShader.isEmpty())
+                    context.useShader(bufferMode.useShader);
+
+                RenderHelper.setup(context);
+                RenderHelper.begin(context);
+                RenderHelper.queueMode = true;
+
+                Queue<Consumer<RenderParams>> render = renderer.get(bufferMode);
+                Iterator<Consumer<RenderParams>> it = render.iterator();
+                while (it.hasNext()) {
+                    Consumer<RenderParams> consumer = it.next();
+                    matrixStackIn.push();
+                    consumer.accept(renderParams);
+                    matrixStackIn.pop();
+                }
+
+                RenderHelper.queueMode = false;
+                RenderHelper.finish(context);
+                RenderHelper.end(context);
             }
+            matrixStackIn.pop();
         }
-    }
 
-    @SubscribeEvent
-    public void renderParticle(RenderWorldEvent.RenderMagickEvent event) {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        BufferBuilder bufferIn = Tessellator.getInstance().getBuffer();
-
-        Vector3d vector3d = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        double d0 = vector3d.getX();
-        double d1 = vector3d.getY();
-        double d2 = vector3d.getZ();
+        double d0 = vec.getX();
+        double d1 = vec.getY();
+        double d2 = vec.getZ();
         Matrix4f matrix4f = event.getMatrixStack().getLast().getMatrix();
 
         ClippingHelper clippinghelper = new ClippingHelper(matrix4f, event.getProjectionMatrix());
         clippinghelper.setCameraPosition(d0, d1, d2);
-
-        for (int i = 0; i < particles.size(); ++i) {
-            LitParticle particle = particles.get(i);
-            if(particle == null || particle.isDead()) continue;
-            if (isInRangeToRender3d(particles.get(i), vec.x, vec.y, vec.z) && particle.shouldRender(clippinghelper))
-                particle.render(event.getMatrixStack(), bufferIn);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static boolean isInRangeToRender3d(LitParticle par, double x, double y, double z) {
-        double d0 = par.getPosX() - x;
-        double d1 = par.getPosY() - y;
-        double d2 = par.getPosZ() - z;
-        double d3 = d0 * d0 + d1 * d1 + d2 * d2;
-        return isInRangeToRenderDist(par, d3);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static boolean isInRangeToRenderDist(LitParticle par, double distance) {
-        double d0 = par.getBoundingBox().getAverageEdgeLength();
-        if (Double.isNaN(d0)) {
-            d0 = 1.0D;
-        }
-        if(d0 < 0.7)
-            d0 = 0.7;
-        d0 = d0 * 64.0D;
-        return distance < d0 * d0;
+        MagickCore.proxy.setClippingHelper(clippinghelper);
+        MagickCore.proxy.updateRenderer();
     }
 
     @SubscribeEvent
-    public void cancelFreezeEntity(RenderLivingEvent.Pre event) {
-        AtomicBoolean hasTaken = new AtomicBoolean(false);
-        ExtraDataHelper.entityData(event.getEntity()).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
-            if(data.getBuffList().containsKey(LibBuff.FREEZE)) {
-                event.setCanceled(true);
-                freezeRender.render(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), 0);
-            }
-            if(data.getBuffList().containsKey(LibBuff.TAKEN))
-                hasTaken.set(true);
-        });
-
-        ExtraDataHelper.entityData(event.getEntity()).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, (data) -> {
-            if(hasTaken.get() && !data.getOwnerUUID().equals(MagickCore.emptyUUID)
-                    && !data.getOwnerUUID().equals(event.getEntity().getUniqueID())) {
-                event.setCanceled(true);
-                takenRenderer.render(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), event.getPartialRenderTick());
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    @SubscribeEvent
-    public void renderEntityLayer(RenderLivingEvent.Post event)
-    {
-        if(layerRenderer.containsKey(event.getEntity().getClass())) {
-            easyRender(event.getEntity(), layerRenderer, event.getMatrixStack(), event.getPartialRenderTick());
-        }
-        EasyLayerRender<LivingEntity>  renderer = (EasyLayerRender<LivingEntity>) layerRenderer.get(LivingEntity.class);
-        renderer.preRender(event.getEntity(), event.getRenderer(), event.getMatrixStack(), event.getBuffers(), event.getPartialRenderTick());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <R extends EasyRenderer<? extends Entity>> void easyRender(Entity entity, HashMap<Class<? extends Entity>, R> rendererHashMap, MatrixStack matrixStackIn, float partialTicks) {
-        EasyRenderer<Entity> renderer = (EasyRenderer<Entity>) rendererHashMap.get(entity.getClass());
-        renderer.preRender(entity, matrixStackIn, Tessellator.getInstance().getBuffer(), partialTicks);
+    public void addRenderer(EntityEvents.EntityAddedToWorldEvent event) {
+        if(event.getEntity() instanceof LivingEntity)
+            MagickCore.proxy.addRenderer(new ElementShieldRenderer((LivingEntity) event.getEntity()));
     }
 
     @SubscribeEvent
-    public void renderEntity(RenderWorldEvent.RenderMagickEvent event) {
-        MatrixStack matrixStackIn = event.getMatrixStack();
-
-        for(Entity entity : Minecraft.getInstance().world.getAllEntities()) {
-            if(entity instanceof IManaEntity && !Minecraft.getInstance().isGamePaused()) {
-                ((IManaEntity) entity).renderFrame(event.getPartialTicks());
-            }
-            if(easyRenderer.containsKey(entity.getClass())) {
-                easyRender(entity, easyRenderer, matrixStackIn, event.getPartialTicks());
-            }
-
-            if(laserRenderer.containsKey(entity.getClass())) {
-                easyRender(entity, laserRenderer, matrixStackIn, event.getPartialTicks());
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onItemDescription(ItemTooltipEvent event)
-    {
-        if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(LibElementTool.TOOL_ELEMENT))
-        {
+    public void onItemDescription(ItemTooltipEvent event) {
+        if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(LibElementTool.TOOL_ELEMENT)) {
             CompoundNBT tag = NBTTagHelper.getToolElementTable(event.getItemStack());
             if(tag.keySet().size() > 0) {
                 event.getToolTip().add((new StringTextComponent("")));
@@ -264,8 +153,7 @@ public class RenderEvent {
             }
             Iterator<String> keys = tag.keySet().iterator();
 
-            while (keys.hasNext())
-            {
+            while (keys.hasNext()) {
                 String element = keys.next();
                 int duration = tag.getInt(element);
                 event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_ATTRIBUTE + element)).appendString(" ").append((new TranslationTextComponent(LibElementTool.TOOL_DURATION).appendString(" " + Integer.toString(duration)))));
@@ -275,28 +163,32 @@ public class RenderEvent {
 
     public static void tickParticle() {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        for(int i = 0; i < particles.size(); ++i) {
-            LitParticle par = particles.get(i);
-            if(par != null) {
-                if(isInRangeToRender3d(par, vec.x, vec.y, vec.z))
-                    par.tick();
+        for (ResourceLocation res : particles.keySet()) {
+            List<LitParticle> litParticles = particles.get(res);
+            for(int i = 0; i < litParticles.size(); ++i) {
+                LitParticle par = litParticles.get(i);
+                if(par != null) {
+                    if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
+                        par.tick();
+                    else
+                        par.easyTick();
+                    if (par.isDead())
+                        litParticles.remove(par);
+                }
                 else
-                    par.easyTick();
-                if (par.isDead())
-                    particles.remove(par);
+                    litParticles.remove(i);
             }
-            else
-                particles.remove(i);
         }
     }
 
     public static void clearParticle() {
-        particles.clear();
+        particles.values().forEach(List::clear);
     }
 
     @SubscribeEvent
     public void onClientEntityUpdate(EntityEvents.EntityUpdateEvent event) {
         Entity entity = event.getEntity();
+        if(!entity.world.isRemote) return;
         ExtraDataHelper.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
             for (ManaBuff buff : data.getBuffList().values()) {
                 if(buff.isBeneficial())
@@ -306,6 +198,26 @@ public class RenderEvent {
             }
             if(entity instanceof AnimalEntity && data.getElement().type() != LibElements.ORIGIN) {
                 applyAnimalParticle(entity, data.getElement().getRenderer(), Minecraft.getInstance().world);
+            }
+
+            float value = data.getElementShieldMana();
+            if(value > 0) {
+                float alpha = value / ((LivingEntity)entity).getMaxHealth();
+
+                if(value > ((LivingEntity)entity).getMaxHealth())
+                    alpha = 1.0f;
+                alpha *= 0.8f;
+                LitParticle par = new LitParticle(entity.world, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_" + Integer.toString(MagickCore.rand.nextInt(5)) + ".png")
+                        , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosX()
+                        , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() / 2
+                        , MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosZ())
+                        , entity.getWidth() * 2, entity.getWidth() * 2, alpha, 60, data.getElement().getRenderer());
+                par.setGlow();
+                par.setParticleGravity(0);
+                par.setShakeLimit(5f);
+                par.useShader(LibShaders.opacity);
+                par.setLimitScale();
+                MagickCore.addMagickParticle(par);
             }
         });
     }

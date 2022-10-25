@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.LeafRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaStarRenderer;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
@@ -16,6 +18,12 @@ public class LeafEntity extends ManaProjectileEntity {
     public LeafEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
         this.dataManager.register(NUMBER, rand.nextInt(3));
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new LeafRenderer(this));
     }
 
     public void setNumber(int number) {

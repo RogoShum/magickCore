@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.lib.LibMaterial;
 
 public class ThunderMaterial extends Material {

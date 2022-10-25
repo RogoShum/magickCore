@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.init.ModShaders;
 import net.minecraft.client.MainWindow;
@@ -92,6 +93,10 @@ public class ShaderEvent {
 
     @SubscribeEvent
     public void onSetupShaders(RenderWorldEvent.PreRenderMagickEvent event) {
+        if(Minecraft.isFabulousGraphicsEnabled()) {
+            RenderSystem.popMatrix();
+        }
+        if(RenderHelper.disableShaders) return;
         Minecraft mc = Minecraft.getInstance();
 
         MainWindow mainWindow = mc.getMainWindow();
@@ -107,11 +112,15 @@ public class ShaderEvent {
             Framebuffer framebuffer = shaderGroup.getFramebufferRaw(Objects.requireNonNull(getShaderFrameName(shader)));
             framebuffer.framebufferClear(Minecraft.IS_RUNNING_ON_MAC);
         });
-        Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+        if (Minecraft.isFabulousGraphicsEnabled()) {
+            Minecraft.getInstance().worldRenderer.func_239228_q_().bindFramebuffer(false);
+        } else
+            Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
     }
 
     @SubscribeEvent
     public void onRenderShaders(RenderWorldEvent.PostRenderMagickEvent event) {
+        if(RenderHelper.disableShaders) return;
         List<Framebuffer> renderFrame = new ArrayList<>();
         renderList.forEach( shader -> {
             ShaderGroup shaderGroup = shaders.get(shader);
@@ -121,7 +130,11 @@ public class ShaderEvent {
             renderFrame.add(framebuffer);
         });
         renderList.clear();
-        Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+
+        if (Minecraft.isFabulousGraphicsEnabled()) {
+            Minecraft.getInstance().worldRenderer.func_239228_q_().bindFramebuffer(false);
+        } else
+            Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
         MainWindow mainWindow = Minecraft.getInstance().getMainWindow();
 
         renderFrame.forEach( framebuffer -> {
@@ -132,5 +145,9 @@ public class ShaderEvent {
             RenderSystem.disableBlend();
             RenderSystem.popMatrix();
         });
+        if(Minecraft.isFabulousGraphicsEnabled()) {
+            RenderSystem.pushMatrix();
+            RenderSystem.multMatrix(event.getMatrixStack().getLast().getMatrix());
+        }
     }
 }

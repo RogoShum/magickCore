@@ -2,11 +2,12 @@ package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.client.entity.easyrender.laser.RadianceWellLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.RadianceWellRenderer;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModSounds;
@@ -37,10 +38,17 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         initial = true;
     }
 
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new RadianceWellRenderer(this));
+        MagickCore.proxy.addRenderer(new RadianceWellLaserRenderer(this));
+    }
+
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), predicate);
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0, getHeight(), 0), predicate);
     }
 
     @Override
@@ -57,8 +65,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     protected void doClientTask() {
         super.doClientTask();
-        if(this.ticksExisted % 2 == 0)
-        {
+        if(this.ticksExisted % 2 == 0) {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
             this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.06F, 0.01F));
         }

@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.tool;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModItems;

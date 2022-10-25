@@ -2,22 +2,12 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.magick.Color;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.vector.Vector3f;
 
 public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileEntity>{
     @Override
     public void render(MagickCraftingTileEntity tileEntityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+        /*
         matrixStackIn.push();
         float length = 0.7f;
         double offset = 0.3;
@@ -69,5 +59,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
             IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tileEntityIn.getMainItem(), tileEntityIn.getWorld(), (LivingEntity) null);
             Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getMainItem(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
+
+         */
     }
 }

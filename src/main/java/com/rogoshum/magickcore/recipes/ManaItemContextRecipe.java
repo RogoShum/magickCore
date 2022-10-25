@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.recipes;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaContextItem;
+import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModRecipes;
 import com.rogoshum.magickcore.item.MagickContextItem;

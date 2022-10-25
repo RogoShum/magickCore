@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.entity.pointed.*;
 import com.rogoshum.magickcore.entity.projectile.*;
 import com.rogoshum.magickcore.entity.radiated.*;
@@ -25,7 +26,6 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<ManaStarEntity>> mana_star = Entities.register(LibEntities.MANA_STAR, () -> EntityType.Builder.create(ManaStarEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.MANA_STAR));
 	public static final RegistryObject<EntityType<ManaLaserEntity>> mana_laser = Entities.register(LibEntities.MANA_LASER, () -> EntityType.Builder.create(ManaLaserEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.MANA_LASER));
 	public static final RegistryObject<EntityType<DawnWardEntity>> mana_shield = Entities.register(LibEntities.MANA_SHIELD, () -> EntityType.Builder.<DawnWardEntity>create(DawnWardEntity::new, EntityClassification.MISC).size(8f, 8f).build(LibEntities.MANA_SHIELD));
-	public static final RegistryObject<EntityType<ManaRiftEntity>> mana_rift = Entities.register(LibEntities.MANA_RIFT, () -> EntityType.Builder.create(ManaRiftEntity::new, EntityClassification.MISC).size(5.0f, 2.0f).build(LibEntities.MANA_RIFT));
 	public static final RegistryObject<EntityType<ManaSphereEntity>> mana_sphere = Entities.register(LibEntities.MANA_SPHERE, () -> EntityType.Builder.create(ManaSphereEntity::new, EntityClassification.MISC).size(2.2f, 2.2f).build(LibEntities.MANA_SPHERE));
 	public static final RegistryObject<EntityType<RadianceWellEntity>> radiance_wall = Entities.register(LibEntities.RADIANCE_WALL, () -> EntityType.Builder.create(RadianceWellEntity::new, EntityClassification.MISC).size(9.0f, 2.0f).build(LibEntities.RADIANCE_WALL));
 	public static final RegistryObject<EntityType<ChaoReachEntity>> chaos_reach = Entities.register(LibEntities.CHAOS_REACH, () -> EntityType.Builder.create(ChaoReachEntity::new, EntityClassification.MISC).size(2.0f, 2.0f).build(LibEntities.CHAOS_REACH));
@@ -53,7 +53,8 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<RedStoneEntity>> red_stone = Entities.register(LibEntities.RED_STONE, () -> EntityType.Builder.create(RedStoneEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.RED_STONE));
 	public static final RegistryObject<EntityType<ShadowEntity>> shadow = Entities.register(LibEntities.SHADOW, () -> EntityType.Builder.create(ShadowEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.SHADOW));
 	public static final RegistryObject<EntityType<WindEntity>> wind = Entities.register(LibEntities.WIND, () -> EntityType.Builder.create(WindEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.WIND));
-	public static final RegistryObject<EntityType<GravityLiftEntity>> gravity_lift = Entities.register(LibEntities.GRAVITY_LIFT, () -> EntityType.Builder.create(GravityLiftEntity::new, EntityClassification.MISC).size(1.0f, 2.0f).build(LibEntities.GRAVITY_LIFT));
+	public static final RegistryObject<EntityType<GravityLiftEntity>> gravity_lift = Entities.register(LibEntities.GRAVITY_LIFT, () -> EntityType.Builder.create(GravityLiftEntity::new, EntityClassification.MISC).size(1.0f, 1.0f).build(LibEntities.GRAVITY_LIFT));
+	public static final RegistryObject<EntityType<PlaceableItemEntity>> placeable_entity = Entities.register(LibEntities.PLACEABLE_ENTITY, () -> EntityType.Builder.create(PlaceableItemEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.PLACEABLE_ENTITY));
 
 	@SubscribeEvent
     public void setupAttributes(FMLCommonSetupEvent event) {

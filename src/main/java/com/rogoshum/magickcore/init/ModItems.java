@@ -1,15 +1,16 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.MagickBarrierRenderer;
-import com.rogoshum.magickcore.client.item.MagickRepeaterItemStackTileEntityRenderer;
+import com.rogoshum.magickcore.client.item.SpiritWoodStickRenderer;
 import com.rogoshum.magickcore.item.*;
 
+import com.rogoshum.magickcore.item.placeable.ContextPointerItem;
+import com.rogoshum.magickcore.item.placeable.ManaCapacityItem;
+import com.rogoshum.magickcore.item.placeable.PlaceableEntityItem;
+import com.rogoshum.magickcore.item.placeable.SpiritCrystalItem;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.lib.LibMaterial;
-import com.rogoshum.magickcore.magick.lifestate.repeater.*;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
@@ -43,6 +44,7 @@ public class ModItems {
     public static final RegistryObject<Item> stasis = ITEMS.register(LibItem.STASIS, () -> new ElementItem(LibElements.STASIS));
     public static final RegistryObject<Item> wither = ITEMS.register(LibItem.WITHER, () -> new ElementItem(LibElements.WITHER));
     public static final RegistryObject<Item> taken = ITEMS.register(LibItem.TAKEN, () -> new ElementItem(LibElements.TAKEN));
+    public static final RegistryObject<Item> AIR = ITEMS.register(LibItem.AIR, () -> new ElementItem(LibElements.AIR));
 
     //material
     public static final RegistryObject<Item> mana_spider_eye = ITEMS.register("mana_spider_eye", ManaFermentedSpiderEyeItem::new);
@@ -54,6 +56,8 @@ public class ModItems {
     public static final RegistryObject<Item> mana_nether_wart = ITEMS.register("mana_nether_wart", ManaNetherWartItem::new);
 
     //public static final RegistryObject<Item> magick_crafting = ITEMS.register("magick_crafting", MagickCraftingItem::new);
+    public static final RegistryObject<PlaceableEntityItem> spirit_crystal = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
+    public static final RegistryObject<PlaceableEntityItem> spirit_wood_stick = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties().setISTER(() -> SpiritWoodStickRenderer::new), 0.4f, 0.4f));
     public static final RegistryObject<Item> magick_container = ITEMS.register("magick_container", ManaCapacityItem::new);
     public static final RegistryObject<Item> element_crystal_seeds = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.element_crystal.get(), BaseItem.properties().maxStackSize(32)));
     //public static final RegistryObject<Item> magick_barrier = ITEMS.register("magick_barrier", () -> new BlockItem(ModBlocks.magick_barrier.get(), BaseItem.properties().setISTER(() -> MagickBarrierRenderer::new)));

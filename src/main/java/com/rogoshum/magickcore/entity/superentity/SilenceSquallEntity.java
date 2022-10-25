@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.SilenceSqualRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
@@ -27,6 +28,12 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new SilenceSqualRenderer(this));
+    }
+
+    @Override
     protected void makeSound() {
         if(this.ticksExisted == 1)
         {
@@ -43,48 +50,44 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
     }
 
-    protected void applyParticle()
-    {
-        if(this.world.isRemote() && this.spellContext().element != null)
-        {
-            for(int i = 0; i < 5; ++i) {
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
-                        , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f + 0.4f * this.rand.nextFloat(), 300, this.spellContext().element.getRenderer());
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setTraceTarget(this);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005);
-                MagickCore.addMagickParticle(par);
-            }
+    protected void applyParticle() {
+        for(int i = 0; i < 3; ++i) {
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
+                    , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f, 50, this.spellContext().element.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setTraceTarget(this);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005);
+            MagickCore.addMagickParticle(par);
+        }
 
-            for(int i = 0; i < 5; ++i) {
-                LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getTrailTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
-                        , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 300, this.spellContext().element.getRenderer());
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setTraceTarget(this);
-                par.addMotion(MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005);
-                MagickCore.addMagickParticle(par);
-            }
+        for(int i = 0; i < 3; ++i) {
+            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getTrailTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
+                    , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 100, this.spellContext().element.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setTraceTarget(this);
+            par.addMotion(MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005, MagickCore.getNegativeToOne() * 0.005);
+            MagickCore.addMagickParticle(par);
+        }
 
-            for(int i = 0; i < 1; ++i) {
-                LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * 8 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * 6 + this.getPosY() + this.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * 8 + this.getPosZ())
-                        , this.rand.nextFloat() * this.getWidth() * 1.5f, this.rand.nextFloat() * this.getWidth() * 1.5f, 0.3f + 0.2f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
-                litPar.setGlow();
-                litPar.setParticleGravity(0f);
-                litPar.setShakeLimit(15.0f);
-                litPar.addMotion(MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15);
-                MagickCore.addMagickParticle(litPar);
-            }
+        for(int i = 0; i < 1; ++i) {
+            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 8 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * 6 + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * 8 + this.getPosZ())
+                    , this.rand.nextFloat() * this.getWidth() * 1.5f, this.rand.nextFloat() * this.getWidth() * 1.5f, 0.3f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.setShakeLimit(15.0f);
+            litPar.addMotion(MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15);
+            MagickCore.addMagickParticle(litPar);
         }
     }
 
@@ -105,14 +108,14 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                 if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
                     cloest = entity;
                 if(this.getDistance(entity) <= 9.5) {
-                    MagickContext context = new MagickContext(this.world).saveMana().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(4f).applyType(EnumApplyType.HIT_ENTITY);
+                    MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(4f).applyType(EnumApplyType.HIT_ENTITY);
                     MagickReleaseHelper.releaseMagick(context);
                 }
                 if(this.getDistance(entity) <= 3) {
-                    MagickContext context = new MagickContext(this.world).saveMana().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(1f).applyType(EnumApplyType.DE_BUFF);
+                    MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(1f).applyType(EnumApplyType.DE_BUFF);
                     MagickReleaseHelper.releaseMagick(context);
                     if(this.ticksExisted % 20 == 0) {
-                        context = new MagickContext(this.world).saveMana().caster(this.getOwner()).projectile(this).victim(entity).tick(20).force(1f).applyType(EnumApplyType.ATTACK);
+                        context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(20).force(1f).applyType(EnumApplyType.ATTACK);
                         MagickReleaseHelper.releaseMagick(context);
                         entity.hurtResistantTime = 0;
                     }

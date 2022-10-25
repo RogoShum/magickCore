@@ -1,21 +1,16 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaContextItem;
+import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.MagickElement;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.magick.ManaData;
-import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-
-import java.util.UUID;
 
 public class StaffItem extends ManaItem implements IManaContextItem {
     public StaffItem() {

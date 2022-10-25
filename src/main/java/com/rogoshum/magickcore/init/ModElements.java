@@ -23,6 +23,8 @@ public class ModElements {
     public static final Color WITHER_COLOR = Color.create(0.3f, 0.7f, 0.2f);
     public static final Color TAKEN_COLOR = Color.create(0.5f, 0.5f, 0.5f);
 
+    public static final Color AIR_COLOR = Color.create(0.8f, 0.8f, 1.0f);
+
     public static final MagickElement ORIGIN = new MagickElement(LibElements.ORIGIN, ORIGIN_COLOR, DamageSource.MAGIC);
 
     private static final MagickElement SOLAR = new MagickElement(LibElements.SOLAR, SOLAR_COLOR, ModDamage.getSolarDamage());
@@ -32,6 +34,7 @@ public class ModElements {
     private static final MagickElement STASIS = new MagickElement(LibElements.STASIS, STASIS_COLOR, ModDamage.getStasisDamage());
     private static final MagickElement WITHER = new MagickElement(LibElements.WITHER, WITHER_COLOR, ModDamage.getWitherDamage());
     private static final MagickElement TAKEN = new MagickElement(LibElements.TAKEN, TAKEN_COLOR, ModDamage.getTakenDamage());
+    private static final MagickElement AIR = new MagickElement(LibElements.AIR, AIR_COLOR, ModDamage.getTakenDamage());
 
     public static final List<String> elements = new ArrayList<>();
 
@@ -44,6 +47,7 @@ public class ModElements {
         elements.register(STASIS.type(), STASIS);
         elements.register(WITHER.type(), WITHER);
         elements.register(TAKEN.type(), TAKEN);
+        elements.register(AIR.type(), AIR);
 
         ObjectRegistry<ElementFunctions> function = new ObjectRegistry<>(LibRegistry.ELEMENT_FUNCTION);
         elements.registry().forEach( (elementType,v) -> {

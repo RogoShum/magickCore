@@ -2,12 +2,10 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.entity.pointed.ContextPointerEntity;
-import com.rogoshum.magickcore.entity.pointed.ManaCapacityEntity;
 import com.rogoshum.magickcore.init.ModEntities;
-import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -40,28 +38,25 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
 
         float height = 0.2f + pointer.getHeight();
         float radius = 0.25f;
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , pointer.spellContext().element.color()
-                , context, pointer.getHitReactions(), 0f);
+                , RenderHelper.drawCylinder(context, null, 0));
 
         height = pointer.getHeight() - 0.2f;
         alpha = 1.0f;
         matrixStackIn.translate(0, 0.2, 0);
         radius = 0.5f;
-        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
+        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , pointer.spellContext().element.color()
-                , context, pointer.getHitReactions(), 0f);
+                , RenderHelper.drawCylinder(context, null, 0));
         matrixStackIn.translate(0, -0.2, 0);
         radius = 0.4f;
-        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f);
+        context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getHeight(), 0f))
-                , pointer.spellContext().element.color()
-                , context, pointer.getHitReactions(), 0f);
+                , RenderHelper.drawCylinder(context, null, 0));
         matrixStackIn.pop();
     }
 }

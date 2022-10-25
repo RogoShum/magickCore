@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.magick.extradata.entity;
 
 import com.rogoshum.magickcore.api.entity.IManaMob;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.buff.ManaBuff;
+import com.rogoshum.magickcore.client.buff.ManaBuff;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
@@ -35,7 +35,7 @@ public class EntityStateData extends EntityExtraData {
     private float manaValue;
     private float shieldValue;
     private MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
-    private HashMap<String, ManaBuff> buffList = new HashMap<>();
+    private final HashMap<String, ManaBuff> buffList = new HashMap<>();
 
     private int shieldCooldown;
     private int manaCooldown;
@@ -131,8 +131,7 @@ public class EntityStateData extends EntityExtraData {
     }
 
     public void removeBuff(String type) {
-        if(buffList.containsKey(type))
-            buffList.remove(type);
+        buffList.remove(type);
     }
 
     public void tick(Entity entity) {
@@ -181,7 +180,7 @@ public class EntityStateData extends EntityExtraData {
             buff.setTick(buff.getTick() - 1).effectEntity(entity);
             if(buff.getTick() < 1) {
                 i.remove();
-                if(i.equals(LibBuff.FREEZE))
+                if(buff.getType().equals(LibBuff.FREEZE))
                     event.getEntityLiving().setSilent(false);
             }
         }

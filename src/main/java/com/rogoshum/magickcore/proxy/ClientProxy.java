@@ -1,8 +1,14 @@
 package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.block.tileentity.*;
-import com.rogoshum.magickcore.client.VertexShakerHelper;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.render.PlaceableItemEntityRenderer;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.client.render.RenderThread;
 import com.rogoshum.magickcore.client.entity.easyrender.*;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
@@ -22,11 +28,9 @@ import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.event.ShaderEvent;
 import com.rogoshum.magickcore.init.ModElements;
 import com.rogoshum.magickcore.lib.LibRegistry;
-import com.rogoshum.magickcore.magick.MagickPoint;
 import com.rogoshum.magickcore.registry.ObjectRegistry;
 import com.rogoshum.magickcore.registry.elementmap.EntityRenderers;
 import com.rogoshum.magickcore.registry.elementmap.RenderFunctions;
-import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModItems;
@@ -34,6 +38,7 @@ import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.settings.ParticleStatus;
@@ -55,102 +60,95 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
+import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientProxy implements IProxy
-{
+public class ClientProxy implements IProxy {
 	private final HashMap<String, ElementRenderer> renderers = new HashMap<>();
 	public final ShaderEvent event = new ShaderEvent();
-	private int clientPreTick;
-	private volatile int clientTick;
-	private int serverPreTick;
-	private volatile int serverTick;
-	private final List<Runnable> taskList = new Vector<>();
-
-	private Thread magickThread;
+	private TaskThread magickThread;
+	private RenderThread renderThread;
 
 	public ElementRenderer getElementRender(String name) {
 		return this.renderers.get(name) != null ? this.renderers.get(name) : this.renderers.get(LibElements.ORIGIN);
 	}
 
+	public void checkRenderer() {
+		if(renderThread == null || renderThread.isInterrupted() || !renderThread.isAlive()) {
+			createRenderer();
+		}
+	}
+
+	public void createRenderer() {
+		if (renderThread != null) {
+			renderThread.interrupt();
+		}
+		renderThread = new RenderThread("MagickCore RenderThread");
+		renderThread.start();
+	}
+
+	@Override
+	public void addRenderer(IEasyRender renderer) {
+		if(renderer instanceof EasyRenderer && !((EasyRenderer<?>) renderer).isRemote()) {
+			return;
+		}
+		checkRenderer();
+		renderThread.addRenderer(renderer);
+	}
+
+	@Override
+	public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction() {
+		checkRenderer();
+		return renderThread.getGlFunction();
+	}
+
+	@Override
+	public void updateRenderer() {
+		checkRenderer();
+		renderThread.update();
+	}
+
+	@Override
+	public void setClippingHelper(ClippingHelper clippingHelper) {
+		checkRenderer();
+		renderThread.setClippingHelper(clippingHelper);
+	}
+
 	@Override
 	public void tick(LogicalSide side) {
-		if(side.isClient()) {
-			int pre = clientTick;
-			clientTick = 1 + pre;
-		}
-		else {
-			int pre = serverTick;
-			serverTick = 1 + pre;
-		}
+		checkThread();
+		magickThread.tick();
 	}
 
 	@Override
 	public int getRunTick() {
-		return clientTick;
+		checkThread();
+		return magickThread.getTick();
 	}
 
 	@Override
 	public void addTask(Runnable run) {
-		taskList.add(run);
+		checkThread();
+		magickThread.addTask(run);
 	}
 
 	@Override
+	public void addAdditionTask(Runnable tryTask, Runnable catchTask) {
+		checkThread();
+		magickThread.setAdditionTask(tryTask);
+		magickThread.setAdditionCatch(catchTask);
+	}
+
+	public void checkThread() {
+		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive())
+			createThread();
+	}
+
 	public void createThread() {
-		if(magickThread != null) {
+		if (magickThread != null) {
 			magickThread.interrupt();
 		}
-		magickThread = new Thread(() -> {
-			while (!magickThread.isInterrupted()) {
-				boolean vertexShaker = false;
-				boolean tickParticle = false;
-				boolean tickTask = false;
-				try {
-					if(clientTick > clientPreTick) {
-						clientPreTick = clientTick;
-						if(Minecraft.getInstance().player == null) {
-							EntityLightSourceHandler.clear();
-							RenderEvent.clearParticle();
-							VertexShakerHelper.clear();
-						}
-
-						VertexShakerHelper.tickGroup();
-						vertexShaker = true;
-						RenderEvent.tickParticle();
-						tickParticle = true;
-						MagickPoint.points.forEach(MagickPoint::tick);
-
-						for (int i = 0; i < taskList.size(); ++i) {
-							taskList.get(i).run();
-						}
-						tickTask = true;
-						taskList.clear();
-					}
-
-					if(serverTick > serverPreTick) {
-						//EntityLightSourceHandler.tick(LogicalSide.SERVER);
-						serverPreTick = serverTick;
-					}
-				} catch (Exception e) {
-					MagickCore.LOGGER.info("MagickCore Client Thread Crashed!");
-					MagickCore.LOGGER.info("happened: ");
-					if(!vertexShaker)
-						MagickCore.LOGGER.info("vertexShaker");
-					else if(!tickParticle)
-						MagickCore.LOGGER.info("tickParticle");
-					else if(!tickTask)
-						MagickCore.LOGGER.info("tickTask");
-					else
-						MagickCore.LOGGER.info("other");
-
-					MagickCore.LOGGER.debug(e);
-					RenderEvent.clearParticle();
-					VertexShakerHelper.clear();
-					taskList.clear();
-					createThread();
-				}
-		}}, "MagickCore Client Thread");
+		magickThread = new TaskThread("MagickCore ClientThread");
 		magickThread.start();
 	}
 
@@ -168,7 +166,7 @@ public class ClientProxy implements IProxy
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
 		registerEasyRenderer();
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
+		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
 
 		ObjectRegistry<EntityRenderers> entityRenderers = new ObjectRegistry<>(LibRegistry.ENTITY_RENDERER);
 		ObjectRegistry<RenderFunctions> renderFunctions = new ObjectRegistry<>(LibRegistry.RENDER_FUNCTION);
@@ -184,7 +182,6 @@ public class ClientProxy implements IProxy
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.mana_shield.get(), ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.mana_star.get(), ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.mana_laser.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.mana_rift.get(), ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.mana_sphere.get(), ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.radiance_wall.get(), ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.chaos_reach.get(), ManaEntityRenderer::new);
@@ -213,6 +210,7 @@ public class ClientProxy implements IProxy
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.shadow.get(), ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.wind.get(), ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.gravity_lift.get(), ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntities.placeable_entity.get(), PlaceableItemEntityRenderer::new);
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
@@ -231,33 +229,13 @@ public class ClientProxy implements IProxy
 		event.getItemColors().register(color, ModItems.element_wool.get());
 	}
 
-	public void onModelBaked(ModelBakeEvent event) {
-		Map<ResourceLocation, IBakedModel> modelRegistry = event.getModelRegistry();
-		ModelResourceLocation location = new ModelResourceLocation(ModItems.orb_bottle.get().getRegistryName(), "inventory");
-		IBakedModel existingModel = modelRegistry.get(location);
-		if (existingModel == null) {
-			throw new RuntimeException("Did not find magick_crafting in registry");
-		} else {
-			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
-			event.getModelRegistry().put(location, magickBakedModel);
-		}
-
-		location = new ModelResourceLocation(ModItems.element_wool.get().getRegistryName(), "inventory");
-		existingModel = modelRegistry.get(location);
-		if (existingModel == null) {
-			throw new RuntimeException("Did not find magick_crafting in registry");
-		} else {
-			MagickBakedModel magickBakedModel = new MagickBakedModel(existingModel);
-			event.getModelRegistry().put(location, magickBakedModel);
-		}
-	}
-
 	public void putElementRendererIn(String name, ElementRenderer renderer)
 	{
 		renderers.put(name, renderer);
 	}
 
 	private void registerEasyRenderer() {
+		/*
 		//normal
 		RenderEvent.registerEasyRender(ManaOrbEntity.class, new ManaOrbRenderer());
 		RenderEvent.registerEasyRender(DawnWardEntity.class, new DawnWardRenderer());
@@ -277,7 +255,7 @@ public class ClientProxy implements IProxy
 		RenderEvent.registerEasyRender(BubbleEntity.class, new BubbleRenderer());
 		RenderEvent.registerEasyRender(BloodBubbleEntity.class, new BloodBubbleRenderer());
 		RenderEvent.registerEasyRender(EntityHunterEntity.class, new EntityHunterRenderer());
-		RenderEvent.registerEasyRender(GravityLiftEntity.class, new GravityLiftRenderer());
+		//RenderEvent.registerEasyRender(GravityLiftEntity.class, new GravityLiftRenderer(entity));
 		RenderEvent.registerEasyRender(LeafEntity.class, new LeafRenderer());
 		RenderEvent.registerEasyRender(RedStoneEntity.class, new RedStoneRenderer());
 		RenderEvent.registerEasyRender(WindEntity.class, new WindRenderer());
@@ -299,6 +277,8 @@ public class ClientProxy implements IProxy
 		RenderEvent.registerTileRender(ElementWoolTileEntity.class, new ElementWoolRenderer());
 		RenderEvent.registerTileRender(MagickBarrierTileEntity.class, new MagickBarrierRenderer());
 		RenderEvent.registerTileRender(MagickRepeaterTileEntity.class, new MagickRepeaterRenderer());
+
+		 */
 	}
 
 	private void putElementRenderer() {
@@ -311,12 +291,13 @@ public class ClientProxy implements IProxy
 		putElementRendererIn(LibElements.STASIS, new StasisRenderer());
 		putElementRendererIn(LibElements.WITHER, new WitherRenderer());
 		putElementRendererIn(LibElements.TAKEN, new TakenRenderer());
+		putElementRendererIn(LibElements.AIR, new AirRenderer());
 	}
 
 	public void addMagickParticle(LitParticle par) {
 		Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
 
-		if(!RenderEvent.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
+		if(!RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
 			return;
 
 		if(Minecraft.getInstance().gameSettings.particles == ParticleStatus.DECREASED) {

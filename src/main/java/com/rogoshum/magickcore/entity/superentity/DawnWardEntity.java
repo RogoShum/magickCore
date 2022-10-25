@@ -2,7 +2,8 @@ package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.DawnWardRenderer;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.magick.MagickElement;
@@ -23,32 +24,28 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/dawn_ward.png");
-    private float hue = 0;
 
     public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 
-    public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn, MagickElement element) {
-        super(entityTypeIn, worldIn, element);
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new DawnWardRenderer(this));
     }
 
     @Override
     public void tick() {
         super.tick();
-        if(hue < 1)
-            hue +=0.01;
-        else
-            hue = 0;
 
-        if(this.ticksExisted <= 25)
+        if(this.ticksExisted <= 15)
             return;
         initial = true;
     }

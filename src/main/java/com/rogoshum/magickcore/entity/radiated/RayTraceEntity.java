@@ -86,7 +86,6 @@ public class RayTraceEntity extends ManaRadiateEntity{
             double tz = this.getPosZ() + (target.z - this.getPosZ()) * trailFactor + world.rand.nextGaussian() * 0.005;
             LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
                     , new Vector3d(tx, ty, tz), scale, scale, 1.0f, particleAge, spellContext().element.getRenderer());
-            par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
             par.addMotion(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f);

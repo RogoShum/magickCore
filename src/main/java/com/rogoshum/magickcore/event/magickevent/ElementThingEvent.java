@@ -8,8 +8,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class ElementThingEvent {
 
     @SubscribeEvent
-    public void applyFunction(ElementEvent.ElementFunctionApply event)
-    {
+    public void applyFunction(ElementEvent.ElementFunctionApply event) {
+        /*
         boolean sameLikeOwner = MagickReleaseHelper.sameLikeOwner(event.getMagickContext().caster, event.getMagickContext().victim);
 
         if(event.getMagickContext().applyType.equals(EnumApplyType.ATTACK) && sameLikeOwner)
@@ -20,5 +20,7 @@ public class ElementThingEvent {
 
         if(event.getMagickContext().applyType.equals(EnumApplyType.HIT_ENTITY) && sameLikeOwner)
             event.setCanceled(true);
+
+         */
     }
 }

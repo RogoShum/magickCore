@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISpellContext;
-import com.rogoshum.magickcore.api.IManaMaterial;
-import com.rogoshum.magickcore.api.IMaterialLimit;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.init.ManaMaterials;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;

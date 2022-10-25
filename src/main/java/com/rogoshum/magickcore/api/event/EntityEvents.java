@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.buff.ManaBuff;
+import com.rogoshum.magickcore.client.buff.ManaBuff;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -10,12 +10,10 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
 public class EntityEvents {
-    public static class HitEntityEvent extends EntityEvent
-    {
+    public static class HitEntityEvent extends EntityEvent {
         private Entity victim;
 
-        public HitEntityEvent(Entity entity, Entity victim)
-        {
+        public HitEntityEvent(Entity entity, Entity victim) {
             super(entity);
             this.setVictim(victim);
         }
@@ -29,8 +27,7 @@ public class EntityEvents {
         }
     }
 
-    public static class EntityUpdateEvent extends EntityEvent
-    {
+    public static class EntityUpdateEvent extends EntityEvent {
         public EntityUpdateEvent(Entity entity)
         {
             super(entity);
@@ -39,6 +36,13 @@ public class EntityEvents {
         @Override
         public boolean isCancelable() {
             return true;
+        }
+    }
+
+    public static class EntityAddedToWorldEvent extends EntityEvent {
+        public EntityAddedToWorldEvent(Entity entity)
+        {
+            super(entity);
         }
     }
 

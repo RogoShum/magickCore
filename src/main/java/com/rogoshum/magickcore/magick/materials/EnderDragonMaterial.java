@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.magick.materials;
 
-import com.rogoshum.magickcore.api.IMaterialLimit;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibMaterial;
 import net.minecraft.item.Item;

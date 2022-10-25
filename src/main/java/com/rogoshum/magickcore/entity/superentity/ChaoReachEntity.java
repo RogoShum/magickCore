@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.laser.ChaosReachLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.ChaosReachRenderer;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.enums.EnumApplyType;
@@ -34,6 +36,13 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ChaosReachRenderer(this));
+        MagickCore.proxy.addRenderer(new ChaosReachLaserRenderer(this));
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if(this.ticksExisted <= 30)
@@ -54,9 +63,9 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         boolean makeSound = false;
         for (Entity entity : livings) {
             makeSound = true;
-            MagickContext context = new MagickContext(world).saveMana().caster(this.getOwner()).projectile(this).victim(entity).tick(50).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.DE_BUFF);
+            MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(50).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.DE_BUFF);
             MagickReleaseHelper.releaseMagick(context);
-            context = new MagickContext(world).saveMana().caster(this.getOwner()).projectile(this).victim(entity).tick(10).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.ATTACK);
+            context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(10).force(EnumManaLimit.FORCE.getValue()).applyType(EnumApplyType.ATTACK);
             MagickReleaseHelper.releaseMagick(context);
         }
 
@@ -84,7 +93,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
     protected void applyParticle()
     {
-        for(int i = 0; i < 2; ++i) {
+        for(int i = 0; i < 1; ++i) {
             LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
@@ -109,7 +118,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         }
 
         float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 3; ++i) {
             LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2

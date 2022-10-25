@@ -1,9 +1,8 @@
 package com.rogoshum.magickcore.magick.lifestate.repeater;
 
-import com.rogoshum.magickcore.api.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
 import com.rogoshum.magickcore.entity.projectile.LifeStateEntity;
-import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.magick.lifestate.LifeState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.LockableLootTileEntity;

@@ -10,4 +10,5 @@ public class LibRegistry {
     public static final String ITEM_DATA = "item_extra_data";
     public static final String CHILD_CONTEXT = "child_context";
     public static final String CONDITION = "condition";
+    public static final String MAGICK_CRAFTING = "magick_crafting";
 }

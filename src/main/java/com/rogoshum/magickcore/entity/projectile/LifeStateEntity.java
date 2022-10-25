@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.entity.projectile;
 
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.block.ILifeStateTile;
 import com.rogoshum.magickcore.api.block.IManaSupplierTile;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
@@ -23,6 +23,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -271,6 +272,11 @@ public class LifeStateEntity extends ThrowableEntity implements ILightSourceEnti
     @Override
     public Vector3d positionVec() {
         return getPositionVec();
+    }
+
+    @Override
+    public AxisAlignedBB boundingBox() {
+        return getBoundingBox();
     }
 
     @Override

@@ -3,13 +3,22 @@ package com.rogoshum.magickcore.init;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.api.INBTRecipe;
+import com.rogoshum.magickcore.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.event.magickevent.LivingLootsEvent;
+import com.rogoshum.magickcore.lib.LibContext;
+import com.rogoshum.magickcore.lib.LibMagickCraftingRecipes;
+import com.rogoshum.magickcore.lib.LibRegistry;
+import com.rogoshum.magickcore.magick.context.child.*;
+import com.rogoshum.magickcore.recipes.SpawnContext;
+import com.rogoshum.magickcore.registry.ObjectRegistry;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
+import com.rogoshum.magickcore.tool.MultiBlockHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
 import com.rogoshum.magickcore.recipes.recipe.ElementItemRecipes;
 import com.rogoshum.magickcore.recipes.recipe.ElementToolRecipes;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,6 +33,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModRecipes {
@@ -97,6 +108,15 @@ public class ModRecipes {
     public static SpecialRecipeSerializer<?> taken_element_recipe;
 
     public static final SpecialRecipeSerializer<?> context_tool_recipe = (SpecialRecipeSerializer<?>)new SpecialRecipeSerializer<>(ManaItemContextRecipe::new).setRegistryName("context_tool_recipe");
+
+    public static final MultiBlockHelper.PredicatePattern<PlaceableItemEntity> EMPTY = new MultiBlockHelper.PredicatePattern<PlaceableItemEntity>("",
+            Objects::isNull);
+
+    public static final MultiBlockHelper.PredicatePattern<PlaceableItemEntity> SPIRIT_WOOD_STICK = new MultiBlockHelper.PredicatePattern<PlaceableItemEntity>("sws",
+            (type) -> type != null && type.getItemStack() != null && type.getItemStack().getItem() == ModItems.spirit_wood_stick.get());
+
+    public static final MultiBlockHelper.PredicatePattern<PlaceableItemEntity> SPIRIT_CRYSTAL = new MultiBlockHelper.PredicatePattern<PlaceableItemEntity>("sc",
+            (type) -> type != null && type.getItemStack() != null && type.getItemStack().getItem() == ModItems.spirit_crystal.get());
 
     public static void init()
     {
@@ -175,6 +195,81 @@ public class ModRecipes {
         registerExplosionRecipe(TagMatchItemContainer.create(ModItems.wither.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.WITHER));
         registerExplosionRecipe(TagMatchItemContainer.create(ModItems.taken.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.TAKEN));
         registerExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_STAR.toString()), new ItemStack(ModItems.nether_star_material.get()));
+
+        ObjectRegistry<MagickCraftingRecipe> magickCrafting = new ObjectRegistry<>(LibRegistry.MAGICK_CRAFTING);
+        String[][][] recipe = new String[][][]
+                {
+                    {
+                        {"", "", ""},
+                        {"", "sws", ""},
+                        {"", "", ""}
+                    },
+                    {
+                        {"", "sc", ""},
+                        {"sc", "sws", "sc"},
+                        {"", "sc", ""}
+                    },
+                    {
+                        {"", "", ""},
+                        {"", "sc", ""},
+                        {"", "", ""}
+                    }
+                };
+        MultiBlockHelper.PredicatePattern<PlaceableItemEntity>[] pattern = new MultiBlockHelper.PredicatePattern[3];
+
+        pattern[0] = EMPTY;
+        pattern[1] = SPIRIT_WOOD_STICK;
+        pattern[2] = SPIRIT_CRYSTAL;
+        magickCrafting.register(LibMagickCraftingRecipes.WAND, new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(ModItems.STAFF.get()));
+            spawnContext.living.world.addEntity(itemEntity);
+        })));
+
+        recipe = new String[][][]
+                {
+                        {
+                                {"", "sc", ""},
+                                {"sws", "sws", "sws"},
+                                {"", "sc", ""}
+                        },
+                        {
+                                {"", "sws", ""},
+                                {"", "sws", ""},
+                                {"", "sws", ""}
+                        },
+                        {
+                                {"", "", ""},
+                                {"", "", ""},
+                                {"", "sc", ""}
+                        }
+                };
+        magickCrafting.register("diamond", new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(Items.DIAMOND));
+            spawnContext.living.world.addEntity(itemEntity);
+        })));
+
+        recipe = new String[][][]
+                {
+                        {
+                                {"sc", "sc"},
+                                {"sc", ""},
+                                {"", "sc"}
+                        },
+                        {
+                                {"sc", " "},
+                                {"", "sws"},
+                                {"", "sc"}
+                        },
+                        {
+                                {"", ""},
+                                {"", "sc"},
+                                {"", ""}
+                        }
+                };
+        magickCrafting.register("sword", new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(Items.DIAMOND_SWORD));
+            spawnContext.living.world.addEntity(itemEntity);
+        })));
 
         Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
         if(book != null) {

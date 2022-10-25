@@ -1,11 +1,9 @@
 package com.rogoshum.magickcore.magick.extradata.item;
 
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.api.IManaContextItem;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.magick.ManaCapacity;
-import com.rogoshum.magickcore.magick.ManaData;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.extradata.ItemExtraData;
 import net.minecraft.item.ItemStack;

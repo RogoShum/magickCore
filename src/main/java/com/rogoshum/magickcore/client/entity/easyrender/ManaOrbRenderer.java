@@ -1,16 +1,34 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.client.particle.TrailParticle;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.entity.projectile.ManaOrbEntity;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.util.math.vector.Vector3d;
+import com.rogoshum.magickcore.init.ModElements;
+import net.minecraft.client.renderer.RenderType;
 
-public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity>{
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity> {
+    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
+
+    public ManaOrbRenderer(ManaOrbEntity entity) {
+        super(entity);
+    }
 
     @Override
-    public void render(ManaOrbEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        matrixStackIn.scale(entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f);
-        entityIn.spellContext().element.getRenderer().renderOrb(matrixStackIn, bufferIn, 0.8f);
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        RenderType TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
+        map.put(new RenderMode(TYPE), (renderParams) -> {
+            baseOffset(renderParams.matrixStack);
+            renderParams.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+        });
+
+        return map;
     }
 }

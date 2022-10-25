@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.entity.base;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.magick.MagickElement;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.vector.Vector3d;
@@ -16,9 +17,12 @@ public abstract class ManaPointEntity extends ManaEntity {
     @Override
     public void tick() {
         super.tick();
+
+        if(world.isRemote) return;
         if(point == null)
             this.point = this.getPositionVec();
-        else
+        else if(!point.equals(this.getPositionVec())) {
             this.setPosition(this.point.x, this.point.y, this.point.z);
+        }
     }
 }

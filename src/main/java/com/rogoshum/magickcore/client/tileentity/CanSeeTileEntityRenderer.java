@@ -18,6 +18,5 @@ public class CanSeeTileEntityRenderer<T extends CanSeeTileEntity> extends TileEn
 
     @Override
     public void render(T tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        RenderEvent.activeTileEntityRender(tileEntityIn);
     }
 }

@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.init.ModElements;
@@ -28,10 +29,16 @@ public class ManaSphereEntity extends ManaPointEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ManaSphereRenderer(this));
+    }
+
+    @Override
     protected void doClientTask() {
         super.doClientTask();
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.05F));
+        this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.07F));
     }
 
     @Override

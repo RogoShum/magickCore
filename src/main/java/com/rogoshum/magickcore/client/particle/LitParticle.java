@@ -3,34 +3,48 @@ package com.rogoshum.magickcore.client.particle;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.IEasyRender;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ReuseableStream;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class LitParticle implements ILightSourceEntity {
+public class LitParticle implements ILightSourceEntity, IEasyRender {
     protected double posX;
     protected double posY;
     protected double posZ;
     protected double lPosX;
     protected double lPosY;
     protected double lPosZ;
+
+    protected double renderX;
+    protected double renderY;
+    protected double renderZ;
+
+    protected Vector3d[] quad = RenderHelper.QuadVector;
     private Color color;
-    private float alpha;
+    private final float alpha;
+    private float renderAlpha;
     private int age = 1;
     private int maxAge;
     private float scaleWidth;
@@ -46,14 +60,17 @@ public class LitParticle implements ILightSourceEntity {
     protected boolean canCollide = true;
     private boolean collidedY;
     protected float particleGravity;
-    private World world;
-    private ElementRenderer renderer;
+    private final World world;
+    private final ElementRenderer renderer;
     private float shakeLimit;
     private boolean limitScale;
 
     private boolean noScale;
     private Entity traceTarget;
-    private String shader;
+    private String shader = "";
+
+    private RenderType type;
+    private RenderHelper.RenderContext renderContext;
 
     public LitParticle(World world, ResourceLocation texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, ElementRenderer renderer) {
         this.world = world;
@@ -66,6 +83,10 @@ public class LitParticle implements ILightSourceEntity {
         this.particleGravity = renderer.getParticleGravity();
         this.canCollide = renderer.getParticleCanCollide();
         this.renderer = renderer;
+    }
+
+    public ResourceLocation getTexture() {
+        return texture;
     }
 
     public LitParticle setColor(Color color) {
@@ -111,47 +132,6 @@ public class LitParticle implements ILightSourceEntity {
     public LitParticle useShader(String shader) {
         this.shader = shader;
         return this;
-    }
-
-    public void render(MatrixStack matrixStackIn, BufferBuilder buffer) {
-        //if(true) return;
-        if (this.texture == null) return;
-        matrixStackIn.push();
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        double camX = cam.x, camY = cam.y, camZ = cam.z;
-        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
-        if(Minecraft.getInstance().isGamePaused()) {
-            partialTicks = 0;
-        }
-        double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
-        double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
-        double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
-        matrixStackIn.translate(x - camX, y - camY, z - camZ);
-        matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
-
-        float lifetime = (float) this.age / (float) this.maxAge;
-        float alphaTest = 0.7f;
-        if(lifetime >= alphaTest) {
-            lifetime -= alphaTest;
-            lifetime *= 2;
-        }
-        else
-            lifetime = 0.003921569F;
-
-        RenderType type = RenderHelper.getTexedOrb(texture, lifetime);
-        if(isGlow)
-            type = RenderHelper.getTexedOrbGlow(texture, lifetime);
-
-        if (shakeLimit > 0.0f)
-            RenderHelper.renderParticle(shader == null ?
-                    BufferContext.create(matrixStackIn, buffer, type) : BufferContext.create(matrixStackIn, buffer, type).useShader(shader)
-                    , getAlpha(alpha), color, true, this.toString(), shakeLimit);
-        else
-            RenderHelper.renderParticle(shader == null ?
-                    BufferContext.create(matrixStackIn, buffer, type) : BufferContext.create(matrixStackIn, buffer, type).useShader(shader)
-                    , getAlpha(alpha), color);
-
-        matrixStackIn.pop();
     }
 
     protected void setSize(float particleWidth, float particleHeight) {
@@ -328,6 +308,81 @@ public class LitParticle implements ILightSourceEntity {
     }
 
     @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        map.put(new RenderMode(type, shader), this::render);
+        return map;
+    }
+
+    public void render(RenderParams renderParams) {
+        MatrixStack matrixStackIn = renderParams.matrixStack;
+        matrixStackIn.push();
+        matrixStackIn.translate(renderX, renderY, renderZ);
+        matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
+        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+        if(shakeLimit <= 0.0f) {
+            RenderHelper.callQuadVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
+        } else {
+            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+            BufferBuilder buffer = renderParams.buffer;
+            BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
+            RenderHelper.begin(context);
+            buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 1.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
+            buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 0.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
+            buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 0.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
+            buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 1.0f)
+                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
+            RenderHelper.finish(context);
+        }
+        matrixStackIn.pop();
+    }
+
+    @Override
+    public void update() {
+        if (this.texture == null) return;
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
+        if(Minecraft.getInstance().isGamePaused()) {
+            partialTicks = 0;
+        }
+        double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
+        double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
+        double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
+        renderX = x - camX;
+        renderY = y - camY;
+        renderZ = z - camZ;
+        renderAlpha = getAlpha(this.alpha);
+        Vector3d[] QuadVector = RenderHelper.QuadVector;
+        Vector3d V0 = QuadVector[0];
+        Vector3d V1 = QuadVector[1];
+        Vector3d V2 = QuadVector[2];
+        Vector3d V3 = QuadVector[3];
+
+        if (shakeLimit > 0.0f) {
+            VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(this.toString());
+            group.putVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ(), shakeLimit);
+            group.putVertex(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ(), shakeLimit);
+            group.putVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ(), shakeLimit);
+            group.putVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ(), shakeLimit);
+
+            V0 = group.getVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).getPositionVec();
+            V1 = group.getVertex(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).getPositionVec();
+            V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
+            V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
+        }
+
+        Vector3d[] Quad = new Vector3d[4];
+        Quad[0] = V0; Quad[1] = V1; Quad[2] = V2; Quad[3] = V3;
+        quad = Quad;
+        type = isGlow ? RenderHelper.getTexedOrbGlow(texture) : RenderHelper.getTexedOrb(texture);
+        renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
+    }
+
+    @Override
     public boolean alive() {
         return !isDead();
     }
@@ -335,6 +390,11 @@ public class LitParticle implements ILightSourceEntity {
     @Override
     public Vector3d positionVec() {
         return new Vector3d(getPosX(), getPosY(), getPosZ());
+    }
+
+    @Override
+    public AxisAlignedBB boundingBox() {
+        return getBoundingBox();
     }
 
     @Override

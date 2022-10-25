@@ -3,7 +3,9 @@ package com.rogoshum.magickcore;
 import com.rogoshum.magickcore.block.tileentity.*;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.CanSeeTileEntityRenderer;
+import com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer;
 import com.rogoshum.magickcore.client.tileentity.MagickRepeaterRenderer;
+import com.rogoshum.magickcore.client.tileentity.SpiritCrystalRenderer;
 import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
@@ -41,6 +43,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import net.minecraftforge.network.ForgeConnectionNetworkFilter;
+import net.minecraftforge.network.NetworkFilters;
+import net.minecraftforge.network.VanillaPacketFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -75,11 +80,11 @@ public class MagickCore {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
         DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
+        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
         ModElements.registerElement();
         ElementOrbEvent.initElementMap();
         LifeState.init();
         proxy.registerHandlers();
-        proxy.createThread();
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -169,6 +174,13 @@ public class MagickCore {
                         functions.add(EnumApplyType.DE_BUFF, WitherAbility::applyDebuff);
                         functions.add(EnumApplyType.HIT_BLOCK, WitherAbility::hitBlock);
                         functions.add(EnumApplyType.ELEMENT_TOOL, WitherAbility::applyToolElement);
+                    case LibElements.AIR:
+                        functions.add(EnumApplyType.ATTACK, AirAbility::damageEntity);
+                        functions.add(EnumApplyType.BUFF, AirAbility::applyBuff);
+                        functions.add(EnumApplyType.HIT_ENTITY, AirAbility::hitEntity);
+                        functions.add(EnumApplyType.DE_BUFF, AirAbility::applyDebuff);
+                        functions.add(EnumApplyType.HIT_BLOCK, AirAbility::hitBlock);
+                        functions.add(EnumApplyType.ELEMENT_TOOL, AirAbility::applyToolElement);
                         break;
                 }
             });
@@ -192,8 +204,10 @@ public class MagickCore {
     private void doClientStuff(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), (CanSeeTileEntityRenderer<MagickCraftingTileEntity>::new));
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), MagickCraftingRenderer::new);
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_crafting.get(), RenderType.getCutout());
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.spirit_crystal_tileentity.get(), SpiritCrystalRenderer::new);
+        RenderTypeLookup.setRenderLayer(ModBlocks.spirit_crystal.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_container_tileentity.get(), (CanSeeTileEntityRenderer<MagickContainerTileEntity>::new));
         RenderTypeLookup.setRenderLayer(ModBlocks.magick_container.get(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_crystal_tileentity.get(), (CanSeeTileEntityRenderer<ElementCrystalTileEntity>::new));

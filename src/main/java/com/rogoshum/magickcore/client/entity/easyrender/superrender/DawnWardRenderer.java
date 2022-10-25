@@ -1,60 +1,72 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.VectorHitReaction;
-import com.rogoshum.magickcore.client.entity.easyrender.EasyRenderer;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.entity.superentity.DawnWardEntity;
 import com.rogoshum.magickcore.lib.LibShaders;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3f;
+
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
-    private static ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
-    private float scale_ = 1;
-    private boolean direction = false;
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphereGlow(RenderHelper.SPHERE_ROTATE, 3f, 0f);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
+    float scale;
+
+    public DawnWardRenderer(DawnWardEntity entity) {
+        super(entity);
+    }
+
+    public void renderOuter(RenderParams params) {
+        MatrixStack matrixStackIn = params.matrixStack;
+        baseOffset(matrixStackIn);
+        matrixStackIn.scale(scale, scale, scale);
+        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(LibShaders.slime)
+                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getEntityId(), 0.3f)
+                , 16);
+        matrixStackIn.scale(0.99f, 0.99f, 0.99f);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
+                , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getEntityId(), 0.5f)
+                , 16);
+    }
+
+    public void renderInner(RenderParams params) {
+        MatrixStack matrixStackIn = params.matrixStack;
+        baseOffset(matrixStackIn);
+        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.scale(scale, scale, scale);
+        matrixStackIn.scale(0.99f, 0.99f, 0.99f);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
+                , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.VertexContext(entity.getHitReactions(),0.5f)
+                , 16);
+    }
 
     @Override
-    public void render(DawnWardEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        //int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entityIn, partialTicks);
-        int packedLightIn = RenderHelper.renderLight;
-        Matrix4f positionMatrix = matrixStackIn.getLast().getMatrix();
-        if(entityIn.spellContext().element != null && entityIn.spellContext().element.getRenderer() != null) {
-            //EasyRenderer.renderRift(matrixStackIn, bufferIn.getBuffer(RenderHelper.ORB), entityIn, 6.0f, entityIn.getElement().getRenderer().getColor()
-                    //, 2.0f, partialTicks, entityIn.world);
-            if(entityIn.initial) {
-                float scale = Math.min(1f, (float) (entityIn.ticksExisted - 25) / 5f) * entityIn.getWidth();
-                //scale *= scale_;
-                matrixStackIn.scale(scale, scale, scale);
-                VectorHitReaction[] test = {};
-                //MagickCore.LOGGER.debug(!direction);
-                RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn,
-                        RenderHelper.getTexedSphereGlow(RenderHelper.ripple_5, 3f, 0f)).useShader(LibShaders.slime),
-                        16, 0.6f, entityIn.getHitReactions(), entityIn.spellContext().element.color(), packedLightIn, 0.3f);
-                /*
-                RenderHelper.renderSphere(BufferPackage.create(matrixStackIn, bufferIn,
-                        RenderHelper.getTexedSphereGlow(RenderHelper.ripple_5, 3f, 0f))
-                        , 16, 1.0f, entityIn.getHitReactions(), entityIn.spellContext().element.color(), packedLightIn, 0.3f);
-                 */
-                matrixStackIn.scale(0.99f, 0.99f, 0.99f);
-                RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn,
-                        RenderHelper.getTexedSphereGlow(blank, 1f, 0f)),
-                        16, 0.3f, entityIn.getHitReactions(), entityIn.spellContext().element.color(), packedLightIn, 0.5f);
+    public void update() {
+        super.update();
+        if(entity.initial)
+            scale = Math.min(1f, (float) (entity.ticksExisted - 15) / 5f) * entity.getWidth();
+    }
 
-                if(!direction && scale_ <= 1.25) {
-                    scale_ += 0.01;
-                    if(scale_ >= 1.25)
-                        direction = true;
-                }
-                if(direction && scale_ >= 1) {
-                    scale_ -= 0.02;
-                    if(scale_ <= 1)
-                        direction = false;
-                }
-            }
-        }
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        if(entity.initial)
+            map.put(RenderMode.ORIGIN_RENDER, this::renderOuter);
+        //map.put(RenderMode.ORIGIN_RENDER, this::renderInner);
+        return map;
     }
 }

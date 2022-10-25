@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -146,6 +147,11 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
     @Override
     public Vector3d positionVec() {
         return Vector3d.copyCentered(this.getPos());
+    }
+
+    @Override
+    public AxisAlignedBB boundingBox() {
+        return getRenderBoundingBox();
     }
 
     @Override

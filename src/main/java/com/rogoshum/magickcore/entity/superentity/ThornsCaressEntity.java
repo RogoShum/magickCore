@@ -2,7 +2,10 @@ package com.rogoshum.magickcore.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.VectorHitReaction;
+import com.rogoshum.magickcore.client.entity.easyrender.laser.ChaosReachLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.laser.ThornsCaressLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
+import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
@@ -25,6 +28,13 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/thorns_caress.png");
     public ThornsCaressEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(new ThornsCaressRenderer(this));
+        MagickCore.proxy.addRenderer(new ThornsCaressLaserRenderer(this));
     }
 
     @Override

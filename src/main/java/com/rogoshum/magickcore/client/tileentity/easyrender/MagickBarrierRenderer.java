@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.block.tileentity.MagickBarrierTileEntity;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.magick.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -52,7 +52,6 @@ public class MagickBarrierRenderer extends EasyTileRenderer<MagickBarrierTileEnt
 
         if(!tileEntityIn.isClosed()) return;
 
-        RenderEvent.activeTileEntityRender(tileEntityIn);
         alpha = 0.4f;
         alphaAdd = 0.0f;
         matrixStackIn.push();

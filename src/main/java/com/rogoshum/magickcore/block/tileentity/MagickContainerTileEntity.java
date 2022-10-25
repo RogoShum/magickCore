@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.block.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.api.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.init.ModItems;
@@ -23,13 +23,13 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MagickContainerTileEntity extends CanSeeTileEntity implements ITickableTileEntity, IManaCapacity, ILightSourceEntity {
@@ -244,6 +244,11 @@ public class MagickContainerTileEntity extends CanSeeTileEntity implements ITick
     @Override
     public Vector3d positionVec() {
         return Vector3d.copyCentered(this.getPos());
+    }
+
+    @Override
+    public AxisAlignedBB boundingBox() {
+        return getRenderBoundingBox();
     }
 
     @Override

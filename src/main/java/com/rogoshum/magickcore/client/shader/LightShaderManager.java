@@ -8,25 +8,16 @@ import com.rogoshum.magickcore.api.event.PreRenderChunkEvent;
 import com.rogoshum.magickcore.api.event.ProfilerChangeEvent;
 import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.shader.ShaderUniform;
 import net.minecraft.entity.player.PlayerEntity;
 
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
-import software.bernie.shadowed.eliotlash.mclib.math.functions.limit.Min;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +49,12 @@ public class LightShaderManager {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         PlayerEntity player = Minecraft.getInstance().player;
 
-        if(event.getName().equals("terrain"))
-        {
+        if(event.getName().equals("terrain")) {
             shader.useShader();
             shader.setUniform("sampler", 33984 - '\u84c0');
             shader.setUniform("lightmap", 33986 - '\u84c0');
 
-            if(!postedLights)
-            {
+            if(!postedLights) {
                 postedLights = true;
                 setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
             }
@@ -76,8 +65,7 @@ public class LightShaderManager {
             shader.setUniform("sampler", 33984 - '\u84c0');
             shader.setUniform("lightmap", 33986 - '\u84c0');
 
-            if(!postedLights)
-            {
+            if(!postedLights) {
                 postedLights = true;
                 setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
             }
@@ -171,8 +159,20 @@ public class LightShaderManager {
             int radius = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].radius");
             GL20.glUniform1f(radius, light.getSourceLight());
         }
+
+        if(minCount < 256) {
+            for(int i = minCount; i < 256; i++) {
+                int pos = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].position");
+                GL20.glUniform3f(pos, 0f, 0f, 0f);
+                int color = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].color");
+                GL20.glUniform4f(color, 0f, 0f, 0f, 0f);
+                int radius = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].radius");
+                GL20.glUniform1f(radius, 0f);
+            }
+        }
         shader.setUniform("lightCount", minCount);
         shader.setUniform("vanillaTracing", 1);
         shader.setUniform("colMix", 1);
+        shader.setUniform("negative", 1f);
     }
 }

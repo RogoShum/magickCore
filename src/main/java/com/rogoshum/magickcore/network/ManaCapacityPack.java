@@ -1,9 +1,7 @@
 package com.rogoshum.magickcore.network;
 
-import com.rogoshum.magickcore.api.IManaCapacity;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.magick.ManaCapacity;
-import com.rogoshum.magickcore.magick.context.SpellContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;

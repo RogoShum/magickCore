@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
@@ -17,6 +17,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 
 import java.awt.*;
 
@@ -27,18 +29,7 @@ public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
     @Override
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.push();
-        matrixStackIn.translate(0.5F, 0.5F, 0.5F);
-        float xOffset = -1 / 32f;
-        float zOffset = 0;
-        matrixStackIn.translate(-xOffset, 0, -zOffset);
-        matrixStackIn.translate(xOffset, 0, zOffset);
-        if(transformType == ItemCameraTransforms.TransformType.GUI) {
-            matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-        }
-        else if(transformType == ItemCameraTransforms.TransformType.GROUND)
-            matrixStackIn.scale(0.4f, 0.4f, 0.4f);
-        else
-            matrixStackIn.scale(0.6f, 0.6f, 0.6f);
+        matrixStackIn.translate(0.5, 0.5, 0.5);
         CompoundNBT nbt = stack.getTag();
         if(stack.hasTag() && nbt.contains("ELEMENT") && nbt.getString("ELEMENT") != LibElements.ORIGIN) {
             ItemStack potion = new ItemStack(Items.POTION);

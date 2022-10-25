@@ -98,6 +98,11 @@ public class EntityHunterEntity extends ManaPointEntity {
     }
 
     @Override
+    public boolean canBeCollidedWith() {
+        return true;
+    }
+
+    @Override
     public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;

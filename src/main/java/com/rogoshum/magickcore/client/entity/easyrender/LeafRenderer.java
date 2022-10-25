@@ -1,30 +1,53 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.particle.TrailParticle;
-import com.rogoshum.magickcore.entity.projectile.BubbleEntity;
-import com.rogoshum.magickcore.entity.projectile.LampEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.entity.projectile.LeafEntity;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
 
-public class LeafRenderer extends EasyRenderer<LeafEntity>{
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+public class LeafRenderer extends EasyRenderer<LeafEntity> {
     private static final ResourceLocation LEAF_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_0.png");
     private static final ResourceLocation LEAF_1 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_1.png");
     private static final ResourceLocation LEAF_2 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_2.png");
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlow(LEAF_1);
+    private static final RenderType RENDER_TYPE_2 = RenderHelper.getTexedOrbGlow(LEAF_2);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrbGlow(LEAF_0);
+
+    private RenderType renderType;
+
+    public LeafRenderer(LeafEntity entity) {
+        super(entity);
+    }
+
     @Override
-    public void render(LeafEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
-        matrixStackIn.scale(entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f, entityIn.getWidth() * 0.6f);
-        int i = entityIn.getNumber();
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        map.put(new RenderMode(renderType), (renderParams) -> {
+            baseOffset(renderParams.matrixStack);
+            renderParams.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, renderType), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+        });
+
+        return map;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        int i = entity.getNumber();
         if(i == 1)
-            RenderHelper.renderParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(LEAF_1)), 1.0f, entityIn.spellContext().element.color());
+            renderType = RENDER_TYPE_1;
         else if(i == 2)
-            RenderHelper.renderParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(LEAF_2)), 1.0f, entityIn.spellContext().element.color());
+            renderType = RENDER_TYPE_2;
         else
-            RenderHelper.renderParticle(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getTexedOrbGlow(LEAF_0)), 1.0f, entityIn.spellContext().element.color());
+            renderType = RENDER_TYPE_0;
     }
 }

@@ -1,11 +1,9 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.api.IManaContextItem;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 
 public class MagickContextItem extends ManaItem{
     public MagickContextItem() {

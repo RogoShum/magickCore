@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.api.entity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.ISpellContext;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.enums.EnumTargetType;
 import com.rogoshum.magickcore.lib.LibContext;
@@ -9,13 +9,10 @@ import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.magick.context.child.PositionContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -54,7 +51,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
 
         List<Entity> livings = findEntity();
         for(Entity living : livings) {
-            if(!suitableEntity(living)) continue;
+            if(living != this && !suitableEntity(living)) continue;
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(spellContext().containChild(LibContext.CONDITION)) {
                 ConditionContext context = spellContext().getChild(LibContext.CONDITION);
@@ -90,6 +87,10 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
         if(entity instanceof IManaRefraction)
             refraction = ((IManaRefraction) entity).refraction(spellContext());
         return !refraction && (!applyType.isBeneficial() || sameLikeOwner);
+    }
+
+    default void beforeJoinWorld(MagickContext context) {
+
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -5,7 +5,6 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.lib.LibContext;
-import com.rogoshum.magickcore.lib.LibShaders;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.context.child.TraceContext;
@@ -81,12 +80,8 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
-        EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-        MinecraftForge.EVENT_BUS.post(event);
-        if(!suitableEntity(p_213868_1_.getEntity())) return;
-        MagickContext context = MagickContext.create(world, spellContext().postContext).saveMana().caster(this.getOwner()).projectile(this).victim(p_213868_1_.getEntity()).force(this.spellContext().force / 3);
-        MagickReleaseHelper.releaseMagick(context);
+    public boolean hitEntityRemove(EntityRayTraceResult result) {
+        return false;
     }
 
     @Override
