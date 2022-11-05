@@ -8,4 +8,5 @@ public class LibContext {
     public static final String POSITION = "position";
     public static final String DIRECTION = "direction";
     public static final String CONDITION = "condition";
+    public static final String MULTI_RELEASE = "multi_release";
 }

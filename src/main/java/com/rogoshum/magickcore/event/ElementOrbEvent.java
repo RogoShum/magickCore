@@ -105,10 +105,9 @@ public class ElementOrbEvent {
     public void onDrops(LivingDropsEvent event)
     {
         ExtraDataHelper.entityStateData(event.getEntityLiving(), state -> {
-            if(event.getEntityLiving() instanceof IMob && !event.getEntityLiving().world.isRemote)
-            {
-                if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived())
-                {
+            if(event.getEntityLiving() instanceof IMob && !event.getEntityLiving().world.isRemote) {
+                /*
+                if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived()) {
                     ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
                     Vector3d vec = event.getEntityLiving().getPositionVec();
                     orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
@@ -117,8 +116,7 @@ public class ElementOrbEvent {
                     orb.setShooter(event.getEntityLiving());
                     event.getEntityLiving().world.addEntity(orb);
                 }
-                else
-                {
+                else {
                     ManaPowerEntity orb = new ManaPowerEntity(ModEntities.mana_power.get(), event.getEntityLiving().world);
                     Vector3d vec = event.getEntityLiving().getPositionVec();
                     orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
@@ -126,6 +124,17 @@ public class ElementOrbEvent {
                     orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
                     event.getEntityLiving().world.addEntity(orb);
                 }
+
+                 */
+                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
+                Vector3d vec = event.getEntityLiving().getPositionVec();
+                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                orb.spellContext().element(state.getElement());
+                orb.setOrbType(true);
+                orb.manaCapacity().setMana(event.getEntityLiving().getMaxHealth() * 0.005f);
+                orb.spellContext().tick(200);
+                orb.setShooter(event.getEntityLiving());
+                event.getEntityLiving().world.addEntity(orb);
             }
         });
 

@@ -40,8 +40,7 @@ public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSou
     public boolean spawnGlowBlock() {
         return true;
     }
-    private void dropWoolItem()
-    {
+    private void dropWoolItem() {
         if(this.world.isRemote) return;
         ItemStack stack = new ItemStack(ModItems.element_wool.get());
         CompoundNBT tag = new CompoundNBT();

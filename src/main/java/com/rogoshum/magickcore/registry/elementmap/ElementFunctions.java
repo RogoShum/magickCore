@@ -1,15 +1,14 @@
 package com.rogoshum.magickcore.registry.elementmap;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.ElementEvent;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.registry.ElementMap;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Function;
 
-public class ElementFunctions extends ElementMap<EnumApplyType, Function<MagickContext, Boolean>> {
+public class ElementFunctions extends ElementMap<ApplyType, Function<MagickContext, Boolean>> {
     private ElementFunctions(){}
 
     public static ElementFunctions create(){

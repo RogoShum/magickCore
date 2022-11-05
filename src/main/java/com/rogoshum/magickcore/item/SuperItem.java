@@ -1,15 +1,13 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.magick.MagickElement;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
-import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
@@ -45,7 +43,7 @@ public class SuperItem extends BaseItem {
             PositionContext positionContext = PositionContext.create(playerIn.getPositionVec());
             SpawnContext spawnContext = new SpawnContext();
             MagickElement element = ExtraDataHelper.entityStateData(playerIn).getElement();
-            MagickContext context = MagickContext.create(worldIn).caster(playerIn).applyType(EnumApplyType.SPAWN_ENTITY);
+            MagickContext context = MagickContext.create(worldIn).caster(playerIn).applyType(ApplyType.SPAWN_ENTITY);
             context.addChild(spawnContext);
             context.tick(mana).element(element);
             switch (state.getElement().type()) {

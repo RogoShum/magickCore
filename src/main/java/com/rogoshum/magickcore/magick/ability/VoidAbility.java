@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.magick.ability;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.init.ModDamage;

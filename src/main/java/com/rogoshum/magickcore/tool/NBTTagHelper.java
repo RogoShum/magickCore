@@ -98,8 +98,7 @@ public class NBTTagHelper {
             consumer.accept(tag.getUniqueId(s));
     }
 
-    public static CompoundNBT getBlockTag(CompoundNBT tag)
-    {
+    public static CompoundNBT getBlockTag(CompoundNBT tag) {
         return tag.getCompound("BlockEntityTag");
     }
 

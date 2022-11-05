@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.magick.condition;
 
-import com.rogoshum.magickcore.enums.EnumTargetType;
+import com.rogoshum.magickcore.enums.TargetType;
 import com.rogoshum.magickcore.lib.LibConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,8 +22,8 @@ public class EntityTypeCondition extends Condition{
     }
 
     @Override
-    public EnumTargetType getType() {
-        return EnumTargetType.TARGET;
+    public TargetType getType() {
+        return TargetType.TARGET;
     }
 
     @Override

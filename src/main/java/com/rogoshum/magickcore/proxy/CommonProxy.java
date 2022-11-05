@@ -74,6 +74,9 @@ public class CommonProxy implements IProxy {
 
 	}
 
+	@Override
+	public void initBlockRenderer() {}
+
 	public void createThread() {
 		if (magickThread != null) {
 			magickThread.interrupt();

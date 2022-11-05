@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.registry.MagickRegistry;
@@ -22,7 +22,7 @@ public class ElementMeatItem extends ElementContainerItem{
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if (tag.contains("ELEMENT")) {
-            MagickContext attribute = new MagickContext(worldIn).applyType(EnumApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(300).force(2);
+            MagickContext attribute = new MagickContext(worldIn).applyType(ApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(300).force(2);
             attribute.addChild(TraceContext.create(entityLiving));
             MagickReleaseHelper.releaseMagick(attribute);
         }

@@ -1,10 +1,6 @@
 package com.rogoshum.magickcore.magick.context.child;
 
-import com.rogoshum.magickcore.enums.EnumApplyType;
 import com.rogoshum.magickcore.lib.LibContext;
-import com.rogoshum.magickcore.lib.LibItem;
-import com.rogoshum.magickcore.magick.context.SpellContext;
-import com.rogoshum.magickcore.tool.ToolTipHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;

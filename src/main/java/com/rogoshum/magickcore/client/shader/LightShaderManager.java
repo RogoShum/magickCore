@@ -146,11 +146,16 @@ public class LightShaderManager {
             ILightSourceEntity light = lightSource.get(i);
             if(light == null) continue;
             float r = light.getColor().r() * 0.75f;
-            float g = light.getColor().g() * 0.5f;
+            float g = light.getColor().g() * 0.65f;
             float b = light.getColor().b();
-            float alpha = (r + g + b) / 2.25f;
+            float alpha = (r + g + b) / 3f;
             alpha = 1f - alpha;
             alpha *= 2f;
+            float scale = (Math.max(15f, light.getSourceLight()) / 15f);
+            r = r*r * scale + (1-scale) * r;
+            g = g*g * scale + (1-scale) * g;
+            b = b*b* scale + (1-scale) * b;
+
             //alpha += 1 - (Math.max(15f, light.getSourceLight()) / 30f);
             int pos = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].position");
             GL20.glUniform3f(pos, (float)light.positionVec().x, (float)light.positionVec().y, (float)light.positionVec().z);

@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.event.magickevent;
 
 import com.rogoshum.magickcore.api.event.ElementEvent;
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ElementThingEvent {

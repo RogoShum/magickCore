@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.MagickElement;
@@ -32,7 +32,7 @@ public class StarStaffItem extends ManaItem {
             TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-        context.applyType(EnumApplyType.SPAWN_ENTITY);
+        context.applyType(ApplyType.SPAWN_ENTITY);
         return MagickReleaseHelper.releaseMagick(context);
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.render.IEasyRender;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderHelper;
@@ -20,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ReuseableStream;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -317,6 +319,19 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     public void render(RenderParams renderParams) {
         MatrixStack matrixStackIn = renderParams.matrixStack;
         matrixStackIn.push();
+        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
+        if(Minecraft.getInstance().isGamePaused()) {
+            partialTicks = 0;
+        }
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+
+        double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
+        double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
+        double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
+        renderX = x - camX;
+        renderY = y - camY;
+        renderZ = z - camZ;
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
@@ -343,18 +358,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     @Override
     public void update() {
         if (this.texture == null) return;
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        double camX = cam.x, camY = cam.y, camZ = cam.z;
-        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
-        if(Minecraft.getInstance().isGamePaused()) {
-            partialTicks = 0;
-        }
-        double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
-        double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
-        double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
-        renderX = x - camX;
-        renderY = y - camY;
-        renderZ = z - camZ;
+
         renderAlpha = getAlpha(this.alpha);
         Vector3d[] QuadVector = RenderHelper.QuadVector;
         Vector3d V0 = QuadVector[0];

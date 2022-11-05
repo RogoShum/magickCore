@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.entity.pointed.*;
 import com.rogoshum.magickcore.entity.projectile.*;
 import com.rogoshum.magickcore.entity.radiated.*;
@@ -55,17 +56,10 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<WindEntity>> wind = Entities.register(LibEntities.WIND, () -> EntityType.Builder.create(WindEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.WIND));
 	public static final RegistryObject<EntityType<GravityLiftEntity>> gravity_lift = Entities.register(LibEntities.GRAVITY_LIFT, () -> EntityType.Builder.create(GravityLiftEntity::new, EntityClassification.MISC).size(1.0f, 1.0f).build(LibEntities.GRAVITY_LIFT));
 	public static final RegistryObject<EntityType<PlaceableItemEntity>> placeable_entity = Entities.register(LibEntities.PLACEABLE_ENTITY, () -> EntityType.Builder.create(PlaceableItemEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.PLACEABLE_ENTITY));
-
-	@SubscribeEvent
-    public void setupAttributes(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            //GlobalEntityTypeAttributes.put(time_manager, MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).create());
-        });
-    }
+	public static final RegistryObject<EntityType<MageVillagerEntity>> MAGE = Entities.register(LibEntities.MAGE, () -> EntityType.Builder.create(MageVillagerEntity::new, EntityClassification.CREATURE).size(0.6F, 1.95F).trackingRange(10).build(LibEntities.MAGE));
 	
 	@SubscribeEvent
-	public void registerEntitySpawnEggs(final RegistryEvent.Register<Item> event)
-	{
+	public void registerEntitySpawnEggs(final RegistryEvent.Register<Item> event) {
 		MagickCore.LOGGER.info("Loading SpawnEggs...");
 		event.getRegistry().registerAll
 		(

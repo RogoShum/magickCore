@@ -9,6 +9,7 @@
     "MixinLivingRender",
     "MixinMobEntity",
     "MixinProfilerChange",
+    "MixinRecipeManager",
     "MixinWorld"
   ],
   "minVersion": "0.8",

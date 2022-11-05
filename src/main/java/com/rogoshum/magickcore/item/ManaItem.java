@@ -1,27 +1,16 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.*;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.event.AdvancementsEvent;
 import com.rogoshum.magickcore.lib.*;
-import com.rogoshum.magickcore.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.magick.extradata.ItemExtraData;
 import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
-import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.tool.RoguelikeHelper;
-import com.rogoshum.magickcore.init.ManaMaterials;
-import com.rogoshum.magickcore.network.ManaItemDataPack;
-import com.rogoshum.magickcore.network.Networking;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
@@ -35,7 +24,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -153,8 +141,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
         return super.onEntityItemUpdate(stack, entity);
     }
 
-    private void updateData(ItemStack stack, Entity entityIn, int slot)
-    {
+    private void updateData(ItemStack stack, Entity entityIn, int slot) {
         /*
         if(!entityIn.world.isRemote())
         {
@@ -181,14 +168,6 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        if(entityLiving instanceof ServerPlayerEntity) {
-            if (stack.getItem() instanceof OrbStaffItem)
-                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.ORB_STAFF);
-            if (stack.getItem() instanceof StarStaffItem)
-                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.STAR_STAFF);
-            if (stack.getItem() instanceof LaserStaffItem)
-                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityLiving, LibAdvancements.LASER_STAFF);
-        }
         ExtraDataHelper.entityData(entityLiving).<EntityStateData>execute(LibEntityData.ENTITY_STATE, data -> releaseMagick(entityLiving, data, stack));
 
         return super.onItemUseFinish(stack, worldIn, entityLiving);

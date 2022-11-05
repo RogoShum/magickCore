@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.item;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.entity.projectile.ManaElementOrbEntity;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.event.ElementOrbEvent;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.magick.MagickElement;
@@ -43,7 +43,7 @@ public class OrbBottleItem extends BaseItem{
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")){
             MagickElement element = MagickRegistry.getElement(tag.getString("ELEMENT"));
-            MagickContext attribute = new MagickContext(worldIn).tick(60).<MagickContext>force(2).victim(entityLiving).element(element).applyType(EnumApplyType.DE_BUFF);
+            MagickContext attribute = new MagickContext(worldIn).tick(60).<MagickContext>force(2).victim(entityLiving).element(element).applyType(ApplyType.DE_BUFF);
             MagickReleaseHelper.releaseMagick(attribute);
             return ItemStack.EMPTY;
         }

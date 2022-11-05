@@ -54,6 +54,11 @@ public class MagickRegistry {
             return (MagickElement) value;
         return ModElements.ORIGIN;
     }
+    public static MagickElement getRandomElement() {
+        IRegistry<MagickElement> elementMap = (IRegistry<MagickElement>) registries.get(LibRegistry.ELEMENT);
+        String[] keys = elementMap.registry().keySet().toArray(new String[0]);
+        return elementMap.get(keys[MagickCore.rand.nextInt(keys.length)]);
+    }
 
     public static ElementFunctions getElementFunctions(String type) {
         Object value = registries.get(LibRegistry.ELEMENT_FUNCTION).get(type);

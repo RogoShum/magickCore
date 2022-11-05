@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.magick.extradata.entity;
 
-import com.rogoshum.magickcore.api.entity.IManaMob;
+import com.rogoshum.magickcore.api.entity.IManaTaskMob;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.enums.EnumManaLimit;
 import com.rogoshum.magickcore.init.ModBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
@@ -195,7 +195,7 @@ public class EntityStateData extends EntityExtraData {
     }
 
     public boolean isEntitySuitable(Entity entity) {
-        return entity instanceof LivingEntity || entity instanceof IManaMob;
+        return entity instanceof LivingEntity || entity instanceof IManaTaskMob;
     }
 
     public void read(CompoundNBT nbt) {

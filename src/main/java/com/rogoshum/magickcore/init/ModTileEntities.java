@@ -48,4 +48,8 @@ public class ModTileEntities {
     public static RegistryObject<TileEntityType<GlowAirTileEntity>> GLOW_AIR_TILE_ENTITY = TILE_ENTITY.register("glow_air_tile_entity"
             , () -> TileEntityType.Builder.create(GlowAirTileEntity::new
                     , ModBlocks.fake_air.get(), ModBlocks.fake_cave_air.get(), ModBlocks.fake_water.get()).build(null));
+
+    public static RegistryObject<TileEntityType<MaterialJarTileEntity>> MATERIAL_JAR_TILE_ENTITY = TILE_ENTITY.register("material_jar_tile_entity"
+            , () -> TileEntityType.Builder.create(MaterialJarTileEntity::new
+                    , ModBlocks.MATERIAL_JAR.get()).build(null));
 }

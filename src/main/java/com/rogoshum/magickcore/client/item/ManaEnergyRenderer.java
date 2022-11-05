@@ -4,20 +4,31 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.init.ManaMaterials;
 import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.item.ContextCoreItem;
 import com.rogoshum.magickcore.item.MagickContextItem;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.Color;
 import com.rogoshum.magickcore.magick.context.SpellContext;
 import com.rogoshum.magickcore.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.magick.materials.Material;
+import com.rogoshum.magickcore.proxy.ClientProxy;
+import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
@@ -45,7 +56,21 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.push();
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();
         matrixStack.translate(0.5, 0.5, 0.5);
-        SpellContext spellContext = ExtraDataHelper.itemManaData(stack).spellContext();
+        ItemManaData itemManaData = ExtraDataHelper.itemManaData(stack);
+        SpellContext spellContext = itemManaData != null ? itemManaData.spellContext() : new SpellContext();
+        if(stack.getItem() instanceof ContextCoreItem) {
+            RenderType RENDER_TYPE = RenderType.getEntityCutout(TAKEN);
+            Color color = Color.create(0.3f, 0.2f, 0f);
+            for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
+                float[] vertex = RenderHelper.vertex_list[i];
+                matrixStack.push();
+                matrixStack.translate(vertex[0] * 0.6, vertex[1] * 0.6, vertex[2] * 0.6);
+                matrixStack.scale(0.25f, 0.25f, 0.25f);
+                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE)
+                        , new RenderHelper.RenderContext(1.0f, color, combinedLight));
+                matrixStack.pop();
+            }
+        }
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         matrixStack.push();
         matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
@@ -89,6 +114,16 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             if(spawnContext.entityType != null) {
                renderEntity(spawnContext.entityType, matrixStack, bufferIn, combinedLight);
             }
+        }
+
+        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().world);
+        if(entity instanceof ContextCreatorEntity)
+            renderMaterial(((ContextCreatorEntity) entity).getInnerManaData(), matrixStack, bufferIn, combinedLight);
+        else if(entity instanceof IMaterialLimit)
+            renderMaterial((IMaterialLimit) entity, matrixStack, bufferIn, combinedLight);
+        else if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+            Material material = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
+            renderMaterial(material, matrixStack, bufferIn, combinedLight);
         }
 
         matrixStack.pop();
@@ -190,6 +225,23 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
                     , 0, matrixStack
                     , bufferIn, combinedLight);
         }
+        matrixStack.pop();
+    }
+
+    public void renderMaterial(IMaterialLimit material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
+        renderMaterial(material.getMaterial(), matrixStack, bufferIn, combinedLight);
+    }
+
+    public void renderMaterial(Material material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
+        matrixStack.push();
+        ItemStack stack = new ItemStack(material.getItem());
+        float f3 = ((float) MagickCore.proxy.getRunTick() + Minecraft.getInstance().getRenderPartialTicks()) / 100.0F;
+        matrixStack.translate(0, -0.1, 0);
+        matrixStack.rotate(Vector3f.YP.rotation(f3));
+        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack, null, null);
+        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStack, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+        renderTypeBuffer.finish();
         matrixStack.pop();
     }
 }

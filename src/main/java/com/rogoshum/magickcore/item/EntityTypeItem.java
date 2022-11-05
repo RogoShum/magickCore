@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.init.ModGroup;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
@@ -39,14 +39,17 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
 
     public void fillEntity(NonNullList<ItemStack> items, ItemStack stack, EntityType<?> entityType) {
         ItemStack itemStack = stack.copy();
-        ExtraDataHelper.itemManaData(itemStack, (data) -> data.spellContext().addChild(SpawnContext.create(entityType)));
+        ExtraDataHelper.itemManaData(itemStack, (data) -> {
+            data.spellContext().addChild(SpawnContext.create(entityType));
+            data.spellContext().applyType(ApplyType.SPAWN_ENTITY);
+        });
         items.add(itemStack);
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
-        ExtraDataHelper.itemManaData(sample, (data) -> data.spellContext().applyType(EnumApplyType.SPAWN_ENTITY));
+        ExtraDataHelper.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.SPAWN_ENTITY));
         if (group == ModGroup.entityTypeGroup) {
             ForgeRegistries.ENTITIES.getEntries().forEach(type -> {
                 if(type.getValue().create(Minecraft.getInstance().world) instanceof LivingEntity)

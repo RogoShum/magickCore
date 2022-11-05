@@ -32,4 +32,6 @@ public interface IProxy {
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction();
     void updateRenderer();
     public void setClippingHelper(ClippingHelper clippingHelper);
+
+    public void initBlockRenderer();
 }

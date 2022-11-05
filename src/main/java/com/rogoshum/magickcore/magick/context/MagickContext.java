@@ -1,12 +1,7 @@
 package com.rogoshum.magickcore.magick.context;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.tool.ToolTipHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 public class MagickContext extends SpellContext{
@@ -31,7 +26,7 @@ public class MagickContext extends SpellContext{
     }
 
     public MagickContext noCost() {
-        this.noCost = false;
+        this.noCost = true;
         return this;
     }
 

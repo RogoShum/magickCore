@@ -15,7 +15,20 @@ public class LibEffect {
     public static final String MANA_CONSUM_REDUCE_I = "mana_consum_reduce_i";
     public static final String MANA_CONSUM_REDUCE_II = "mana_consum_reduce_ii";
     public static final String MANA_FORCE = "mana_force";
+    public static final String MANA_FORCE_I = "mana_force_i";
+    public static final String MANA_FORCE_II = "mana_force_ii";
     public static final String MANA_STASIS = "mana_stasis";
+    public static final String MANA_RANGE = "mana_range";
+    public static final String MANA_RANGE_I = "mana_range_i";
+    public static final String MANA_RANGE_II = "mana_range_ii";
+    public static final String MULTI_RELEASE = "multi_release";
+    public static final String MULTI_RELEASE_I = "multi_release_i";
+    public static final String CHAOS_THEOREM = "chaos_theorem";
+    public static final String MANA_CONVERT = "mana_convert";
+    public static final String MANA_CONVERT_I = "mana_convert_i";
+    public static final String MANA_TICK = "mana_tick";
+    public static final String MANA_TICK_I = "mana_tick_i";
+    public static final String MANA_TICK_II = "mana_tick_ii";
 
     public static final String NOTHING = "refreshing";
 }

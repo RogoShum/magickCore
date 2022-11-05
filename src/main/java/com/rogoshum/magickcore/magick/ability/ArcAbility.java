@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.entity.projectile.ManaStarEntity;
@@ -66,7 +66,7 @@ public class ArcAbility{
                         starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
                         starEntity.spellContext().element(MagickRegistry.getElement(LibElements.ARC));
                         starEntity.spellContext().force(attribute.force / 2F);
-                        starEntity.spellContext().applyType(EnumApplyType.ATTACK);
+                        starEntity.spellContext().applyType(ApplyType.ATTACK);
                         starEntity.spellContext().tick(Math.max(attribute.tick / 10, 20));
                         starEntity.spellContext().range(0);
                         starEntity.spellContext().addChild(TraceContext.create(entity1.getUniqueID()));

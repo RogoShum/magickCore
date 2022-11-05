@@ -1,11 +1,17 @@
 package com.rogoshum.magickcore.recipes;
 
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.init.ModRecipes;
+import com.rogoshum.magickcore.item.ContextCoreItem;
 import com.rogoshum.magickcore.item.MagickContextItem;
+import com.rogoshum.magickcore.item.ManaMaterialItem;
 import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
+import com.rogoshum.magickcore.tool.NBTTagHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;

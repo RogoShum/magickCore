@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibMagickCraftingRecipes;
 import com.rogoshum.magickcore.lib.LibRegistry;
 import com.rogoshum.magickcore.magick.context.child.*;
+import com.rogoshum.magickcore.magick.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.recipes.SpawnContext;
 import com.rogoshum.magickcore.registry.ObjectRegistry;
 import com.rogoshum.magickcore.tool.ExtraDataHelper;
@@ -18,6 +19,7 @@ import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.recipes.*;
 import com.rogoshum.magickcore.recipes.recipe.ElementItemRecipes;
 import com.rogoshum.magickcore.recipes.recipe.ElementToolRecipes;
+import net.minecraft.data.ShapedRecipeBuilder;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -118,8 +120,7 @@ public class ModRecipes {
     public static final MultiBlockHelper.PredicatePattern<PlaceableItemEntity> SPIRIT_CRYSTAL = new MultiBlockHelper.PredicatePattern<PlaceableItemEntity>("sc",
             (type) -> type != null && type.getItemStack() != null && type.getItemStack().getItem() == ModItems.spirit_crystal.get());
 
-    public static void init()
-    {
+    public static void init() {
         TagMatchItemContainer arcContainer = TagMatchItemContainer.create(element_crystal, getStringTagMap("ELEMENT", LibElements.ARC));
         arc_element_recipe = (SpecialRecipeSerializer<?>) new SpecialRecipeSerializer<>((r) -> new NBTRecipe(CopyTagContainer.create(arc, arcContainer, arcContainer, arcContainer, arcContainer).shapeless(), r){
             @Override
@@ -169,14 +170,19 @@ public class ModRecipes {
         }).setRegistryName("taken_element_recipe");
 
         ItemStack manaEnergy = new ItemStack(ModItems.MANA_ENERGY.get());
+
         ItemStack rangeEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemData(rangeEnergy).extraData().put(LibRegistry.ITEM_DATA, new ItemManaData());
         ExtraDataHelper.itemManaData(rangeEnergy, (data) -> data.spellContext().range(0.5f));
 
         ItemStack forceEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemData(forceEnergy).extraData().put(LibRegistry.ITEM_DATA, new ItemManaData());
         ExtraDataHelper.itemManaData(forceEnergy, (data) -> data.spellContext().force(0.5f));
 
         ItemStack tickEnergy = manaEnergy.copy();
+        ExtraDataHelper.itemData(tickEnergy).extraData().put(LibRegistry.ITEM_DATA, new ItemManaData());
         ExtraDataHelper.itemManaData(tickEnergy, (data) -> data.spellContext().tick(20));
+
         registerExplosionRecipe(TagMatchItemContainer.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.mana_dragon_breath.get()));
         registerExplosionRecipe(TagMatchItemContainer.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
         registerExplosionRecipe(TagMatchItemContainer.create(Items.BLAZE_ROD.toString()), rangeEnergy);
@@ -185,6 +191,7 @@ public class ModRecipes {
         registerExplosionRecipe(TagMatchItemContainer.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
         registerExplosionRecipe(TagMatchItemContainer.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.mana_spider_eye.get()));
         registerExplosionRecipe(TagMatchItemContainer.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.mana_nether_wart.get()));
+        registerExplosionRecipe(TagMatchItemContainer.create(Items.STICK.toString()), new ItemStack(ModItems.spirit_wood_stick.get()));
         registerExplosionRecipe(TagMatchItemContainer.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.element_crystal.get()), LibElements.ORIGIN));
 
         registerExplosionRecipe(TagMatchItemContainer.create(ModItems.solar.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.orb_bottle.get()), LibElements.SOLAR));
@@ -228,23 +235,55 @@ public class ModRecipes {
         recipe = new String[][][]
                 {
                         {
-                                {"", "sc", ""},
-                                {"sws", "sws", "sws"},
-                                {"", "sc", ""}
+                                {"sc", "sc"},
+                                {"sc", "sc"}
                         },
                         {
-                                {"", "sws", ""},
-                                {"", "sws", ""},
-                                {"", "sws", ""}
-                        },
-                        {
-                                {"", "", ""},
-                                {"", "", ""},
-                                {"", "sc", ""}
+                                {"sc", "sc"},
+                                {"sc", "sc"}
                         }
                 };
-        magickCrafting.register("diamond", new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
-            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(Items.DIAMOND));
+        magickCrafting.register(LibMagickCraftingRecipes.JAR, new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(ModItems.MATERIAL_JAR.get()));
+            spawnContext.living.world.addEntity(itemEntity);
+        })));
+
+        recipe = new String[][][]
+                {
+                        {
+                                {"sc", "sc", "sc"},
+                                {"sc", "sc", "sc"},
+                                {"sc", "sc", "sc"}
+                        },
+                        {
+                                {"sc", "sc", "sc"},
+                                {"sc", "", "sc"},
+                                {"sc", "sc", "sc"}
+                        },
+                        {
+                                {"sc", "sc", "sc"},
+                                {"sc", "sc", "sc"},
+                                {"sc", "sc", "sc"}
+                        }
+                };
+        magickCrafting.register(LibMagickCraftingRecipes.CAPACITY, new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(ModItems.magick_container.get()));
+            spawnContext.living.world.addEntity(itemEntity);
+        })));
+
+        recipe = new String[][][]
+                {
+                        {
+                                {"sws", "sc"},
+                                {"sc", "sws"}
+                        },
+                        {
+                                {"sc", "sws"},
+                                {"sws", "sc"}
+                        }
+                };
+        magickCrafting.register(LibMagickCraftingRecipes.CONTEXT, new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(ModItems.CONTEXT_CORE.get()));
             spawnContext.living.world.addEntity(itemEntity);
         })));
 
@@ -252,22 +291,19 @@ public class ModRecipes {
                 {
                         {
                                 {"sc", "sc"},
-                                {"sc", ""},
-                                {"", "sc"}
+                                {"sc", "sc"}
                         },
                         {
-                                {"sc", " "},
-                                {"", "sws"},
-                                {"", "sc"}
+                                {"sws", "sws"},
+                                {"sws", "sws"}
                         },
                         {
-                                {"", ""},
-                                {"", "sc"},
-                                {"", ""}
+                                {"sc", "sc"},
+                                {"sc", "sc"}
                         }
                 };
-        magickCrafting.register("sword", new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
-            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(Items.DIAMOND_SWORD));
+        magickCrafting.register(LibMagickCraftingRecipes.POINTER, new MagickCraftingRecipe(recipe, pattern, SpawnResult.create((spawnContext) -> {
+            ItemEntity itemEntity = new ItemEntity(spawnContext.living.world, spawnContext.vec.x, spawnContext.vec.y, spawnContext.vec.z, new ItemStack(ModItems.CONTEXT_POINTER.get()));
             spawnContext.living.world.addEntity(itemEntity);
         })));
 
@@ -280,8 +316,7 @@ public class ModRecipes {
     }
 
     @SubscribeEvent
-    public static void registerRecipes(final RegistryEvent.Register<IRecipeSerializer<?>> event)
-    {
+    public static void registerRecipes(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
         init();
         LivingLootsEvent.init();
         event.getRegistry().registerAll(
@@ -296,15 +331,7 @@ public class ModRecipes {
                 element_wool_recipe,
                 element_string_recipe,
                 ElementToolRecipes.element_any_recipe,
-                ElementItemRecipes.recipe_0,
-                ElementItemRecipes.recipe_1,
-                ElementItemRecipes.recipe_2,
-                ElementItemRecipes.recipe_3,
-                ElementItemRecipes.recipe_4,
-                ElementItemRecipes.recipe_5,
                 ElementItemRecipes.recipe_6,
-                ElementItemRecipes.recipe_7,
-                ElementItemRecipes.recipe_8,
                 ElementItemRecipes.recipe_9
         );
     }

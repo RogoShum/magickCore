@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -46,12 +46,10 @@ public class EntityEvents {
         }
     }
 
-    public static class MagickPreReleaseEvent extends EntityEvent
-    {
+    public static class MagickPreReleaseEvent extends EntityEvent {
         private float mana;
         private MagickContext context;
-        public MagickPreReleaseEvent(MagickContext context, float mana)
-        {
+        public MagickPreReleaseEvent(MagickContext context, float mana) {
             super(context.caster);
             this.mana = mana;
             this.context = context;
@@ -193,7 +191,7 @@ public class EntityEvents {
 
     public static class EntityVelocity extends EntityEvent {
         private float velocity = 1.0f;
-        private float inaccuracy = 0.5f;
+        private float inaccuracy = 10f;
         public EntityVelocity(Entity entity) {
             super(entity);
         }

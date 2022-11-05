@@ -2,10 +2,9 @@ package com.rogoshum.magickcore.magick;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.registry.MagickRegistry;
-import com.rogoshum.magickcore.tool.NBTTagHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -24,8 +23,8 @@ public class ManaData {
     private float force;
     private int range;
     private int tick;
-    private EnumApplyType applyType = EnumApplyType.NONE;
-    private EnumApplyType spawnType = EnumApplyType.NONE;
+    private ApplyType applyType = ApplyType.NONE;
+    private ApplyType spawnType = ApplyType.NONE;
     public EntityType<? extends Entity> spawnEntity;
 
     public static ManaData create() {
@@ -88,19 +87,19 @@ public class ManaData {
         this.range = range;
     }
 
-    public EnumApplyType getApplyType() {
+    public ApplyType getApplyType() {
         return applyType;
     }
 
-    public void setApplyType(EnumApplyType type) {
+    public void setApplyType(ApplyType type) {
         applyType = type;
     }
 
-    public EnumApplyType getSpawnType() {
+    public ApplyType getSpawnType() {
         return spawnType;
     }
 
-    public void setSpawnType(EnumApplyType type) {
+    public void setSpawnType(ApplyType type) {
         spawnType = type;
     }
 
@@ -144,9 +143,9 @@ public class ManaData {
         if(tag.contains("TICK"))
             this.tick = tag.getInt("TICK");
         if(tag.contains("APPLY_TYPE"))
-            this.applyType = EnumApplyType.getEnum(tag.getString("APPLY_TYPE"));
+            this.applyType = ApplyType.getEnum(tag.getString("APPLY_TYPE"));
         if(tag.contains("SPAWN_TYPE"))
-            this.spawnType = EnumApplyType.getEnum(tag.getString("SPAWN_TYPE"));
+            this.spawnType = ApplyType.getEnum(tag.getString("SPAWN_TYPE"));
         if(tag.contains("TRACE"))
             this.trace = tag.getBoolean("TRACE");
         Optional<EntityType<?>> typeOptional = EntityType.byKey(tag.getString("ENTITY_TYPE"));

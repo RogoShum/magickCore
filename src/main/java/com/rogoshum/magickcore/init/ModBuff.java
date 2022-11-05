@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibEntityData;
@@ -69,8 +69,7 @@ public class ModBuff{
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
                 living.heal(living.getMaxHealth() * 0.1f);
-                if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth())
-                {
+                if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
                     living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.1f);
                 }
                 living.hurtTime = 0;

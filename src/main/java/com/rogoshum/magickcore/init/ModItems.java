@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.init;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.item.MaterialJarItemRenderer;
 import com.rogoshum.magickcore.client.item.SpiritWoodStickRenderer;
 import com.rogoshum.magickcore.item.*;
 
@@ -11,6 +12,7 @@ import com.rogoshum.magickcore.item.placeable.SpiritCrystalItem;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.lib.LibMaterial;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
@@ -21,13 +23,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ModItems {
     public static final String SELECTOR = "selector";
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MagickCore.MOD_ID);
+    //block items
+    public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new BlockItem(ModBlocks.MATERIAL_JAR.get()
+            , BaseItem.properties().setISTER(() -> MaterialJarItemRenderer::new)));
+    public static final RegistryObject<Item> SPIRIT_ORE = ITEMS.register(LibItem.SPIRIT_ORE, () -> new BlockItem(ModBlocks.SPIRIT_ORE.get()
+            , BaseItem.properties()));
+
     public static final RegistryObject<Item> wand = ITEMS.register(LibItem.WAND, WandItem::new);
     public static final RegistryObject<ManaItem> star_staff = ITEMS.register(LibItem.STAR_STAFF, StarStaffItem::new);
     public static final RegistryObject<ManaItem> orb_staff = ITEMS.register(LibItem.ORB_STAFF, OrbStaffItem::new);
     public static final RegistryObject<ManaItem> laser_staff = ITEMS.register(LibItem.LASER_STAFF, LaserStaffItem::new);
     public static final RegistryObject<Item> super_spawner = ITEMS.register(LibItem.SUPER_SPAWNER, SuperItem::new);
-    //public static final RegistryObject<Item> rune = ITEMS.register(LibItem.RUNE, RuneItem::new);
-    //public static final RegistryObject<Item> rift = ITEMS.register(LibItem.RIFT, RiftItem::new);
 
     public static final RegistryObject<Item> CONTEXT_CORE = ITEMS.register(LibItem.CONTEXT_CORE, ContextCoreItem::new);
     public static final RegistryObject<Item> MAGICK_CORE = ITEMS.register(LibItem.MAGICK_CONTEXT, MagickContextItem::new);
@@ -35,8 +41,6 @@ public class ModItems {
     public static final RegistryObject<Item> STAFF = ITEMS.register(LibItem.STAFF, StaffItem::new);
     public static final RegistryObject<Item> ENTITY_TYPE = ITEMS.register(LibItem.ENTITY_TYPE_ITEM, EntityTypeItem::new);
     public static final RegistryObject<Item> MANA_ENERGY = ITEMS.register(LibItem.MANA_ENERGY, ManaEnergyItem::new);
-
-    //public static final RegistryObject<ManaItem> buff = ITEMS.register("buff", BuffItem::new);
 
     public static final RegistryObject<Item> arc = ITEMS.register(LibItem.ARC, () -> new ElementItem(LibElements.ARC));
     public static final RegistryObject<Item> solar = ITEMS.register(LibItem.SOLAR, () -> new ElementItem(LibElements.SOLAR));
@@ -48,14 +52,9 @@ public class ModItems {
 
     //material
     public static final RegistryObject<Item> mana_spider_eye = ITEMS.register("mana_spider_eye", ManaFermentedSpiderEyeItem::new);
-    //public static final RegistryObject<Item> mana_glowstone = ITEMS.register("mana_glowstone", ManaForceUpgradeItem::new);
     public static final RegistryObject<Item> mana_gunpowder = ITEMS.register("mana_gunpowder", ManaGunpowderItem::new);
-    //public static final RegistryObject<Item> mana_radstone = ITEMS.register("mana_redstone", ManaTickUpgradeItem::new);
-    //public static final RegistryObject<Item> mana_blaze_rod = ITEMS.register("mana_blaze_rod", ManaRangeUpgradeItem::new);
     public static final RegistryObject<Item> mana_dragon_breath = ITEMS.register("mana_dragon_breath", ManaDragonBreathItem::new);
     public static final RegistryObject<Item> mana_nether_wart = ITEMS.register("mana_nether_wart", ManaNetherWartItem::new);
-
-    //public static final RegistryObject<Item> magick_crafting = ITEMS.register("magick_crafting", MagickCraftingItem::new);
     public static final RegistryObject<PlaceableEntityItem> spirit_crystal = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> spirit_wood_stick = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties().setISTER(() -> SpiritWoodStickRenderer::new), 0.4f, 0.4f));
     public static final RegistryObject<Item> magick_container = ITEMS.register("magick_container", ManaCapacityItem::new);
@@ -82,7 +81,7 @@ public class ModItems {
     //public static final RegistryObject<Item> living_entity_selector = ITEMS.register("living_entity_selector", () -> new LifeRepeaterItem(LivingEntitySelector::new, SELECTOR));
 
     //public static final RegistryObject<Item> origin_material = ITEMS.register("origin_material", () -> new ManaMaterialsItem(LibMaterial.ORIGIN));
-    public static final RegistryObject<Item> nether_star_material = ITEMS.register("nether_star_material", () -> new ManaMaterialsItem(LibMaterial.NETHER_STAR));
-    public static final RegistryObject<Item> ender_dragon_material = ITEMS.register("ender_dragon_material", () -> new ManaMaterialsItem(LibMaterial.ENDER_DRAGON));
-    public static final RegistryObject<Item> thunder_material = ITEMS.register("thunder_material", () -> new ManaMaterialsItem(LibMaterial.THUNDER));
+    public static final RegistryObject<Item> nether_star_material = ITEMS.register("nether_star_material", () -> new ManaMaterialItem(LibMaterial.NETHER_STAR));
+    public static final RegistryObject<Item> ender_dragon_material = ITEMS.register("ender_dragon_material", () -> new ManaMaterialItem(LibMaterial.ENDER_DRAGON));
+    public static final RegistryObject<Item> thunder_material = ITEMS.register("thunder_material", () -> new ManaMaterialItem(LibMaterial.THUNDER));
 }

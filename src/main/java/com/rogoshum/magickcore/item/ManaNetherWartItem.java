@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.item;
 
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
@@ -30,7 +30,7 @@ public class ManaNetherWartItem extends BaseItem implements IManaMaterial {
 
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
-        data.spellContext().applyType(EnumApplyType.ATTACK);
+        data.spellContext().applyType(ApplyType.ATTACK);
         return true;
     }
 

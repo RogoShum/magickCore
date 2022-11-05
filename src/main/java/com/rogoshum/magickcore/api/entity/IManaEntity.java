@@ -2,8 +2,8 @@ package com.rogoshum.magickcore.api.entity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.enums.EnumTargetType;
+import com.rogoshum.magickcore.enums.ApplyType;
+import com.rogoshum.magickcore.enums.TargetType;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.magick.context.MagickContext;
@@ -56,7 +56,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
             if(spellContext().containChild(LibContext.CONDITION)) {
                 ConditionContext context = spellContext().getChild(LibContext.CONDITION);
                 context.conditions.forEach((condition -> {
-                    if(condition.getType() == EnumTargetType.TARGET) {
+                    if(condition.getType() == TargetType.TARGET) {
                         if(!condition.test(living))
                             pass.set(false);
                     } else if(!condition.test(this.getOwner()))
@@ -74,7 +74,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
     }
 
     default boolean suitableEntity(Entity entity) {
-        EnumApplyType applyType = spellContext().applyType;
+        ApplyType applyType = spellContext().applyType;
         if(spellContext().postContext != null)
             applyType = spellContext().postContext.applyType;
 

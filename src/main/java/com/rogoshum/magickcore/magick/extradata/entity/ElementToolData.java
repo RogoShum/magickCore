@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.magick.extradata.entity;
 
-import com.rogoshum.magickcore.api.entity.IManaMob;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.api.entity.IManaTaskMob;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.lib.LibElementTool;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.context.MagickContext;
@@ -20,7 +20,7 @@ public class ElementToolData extends EntityExtraData {
 
     @Override
     public boolean isEntitySuitable(Entity entity) {
-        return entity instanceof LivingEntity || entity instanceof IManaMob;
+        return entity instanceof LivingEntity || entity instanceof IManaTaskMob;
     }
 
     private float addtionDamage;
@@ -38,7 +38,7 @@ public class ElementToolData extends EntityExtraData {
                     }
 
                     for (String key : tag.keySet()) {
-                        MagickContext context = new MagickContext(entity.world).force(1).applyType(EnumApplyType.ELEMENT_TOOL);
+                        MagickContext context = new MagickContext(entity.world).force(1).applyType(ApplyType.ELEMENT_TOOL);
                         context.addChild(ItemContext.create(stack));
                         MagickReleaseHelper.releaseMagick(context);
                         //MagickReleaseHelper.releaseMagick(MagickContext.create(entity.world).entity(entity).force(1).applyType(Enum));
@@ -49,7 +49,7 @@ public class ElementToolData extends EntityExtraData {
         }
 
         for(String key : map.keySet()) {
-            MagickContext context = new MagickContext(entity.world).<MagickContext>force(map.get(key)).caster(entity).applyType(EnumApplyType.ELEMENT_TOOL);
+            MagickContext context = new MagickContext(entity.world).<MagickContext>force(map.get(key)).caster(entity).applyType(ApplyType.ELEMENT_TOOL);
             MagickReleaseHelper.releaseMagick(context);
         }
 

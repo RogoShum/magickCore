@@ -5,10 +5,8 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.block.SpiritCrystalBlock;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.init.ModBlocks;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.init.ModRecipes;
-import com.rogoshum.magickcore.init.ModTileEntities;
+import com.rogoshum.magickcore.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.item.placeable.SpiritCrystalItem;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.magick.Color;
@@ -44,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITickableTileEntity {
     public static final int transNeed = 120;
     public int transTick;
+    private PlaceableItemEntity corePlaceable;
 
     public MagickCraftingTileEntity() {
         super(ModTileEntities.magick_crafting_tileentity.get());
@@ -97,8 +96,24 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                 break;
             }
         }
+
         if(transTick > 0)
             transTick--;
+
+        if(corePlaceable != null && !corePlaceable.isAlive()) {
+            corePlaceable = null;
+            return;
+        }
+        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.placeable_entity.get(), new AxisAlignedBB(pos.add(0, 1, 0)).grow(1, 1, 1), (entity) -> entity != corePlaceable);
+        if(placeableItemEntities.size() < 1) return;
+        if(corePlaceable == null)
+            corePlaceable = placeableItemEntities.get(0);
+        else {
+            for (PlaceableItemEntity placeableItem : placeableItemEntities){
+                if(placeableItem.getOrigin() != corePlaceable)
+                    placeableItem.remove();
+            }
+        }
     }
 
     private void addParticle(float scale, Vector3d vec) {

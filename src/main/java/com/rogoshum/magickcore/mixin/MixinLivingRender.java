@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.mixin;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.buff.ManaBuff;
+import com.rogoshum.magickcore.buff.ManaBuff;
 import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.lib.LibBuff;
 import com.rogoshum.magickcore.lib.LibElements;

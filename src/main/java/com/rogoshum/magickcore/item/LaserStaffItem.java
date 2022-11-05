@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibRegistry;
 import com.rogoshum.magickcore.magick.context.MagickContext;
@@ -14,11 +13,7 @@ import com.rogoshum.magickcore.tool.ExtraDataHelper;
 import com.rogoshum.magickcore.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.init.ModEntities;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.item.ItemStack;
-
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class LaserStaffItem extends ManaItem {
     public LaserStaffItem() {
@@ -29,7 +24,7 @@ public class LaserStaffItem extends ManaItem {
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
             MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
-            MagickContext context = MagickContext.create(playerIn.world, data.spellContext()).<MagickContext>applyType(EnumApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
+            MagickContext context = MagickContext.create(playerIn.world, data.spellContext()).<MagickContext>applyType(ApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
             SpawnContext spawnContext = SpawnContext.create(ModEntities.mana_laser.get());
             context.addChild(spawnContext);
             context.post(data.spellContext().copy().element(element));

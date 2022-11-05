@@ -61,14 +61,23 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
         float scale = entity.manaCapacity().getMana() / entity.manaCapacity().getMaxMana() * this.scale;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2).useShader(LibShaders.slime), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), lightmap));
+        for (int i = 0; i < 2; ++i) {
+            if(entity.getMode())
+                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), lightmap));
+            else
+                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), lightmap));
+            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        }
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(renderType_1), this::render);
-        map.put(new RenderMode(renderType_2, LibShaders.slime), this::renderCapacity);
+        if(entity.getMode())
+            map.put(new RenderMode(renderType_2, LibShaders.opacity), this::renderCapacity);
+        else
+            map.put(new RenderMode(renderType_2, LibShaders.slime), this::renderCapacity);
         return map;
     }
 }

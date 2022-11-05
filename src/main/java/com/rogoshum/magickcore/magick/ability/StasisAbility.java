@@ -63,7 +63,7 @@ public class StasisAbility{
 
     public static boolean applyDebuff(MagickContext attribute) {
         if(attribute.victim == null) return false;
-        if(attribute.tick >= EnumManaLimit.TICK.getValue())
+        if(attribute.force >= 7)
             return ModBuff.applyBuff(attribute.victim, LibBuff.FREEZE, attribute.tick, attribute.force, false);
         return ModBuff.applyBuff(attribute.victim, LibBuff.SLOW, attribute.tick, attribute.force, false);
     }

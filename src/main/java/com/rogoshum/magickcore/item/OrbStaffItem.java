@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.context.MagickContext;
 import com.rogoshum.magickcore.magick.MagickElement;
@@ -31,13 +30,13 @@ public class OrbStaffItem extends ManaItem {
         SpellContext orbContext = data.spellContext().copy().element(element);
         SpawnContext spawnSphere = SpawnContext.create(ModEntities.mana_sphere.get());
         orbContext.addChild(spawnSphere);
-        orbContext.applyType(EnumApplyType.SPAWN_ENTITY);
+        orbContext.applyType(ApplyType.SPAWN_ENTITY);
         orbContext.post(data.spellContext());
         orbContext.postContext.element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.mana_orb.get());
         context.addChild(spawnContext);
         context.post(orbContext);
-        context.applyType(EnumApplyType.SPAWN_ENTITY);
+        context.applyType(ApplyType.SPAWN_ENTITY);
         if(context.postContext.containChild(LibContext.TRACE)) {
             TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);

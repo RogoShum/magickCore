@@ -22,11 +22,6 @@ public class StaffItem extends ManaItem implements IManaContextItem {
         ItemManaData data = ExtraDataHelper.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
         MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
-        if(magickContext.containChild(LibContext.TRACE)) {
-            TraceContext traceContext = magickContext.getChild(LibContext.TRACE);
-            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
-        }
-
         MagickContext context = magickContext.caster(playerIn).element(element);
         return MagickReleaseHelper.releaseMagick(context);
     }

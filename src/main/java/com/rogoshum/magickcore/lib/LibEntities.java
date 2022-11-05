@@ -37,6 +37,6 @@ public class LibEntities {
     public static final String WIND = "wind";
     public static final String GRAVITY_LIFT = "gravity_lift";
     public static final String PLACEABLE_ENTITY = "placeable_entity";
-
+    public static final String MAGE = "mage";
 
 }

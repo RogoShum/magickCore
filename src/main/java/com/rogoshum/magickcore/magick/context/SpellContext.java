@@ -1,20 +1,16 @@
 package com.rogoshum.magickcore.magick.context;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.enums.EnumApplyType;
+import com.rogoshum.magickcore.enums.ApplyType;
 import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibElements;
 import com.rogoshum.magickcore.lib.LibItem;
 import com.rogoshum.magickcore.magick.MagickElement;
 import com.rogoshum.magickcore.magick.context.child.ChildContext;
-import com.rogoshum.magickcore.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.tool.RoguelikeHelper;
 import com.rogoshum.magickcore.tool.ToolTipHelper;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.HashMap;
@@ -23,7 +19,7 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class SpellContext {
     public MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
-    public EnumApplyType applyType = EnumApplyType.NONE;
+    public ApplyType applyType = ApplyType.NONE;
     public SpellContext postContext = null;
     public int tick;
     public float range;
@@ -40,7 +36,7 @@ public class SpellContext {
         return new SpellContext();
     }
 
-    public <T extends SpellContext> T applyType(EnumApplyType applyType) {
+    public <T extends SpellContext> T applyType(ApplyType applyType) {
         this.applyType = applyType;
         return (T) this;
     }
@@ -91,7 +87,7 @@ public class SpellContext {
         this.tick += context.tick;
         this.range += context.range;
         this.force += context.force;
-        if(context.applyType != EnumApplyType.NONE)
+        if(context.applyType != ApplyType.NONE)
             this.applyType = context.applyType;
         context.childContexts.values().forEach((child) -> this.childContexts.put(child.getName(), child));
         return (T) this;
@@ -126,7 +122,7 @@ public class SpellContext {
 
     public void clear() {
         this.element = MagickRegistry.getElement(LibElements.ORIGIN);
-        this.applyType = EnumApplyType.NONE;
+        this.applyType = ApplyType.NONE;
         this.tick = 0;
         this.range = 0;
         this.force = 0;
@@ -159,7 +155,7 @@ public class SpellContext {
     public void deserialize(CompoundNBT tag) {
         NBTTagHelper tagHelper = new NBTTagHelper(tag);
         tagHelper.ifContainString("ELEMENT", (s) -> element = MagickRegistry.getElement(s));
-        tagHelper.ifContainString("APPLY_TYPE", (s) -> applyType = EnumApplyType.getEnum(s));
+        tagHelper.ifContainString("APPLY_TYPE", (s) -> applyType = ApplyType.getEnum(s));
         tagHelper.ifContainInt("TICK", (i) -> tick = i);
         tagHelper.ifContainFloat("RANGE", (i) -> range = i);
         tagHelper.ifContainFloat("FORCE", (f) -> force = f);
@@ -179,7 +175,7 @@ public class SpellContext {
         ToolTipHelper toolTip = new ToolTipHelper();
         if(element != ModElements.ORIGIN)
             toolTip.nextTrans(LibItem.ELEMENT, new TranslationTextComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != EnumApplyType.NONE)
+        if(applyType != ApplyType.NONE)
             toolTip.nextTrans(LibItem.MANA_TYPE, applyType, ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(force > 0)
             toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.PINK, ToolTipHelper.GREY);
@@ -206,7 +202,7 @@ public class SpellContext {
         toolTip.nextLine("{");
         if(element != ModElements.ORIGIN)
             toolTip.nextTrans(LibItem.ELEMENT, new TranslationTextComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != EnumApplyType.NONE)
+        if(applyType != ApplyType.NONE)
             toolTip.nextTrans(LibItem.MANA_TYPE, applyType, ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(force > 0)
             toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.PINK, ToolTipHelper.GREY);

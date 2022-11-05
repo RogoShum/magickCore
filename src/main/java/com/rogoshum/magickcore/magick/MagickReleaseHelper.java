@@ -3,10 +3,11 @@ package com.rogoshum.magickcore.magick;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.api.entity.IManaMob;
+import com.rogoshum.magickcore.api.entity.IManaTaskMob;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.init.ModEffects;
 import com.rogoshum.magickcore.init.ModEntities;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.lib.LibElements;
@@ -26,6 +27,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -43,13 +45,8 @@ import java.util.function.Supplier;
 
 public class MagickReleaseHelper {
     private final static float ORB_VELOCITY = 0.5f;
-    private final static float ORB_INACCURACY = 0.7f;
-
     private final static float STAR_VELOCITY = 0.7f;
-    private final static float STAR_INACCURACY = 0.5f;
-
     private final static float LASER_VELOCITY = 1.0f;
-    private final static float LASER_INACCURACY = 1.0f;
 
     private final static HashMap<String, Function<DoubleEntity, Boolean>> ownerTest = new HashMap<>();
 
@@ -66,12 +63,12 @@ public class MagickReleaseHelper {
     }
 
     public static float manaNeed(MagickContext context) {
-        float trace = 0;
-        return context.tick + context.force * context.force * 10 + trace + context.range * context.range * 5;
+        float trace = 100;
+        return context.tick + context.force * 10 + (context.containChild(LibContext.TRACE) ? trace : 0) + context.range * 5;
     }
 
     public static EntityEvents.MagickPreReleaseEvent preReleaseMagickEvent(MagickContext context) {
-        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.noCost ? manaNeed(context) : 0);
+        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.noCost ? 0 : manaNeed(context));
         MinecraftForge.EVENT_BUS.post(event);
         return event;
     }
@@ -82,15 +79,27 @@ public class MagickReleaseHelper {
         return event;
     }
 
+    public static void failed(MagickContext context, Entity entity) {
+        for(int i = 0; i < 20; ++i) {
+            context.world.addParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + entity.getEntity().getPosX()
+                    , MagickCore.getNegativeToOne() + entity.getEntity().getPosY() + entity.getEntity().getHeight() * 0.5
+                    , MagickCore.getNegativeToOne() + entity.getEntity().getPosZ(), MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.01);
+        }
+    }
+
     public static boolean releaseMagick(MagickContext context) {
         if(context == null)
             return false;
         EntityEvents.MagickPreReleaseEvent preEvent = preReleaseMagickEvent(context);
-        if(preEvent.isCanceled())
+        if(preEvent.isCanceled()) {
+            failed(context, preEvent.getEntity());
             return false;
+        }
         EntityEvents.MagickReleaseEvent releaseEvent = releaseMagickEvent(preEvent.getContext());
-        if(releaseEvent.isCanceled())
+        if(releaseEvent.isCanceled()) {
+            failed(context, releaseEvent.getEntity());
             return false;
+        }
 
         context = releaseEvent.getContext();
         MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
@@ -150,7 +159,7 @@ public class MagickReleaseHelper {
                 element = context.element;
             else if(context.caster instanceof ISpellContext)
                 element = ((ISpellContext) context.caster).spellContext().element;
-            else if(context.caster instanceof LivingEntity || context.caster instanceof IManaMob)
+            else if(context.caster instanceof LivingEntity || context.caster instanceof IManaTaskMob)
                 element = ExtraDataHelper.entityStateData(context.caster).getElement();
             spellContext.spellContext().element(element);
         }
@@ -210,16 +219,6 @@ public class MagickReleaseHelper {
     }
 
     private static float getInaccuracy(Entity entity) {
-        EntityType<?> type = entity.getType();
-        if (type == ModEntities.mana_orb.get())
-            return ORB_INACCURACY;
-
-        if (type == ModEntities.mana_laser.get())
-            return LASER_INACCURACY;
-
-        if (type == ModEntities.mana_star.get())
-            return STAR_INACCURACY;
-
         EntityEvents.EntityVelocity event = new EntityEvents.EntityVelocity(entity);
         MinecraftForge.EVENT_BUS.post(event);
         return event.getInaccuracy();
@@ -296,6 +295,11 @@ public class MagickReleaseHelper {
     }
 
     public static boolean sameLikeOwner(Entity owner, Entity other) {
+        if(owner instanceof LivingEntity) {
+            if(((LivingEntity)owner).getActivePotionMap().containsKey(ModEffects.CHAOS_THEOREM.orElse(null))) {
+                return false;
+            }
+        }
         if (owner == null)
             return false;
 
@@ -325,10 +329,7 @@ public class MagickReleaseHelper {
         if (flag.get())
             return true;
 
-        if (isOwnerPlayer && isOtherPlayer)
-            return true;
-
-        return !isOwnerPlayer && !isOtherPlayer;
+        return isOwnerPlayer && isOtherPlayer;
     }
 
     public static boolean ownerFunction(boolean isOwnerPlayer, Supplier<Entity> entitySupplier) {

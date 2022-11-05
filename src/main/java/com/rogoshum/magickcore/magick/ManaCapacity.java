@@ -1,7 +1,5 @@
 package com.rogoshum.magickcore.magick;
 
-import com.rogoshum.magickcore.enums.EnumApplyType;
-import com.rogoshum.magickcore.registry.MagickRegistry;
 import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;

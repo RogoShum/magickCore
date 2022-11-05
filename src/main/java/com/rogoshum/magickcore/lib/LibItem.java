@@ -6,7 +6,14 @@ public class LibItem {
     public static final String ROGUELIKE_TICK = "roguelike_tick";
     public static final String ROGUELIKE_MAX_TICK = "roguelike_max_tick";
     public static final String ROGUE_TICK = MagickCore.MOD_ID + ".description.rogue_tick";
-
+    public static final String SPIRIT_PLANKS = "spirit_planks";
+    public static final String SPIRIT_LOG = "spirit_log";
+    public static final String STRIPPED_SPIRIT_LOG = "stripped_spirit_log";
+    public static final String SPIRIT_WOOD = "spirit_wood";
+    public static final String STRIPPED_SPIRIT_WOOD = "stripped_spirit_wood";
+    public static final String MATERIAL_JAR = "material_jar";
+    public static final String SPIRIT_ORE = "spirit_ore";
+    public static final String SPIRIT_LEAVES = "spirit_leaves";
     public static final String LASER_STAFF = "laser_staff";
     public static final String ORB_STAFF = "orb_staff";
     public static final String WAND = "wand";

@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.magick.context.child;
 
+import com.rogoshum.magickcore.enums.TargetType;
 import com.rogoshum.magickcore.lib.LibContext;
 import com.rogoshum.magickcore.magick.condition.AlwaysCondition;
 import com.rogoshum.magickcore.magick.condition.Condition;
 import com.rogoshum.magickcore.registry.MagickRegistry;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
 import com.rogoshum.magickcore.tool.ToolTipHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -37,6 +39,17 @@ public class ConditionContext extends ChildContext{
             compoundNBT.put(condition.getName(), conditionTag);
         });
         tag.put("Conditions", compoundNBT);
+    }
+
+    public boolean test(Entity self, Entity target) {
+        for (Condition condition : conditions) {
+            Entity entity = self;
+            if(condition.getType().equals(TargetType.TARGET))
+                entity = target;
+            if(!(!condition.isNegate() && condition.test(entity)) && !(condition.isNegate() && !condition.test(entity)))
+                return false;
+        }
+        return true;
     }
 
     @Override

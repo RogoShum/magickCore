@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.block.tileentity.*;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.render.PlaceableItemEntityRenderer;
+import com.rogoshum.magickcore.client.entity.render.*;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderParams;
@@ -14,31 +14,33 @@ import com.rogoshum.magickcore.client.entity.easyrender.laser.*;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.*;
 import com.rogoshum.magickcore.client.element.*;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.*;
-import com.rogoshum.magickcore.client.entity.render.LifeStateEntityRenderer;
-import com.rogoshum.magickcore.client.entity.render.ManaEntityRenderer;
-import com.rogoshum.magickcore.client.entity.render.ManaObjectRenderer;
 import com.rogoshum.magickcore.client.item.MagickBakedModel;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
+import com.rogoshum.magickcore.client.tileentity.CanSeeTileEntityRenderer;
+import com.rogoshum.magickcore.client.tileentity.MagickRepeaterRenderer;
+import com.rogoshum.magickcore.client.tileentity.MaterialJarRenderer;
+import com.rogoshum.magickcore.client.tileentity.SpiritCrystalRenderer;
 import com.rogoshum.magickcore.client.tileentity.easyrender.*;
 import com.rogoshum.magickcore.entity.pointed.*;
 import com.rogoshum.magickcore.entity.projectile.*;
 import com.rogoshum.magickcore.entity.superentity.*;
 import com.rogoshum.magickcore.event.RenderEvent;
 import com.rogoshum.magickcore.event.ShaderEvent;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.init.*;
 import com.rogoshum.magickcore.lib.LibRegistry;
 import com.rogoshum.magickcore.registry.ObjectRegistry;
 import com.rogoshum.magickcore.registry.elementmap.EntityRenderers;
 import com.rogoshum.magickcore.registry.elementmap.RenderFunctions;
 import com.rogoshum.magickcore.tool.NBTTagHelper;
-import com.rogoshum.magickcore.init.ModEntities;
-import com.rogoshum.magickcore.init.ModItems;
 import com.rogoshum.magickcore.lib.LibElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.entity.VillagerRenderer;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.settings.ParticleStatus;
@@ -54,6 +56,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -74,16 +77,17 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void checkRenderer() {
-		if(renderThread == null || renderThread.isInterrupted() || !renderThread.isAlive()) {
+		if(renderThread == null || renderThread.isInterrupted() || !renderThread.isAlive() || renderThread.getState().equals(Thread.State.WAITING) || renderThread.getState().equals(Thread.State.BLOCKED)) {
 			createRenderer();
 		}
 	}
+
 
 	public void createRenderer() {
 		if (renderThread != null) {
 			renderThread.interrupt();
 		}
-		renderThread = new RenderThread("MagickCore RenderThread");
+		renderThread = new RenderThread("MagickCore Render Thread");
 		renderThread.start();
 	}
 
@@ -140,7 +144,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void checkThread() {
-		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive())
+		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive() || magickThread.getState().equals(Thread.State.WAITING) || magickThread.getState().equals(Thread.State.BLOCKED))
 			createThread();
 	}
 
@@ -148,7 +152,7 @@ public class ClientProxy implements IProxy {
 		if (magickThread != null) {
 			magickThread.interrupt();
 		}
-		magickThread = new TaskThread("MagickCore ClientThread");
+		magickThread = new TaskThread("MagickCore Client Thread");
 		magickThread.start();
 	}
 
@@ -165,7 +169,6 @@ public class ClientProxy implements IProxy {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
-		registerEasyRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
 
 		ObjectRegistry<EntityRenderers> entityRenderers = new ObjectRegistry<>(LibRegistry.ENTITY_RENDERER);
@@ -211,6 +214,7 @@ public class ClientProxy implements IProxy {
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.wind.get(), ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.gravity_lift.get(), ManaEntityRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.placeable_entity.get(), PlaceableItemEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MAGE.get(), MageRenderer::new);
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
@@ -229,56 +233,30 @@ public class ClientProxy implements IProxy {
 		event.getItemColors().register(color, ModItems.element_wool.get());
 	}
 
-	public void putElementRendererIn(String name, ElementRenderer renderer)
-	{
+	public void putElementRendererIn(String name, ElementRenderer renderer) {
 		renderers.put(name, renderer);
 	}
 
-	private void registerEasyRenderer() {
-		/*
-		//normal
-		RenderEvent.registerEasyRender(ManaOrbEntity.class, new ManaOrbRenderer());
-		RenderEvent.registerEasyRender(DawnWardEntity.class, new DawnWardRenderer());
-		RenderEvent.registerEasyRender(Entity.class, new ElementShieldRenderer());
-		RenderEvent.registerEasyRender(ManaStarEntity.class, new ManaStarRenderer());
-		RenderEvent.registerEasyRender(ManaLaserEntity.class, new ManaLaserRenderer());
-		RenderEvent.registerEasyRender(ManaRiftEntity.class, new ManaRiftRenderer());
-		RenderEvent.registerEasyRender(ManaSphereEntity.class, new ManaSphereRenderer());
-		RenderEvent.registerEasyRender(RadianceWellEntity.class, new RadianceWellRenderer());
-		RenderEvent.registerEasyRender(ChaoReachEntity.class, new ChaosReachRenderer());
-		RenderEvent.registerEasyRender(SilenceSquallEntity.class, new SilenceSqualRenderer());
-		RenderEvent.registerEasyRender(ThornsCaressEntity.class, new ThornsCaressRenderer());
-		RenderEvent.registerEasyRender(AscendantRealmEntity.class, new AscendantRealmRenderer());
-		RenderEvent.registerEasyRender(ContextCreatorEntity.class, new ContextCreatorRenderer());
-		RenderEvent.registerEasyRender(ManaCapacityEntity.class, new ManaCapacityRenderer());
-		RenderEvent.registerEasyRender(ContextPointerEntity.class, new ContextPointerRenderer());
-		RenderEvent.registerEasyRender(BubbleEntity.class, new BubbleRenderer());
-		RenderEvent.registerEasyRender(BloodBubbleEntity.class, new BloodBubbleRenderer());
-		RenderEvent.registerEasyRender(EntityHunterEntity.class, new EntityHunterRenderer());
-		//RenderEvent.registerEasyRender(GravityLiftEntity.class, new GravityLiftRenderer(entity));
-		RenderEvent.registerEasyRender(LeafEntity.class, new LeafRenderer());
-		RenderEvent.registerEasyRender(RedStoneEntity.class, new RedStoneRenderer());
-		RenderEvent.registerEasyRender(WindEntity.class, new WindRenderer());
-		RenderEvent.registerEasyRender(RayEntity.class, new RayRenderer());
+	public void initBlockRenderer() {
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.magick_crafting.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.spirit_crystal_tileentity.get(), SpiritCrystalRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.spirit_crystal.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_container_tileentity.get(), (CanSeeTileEntityRenderer<MagickContainerTileEntity>::new));
+		RenderTypeLookup.setRenderLayer(ModBlocks.magick_container.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_crystal_tileentity.get(), (CanSeeTileEntityRenderer<ElementCrystalTileEntity>::new));
+		RenderTypeLookup.setRenderLayer(ModBlocks.element_crystal.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_wool_tileentity.get(), (CanSeeTileEntityRenderer<ElementWoolTileEntity>::new));
+		RenderTypeLookup.setRenderLayer(ModBlocks.element_wool.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_repeater_tileentity.get(), (MagickRepeaterRenderer::new));
+		RenderTypeLookup.setRenderLayer(ModBlocks.magick_repeater.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_barrier_tileentity.get(), (CanSeeTileEntityRenderer<MagickBarrierTileEntity>::new));
+		RenderTypeLookup.setRenderLayer(ModBlocks.magick_barrier.get(), RenderType.getCutout());
 
-		//layer
-		RenderEvent.registerLayerRender(LivingEntity.class, new ManaBuffRenderer());
-		RenderEvent.registerLayerRender(ClientPlayerEntity.class, new PlayerShieldRenderer());
-
-		//laser
-		RenderEvent.registerLaserRender(RadianceWellEntity.class, new RadianceWellLaserRenderer());
-		RenderEvent.registerLaserRender(ChaoReachEntity.class, new ChaosReachLaserRenderer());
-		RenderEvent.registerLaserRender(ThornsCaressEntity.class, new ThornsCaressLaserRenderer());
-
-		//tile
-		RenderEvent.registerTileRender(MagickCraftingTileEntity.class, new MagickCraftingRenderer());
-		RenderEvent.registerTileRender(MagickContainerTileEntity.class, new MagickContainerRenderer());
-		RenderEvent.registerTileRender(ElementCrystalTileEntity.class, new ElementCrystalRenderer());
-		RenderEvent.registerTileRender(ElementWoolTileEntity.class, new ElementWoolRenderer());
-		RenderEvent.registerTileRender(MagickBarrierTileEntity.class, new MagickBarrierRenderer());
-		RenderEvent.registerTileRender(MagickRepeaterTileEntity.class, new MagickRepeaterRenderer());
-
-		 */
+		RenderTypeLookup.setRenderLayer(ModBlocks.magick_supplier.get(), RenderType.getTranslucent());
+		RenderTypeLookup.setRenderLayer(ModBlocks.void_sphere.get(), RenderType.getTranslucent());
 	}
 
 	private void putElementRenderer() {
@@ -310,20 +288,6 @@ public class ClientProxy implements IProxy {
 		}
 		else {
 			RenderEvent.addMagickParticle(par);
-		}
-	}
-
-	public static void registerParticleSprite(TextureStitchEvent.Pre event, String name) {
-		String path = MagickCore.MOD_ID + ":element/" + name;
-		if(event.addSprite(new ResourceLocation(path)))
-			MagickCore.LOGGER.info("Successes to add sprite [" + name + "]");
-		else
-			MagickCore.LOGGER.info("Failed to add sprite [" + name + "]");
-	}
-
-	public static class ErrorRenderer extends ElementRenderer {
-		public ErrorRenderer() {
-			super(com.rogoshum.magickcore.magick.Color.create(1f, 0, 0));
 		}
 	}
 }

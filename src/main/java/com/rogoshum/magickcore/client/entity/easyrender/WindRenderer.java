@@ -42,13 +42,6 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
                 , 0.1f * alpha, alpha, 0.3f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
-        matrixStackIn.translate(0, 0.2, 0);
-        float height = entity.getHeight() - 0.2f;
-        context = new RenderHelper.CylinderContext(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, 1
-                , height, 16
-                , 0.0f, alpha, 0.3f, ModElements.ORIGIN.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context);
     }
     public void renderSlime(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
@@ -57,28 +50,12 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
         float alpha = 1.0f;
 
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 29)));
-        matrixStackIn.translate(0, -0.2, 0);
-        matrixStackIn.push();
-        matrixStackIn.translate(0, 0.2, 0);
-        RenderHelper.CylinderContext context =
-                new RenderHelper.CylinderContext(entity.getWidth() * 0.4f, entity.getWidth() * 0.4f, 1
-                        , entity.getHeight() / 2, 16
-                        , 0.1f * alpha, alpha, 0.3f, ModElements.ORIGIN.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context);
-        matrixStackIn.pop();
-        matrixStackIn.translate(0, 0.2, 0);
-        context = new RenderHelper.CylinderContext(entity.getWidth() * 0.5f, entity.getWidth() * 0.5f, 1
-                , 0.2f + entity.getHeight(), 16
-                , 0.1f * alpha, alpha, 0.3f, entity.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context);
 
         float height = entity.getHeight() - 0.2f;
 
-        context = new RenderHelper.CylinderContext(entity.getWidth() * 2f, entity.getWidth() * 2f, 1
-                , height * 0.5f, 16
-                , 0, 0.8f, 0.3f, entity.spellContext().element.color());
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getWidth() * 2f, entity.getWidth() * 0.5f, 2
+                , height , 16
+                , 0, 0.7f, 0.9f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
     }
