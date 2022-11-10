@@ -4,13 +4,13 @@ import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.pointed.GravityLiftEntity;
-import com.rogoshum.magickcore.lib.LibContext;
-import com.rogoshum.magickcore.lib.LibShaders;
-import com.rogoshum.magickcore.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.common.entity.pointed.GravityLiftEntity;
+import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -67,11 +67,11 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
 
         INNER_CYLINDER = new RenderHelper.CylinderContext(0.3f, 0.1f, 2f
                 , height, 16
-                , 0.2f, 1.0f, 0.3f, entity.spellContext().element.color());
+                , 0.0f, 1.0f, 0.3f, entity.spellContext().element.color());
 
         BASE_CYLINDER = new RenderHelper.CylinderContext(2f, 2f, 2f
                 , 0.5f, 16
-                , 0.0f, 0.8f, 0.8f, entity.spellContext().element.color());
+                , 0.0f, 0.8f, 0.6f, entity.spellContext().element.color());
 
         c = entity.ticksExisted % 30;
         Queue<RenderHelper.CylinderContext> cylinders = Queues.newArrayDeque();
@@ -81,7 +81,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
                 radius += 0.3f * Math.sin(c / 29 * Math.PI);
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 2f
                     , 0.7f, 16
-                    , 0.0f, 1.0f, 0.7f, entity.spellContext().element.color());
+                    , 0.0f, 1.0f, 0.6f, entity.spellContext().element.color());
 
             cylinders.add(context);
         }

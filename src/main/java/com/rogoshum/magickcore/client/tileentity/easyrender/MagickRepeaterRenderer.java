@@ -6,15 +6,20 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;// Made with Blockb
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.tileentity.MagickRepeaterTileEntity;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileEntity> {
     private ResourceLocation magick_repeater = new ResourceLocation(MagickCore.MOD_ID + ":textures/tileentity/magick_repeater.png");
@@ -29,6 +34,7 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
     private final ModelRenderer south_r1;
 
     public MagickRepeaterRenderer() {
+        super(null);
         textureWidth = 64;
         textureHeight = 32;
 
@@ -62,7 +68,6 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
         south_r1.setTextureOffset(38, 0).addBox(-8.0F, -6.0F, -6.0F, 1.0F, 12.0F, 12.0F, 0.0F, false);
     }
 
-    @Override
     public void render(MagickRepeaterTileEntity entity, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
         int light = RenderHelper.renderLight;
         if (entity.getLifeRepeater() != null && entity.getLifeRepeater().useDirection()) {
@@ -124,5 +129,10 @@ public class MagickRepeaterRenderer extends EasyTileRenderer<MagickRepeaterTileE
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        return null;
     }
 }

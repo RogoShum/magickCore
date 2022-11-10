@@ -1,31 +1,26 @@
 package com.rogoshum.magickcore.client.entity.easyrender.base;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
-import com.rogoshum.magickcore.entity.base.ManaEntity;
-import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
-import com.rogoshum.magickcore.entity.pointed.GravityLiftEntity;
-import com.rogoshum.magickcore.magick.Color;
-import net.minecraft.block.BlockState;
+import com.rogoshum.magickcore.common.api.entity.IManaEntity;
+import com.rogoshum.magickcore.common.api.render.IEasyRender;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.HashMap;
+import java.util.function.Consumer;
+
+@OnlyIn(Dist.CLIENT)
 public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     protected static final ResourceLocation sphereOrb = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png");
     protected static final ResourceLocation cylinder_bloom = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
@@ -38,6 +33,11 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     protected double x;
     protected double y;
     protected double z;
+    protected String[] debugSpellContext;
+    protected double debugX;
+    protected double debugY;
+    protected double debugZ;
+    protected int contextLength;
 
     public EasyRenderer(T entity) {
         this.entity = entity;
@@ -79,12 +79,14 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
         x = vec.x;
         y = vec.y;
         z = vec.z;
+        if(RenderHelper.showDebug() && entity instanceof IManaEntity)
+            updateSpellContext();
     }
 
     public void baseOffset(MatrixStack matrixStackIn) {
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
+        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() * 0.5, z - camZ);
     }
 
     @Override
@@ -100,5 +102,61 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     @Override
     public Vector3d positionVec() {
         return entity.getPositionVec();
+    }
+
+    protected void renderDebug(RenderParams renderParams) {
+        if(entity instanceof IManaEntity) {
+            renderSpellContext(renderParams);
+        }
+    }
+
+    protected void updateSpellContext() {
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        debugX = x - camX + offset.x;
+        debugY = y - camY + entity.getHeight() * 0.5 + offset.y;
+        debugZ = z - camZ + offset.z;
+
+        String information = ((IManaEntity)entity).spellContext().toString();
+        if(information.isEmpty())  {
+            debugSpellContext = null;
+            return;
+        }
+        debugSpellContext = information.split("\n");
+        contextLength = 0;
+        if(debugSpellContext.length < 1) return;
+        for (String s : debugSpellContext) {
+            if (s.length() > contextLength)
+                contextLength = s.length();
+        }
+    }
+
+    protected void renderSpellContext(RenderParams renderParams) {
+        if(debugSpellContext != null) {
+            renderParams.matrixStack.push();
+            renderParams.matrixStack.translate(debugX, debugY, debugZ);
+            renderParams.matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+            renderParams.matrixStack.scale(0.015f, 0.015f, 0.015f);
+            renderParams.matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
+            renderParams.matrixStack.translate(-contextLength, debugSpellContext.length * -4, 0);
+            for (int i = 0; i < debugSpellContext.length; ++i) {
+                String tip = debugSpellContext[i];
+                if(!tip.isEmpty()) {
+                    renderParams.matrixStack.push();
+                    Minecraft.getInstance().fontRenderer.drawString(renderParams.matrixStack, tip, 0, i*8, 0);
+                    renderParams.matrixStack.pop();
+                }
+            }
+            renderParams.matrixStack.pop();
+        }
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getDebugFunction() {
+        if(!(entity instanceof IManaEntity)) return null;
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        map.put(RenderMode.ORIGIN_RENDER, this::renderDebug);
+        return map;
     }
 }

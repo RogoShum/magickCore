@@ -2,12 +2,11 @@ package com.rogoshum.magickcore.client.entity.easyrender.laser;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.superentity.RadianceWellEntity;
-import com.rogoshum.magickcore.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
+import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -65,6 +64,11 @@ public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> 
                     matrixStackIn, params.buffer, entity.spellContext().element.getRenderer().getWaveTexture(1), 0.35f, (float) (vector3d.z * 2), 2.0f);
             matrixStackIn.pop();
         }
+    }
+
+    @Override
+    public boolean forceRender() {
+        return true;
     }
 
     @Override

@@ -3,15 +3,14 @@ package com.rogoshum.magickcore.client.element;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.util.ResourceLocation;
 
-public abstract class ElementRenderer
-{
+public abstract class ElementRenderer {
     private ResourceLocation orbTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/magick_orb.png");
     private ResourceLocation starTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/star.png");
     private ResourceLocation laserTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/laser.png");

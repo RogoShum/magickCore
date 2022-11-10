@@ -1,24 +1,17 @@
 package com.rogoshum.magickcore.client.entity.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.entity.PlaceableItemEntity;
-import com.rogoshum.magickcore.entity.base.ManaEntity;
+import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class PlaceableItemEntityRenderer extends EntityRenderer<PlaceableItemEntity> {

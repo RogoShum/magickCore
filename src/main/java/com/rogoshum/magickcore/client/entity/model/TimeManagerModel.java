@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.entity.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import com.rogoshum.magickcore.entity.living.TimeManagerEntity;
+import com.rogoshum.magickcore.common.entity.living.TimeManagerEntity;
 
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;

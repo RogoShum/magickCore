@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.entity.easyrender.base;
 
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;

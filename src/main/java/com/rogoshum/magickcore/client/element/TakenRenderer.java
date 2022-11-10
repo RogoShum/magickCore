@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class TakenRenderer extends ElementRenderer {

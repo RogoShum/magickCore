@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.entity.render.living;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.entity.living.TimeManagerEntity;
+import com.rogoshum.magickcore.common.entity.living.TimeManagerEntity;
 
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.*;

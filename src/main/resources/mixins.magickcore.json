@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.rogoshum.magickcore.mixin",
+  "package": "com.rogoshum.magickcore.common.mixin",
   "mixins": [
     "MixinChunkRenderer",
     "MixinEntity",

@@ -1,15 +1,12 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.pointed.ManaSphereEntity;
-import com.rogoshum.magickcore.lib.LibShaders;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.rogoshum.magickcore.common.entity.pointed.ManaSphereEntity;
+import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.math.vector.Vector3f;
 

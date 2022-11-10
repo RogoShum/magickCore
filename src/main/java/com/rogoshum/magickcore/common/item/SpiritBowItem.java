@@ -1,0 +1,55 @@
+package com.rogoshum.magickcore.common.item;
+
+import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.client.item.SpiritBowRenderer;
+import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
+public class SpiritBowItem extends ManaItem implements IManaContextItem {
+    public SpiritBowItem(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
+        EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        MagickContext magickContext = MagickContext.create(entityLiving.world);
+        int tick = Math.min(40, (getUseDuration(stack) - timeLeft));
+        magickContext.range(tick * 0.25f);
+        magickContext.tick(tick * 4);
+        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickContext context = magickContext.caster(entityLiving).element(element);
+        SpawnContext spawnContext = SpawnContext.create(ModEntities.ARROW.get());
+        context.addChild(spawnContext);
+        context.post(data.spellContext().copy().element(element));
+        if(context.postContext.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
+            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(entityLiving);
+        }
+        context.applyType(ApplyType.SPAWN_ENTITY);
+        MagickReleaseHelper.releaseMagick(context);
+        super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
+    }
+
+    public int getUseDuration(ItemStack stack) {
+        return 114514;
+    }
+
+    @Override
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+        return false;
+    }
+}

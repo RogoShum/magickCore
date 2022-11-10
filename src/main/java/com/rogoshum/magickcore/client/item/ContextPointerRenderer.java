@@ -3,10 +3,10 @@ package com.rogoshum.magickcore.client.item;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.entity.pointed.ContextPointerEntity;
-import com.rogoshum.magickcore.init.ModEntities;
-import com.rogoshum.magickcore.tool.NBTTagHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
+import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -25,7 +25,7 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
         matrixStackIn.push();
         matrixStackIn.translate(0.5, 0.5, 0.5);
         Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().world);
-        ContextPointerEntity pointer = ModEntities.context_pointer.get().create(Minecraft.getInstance().world);
+        ContextPointerEntity pointer = ModEntities.CONTEXT_POINTER.get().create(Minecraft.getInstance().world);
         if(entity instanceof ContextPointerEntity)
             pointer = (ContextPointerEntity) entity;
         float alpha = 0.5f - MagickCore.proxy.getRunTick() % 100 / 100f;

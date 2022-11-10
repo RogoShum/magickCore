@@ -2,16 +2,13 @@ package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.entity.superentity.DawnWardEntity;
-import com.rogoshum.magickcore.lib.LibShaders;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.rogoshum.magickcore.common.entity.superentity.DawnWardEntity;
+import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;

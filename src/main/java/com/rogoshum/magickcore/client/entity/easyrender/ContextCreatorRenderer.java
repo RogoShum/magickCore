@@ -3,15 +3,13 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
-import com.rogoshum.magickcore.entity.pointed.ContextCreatorEntity;
-import com.rogoshum.magickcore.lib.LibShaders;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -19,6 +17,7 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
@@ -92,6 +91,24 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
             scale *= 0;
         else if(entity.ticksExisted < 30)
             scale *= 1f - 1f / (float)entity.ticksExisted;
+    }
+
+    @Override
+    protected void updateSpellContext() {
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        debugX = x - camX + offset.x;
+        debugY = y - camY + entity.getHeight() * 0.5 + offset.y;
+        debugZ = z - camZ + offset.z;
+
+        String information = entity.getInnerManaData().spellContext().toString();
+        debugSpellContext = information.split("\n");
+        contextLength = 0;
+        for (String s : debugSpellContext) {
+            if (s.length() > contextLength)
+                contextLength = s.length();
+        }
     }
 
     @Override

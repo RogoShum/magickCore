@@ -1,0 +1,10 @@
+package com.rogoshum.magickcore.common.lib;
+
+public class LibConditions {
+    public static final String ALWAYS = "always";
+    public static final String ENTITY_TYPE = "entity_type";
+    public static final String INJURABLE = "injurable";
+    public static final String LIVING_ENTITY = "living_entity";
+    public static final String HEALTH = "health";
+    public static final String DISTANCE = "distance";
+}

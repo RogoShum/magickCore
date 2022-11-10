@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.block.tileentity.MagickContainerTileEntity;
+import com.rogoshum.magickcore.common.tileentity.MagickContainerTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.magick.Color;
-import com.rogoshum.magickcore.magick.MagickElement;
-import com.rogoshum.magickcore.registry.MagickRegistry;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -17,12 +19,19 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 
+import java.util.HashMap;
+import java.util.function.Consumer;
+
 public class MagickContainerRenderer extends EasyTileRenderer<MagickContainerTileEntity>{
     private static final RenderHelper.RenderContext RENDER_CONTEXT = new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
     private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphereGlow(blank, 0.32f, 0f);
     private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlow(cylinder_rotate, 0.32f, 0f);
 
-    @Override
+    public MagickContainerRenderer(MagickContainerTileEntity tile) {
+        super(tile);
+    }
+
+
     public void render(MagickContainerTileEntity tileEntityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
         Color color = Color.ORIGIN_COLOR;
         matrixStackIn.push();
@@ -52,5 +61,10 @@ public class MagickContainerRenderer extends EasyTileRenderer<MagickContainerTil
             Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getMaterialItem(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
         matrixStackIn.pop();
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        return null;
     }
 }

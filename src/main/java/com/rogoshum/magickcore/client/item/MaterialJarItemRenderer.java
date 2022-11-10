@@ -2,10 +2,9 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.magick.Color;
-import com.rogoshum.magickcore.tool.NBTTagHelper;
-import net.minecraft.block.ChestBlock;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -26,11 +25,18 @@ public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
 
         matrixStackIn.push();
         matrixStackIn.scale(0.3f, 0.38f, 0.3f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntity(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntity(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, RenderHelper.halfLight));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
+        matrixStackIn.pop();
+
+        matrixStackIn.push();
+        matrixStackIn.translate(0, 0.2, 0.0);
+        matrixStackIn.scale(0.2f, 0.08f, 0.2f);
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbSolid(RenderHelper.blankTex))
+                , new RenderHelper.RenderContext(1.0f, Color.create(0.4f, 0.3f, 0), combinedLight));
         matrixStackIn.pop();
 
         if(!stack.hasTag()) {

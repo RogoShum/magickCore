@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.proxy;
 
-import com.rogoshum.magickcore.api.render.IEasyRender;
+import com.rogoshum.magickcore.common.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
@@ -10,6 +10,7 @@ import net.minecraftforge.fml.LogicalSide;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CommonProxy implements IProxy {
 	private TaskThread magickThread;
@@ -55,7 +56,7 @@ public class CommonProxy implements IProxy {
 	public ElementRenderer getElementRender(String string) { return null;}
 
 	@Override
-	public void addRenderer(IEasyRender renderer) {
+	public void addRenderer(Supplier<IEasyRender> renderSupplier) {
 
 	}
 

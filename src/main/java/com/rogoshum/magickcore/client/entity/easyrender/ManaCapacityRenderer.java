@@ -3,28 +3,21 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
-import com.rogoshum.magickcore.entity.pointed.ManaCapacityEntity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibShaders;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
+import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
-    private final static RenderType renderType = RenderHelper.getTexedEntity(ModElements.ORIGIN.getRenderer().getParticleSprite());
     private final static RenderType renderType_1 = RenderHelper.getTexedEntityGlint(RenderHelper.blankTex, 1f, 0f);
     private final static RenderType renderType_2 = RenderHelper.getTexedEntityGlint(taken, 1f, 0f);
     float scale;
@@ -68,6 +61,22 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
                 RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), lightmap));
             matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
         }
+    }
+
+    @Override
+    protected void updateSpellContext() {
+        super.updateSpellContext();
+        String[] strings = new String[1];
+        String mana = "§7Mana: " + entity.manaCapacity().getMana() + " / " + entity.manaCapacity().getMaxMana();
+        if(contextLength < mana.length())
+            contextLength = mana.length();
+        strings[0] = mana;
+        if(debugSpellContext != null) {
+            strings = new String[debugSpellContext.length+1];
+            System.arraycopy(debugSpellContext, 0, strings, 0, debugSpellContext.length);
+            strings[debugSpellContext.length] = mana;
+        }
+        debugSpellContext = strings;
     }
 
     @Override

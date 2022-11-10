@@ -3,11 +3,13 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.pointed.ContextPointerEntity;
-import com.rogoshum.magickcore.lib.LibShaders;
+import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.util.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -16,6 +18,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
@@ -97,6 +100,38 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
                 , 0.2f * alpha, alpha, 0.3f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
+    }
+
+    @Override
+    protected void updateSpellContext() {
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        debugX = x - camX + offset.x;
+        debugY = y - camY + entity.getHeight() * 0.5 + offset.y;
+        debugZ = z - camZ + offset.z;
+
+        SpellContext context = SpellContext.create();
+        if(entity.getStacks().size() < 1) {
+            debugSpellContext = new String[]{};
+            return;
+        }
+        if(entity.getStacks().size() < 2) {
+            context.copy(ExtraDataUtil.itemManaData(entity.getStacks().get(0).getItemStack()).spellContext());
+        } else {
+            context.copy(ExtraDataUtil.itemManaData(entity.getStacks().get(entity.getStacks().size() - 1).getItemStack()).spellContext());
+            for(int i = entity.getStacks().size() - 2; i > -1; --i) {
+                context = ExtraDataUtil.itemManaData(entity.getStacks().get(i).getItemStack()).spellContext().copy().post(context);
+            }
+        }
+
+        String information = context.toString();
+        debugSpellContext = information.split("\n");
+        contextLength = 0;
+        for (String s : debugSpellContext) {
+            if (s.length() > contextLength)
+                contextLength = s.length();
+        }
     }
 
     @Override

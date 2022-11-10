@@ -2,10 +2,9 @@ package com.rogoshum.magickcore.client.entity.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.entity.base.ManaEntity;
-import com.rogoshum.magickcore.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
@@ -25,12 +24,6 @@ public class ManaObjectRenderer extends EntityRenderer<ManaProjectileEntity> {
 	@Override
 	public void render(ManaProjectileEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-	}
-
-	@Override
-	public boolean shouldRender(ManaProjectileEntity livingEntityIn, ClippingHelper camera, double camX, double camY, double camZ) {
-		livingEntityIn.cansee = super.shouldRender(livingEntityIn, camera, camX, camY, camZ);
-		return livingEntityIn.cansee;
 	}
 
 	@Override

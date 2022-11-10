@@ -2,10 +2,10 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.projectile.BubbleEntity;
+import com.rogoshum.magickcore.common.entity.projectile.BubbleEntity;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;

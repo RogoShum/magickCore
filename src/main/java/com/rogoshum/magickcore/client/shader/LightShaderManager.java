@@ -2,11 +2,11 @@ package com.rogoshum.magickcore.client.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.api.event.PreRenderChunkEvent;
-import com.rogoshum.magickcore.api.event.ProfilerChangeEvent;
-import com.rogoshum.magickcore.tool.EntityLightSourceHandler;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.common.api.event.PreRenderChunkEvent;
+import com.rogoshum.magickcore.common.api.event.ProfilerChangeEvent;
+import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -38,14 +38,15 @@ public class LightShaderManager {
         //RenderSystem.activeTexture(33984);
         //RenderSystem.bindTexture(5);
         //RenderSystem.enableTexture();
+        if(RenderHelper.stopShader()) return;
         BlockPos pos = e.getRenderPosition();
         if(shader.isActive())
             setChunk(pos.getX(), pos.getY(), pos.getZ());
     }
 
     @SubscribeEvent
-    public void onProfilerChange(ProfilerChangeEvent event)
-    {
+    public void onProfilerChange(ProfilerChangeEvent event) {
+        if(RenderHelper.stopShader()) return;
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         PlayerEntity player = Minecraft.getInstance().player;
 
@@ -56,7 +57,7 @@ public class LightShaderManager {
 
             if(!postedLights) {
                 postedLights = true;
-                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
+                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceManager.getLightList())));
             }
         } else if(event.getName().equals("translucent")) {
             shader.useShader();
@@ -67,7 +68,7 @@ public class LightShaderManager {
 
             if(!postedLights) {
                 postedLights = true;
-                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceHandler.getLightList())));
+                setLightSource(Util.make(new ArrayList<>(), list -> list.addAll(EntityLightSourceManager.getLightList())));
             }
         } else {
             shader.stopShader();
@@ -129,6 +130,7 @@ public class LightShaderManager {
 
     @SubscribeEvent
     public void renderLast(RenderWorldLastEvent e) {
+        if(RenderHelper.stopShader()) return;
         postedLights = false;
         GlStateManager.disableLighting();
         shader.stopShader();

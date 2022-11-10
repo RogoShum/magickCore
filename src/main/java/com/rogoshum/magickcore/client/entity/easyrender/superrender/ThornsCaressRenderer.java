@@ -2,15 +2,15 @@ package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.lib.LibShaders;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
+import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -104,7 +104,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         map.put(new RenderMode(BLANK, LibShaders.slime), this::renderSphereSlime);
         map.put(new RenderMode(SPHERE, LibShaders.opacity), this::renderSphereOpacity);
         map.put(new RenderMode(CYLINDER, LibShaders.slime), this::renderCylinderSlime);
-        map.put(new RenderMode(CYLINDER, LibShaders.opacity), this::renderCylinderOpacity);
+        //map.put(new RenderMode(CYLINDER, LibShaders.opacity), this::renderCylinderOpacity);
         return map;
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.projectile.ManaLaserEntity;
+import com.rogoshum.magickcore.common.entity.projectile.ManaLaserEntity;
 import net.minecraft.client.renderer.BufferBuilder;
 
 import java.util.HashMap;

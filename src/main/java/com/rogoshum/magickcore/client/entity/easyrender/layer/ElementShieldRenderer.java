@@ -4,17 +4,15 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.lib.LibEntityData;
-import com.rogoshum.magickcore.lib.LibShaders;
-import com.rogoshum.magickcore.magick.Color;
-import com.rogoshum.magickcore.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.tool.ExtraDataHelper;
+import com.rogoshum.magickcore.common.lib.LibEntityData;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.util.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -40,7 +38,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
         Entity player = Minecraft.getInstance().player;
         Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = player.getEyePosition(Minecraft.getInstance().getRenderPartialTicks())
+        Vector3d offset = entity == player ? Vector3d.ZERO : player.getEyePosition(Minecraft.getInstance().getRenderPartialTicks())
                 .subtract(new Vector3d(x, y, z)).normalize().mul(entity.getWidth() * 1.3d, entity.getHeight() * 0.5, entity.getWidth() * 1.3d);
         matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getHeight() * 0.5f + offset.y, z - camZ + offset.z);
     }
@@ -48,22 +46,23 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     @Override
     public void update() {
         super.update();
-
-        if(entity == Minecraft.getInstance().player) return;
-        ExtraDataHelper.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
+        if(entity == Minecraft.getInstance().player && !Minecraft.getInstance().gameRenderer.getActiveRenderInfo().isThirdPerson()) {
+            render = false;
+            return;
+        }
+        ExtraDataUtil.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
             float value = state.getElementShieldMana();
             if(value > 0.0f) {
                 render = true;
-                alpha = value / entity.getMaxHealth();
-
-                if(value > entity.getMaxHealth())
+                alpha = value / Math.max(1, state.getMaxElementShieldMana());
+                if(alpha > 1.0)
                     alpha = 1.0f;
-
                 color = state.getElement().getRenderer().getColor();
-            }
+            } else
+                render = false;
         });
-        BLOOM_TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.ticksExisted % 10) + ".png"));
-        CIRCLE_TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.ticksExisted % 10) + ".png"));
+        BLOOM_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.ticksExisted % 10) + ".png"));
+        CIRCLE_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.ticksExisted % 10) + ".png"));
     }
 
     public void renderCircle(RenderParams params) {

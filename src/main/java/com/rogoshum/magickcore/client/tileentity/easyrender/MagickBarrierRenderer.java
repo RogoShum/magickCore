@@ -2,17 +2,25 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import com.rogoshum.magickcore.block.tileentity.MagickBarrierTileEntity;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.event.RenderEvent;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.tileentity.MagickBarrierTileEntity;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.math.vector.Vector3f;
 
+import java.util.HashMap;
+import java.util.function.Consumer;
+
 public class MagickBarrierRenderer extends EasyTileRenderer<MagickBarrierTileEntity>{
-    @Override
+    public MagickBarrierRenderer(MagickBarrierTileEntity tile) {
+        super(tile);
+    }
+
+
     public void render(MagickBarrierTileEntity tileEntityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
         if(tileEntityIn == null || tileEntityIn.isRemoved()) return;
         float alphaScale = tileEntityIn.mana / tileEntityIn.requiredMana;
@@ -103,5 +111,10 @@ public class MagickBarrierRenderer extends EasyTileRenderer<MagickBarrierTileEnt
                 tex(1, 1).overlay(OverlayTexture.NO_OVERLAY).
                 lightmap(RenderHelper.renderLight).normal(0.5f, 0.5f, 0.5f).endVertex();
 
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        return null;
     }
 }

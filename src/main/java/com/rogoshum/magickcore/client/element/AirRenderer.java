@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.client.element;
 
-import com.rogoshum.magickcore.init.ModElements;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.common.init.ModElements;
 
 public class AirRenderer extends ElementRenderer{
     public AirRenderer() {

@@ -2,11 +2,10 @@ package com.rogoshum.magickcore.client.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.tileentity.MaterialJarTileEntity;
-import com.rogoshum.magickcore.block.tileentity.SpiritCrystalTileEntity;
+import com.rogoshum.magickcore.common.tileentity.MaterialJarTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.magick.Color;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -32,11 +31,18 @@ public class MaterialJarRenderer extends TileEntityRenderer<MaterialJarTileEntit
 
         matrixStackIn.push();
         matrixStackIn.scale(0.3f, 0.38f, 0.3f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntity(RenderHelper.blankTex))
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntity(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, RenderHelper.halfLight));
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLightIn));
+        matrixStackIn.pop();
+
+        matrixStackIn.push();
+        matrixStackIn.translate(0, 0.2, 0.0);
+        matrixStackIn.scale(0.2f, 0.08f, 0.2f);
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbSolid(RenderHelper.blankTex))
+                , new RenderHelper.RenderContext(1.0f, Color.create(0.4f, 0.3f, 0), combinedLightIn));
         matrixStackIn.pop();
 
         if(!tile.getStack().isEmpty()) {

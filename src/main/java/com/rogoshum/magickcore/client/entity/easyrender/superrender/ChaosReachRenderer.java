@@ -3,15 +3,11 @@ package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.superentity.ChaoReachEntity;
-import com.rogoshum.magickcore.lib.LibShaders;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.rogoshum.magickcore.common.entity.superentity.ChaoReachEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
 
@@ -39,7 +35,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
         matrixStackIn.scale(entity.getWidth() * scale, entity.getWidth() * scale, entity.getWidth() * scale);
         matrixStackIn.push();
         matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
-        RenderHelper.renderParticle(BufferContext.create(matrixStackIn, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+        RenderHelper.renderParticle(BufferContext.create(matrixStackIn, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.halfLight));
         matrixStackIn.pop();
     }
 

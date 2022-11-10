@@ -1,5 +1,28 @@
 {
   "variants": {
-    "": { "model": "minecraft:block/air" }
+    "age=0": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=1": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=2": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=3": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=4": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=5": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=6": {
+      "model": "magickcore:block/element_crystal"
+    },
+    "age=7": {
+      "model": "magickcore:block/element_crystal"
+    }
   }
 }

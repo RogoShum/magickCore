@@ -1,11 +1,20 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.block.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 
+import java.util.HashMap;
+import java.util.function.Consumer;
+
 public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileEntity>{
-    @Override
+    public MagickCraftingRenderer(MagickCraftingTileEntity tile) {
+        super(tile);
+    }
+
+
     public void render(MagickCraftingTileEntity tileEntityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
         /*
         matrixStackIn.push();
@@ -61,5 +70,10 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         }
 
          */
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
+        return null;
     }
 }

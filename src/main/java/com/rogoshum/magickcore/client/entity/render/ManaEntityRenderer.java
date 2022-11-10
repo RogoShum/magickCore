@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.entity.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.entity.base.ManaEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;

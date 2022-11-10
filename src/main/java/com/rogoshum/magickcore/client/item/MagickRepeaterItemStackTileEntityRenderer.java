@@ -2,10 +2,8 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.block.tileentity.MagickRepeaterTileEntity;
-import com.rogoshum.magickcore.client.tileentity.easyrender.EasyTileRenderer;
-import com.rogoshum.magickcore.event.RenderEvent;
-import com.rogoshum.magickcore.init.ModBlocks;
+import com.rogoshum.magickcore.common.tileentity.MagickRepeaterTileEntity;
+import com.rogoshum.magickcore.common.init.ModBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

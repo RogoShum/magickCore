@@ -1,13 +1,12 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.entity.projectile.ManaStarEntity;
-import com.rogoshum.magickcore.init.ModElements;
+import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
+import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;

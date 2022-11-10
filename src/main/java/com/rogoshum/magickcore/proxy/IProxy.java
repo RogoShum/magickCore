@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.proxy;
 
-import com.rogoshum.magickcore.api.render.IEasyRender;
+import com.rogoshum.magickcore.common.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
@@ -11,6 +11,7 @@ import net.minecraftforge.fml.LogicalSide;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface IProxy {
     public void init();
@@ -28,7 +29,7 @@ public interface IProxy {
     public void addMagickParticle(LitParticle par);
 
     public ElementRenderer getElementRender(String string);
-    public void addRenderer(IEasyRender renderer);
+    public void addRenderer(Supplier<IEasyRender> renderSupplier);
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction();
     void updateRenderer();
     public void setClippingHelper(ClippingHelper clippingHelper);

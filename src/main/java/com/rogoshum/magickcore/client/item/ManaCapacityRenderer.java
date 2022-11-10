@@ -3,10 +3,10 @@ package com.rogoshum.magickcore.client.item;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderHelper;
-import com.rogoshum.magickcore.entity.pointed.ManaCapacityEntity;
-import com.rogoshum.magickcore.init.ModEntities;
-import com.rogoshum.magickcore.tool.NBTTagHelper;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
+import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -29,16 +29,18 @@ public class ManaCapacityRenderer extends ItemStackTileEntityRenderer {
         matrixStackIn.push();
         matrixStackIn.translate(0.5, 0.5, 0.5);
         Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().world);
-        ManaCapacityEntity capacity = ModEntities.mana_capacity.get().create(Minecraft.getInstance().world);
+        ManaCapacityEntity capacity = ModEntities.MANA_CAPACITY.get().create(Minecraft.getInstance().world);
         if(entity instanceof ManaCapacityEntity)
             capacity = (ManaCapacityEntity) entity;
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RENDER_TYPE_0)
-                , new RenderHelper.RenderContext(0.1f, capacity.spellContext().element.color(), combinedLight));
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.push();
         float scale = capacity.manaCapacity().getMana() / capacity.manaCapacity().getMaxMana();
         matrixStackIn.scale(scale, scale, scale);
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element.color(), combinedLight));
+        matrixStackIn.pop();
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RENDER_TYPE_0)
+                , new RenderHelper.RenderContext(0.1f, capacity.spellContext().element.color(), combinedLight));
         matrixStackIn.pop();
     }
 }
