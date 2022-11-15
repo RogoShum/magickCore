@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.common.magick.extradata.entity.TakenEntityData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;

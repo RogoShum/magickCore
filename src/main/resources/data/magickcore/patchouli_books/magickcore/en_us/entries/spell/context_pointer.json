@@ -1,0 +1,27 @@
+{
+  "name": "法术指针",
+  "advancement": "magickcore:learn/magick_core",
+  "icon": "magickcore:context_pointer",
+  "category": "spell",
+  "pages": [
+    {
+      "type": "spotlight",
+      "title": "法术指针",
+      "item": "magickcore:context_pointer",
+      "text": "指引魔力走向的单行道。"
+    },
+    {
+      "type": "text",
+      "text": "一般的完备法术只能完成一次施法，但是法术指针可以让我们实现多次施法。指针可以放置在地面上，只需要把完备法术的掉落物丢在指针上，完备法术就会按顺序排列起来。"
+    },
+    {
+      "type": "text",
+      "text": "我们只要用魔杖右键一下法术指针，里面的完备法术就会合多为一，释放魔法时里面的法术会按顺序执行。假如法术携带的施加方式是形态，那么后续法术会在形态触发目标后执行。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "context_pointer",
+      "text": "在魔力工作台处合成。"
+    }
+  ]
+}

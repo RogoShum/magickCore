@@ -12,7 +12,7 @@
     "MixinRecipeManager",
     "MixinWorld"
   ],
-  "minVersion": "0.8",
+  "minVersion": "0.8.1",
   "compatibilityLevel": "JAVA_8",
   "refmap": "magickcore.refmap.json",
   "injectors": {

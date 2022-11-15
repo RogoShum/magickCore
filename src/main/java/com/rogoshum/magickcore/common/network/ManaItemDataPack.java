@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;

@@ -2,19 +2,23 @@ package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.api.entity.IManaEntity;
 import com.rogoshum.magickcore.common.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -36,6 +40,9 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     @Override
     public void update() {
         super.update();
+
+        if(RenderHelper.showDebug() && entity.getItem().getItem() instanceof IManaData)
+            updateSpellContext();
         if(entity.getItem().getItem() instanceof IManaData && entity.getItem().getItem().showDurabilityBar(entity.getItem())) {
             render = true;
             ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
@@ -79,10 +86,49 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     }
 
     @Override
+    protected void renderDebug(RenderParams renderParams) {
+        if(entity.getItem().getItem() instanceof IManaData) {
+            renderSpellContext(renderParams);
+        }
+    }
+
+    @Override
+    protected void updateSpellContext() {
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        double camX = cam.x, camY = cam.y, camZ = cam.z;
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        debugX = x - camX + offset.x;
+        debugY = y - camY + entity.getHeight() + offset.y;
+        debugZ = z - camZ + offset.z;
+
+        String information = ExtraDataUtil.itemManaData(entity.getItem()).spellContext().toString();
+        if(information.isEmpty())  {
+            debugSpellContext = null;
+            return;
+        }
+        debugSpellContext = information.split("\n");
+        contextLength = 0;
+        if(debugSpellContext.length < 1) return;
+        for (String s : debugSpellContext) {
+            if (s.length() > contextLength)
+                contextLength = s.length();
+        }
+        debugY += debugSpellContext.length * 0.1;
+    }
+
+    @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         if(!render) return null;
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::render);
+        return map;
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getDebugFunction() {
+        if(!(entity.getItem().getItem() instanceof IManaData)) return null;
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        map.put(RenderMode.ORIGIN_RENDER, this::renderDebug);
         return map;
     }
 }

@@ -2,11 +2,15 @@ package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ContextCoreItem extends BaseItem{
     public ContextCoreItem() {
@@ -38,5 +42,13 @@ public class ContextCoreItem extends BaseItem{
         }
 
         return false;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        if(p_77663_3_ instanceof ServerPlayerEntity) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.CONTEXT_CORE);
+        }
     }
 }

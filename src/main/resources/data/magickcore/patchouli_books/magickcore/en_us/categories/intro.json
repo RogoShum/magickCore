@@ -1,6 +1,6 @@
 {
-  "name": "World",
-  "description": "What is inside this world",
+  "name": "世界构成",
+  "description": "这个世界里都有些什么？",
   "icon": "magickcore:textures/element/base/magick_particle.png",
   "sortnum": 0
 }

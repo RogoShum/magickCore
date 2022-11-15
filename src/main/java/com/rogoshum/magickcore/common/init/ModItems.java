@@ -73,7 +73,7 @@ public class ModItems {
             new Food.Builder().meat().saturation(3f).fastToEat().setAlwaysEdible().effect(() -> new EffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> ELEMENT_CRYSTAL = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties()));
     public static final RegistryObject<Item> ELEMENT_WOOL = ITEMS.register("element_wool", ElementWoolItem::new);
-    public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", () -> new ElementContainerItem(BaseItem.properties()));
+    public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", ElementStringItem::new);
 
     //public static final RegistryObject<Item> entity_repeater = ITEMS.register("entity_repeater", () -> new LifeRepeaterItem(EntityRepeater::new));
     //public static final RegistryObject<Item> ordinary_repeater = ITEMS.register("ordinary_repeater", () -> new LifeRepeaterItem(OrdinaryRepeater::new));

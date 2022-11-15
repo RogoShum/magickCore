@@ -2,11 +2,10 @@ package com.rogoshum.magickcore.common.recipes;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;

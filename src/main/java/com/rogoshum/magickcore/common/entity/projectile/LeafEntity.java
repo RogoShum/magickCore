@@ -57,6 +57,6 @@ public class LeafEntity extends ManaProjectileEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return MANA_FACTOR;
+        return ManaFactor.DEFAULT;
     }
 }

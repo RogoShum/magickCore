@@ -14,9 +14,9 @@ import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -49,7 +49,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     private static final DataParameter<Boolean> TRANS = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> MODE = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private final ManaCapacity manaCapacity = ManaCapacity.create(5000);
-
+    private boolean dead = false;
     public ManaCapacityEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
@@ -99,10 +99,12 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     public void remove() {
-        ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.MAGICK_CONTAINER.get(), 1);
-        ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
-        if(!this.world.isRemote)
-            world.addEntity(entity);
+        if(!dead) {
+            ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.MAGICK_CONTAINER.get(), 1);
+            ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
+            if (!this.world.isRemote)
+                world.addEntity(entity);
+        }
         super.remove();
     }
 

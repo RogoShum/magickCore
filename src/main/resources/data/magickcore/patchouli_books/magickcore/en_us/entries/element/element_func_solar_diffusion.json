@@ -1,0 +1,12 @@
+{
+  "name": "§6烈焰§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_solar_diffusion",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

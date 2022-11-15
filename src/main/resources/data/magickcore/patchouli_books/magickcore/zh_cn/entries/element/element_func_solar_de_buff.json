@@ -1,0 +1,12 @@
+{
+  "name": "§6烈焰§7减益",
+  "advancement": "magickcore:learn/trigger_element_func_solar_de_buff",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "减益状态的烈焰能量可以给予目标燃烧效果。"
+    }
+  ]
+}

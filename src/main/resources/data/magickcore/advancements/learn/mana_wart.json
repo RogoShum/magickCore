@@ -1,5 +1,5 @@
 {
-  "parent": "magickcore:learn/root",
+	"parent": "magickcore:learn/magick_crafting",
 	"criteria": {
 	"example": {
 		"trigger": "magickcore:string",

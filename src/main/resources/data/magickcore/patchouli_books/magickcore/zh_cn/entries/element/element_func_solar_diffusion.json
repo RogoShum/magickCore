@@ -1,0 +1,12 @@
+{
+  "name": "§6烈焰§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_solar_diffusion",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "漫散状态的烈焰能量会产生一次无伤害的热爆，将目标推开。"
+    }
+  ]
+}

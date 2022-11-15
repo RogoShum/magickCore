@@ -1,0 +1,12 @@
+{
+  "name": "§8夺魂§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_taken_diffusion",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "漫散状态的夺魂能量可以使刷怪笼生成生物。"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "§3冰影§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_diffusion",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

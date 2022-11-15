@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
+import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,29 +17,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class MultiBlockUtil {
-    public static class ArrayWithTypeToken<T> {
-        private final T[] array;
-
-        public ArrayWithTypeToken(Class<T> type, int size) {
-            array = (T[]) Array.newInstance(type, size);
-        }
-
-        public void put(int index, T item) {
-            array[index] = item;
-        }
-
-        public T get(int index) {
-            return array[index];
-        }
-
-        public T[] create() {
-            return array;
-        }
-    }
-
-    static <T> Class < T > newTclass (Class < T > clazz) throws InstantiationException, IllegalAccessException {
-        return clazz;
-    }
 
     public static <T> Optional<T>[][][] createBlockPosArrays(HashMap<BlockPos, T> map, Optional<T> empty) {
         if(map.isEmpty()) {
@@ -329,6 +307,35 @@ public class MultiBlockUtil {
         public boolean match(T object) {
             if(!valid()) return false;
             return predicate.test(object);
+        }
+
+        @Override
+        public String getPattern() {
+            return pattern;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(pattern);
+        }
+    }
+
+    public static class PlaceableEntityPattern extends StructurePattern<PlaceableItemEntity>{
+        public final Item item;
+        public final String pattern;
+
+        public PlaceableEntityPattern(String pattern, Item item) {
+            this.item = item;
+            this.pattern = pattern;
+        }
+
+        private boolean valid() {
+            return this.pattern != null && item != null;
+        }
+
+        @Override
+        public boolean match(PlaceableItemEntity type) {
+            return item == Items.AIR || (type != null && type.getItemStack().getItem() == item);
         }
 
         @Override

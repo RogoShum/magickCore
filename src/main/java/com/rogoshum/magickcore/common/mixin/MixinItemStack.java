@@ -2,12 +2,11 @@ package com.rogoshum.magickcore.common.mixin;
 
 import com.rogoshum.magickcore.common.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.api.itemstack.IItemData;
-import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.magick.extradata.ItemExtraData;
+import com.rogoshum.magickcore.common.extradata.ItemExtraData;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

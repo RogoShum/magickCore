@@ -7,7 +7,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;

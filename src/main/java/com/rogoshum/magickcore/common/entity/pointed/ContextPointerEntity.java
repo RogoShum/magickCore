@@ -14,7 +14,7 @@ import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
@@ -43,7 +43,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
     private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
     private final SpellContext spellContext = SpellContext.create();
     private int coolDown = 40;
-
+    private boolean dead = false;
     public ContextPointerEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
@@ -299,10 +299,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaCapaci
     @Override
     public void remove() {
         dropItem();
-        ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_POINTER.get(), 1);
-        ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
-        if(!this.world.isRemote)
-            world.addEntity(entity);
+        if(!dead) {
+            ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_POINTER.get(), 1);
+            ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
+            if (!this.world.isRemote)
+                world.addEntity(entity);
+        }
         super.remove();
     }
 

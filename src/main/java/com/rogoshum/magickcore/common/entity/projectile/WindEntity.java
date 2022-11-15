@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WindEntity extends ManaProjectileEntity {
-    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
+    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.6f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/wind.png");
     public WindEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);

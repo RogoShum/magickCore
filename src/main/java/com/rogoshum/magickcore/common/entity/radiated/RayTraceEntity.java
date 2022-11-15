@@ -10,6 +10,10 @@ import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -41,15 +45,37 @@ public class RayTraceEntity extends ManaRadiateEntity {
         Entity target = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, spellContext().range * 5);
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, getLength());
         } else if (getOwner() != null) {
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), spellContext().range * 5);
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), getLength());
         }
 
         List<Entity> list = new ArrayList<>();
         if(target != null)
             list.add(target);
         return list;
+    }
+
+    public float getLength() {
+        return spellContext().range * 5;
+    }
+
+    @Override
+    public List<BlockPos> findBlocks() {
+        BlockRayTraceResult result = null;
+        if(spellContext().containChild(LibContext.DIRECTION)) {
+            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
+            result = this.world().rayTraceBlocks(new RayTraceContext(this.getPositionVec(), this.getPositionVec().add(direction.normalize().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+        } else if (getOwner() != null) {
+            result = this.world().rayTraceBlocks(new RayTraceContext(this.getPositionVec(), this.getPositionVec().add(getOwner().getLookVec().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+        }
+
+        if(result != null && result.getType() != RayTraceResult.Type.MISS){
+            List<BlockPos> list = new ArrayList<>();
+            list.add(result.getPos());
+            return list;
+        }
+        return super.findBlocks();
     }
 
     @Override
@@ -59,22 +85,22 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.RADIATE_DEFAULT;
+        return ManaFactor.create(0.5f, 1.0f, 1.0f);
     }
 
     protected void applyParticle(int particleAge) {
         Vector3d target = this.getPositionVec();
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            target = target.add(direction.normalize().scale(spellContext().range * 5));
+            target = target.add(direction.normalize().scale(getLength()));
 
-            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, spellContext().range * 5);
+            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, getLength());
             if(entity != null)
                 target = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
         } else if (getOwner() != null){
-            target = target.add(getOwner().getLookVec().normalize().scale(spellContext().range * 5));
+            target = target.add(getOwner().getLookVec().normalize().scale(getLength()));
 
-            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), spellContext().range * 5);
+            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), getLength());
             if(entity != null)
                 target = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
         }

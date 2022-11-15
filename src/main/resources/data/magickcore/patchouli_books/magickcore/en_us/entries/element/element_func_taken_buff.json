@@ -1,0 +1,12 @@
+{
+  "name": "§8夺魂§7增益",
+  "advancement": "magickcore:learn/trigger_element_func_taken_buff",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

@@ -69,7 +69,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getOwner()).projectile((Entity) this)
                         .victim(living).noCost();
-                MagickReleaseHelper.releaseMagick(context);
+                MagickReleaseHelper.releaseMagick(beforeCast(context));
             }
         }
     }
@@ -92,6 +92,10 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
 
     default void beforeJoinWorld(MagickContext context) {
 
+    }
+
+    default MagickContext beforeCast(MagickContext context) {
+        return context;
     }
 
     default Vector3d getPostDirection(Entity entity) {

@@ -3,8 +3,12 @@ package com.rogoshum.magickcore.common.item.placeable;
 import com.rogoshum.magickcore.common.block.MagickCraftingBlock;
 import com.rogoshum.magickcore.client.item.SpiritCrystalItemRenderer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.item.BaseItem;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
@@ -12,6 +16,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+
+import java.io.Serializable;
 
 public class SpiritCrystalItem extends PlaceableEntityItem {
     public static String[][] CRAFTING_RECIPE = {
@@ -41,6 +47,8 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
         BlockPos crafting = validCrafting(context.getWorld(), new BlockPos(pos), false);
         if(crafting != null) {
             context.getWorld().setBlockState(crafting, ModBlocks.magick_crafting.get().getDefaultState());
+            if(context.getPlayer() instanceof ServerPlayerEntity)
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.getPlayer(), LibAdvancements.MAGICK_CRAFTING);
         }
     }
 

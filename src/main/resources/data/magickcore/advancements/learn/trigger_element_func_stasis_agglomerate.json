@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "element_func_stasis_agglomerate"
+      }
+    }
+  }
+}

@@ -86,7 +86,6 @@ public class ModRegistry {
                     functions.add(ApplyType.ELEMENT_TOOL, WitherAbility::applyToolElement);
                     functions.add(ApplyType.SUPER, WitherAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, WitherAbility::diffusion);
-                    functions.add(ApplyType.AGGLOMERATE, WitherAbility::agglomerate);
             }
         });
 

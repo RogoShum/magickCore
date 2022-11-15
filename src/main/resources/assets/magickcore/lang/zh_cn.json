@@ -1,6 +1,6 @@
 {
     "itemGroup.magickcore_group": "魔法核心",
-    "itemGroup.magickcore_entity_type_group": "法术样式",
+    "itemGroup.magickcore_entity_type_group": "法术形态",
     "itemGroup.magickcore_element_item_group": "元素物品",
     "itemGroup.magickcore_magick_context_group": "完备法术",
 
@@ -215,7 +215,7 @@
     "magickcore.description.mana_type": "类型",
     "magickcore.description.tick": "存在时间",
     "magickcore.description.trace": "追踪",
-    "magickcore.description.spawn": "生成实体",
+    "magickcore.description.spawn": "法术形态",
     "magickcore.description.direction": "方向",
     "magickcore.description.position": "位置",
     "magickcore.description.apply_type": "额外类型",
@@ -257,7 +257,7 @@
     "magickcore.context.de_buff": "减益",
     "magickcore.context.hit_entity": "触碰实体",
     "magickcore.context.hit_block": "触碰方块",
-    "magickcore.context.spawn_entity": "生成",
+    "magickcore.context.spawn_entity": "形态",
     "magickcore.context.element_tool": "元素工具",
     "magickcore.context.diffusion": "漫散",
     "magickcore.context.agglomerate": "凝聚",
@@ -290,7 +290,7 @@
     "entity.magickcore.element_orb": "元素能量",
     "entity.magickcore.mana_power": "原始能量",
     "entity.magickcore.life_state": "生命状态",
-    "entity.magickcore.context_creator": "法术制作台",
+    "entity.magickcore.context_creator": "法术制作器",
     "entity.magickcore.entity_hunter": "实体猎手",
     "entity.magickcore.mana_capacity": "魔力容器",
     "entity.magickcore.context_pointer": "法术指针",
@@ -318,11 +318,5 @@
 
     //书
     "magickcore.book.name": "魔法核心指南",
-    "magickcore.book.landing_text": "这个模组为世界带来了什么，这个模组都能让你做到什么，部分内容会为你讲解。",
-    "item.magickcore.rune": "Origin Rune",
-    "item.magickcore.rift": "Rift Spawner",
-    "item.magickcore.eye": "Eye Spawner",
-    "item.magickcore.mana_glowstone": "Mana Glowstone Dust",
-    "item.magickcore.mana_redstone": "Mana Redstone Dust",
-    "item.magickcore.mana_blaze_rod": "Mana Blaze Rod"
+    "magickcore.book.landing_text": "这个模组为世界带来了什么，这个模组都能让你做到什么，部分内容会为你讲解。"
 }

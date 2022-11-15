@@ -1,0 +1,17 @@
+{
+  "name": "材料罐",
+  "advancement": "magickcore:learn/wand",
+  "icon": "magickcore:material_jar",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "材料灌是用来存储魔力材料的容器，一个材料罐只能存储一种材料，数量无上限，右键存取，潜行可以存取一组。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "material_jar",
+      "text": "在魔力工作台处合成。"
+    }
+  ]
+}

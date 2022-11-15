@@ -1,0 +1,27 @@
+{
+  "name": "元素水晶",
+  "advancement": "magickcore:learn/element_crystal",
+  "icon": "magickcore:element_crystal",
+  "category": "element_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:element_crystal",
+	  "text": "使用石英在魔法工作台转换而成。元素水晶可以承载不同属性的魔力，也可以制作元素容器来收纳元素能量。有了它我们就可以着手转变自身的元素属性。释放不同功能的魔法。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "minecraft:air",
+      "item1": "minecraft:air",
+      "item2": "minecraft:air",
+      "item3": "magickcore:element_crystal",
+      "item4": "minecraft:air",
+      "item5": "magickcore:element_crystal",
+      "item6": "minecraft:air",
+      "item7": "magickcore:element_crystal",
+      "item8": "minecraft:air",
+      "output": "magickcore:orb_bottle",
+      "text": "元素容器合成。"
+    }
+  ]
+}

@@ -1,20 +1,19 @@
 package com.rogoshum.magickcore.common.event;
 
-import com.google.common.collect.ImmutableMap;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.api.event.RecipeLoadedEvent;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.magick.extradata.entity.ElementToolData;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.magick.extradata.entity.TakenEntityData;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -27,9 +26,7 @@ import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.biome.Biome;
@@ -66,7 +63,7 @@ public class RegisterEvent {
         spawnElementMap.put(SpiderEntity.class, new LivingElementTable(15, 50, LibElements.WITHER));
         spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(2, 200, LibElements.VOID));
         spawnElementMap.put(MagmaCubeEntity.class, new LivingElementTable(2, 7, LibElements.SOLAR));
-        spawnElementMap.put(EvokerEntity.class, new LivingElementTable(1, 5, LibElements.TAKEN));
+        spawnElementMap.put(EvokerEntity.class, new LivingElementTable(1, 10, LibElements.TAKEN));
         spawnElementMap.put(VexEntity.class, new LivingElementTable(2, 10, LibElements.TAKEN));
         spawnElementMap.put(CreeperEntity.class, new LivingElementTable(5, 50, LibElements.ARC));
         spawnElementMap.put(PhantomEntity.class, new LivingElementTable(1, 50, LibElements.ARC));
@@ -220,27 +217,31 @@ public class RegisterEvent {
 
     @SubscribeEvent
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event) {
-        ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
-            if(!state.allowElement())
-                return;
-            if(!event.getEntityLiving().isNonBoss())
-                state.setElemented();
+        testIfElement(event.getEntityLiving());
+    }
 
-            if(spawnElementMap.containsKey(event.getEntityLiving().getClass())) {
-                transEntityElement(event.getEntityLiving(), state, spawnElementMap.get(event.getEntityLiving().getClass()));
-            }
+    public static boolean testIfElement(LivingEntity living) {
+        EntityStateData state = ExtraDataUtil.entityStateData(living);
+        if(state == null) return false;
+        if(!state.allowElement())
+            return state.getElement() != ModElements.ORIGIN;
+        if(!living.isNonBoss())
+            state.setElemented();
 
-            String dimension_name = event.getEntityLiving().world.getDimensionKey().getLocation().toString();
-            if(event.getEntityLiving() instanceof IMob && spawnElementMap_dimension.containsKey(dimension_name)) {
-                transEntityElement(event.getEntityLiving(), state, spawnElementMap_dimension.get(dimension_name));
-            }
+        if(spawnElementMap.containsKey(living.getClass())) {
+            transEntityElement(living, state, spawnElementMap.get(living.getClass()));
+        }
 
-            String biome_type = event.getEntityLiving().world.getBiome(event.getEntityLiving().getPosition()).getCategory().getString();
-            if(event.getEntityLiving() instanceof IMob && spawnElementMap_biome.containsKey(biome_type)) {
-                transEntityElement(event.getEntityLiving(), state, spawnElementMap_biome.get(biome_type));
-            }
-        });
+        String dimension_name = living.world.getDimensionKey().getLocation().toString();
+        if(living instanceof IMob && spawnElementMap_dimension.containsKey(dimension_name)) {
+            transEntityElement(living, state, spawnElementMap_dimension.get(dimension_name));
+        }
 
+        String biome_type = living.world.getBiome(living.getPosition()).getCategory().getString();
+        if(living instanceof IMob && spawnElementMap_biome.containsKey(biome_type)) {
+            transEntityElement(living, state, spawnElementMap_biome.get(biome_type));
+        }
+        return state.getElement() != ModElements.ORIGIN;
     }
 
     public static void transEntityElement(LivingEntity living, EntityStateData state, LivingElementTable table) {

@@ -1,0 +1,11 @@
+{
+   "parent": "magickcore:learn/context_core",
+   "criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "magick_core"
+		}
+	}
+  }
+}

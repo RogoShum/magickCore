@@ -1,0 +1,12 @@
+{
+  "name": "原生攻击",
+  "advancement": "magickcore:learn/element_func_origin_attack",
+  "icon": "magickcore:textures/items/origin_material.png",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "平平无奇的魔法攻击。"
+    }
+  ]
+}

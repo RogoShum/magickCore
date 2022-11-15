@@ -1,0 +1,13 @@
+{
+  "name": "威力药水",
+  "advancement": "magickcore:learn/mana_netherite",
+  "icon": "minecraft:potion{Potion:\"magickcore:mana_force\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:mana_force\"}",
+	  "text": "由含有“netherite(下界合金)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：提升一切魔法的强度。"
+    }
+  ]
+}

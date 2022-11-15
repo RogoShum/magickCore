@@ -3,12 +3,14 @@ package com.rogoshum.magickcore.common.item;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModGroup;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -21,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
@@ -124,6 +127,14 @@ public class OrbBottleItem extends BaseItem{
         }
         if(group == ModGroup.ITEM_GROUP) {
             items.add(new ItemStack(this));
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        if(p_77663_3_ instanceof ServerPlayerEntity) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.ORB_BOTTLE);
         }
     }
 }

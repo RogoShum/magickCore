@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.common.magick;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.api.entity.IManaEntity;
 import com.rogoshum.magickcore.common.api.entity.IManaTaskMob;
 import com.rogoshum.magickcore.common.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.common.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -14,9 +16,9 @@ import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModEffects;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -26,6 +28,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
@@ -138,31 +141,15 @@ public class MagickReleaseHelper {
             context.replenishChild(DirectionContext.create(context.projectile.getMotion()));
         }
 
-        if(context.projectile instanceof IManaEntity) {
+        if(context.projectile instanceof IManaEntity && context.applyType != ApplyType.SPAWN_ENTITY) {
             ManaFactor manaFactor = ((IManaEntity) context.projectile).getManaFactor();
             context.force(manaFactor.force * context.force);
             context.range(manaFactor.range * context.range);
             context.tick((int) (manaFactor.tick * context.tick));
         }
-        /*
-        if(context.projectile == null && context.world.isRemote && context.caster != null) {
-            Vector3d center = context.caster.getPositionVec().add(0, context.caster.getHeight() * 0.5, 0);
-            for (int i = 0; i < 30; ++i) {
-                double randX = MagickCore.getNegativeToOne();
-                double randY = MagickCore.getNegativeToOne();
-                double randZ = MagickCore.getNegativeToOne();
-                LitParticle par = new LitParticle(context.world, element.getRenderer().getParticleTexture()
-                        , new Vector3d(center.x, center.y, center.z), 0.07f, 0.07f, 1.0f, 10, element.getRenderer());
-                par.setParticleGravity(0);
-                par.setLimitScale();
-                par.setGlow();
-                par.setCanCollide(false);
-                par.addMotion(randX * 0.1, randY * 0.1, randZ * 0.1);
-                MagickCore.addMagickParticle(par);
-            }
+        if(context.caster instanceof ServerPlayerEntity) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
         }
-
-         */
         return MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
     }
 
@@ -175,6 +162,9 @@ public class MagickReleaseHelper {
         SpawnContext spawnContext = context.getChild(LibContext.SPAWN);
         if(spawnContext.entityType == null)
             return false;
+        if(context.caster instanceof ServerPlayerEntity && spawnContext.entityType.getRegistryName() != null) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "entity_type_" + spawnContext.entityType.getRegistryName().getPath());
+        }
         Entity pro = spawnContext.entityType.create(context.world);
         if(pro == null)
             return false;

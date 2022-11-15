@@ -1,15 +1,21 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.client.item.StaffRenderer;
+import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.util.GenerationUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
 
 public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem {
     public SpiritCrystalStaffItem(Properties properties) {

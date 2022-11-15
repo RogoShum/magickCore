@@ -1,27 +1,31 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.common.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModGroup;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -104,5 +108,20 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
         SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
         MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(200).force(10.0f).range(10f).addChild(new TraceContext()));
         return false;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+        if(entityIn instanceof ServerPlayerEntity) {
+            SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
+            if(item.containChild(LibContext.SPAWN)) {
+                SpawnContext spawnContext = item.getChild(LibContext.SPAWN);
+                EntityType<?> type = spawnContext.entityType;
+                if(type.getRegistryName() != null) {
+                    AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityIn, "entity_type_" + type.getRegistryName().getPath());
+                }
+            }
+        }
     }
 }

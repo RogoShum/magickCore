@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.api.entity;
 
-import com.rogoshum.magickcore.common.magick.extradata.EntityExtraData;
+import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.init.ModGroup;
@@ -10,7 +12,9 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -58,6 +62,14 @@ public class ElementSeedsItem extends BlockItem{
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))
             );
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        if(p_77663_3_ instanceof ServerPlayerEntity) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.ELEMENT_SEEDS);
         }
     }
 }

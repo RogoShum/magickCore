@@ -7,13 +7,21 @@ import java.util.Optional;
 
 public class MagickCraftingRecipe {
     private final String[][][] recipe;
-    private final MultiBlockUtil.PredicatePattern<PlaceableItemEntity>[] pattern;
+    private final MultiBlockUtil.PlaceableEntityPattern[] pattern;
     private final SpawnResult spawnResult;
 
-    public MagickCraftingRecipe(String[][][] recipe, MultiBlockUtil.PredicatePattern<PlaceableItemEntity>[] pattern, SpawnResult spawnResult) {
+    public MagickCraftingRecipe(String[][][] recipe, MultiBlockUtil.PlaceableEntityPattern[] pattern, SpawnResult spawnResult) {
         this.recipe = recipe;
         this.pattern = pattern;
         this.spawnResult = spawnResult;
+    }
+
+    public String[][][] getRecipe() {
+        return recipe;
+    }
+
+    public MultiBlockUtil.PlaceableEntityPattern[] getPattern() {
+        return pattern;
     }
 
     public boolean match(Optional<PlaceableItemEntity>[][][] structure) {

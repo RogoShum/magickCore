@@ -1,13 +1,12 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.client.item.SpiritSwordRenderer;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

@@ -4,11 +4,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.IItemContainer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.recipes.*;
 import com.rogoshum.magickcore.common.recipes.container.*;
 import com.rogoshum.magickcore.common.registry.ObjectRegistry;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.lib.LibMagickCraftingRecipes;
@@ -21,7 +21,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.crafting.*;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -92,13 +91,7 @@ public class ModRecipes {
     public static final IItemContainer STRING = NBTRecipeContainer.ItemMatcher.create("element_string", "ELEMENT");
     public static final NBTRecipe ELEMENT_TOOL = new NBTRecipe(ElementOnToolContainer.create(NBTRecipeContainer.ItemMatcher.create(":"), STRING, STRING, STRING).shapeless(), new ResourceLocation("element_any_recipe"));
 
-    public static final MultiBlockUtil.PredicatePattern<PlaceableItemEntity> EMPTY = new MultiBlockUtil.PredicatePattern<PlaceableItemEntity>("",
-            Objects::isNull);
-    public static final MultiBlockUtil.PredicatePattern<PlaceableItemEntity> SPIRIT_WOOD_STICK = new MultiBlockUtil.PredicatePattern<PlaceableItemEntity>("sws",
-            (type) -> type != null && type.getItemStack() != null && type.getItemStack().getItem() == ModItems.SPIRIT_WOOD_STICK.get());
-
-    public static final MultiBlockUtil.PredicatePattern<PlaceableItemEntity> SPIRIT_CRYSTAL = new MultiBlockUtil.PredicatePattern<PlaceableItemEntity>("sc",
-            (type) -> type != null && type.getItemStack() != null && type.getItemStack().getItem() == ModItems.SPIRIT_CRYSTAL.get());
+    public static final MultiBlockUtil.PlaceableEntityPattern EMPTY = new MultiBlockUtil.PlaceableEntityPattern("", Items.AIR);
 
     public static final IItemContainer CRYSTAL_CONTAINER = TagItemMatcher.create(ELEMENT_CRYSTAL, ModRecipes.getStringTagMap("ELEMENT", LibElements.ORIGIN));
     public static final IItemContainer EMPTY_CONTAINER = NBTRecipeContainer.ItemMatcher.create("minecraft:air");
@@ -164,8 +157,9 @@ public class ModRecipes {
                                 {"", "", ""}
                         }
                 };
-        MultiBlockUtil.PredicatePattern<PlaceableItemEntity>[] pattern = new MultiBlockUtil.PredicatePattern[3];
-
+        MultiBlockUtil.PlaceableEntityPattern[] pattern = new MultiBlockUtil.PlaceableEntityPattern[3];
+        MultiBlockUtil.PlaceableEntityPattern SPIRIT_WOOD_STICK = new MultiBlockUtil.PlaceableEntityPattern("sws", ModItems.SPIRIT_WOOD_STICK.get());
+        MultiBlockUtil.PlaceableEntityPattern SPIRIT_CRYSTAL = new MultiBlockUtil.PlaceableEntityPattern("sc", ModItems.SPIRIT_CRYSTAL.get());
         pattern[0] = EMPTY;
         pattern[1] = SPIRIT_WOOD_STICK;
         pattern[2] = SPIRIT_CRYSTAL;

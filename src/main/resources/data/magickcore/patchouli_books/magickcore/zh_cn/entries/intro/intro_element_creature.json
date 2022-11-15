@@ -1,0 +1,39 @@
+{
+  "name": "元素生物",
+  "advancement": "magickcore:learn/element_creature",
+  "icon": "minecraft:shield",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+      "text": "自然怪物通常会携带不同元素的魔力，可以观察到他们的身边围绕着元素粒子。$(br2)如果怪物的因果之力比较多，还可能会产生元素盾来抵御攻击。"
+    },
+	{
+      "type": "image",
+	  "title": "连连看",
+	  "images": ["magickcore:textures/book_image/element_shield.png"],
+	  "border": "true",
+	  "text": "元素盾是一种防御机制，可以抵御伤害。"
+    },
+    {
+      "type": "text",
+      "text": "自然生物的元素盾盾容通常在自身最大血量的一半或一半以下。$(br2)元素盾可以一定程度上减免非魔法伤害的威力，只有相同元素的攻击才能达到最大收益。$(br2)缠上元素线的近战武器也可以对元素盾造成有效打击。$(br2)玩家也可以通过饮用盾容药水来短时间内产生元素盾"
+    },
+    {
+      "type": "text",
+      "text": "携带元素能量的生物在死亡之后，体内的元素能量会以各种方式被抽离出来，通常只会掉落一团元素能量。"
+    },
+    {
+      "type": "image",
+      "title": "元素能量",
+      "images": ["magickcore:textures/book_image/element_power.png"],
+      "text": "此为冰属性的元素能量",
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "title": " ",
+      "text": "元素能量可以被生命体吸收，从而增加生命体的魔力上限，也可以被元素容器收纳起来，制作成不同的元素道具。制作元素容器需要用到下界石英。"
+    }
+  ]
+}

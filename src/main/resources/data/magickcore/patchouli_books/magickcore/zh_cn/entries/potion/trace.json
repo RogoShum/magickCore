@@ -1,0 +1,13 @@
+{
+  "name": "追踪药水",
+  "advancement": "magickcore:learn/mana_disc",
+  "icon": "minecraft:potion{Potion:\"magickcore:trace\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:trace\"}",
+	  "text": "由含有“dragon_breath(龙息)”字样的物品与清爽水酿造而成。$(br2)功能：使释放的魔法含带追踪效果。"
+    }
+  ]
+}

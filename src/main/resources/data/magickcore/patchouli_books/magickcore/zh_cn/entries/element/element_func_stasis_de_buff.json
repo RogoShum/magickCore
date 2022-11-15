@@ -1,0 +1,12 @@
+{
+  "name": "§3冰影§7减益",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_de_buff",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "减益状态的冰影能量可以给予目标受冻或者停滞的效果。"
+    }
+  ]
+}

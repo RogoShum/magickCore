@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore;
 
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
@@ -8,8 +9,12 @@ import com.rogoshum.magickcore.common.event.magickevent.ElementThingEvent;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.common.init.*;
+import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.lifestate.LifeState;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.util.GenerationUtil;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
@@ -22,11 +27,14 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,7 +45,7 @@ public class MagickCore {
     public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "magickcore";
 	public static final String NAME = "MagickCore";
-	public static final String VERSION = "0.8";
+	public static final String VERSION = "0.8.1";
 	
 	public static final String Data = MOD_ID + ":data";
 	public static final UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
@@ -54,6 +62,7 @@ public class MagickCore {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::generate);
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
         DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
         ModElements.registerElement();
@@ -107,5 +116,22 @@ public class MagickCore {
         event.enqueueWork(() -> {
             proxy.initBlockRenderer();
         });
+    }
+
+    private void generate(final FMLLoadCompleteEvent event) {
+        /*
+        new ArrayList<>(ModEntities.Entities.getEntries()).forEach(ob -> {
+            if(ob.isPresent())
+                GenerationUtil.generateEntityType(ob.get());
+        });
+        MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().keySet().forEach(elementType -> {
+            for (int i = 0; i < ApplyType.values().length; ++i) {
+                ApplyType type = ApplyType.values()[i];
+                if(type != ApplyType.SPAWN_ENTITY type != ApplyType.NONE && type != ApplyType.HIT_ENTITY && type != ApplyType.HIT_BLOCK && type != ApplyType.SUPER && type != ApplyType.ELEMENT_TOOL)
+                    GenerationUtil.generateElementFuncFile(elementType, ApplyType.values()[i].getLabel());
+            }
+        });
+
+         */
     }
 }

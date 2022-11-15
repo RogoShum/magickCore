@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.init;
 
 import com.google.gson.JsonObject;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.util.RoguelikeUtil;
+import com.rogoshum.magickcore.common.util.LootUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.conditions.ILootCondition;
@@ -21,8 +21,7 @@ public class ModLoots {
     public static final GlobalLootModifierSerializer<?> RandomLoots = new Serializer().setRegistryName("random_loots");
 
     @SubscribeEvent
-    public static void registerRecipes(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event)
-    {
+    public static void registerRecipes(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
         event.getRegistry().registerAll(
                 RandomLoots
         );
@@ -42,29 +41,19 @@ public class ModLoots {
     }
 
     public static class RandomLootModifier implements IGlobalLootModifier {
-        private ILootCondition[] ailootcondition;
-        private ResourceLocation location;
-        public RandomLootModifier(ResourceLocation location, ILootCondition[] ailootcondition)
-        {
-            this.ailootcondition = ailootcondition;
-            this.location = location;
+        public RandomLootModifier(ResourceLocation location, ILootCondition[] ailootcondition) {
         }
 
         @Nonnull
         @Override
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
-           if(context.getQueriedLootTableId().toString().contains("minecraft:chests"))
-           {
-               while (context.getRandom().nextBoolean())
-               {
+           if(context.getQueriedLootTableId().toString().contains("minecraft:chests")) {
+               while (context.getRandom().nextBoolean()) {
                    int lucky = 1;
                    while (context.getRandom().nextBoolean())
                        lucky++;
 
-                   int tick = (context.getRandom().nextInt(lucky) + 1) * (context.getRandom().nextInt(lucky * 2) + 1) * (context.getRandom().nextInt(lucky + 1) + 1) * 10;
-                   if(context.getRandom().nextInt(lucky + 1) + context.getRandom().nextInt(lucky + 1) > 10)
-                       tick = Integer.MAX_VALUE;
-                   generatedLoot.add(RoguelikeUtil.createRandomItemByLucky(lucky));
+                   generatedLoot.add(LootUtil.createRandomItemByLucky(lucky));
                }
            }
             return generatedLoot;

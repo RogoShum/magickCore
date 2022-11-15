@@ -11,20 +11,24 @@ import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.item.placeable.SpiritCrystalItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITickableTileEntity {
     public static final int transNeed = 120;
     public int transTick;
     private PlaceableItemEntity corePlaceable;
+    private final HashSet<PlaceableItemEntity> craftingSides = new HashSet<>();
 
     public MagickCraftingTileEntity() {
         super(ModTileEntities.magick_crafting_tileentity.get());
@@ -33,9 +37,24 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
     @Override
     public void tick() {
         ticksExisted++;
-        if(ticksExisted > 10 && ticksExisted % 10 == 0) {
-            if(SpiritCrystalItem.validCrafting(world, pos, true) == null)
+        if(ticksExisted > 10 && ticksExisted % 10 == 0 && craftingSides.size() < 4) {
+            craftingSides.clear();
+            getSide(this.getPos().add(1, 0, 1));
+            getSide(this.getPos().add(-1, 0, 1));
+            getSide(this.getPos().add(1, 0, -1));
+            getSide(this.getPos().add(-1, 0, -1));
+            if(craftingSides.size() < 4) {
                 this.world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                return;
+            }
+        }
+
+        if(craftingSides.size() >= 4) {
+            craftingSides.removeIf(placeableItemEntity -> !placeableItemEntity.isAlive());
+            if(craftingSides.size() < 4) {
+                this.world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                return;
+            }
         }
 
         if(world.isRemote) {
@@ -83,11 +102,12 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
         if(transTick > 0)
             transTick--;
 
+        if(craftingSides.size() < 4) return;
         if(corePlaceable != null && !corePlaceable.isAlive()) {
             corePlaceable = null;
             return;
         }
-        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos), (entity) -> entity != corePlaceable);
+        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos.up()).grow(1), (entity) -> entity != corePlaceable && !craftingSides.contains(entity));
         if(placeableItemEntities.size() < 1) return;
         if(corePlaceable == null)
             corePlaceable = placeableItemEntities.get(0);
@@ -97,6 +117,12 @@ public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITicka
                     placeableItem.remove();
             }
         }
+    }
+
+    private void getSide(BlockPos pos) {
+        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos), (entity) -> entity != corePlaceable);
+        if(placeableItemEntities.size() < 1) return;
+        craftingSides.add(placeableItemEntities.get(0));
     }
 
     private void addParticle(float scale, Vector3d vec) {

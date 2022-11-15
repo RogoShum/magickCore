@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.mixin;
 
 import com.rogoshum.magickcore.common.api.entity.IEntityData;
 import com.rogoshum.magickcore.common.api.event.ExtraDataEvent;
-import com.rogoshum.magickcore.common.magick.extradata.EntityExtraData;
+import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;

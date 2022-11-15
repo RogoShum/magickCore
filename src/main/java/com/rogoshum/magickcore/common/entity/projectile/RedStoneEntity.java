@@ -56,7 +56,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
 
     @Override
     public ManaFactor getManaFactor() {
-        return MANA_FACTOR;
+        return ManaFactor.DEFAULT;
     }
 
     @Override

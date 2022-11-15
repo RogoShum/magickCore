@@ -1,0 +1,13 @@
+{
+  "name": "魔力蜘蛛眼",
+  "advancement": "magickcore:learn/mana_spider_eye",
+  "icon": "magickcore:mana_spider_eye",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_spider_eye",
+	  "text": "使用蜘蛛眼在魔法工作台转换而成。"
+    }
+  ]
+}

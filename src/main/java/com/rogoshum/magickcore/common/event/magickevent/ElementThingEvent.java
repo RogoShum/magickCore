@@ -1,6 +1,9 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.event.ElementEvent;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ElementThingEvent {

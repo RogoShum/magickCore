@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.common.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.api.entity.IExistTick;
@@ -17,12 +18,14 @@ import com.rogoshum.magickcore.common.entity.projectile.LampEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaArrowEntity;
 import com.rogoshum.magickcore.common.entity.projectile.RayEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ShadowEntity;
+import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.common.init.ModBuff;
 import com.rogoshum.magickcore.common.init.ModEffects;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModRecipes;
-import com.rogoshum.magickcore.common.magick.extradata.entity.ElementToolData;
-import com.rogoshum.magickcore.common.magick.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.magick.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.common.network.*;
@@ -34,7 +37,7 @@ import com.rogoshum.magickcore.common.magick.context.child.MultiReleaseContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import com.rogoshum.magickcore.common.magick.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
@@ -43,7 +46,8 @@ import com.rogoshum.magickcore.common.entity.ManaItemEntity;
 import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibBuff;
@@ -53,6 +57,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.brain.schedule.Activity;
@@ -70,6 +75,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
@@ -161,6 +167,21 @@ public class MagickLogicEvent {
 					player.inventory.addItemStackToInventory(stack);
 					PERSISTED_NBT_TAG.putBoolean("MAGICKCORE_FIRST", true);
 				}
+				int lucky = 1;
+				while (MagickCore.rand.nextBoolean())
+					lucky++;
+
+				ItemStack staff = LootUtil.createRandomItemByLucky(lucky);
+				while (!(staff.getItem() instanceof IManaData)) {
+					staff = LootUtil.createRandomItemByLucky(lucky);
+				}
+				ItemManaData data = ExtraDataUtil.itemManaData(staff);
+				data.spellContext().applyType = ApplyType.DE_BUFF;
+				while (data.spellContext().element == ModElements.ORIGIN) {
+					data.spellContext().element = MagickRegistry.getRandomElement();
+				}
+				data.manaCapacity().setMana(data.manaCapacity().getMaxMana());
+				player.inventory.addItemStackToInventory(staff);
 			}
 		}
 	}
@@ -290,7 +311,6 @@ public class MagickLogicEvent {
 
 			ItemStack stack = ((LivingEntity) event.getEntity()).getActiveItemStack();
 			ItemManaData item = ExtraDataUtil.itemManaData(stack);
-			if(item == null) item = new ItemManaData();
 			if(item.manaCapacity().getMana() >= event.getMana()) {
 				item.manaCapacity().extractMana(event.getMana());
 				flag = true;
@@ -389,6 +409,25 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void onDeBuff(LivingEvent.LivingUpdateEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
+		if(event.getEntityLiving() instanceof MobEntity && state != null && state.allowElement())
+			RegisterEvent.testIfElement(event.getEntityLiving());
+
+		if(state != null && state.getBuffList().containsKey(LibBuff.PURE)) {
+			float force = state.getBuffList().get(LibBuff.PURE).getForce() * 0.5f;
+			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
+
+			for(int i = 0; i< entityList.size(); ++i) {
+				Entity entity = entityList.get(i);
+				if(entity instanceof ProjectileEntity) {
+					double factor = entity.getMotion().normalize().dotProduct(event.getEntity().getPositionVec().add(0, event.getEntity().getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
+					if(factor > 0.8) {
+						Vector3d motion = entity.getMotion();
+						entity.addVelocity(-motion.x, -motion.y, -motion.z);
+					}
+				}
+			}
+		}
+
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			return;
 
@@ -421,23 +460,7 @@ public class MagickLogicEvent {
 			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
 
 			for(int i = 0; i< entityList.size(); ++i) {
-				ModBuff.applyBuff(entityList.get(i), LibBuff.FREEZE, 20, 1, true);
-			}
-		}
-
-		if(state != null && state.getBuffList().containsKey(LibBuff.PURE)) {
-			float force = state.getBuffList().get(LibBuff.PURE).getForce() * 0.5f;
-			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
-
-			for(int i = 0; i< entityList.size(); ++i) {
-				Entity entity = entityList.get(i);
-				if(entity instanceof ProjectileEntity) {
-					double factor = entity.getMotion().normalize().dotProduct(event.getEntity().getPositionVec().add(0, event.getEntity().getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
-					if(factor > 0.8) {
-						Vector3d motion = entity.getMotion();
-						entity.addVelocity(-motion.x, -motion.y, -motion.z);
-					}
-				}
+				ModBuff.applyBuff(entityList.get(i), LibBuff.SLOW, 20, force, true);
 			}
 		}
 	}
@@ -523,9 +546,14 @@ public class MagickLogicEvent {
 			if(!(entity instanceof PlayerEntity)) {
 				EntityStateData attacker = ExtraDataUtil.entityStateData(entity);
 				float manaNeed = event.getAmount();
-				if (attacker != null && !attacker.getElement().type().equals(LibElements.ORIGIN) && state != null && state.getElementShieldMana() > 0) {
-					MagickContext attribute = new MagickContext(entity.world).noCost().caster(entity).projectile(event.getSource().getImmediateSource()).victim(event.getEntityLiving()).applyType(ApplyType.DE_BUFF).tick((int) manaNeed * 40).force(manaNeed);
-					MagickReleaseHelper.releaseMagick(attribute);
+
+				if (attacker != null && !attacker.getElement().type().equals(LibElements.ORIGIN)) {
+					if(event.getEntityLiving() instanceof ServerPlayerEntity)
+						AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) event.getEntityLiving(), LibAdvancements.ELEMENT_CREATURE);
+					if (attacker.getElementShieldMana() > 0) {
+						MagickContext attribute = new MagickContext(entity.world).noCost().caster(entity).projectile(event.getSource().getImmediateSource()).victim(event.getEntityLiving()).applyType(ApplyType.DE_BUFF).tick((int) manaNeed * 40).force(manaNeed);
+						MagickReleaseHelper.releaseMagick(attribute);
+					}
 				}
 			}
 
@@ -569,22 +597,19 @@ public class MagickLogicEvent {
 				matchMeleeType = NBTTagHelper.hasElementOnTool(((LivingEntity) event.getSource().getTrueSource()).getHeldItemMainhand(), state.getElement().type());
 
 			float damage;
-			boolean unlock = false;
 
 			if(shieldElement.equals(damageType)) {
 				damage = event.getAmount() * 2f;
-				unlock = true;
 			}
 			else if(matchMeleeType) {
 				damage = event.getAmount() * 2.25f;
-				unlock = true;
 			}
 			else if(state.getElement().type().equals(LibElements.ORIGIN))
 				damage = event.getAmount();
 			else {
 				damage = Math.min(event.getAmount(), 5.0f);
 			}
-			HandleElementShield(state, damage, event, unlock);
+			HandleElementShield(state, damage, event);
 		}
 
 		if(event.getSource().getTrueSource() instanceof LivingEntity) {
@@ -600,7 +625,7 @@ public class MagickLogicEvent {
 		}
 	}
 
-	public static void HandleElementShield(EntityStateData state, float damage, LivingAttackEvent event, boolean unlock) {
+	public static void HandleElementShield(EntityStateData state, float damage, LivingAttackEvent event) {
 		if(state.getElementShieldMana() >= damage) {
 			state.hitElementShield();
 			state.setElementShieldMana(state.getElementShieldMana() - damage);
@@ -608,8 +633,7 @@ public class MagickLogicEvent {
 				spawnParticle(state.getElement().type(), event.getEntity());
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);
-		}
-		else if(state.getElementShieldMana() > 0.0f) {
+		} else if(state.getElementShieldMana() > 0.0f) {
 			float amount = damage - state.getElementShieldMana();
 			state.hitElementShield();
 			state.setElementShieldMana(0.0f);
@@ -618,9 +642,6 @@ public class MagickLogicEvent {
 			event.setCanceled(true);
 			if(damage > 0.0f)
 				spawnParticle(state.getElement().type(), event.getEntity());
-
-			if(unlock && event.getSource().getTrueSource() instanceof ServerPlayerEntity)
-				AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) event.getSource().getTrueSource(), LibAdvancements.ELEMENT_SHIELD);
 		}
 	}
 

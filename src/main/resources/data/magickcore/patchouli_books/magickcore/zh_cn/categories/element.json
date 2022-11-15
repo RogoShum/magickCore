@@ -1,6 +1,6 @@
 {
   "name": "元素",
-  "description": "支撑魔力系统的基本能量",
+  "description": "因果之力的分化类型",
   "icon": "magickcore:textures/element/taken/particle.png",
-  "sortnum": 4
+  "sortnum": 5
 }

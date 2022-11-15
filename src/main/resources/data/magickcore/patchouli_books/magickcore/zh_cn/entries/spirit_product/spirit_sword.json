@@ -1,0 +1,17 @@
+{
+  "name": "灵魂木剑",
+  "advancement": "magickcore:learn/wand",
+  "icon": "magickcore:spirit_sword",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "灵魂木剑本身不携带任何术式，需要近距离接触目标才能传递魔力到目标，可以装备完备法术。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "sword",
+      "text": "在魔力工作台处合成。"
+    }
+  ]
+}

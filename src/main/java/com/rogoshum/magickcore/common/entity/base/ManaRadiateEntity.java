@@ -12,8 +12,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Pose;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,10 +62,26 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
         }
 
+        List<BlockPos> blocks = findBlocks();
+
+        for (BlockPos pos : blocks) {
+            MagickContext context = MagickContext.create(this.world, spellContext().postContext)
+                    .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
+                    .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
+                    .caster(getOwner()).projectile(this).noCost();
+            boolean success = MagickReleaseHelper.releaseMagick(context);
+            if(success)
+                released.set(true);
+        }
+
         if(released.get()) {
             successFX();
             this.remove();
         }
+    }
+
+    public List<BlockPos> findBlocks() {
+        return Collections.emptyList();
     }
 
     @Override

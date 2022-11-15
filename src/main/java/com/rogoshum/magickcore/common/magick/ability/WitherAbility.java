@@ -10,10 +10,11 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
@@ -46,6 +47,9 @@ public class WitherAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
+        if(!context.containChild(LibContext.APPLY_TYPE)) return false;
+        ExtraApplyTypeContext typeContext = context.getChild(LibContext.APPLY_TYPE);
+        if(typeContext.applyType != ApplyType.AGGLOMERATE) return false;
         if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
@@ -103,18 +107,12 @@ public class WitherAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
-        if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof LivingEntity)) return false;
-        float health = context.force * 0.5f;
-        if(context.victim.attackEntityFrom(ModDamage.getArcDamage(), health)) {
-            ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + health * 100));
-            return true;
-        }
-
-        return false;
-    }
-
-    public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.PURE, context.tick, context.force, true);
+        float health = Math.min(((LivingEntity) context.victim).getHealth() - 0.1f, context.force * 0.5f);
+
+        ((LivingEntity) context.victim).setHealth(((LivingEntity) context.victim).getHealth() - health);
+        ((LivingEntity)context.victim).setAbsorptionAmount(((LivingEntity) context.victim).getAbsorptionAmount() + health);
+
+        return true;
     }
 }

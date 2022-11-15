@@ -2,10 +2,13 @@ package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.client.item.ContextPointerRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -34,5 +37,13 @@ public class ContextPointerItem extends EntityItem {
             itemstack.shrink(1);
         }
         world.addEntity(contextPointer);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+        if(p_77663_3_ instanceof ServerPlayerEntity) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.CONTEXT_POINTER);
+        }
     }
 }

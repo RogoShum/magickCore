@@ -1,0 +1,12 @@
+{
+  "name": "§5虚空§7凝聚",
+  "advancement": "magickcore:learn/trigger_element_func_void_agglomerate",
+  "icon": "magickcore:void",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

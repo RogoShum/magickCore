@@ -1,0 +1,12 @@
+{
+  "name": "§b电弧§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_arc_diffusion",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": ""
+    }
+  ]
+}

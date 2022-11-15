@@ -1,0 +1,12 @@
+{
+  "name": "电弧攻击",
+  "advancement": "magickcore:learn/element_func_arc_attack",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "电弧元素是一种偏向光能的魔力元素，能够影响速度和能量。"
+    }
+  ]
+}

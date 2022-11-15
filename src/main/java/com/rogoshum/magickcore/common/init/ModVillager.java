@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.ai.sensor.VillagerHostilesSensor;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.util.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
