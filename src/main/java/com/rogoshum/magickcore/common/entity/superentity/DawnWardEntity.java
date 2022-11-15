@@ -93,6 +93,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     protected void collideWithNearbyEntities() {
+        if(!initial) return;
         List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox().grow(2));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {

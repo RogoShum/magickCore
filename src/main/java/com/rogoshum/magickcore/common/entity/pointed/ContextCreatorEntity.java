@@ -43,12 +43,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-public class ContextCreatorEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction {
+public class ContextCreatorEntity extends ManaPointEntity implements IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/items/context_core.png");
     private final InnerManaData innerManaData = new InnerManaData(ManaMaterials.getMaterial(LibMaterial.ORIGIN));
     private int itemCount = 0;
     private final List<PosItem> stacks = Collections.synchronizedList(new ArrayList<>());
-    private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
     private final SpellContext spellContext = SpellContext.create();
     private int coolDown = 40;
     private boolean dead = false;
@@ -229,7 +228,6 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaCapaci
             case 10:
                 if(!stacks.isEmpty())
                     stacks.remove(0);
-                this.manaCapacity().setMana(0);
                 break;
             case 11:
                 stacks.clear();
@@ -284,8 +282,6 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaCapaci
                     this.stacks.add(posItem);
             });
         }
-
-        this.manaCapacity().deserialize(compound);
     }
 
     @Override
@@ -300,8 +296,6 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaCapaci
             tag.put(String.valueOf(i), stack);
         }
         compound.put("STACKS", tag);
-
-        this.manaCapacity().serialize(compound);
     }
 
     public void dropItem() {
@@ -345,11 +339,6 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaCapaci
 
     public List<PosItem> getStacks() {
         return stacks;
-    }
-
-    @Override
-    public ManaCapacity manaCapacity() {
-        return manaCapacity;
     }
 
     @Override

@@ -54,6 +54,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     public void releaseMagick() {
+        if(!initial) return;
         List<Entity> livings = findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(this.getOwner(), living));
         livings.forEach(living -> {
             MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);

@@ -3,7 +3,7 @@
   "advancement": "magickcore:learn/wither",
   "icon": "magickcore:wither",
   "category": "element",
-  "sortnum": 1,
+  "sortnum": 0,
   "pages": [
     {
       "type": "spotlight",

@@ -1,6 +1,6 @@
 {
-  "name": "法术构成",
-  "description": "法术构成相关的各种属性",
+  "name": "Spell Composition",
+  "description": "Attribute of Spell",
   "icon": "magickcore:context_core",
   "sortnum": 2
 }

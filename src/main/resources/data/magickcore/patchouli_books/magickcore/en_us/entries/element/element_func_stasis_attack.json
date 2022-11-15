@@ -1,12 +1,12 @@
 {
-  "name": "冰影攻击",
-  "advancement": "magickcore:learn/element_func_stasis_attack",
+  "name": "§3冰影§7攻击",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_attack",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "电弧元素是一种偏向光能的魔力元素，能够影响速度和能量。"
+      "text": "攻击状态的冰影能量可以给予目标冰影魔法的伤害，对受冻状态的目标效果更佳。"
     }
   ]
 }

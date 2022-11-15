@@ -1,12 +1,12 @@
 {
-  "name": "枯萎攻击",
-  "advancement": "magickcore:learn/element_func_wither_attack",
+  "name": "§2枯萎§7攻击",
+  "advancement": "magickcore:learn/trigger_element_func_wither_attack",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "电弧元素是一种偏向光能的魔力元素，能够影响速度和能量。"
+      "text": "攻击状态的枯萎能量可以给予目标枯萎魔法伤害，对枯萎效果的目标效果更佳。"
     }
   ]
 }

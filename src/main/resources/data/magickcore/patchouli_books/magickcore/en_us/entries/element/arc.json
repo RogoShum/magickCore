@@ -3,6 +3,7 @@
   "advancement": "magickcore:learn/arc",
   "icon": "magickcore:arc",
   "category": "element",
+  "sortnum": 0,
   "pages": [
     {
       "type": "spotlight",

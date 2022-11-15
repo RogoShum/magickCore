@@ -3,7 +3,7 @@
   "advancement": "magickcore:learn/void",
   "icon": "magickcore:void",
   "category": "element",
-  "sortnum": 1,
+  "sortnum": 0,
   "pages": [
     {
       "type": "spotlight",

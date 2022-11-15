@@ -60,6 +60,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     public void releaseMagick() {
+        if(!initial) return;
         List<Entity> livings = findEntity(entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity));
         boolean makeSound = false;
         for (Entity entity : livings) {

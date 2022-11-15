@@ -681,13 +681,15 @@ public class MagickLogicEvent {
 		TakenEntityData takenState = ref.get();
 		if(takenState != null && event.getEntity() instanceof MobEntity) {
 			takenState.tick((MobEntity) event.getEntity());
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
-				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed) {
+				if(event.getEntity().ticksExisted % 40 == 0 || takenState.getOwnerUUID() != MagickCore.emptyUUID)
+					Networking.INSTANCE.send(
+							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+							new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
+			}
 		}
 
-		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null) {
+		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().ticksExisted % 40 == 0) {
 			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
@@ -724,25 +726,16 @@ public class MagickLogicEvent {
 					state.tick(event.getEntity());
 			}
 
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0)
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
 						new EntityStatePack(event.getEntity().getEntityId(), state.getElement().type(), state.getElementShieldMana(), state.getManaValue()
 								, state.getMaxElementShieldMana(), state.getMaxManaValue(), effect_tick, effect_force));
 		}
 
-		if(event.getEntity() instanceof ISpellContext) {
-			SpellContext data = ((ISpellContext) event.getEntity()).spellContext();
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed && data.element != null) {
-				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new ManaDataPack(event.getEntity().getEntityId(), data));
-			}
-		}
-
 		if(event.getEntity() instanceof IManaCapacity) {
 			ManaCapacity data = ((IManaCapacity) event.getEntity()).manaCapacity();
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed) {
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 10 == 0) {
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
 						new ManaCapacityPack(event.getEntity().getEntityId(), data));
