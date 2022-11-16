@@ -1,9 +1,13 @@
 package com.rogoshum.magickcore.common.entity;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.recipes.MagickCraftingRecipe;
 import com.rogoshum.magickcore.common.recipes.SpawnContext;
@@ -19,12 +23,10 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -121,7 +123,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                 Vector3d vector3d = player.getLookVec();
                 nextNode(stack, Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z));
             } else if (stack.getItem() == ModItems.WAND.get()) {
-                BlockPos pos = new BlockPos(this.getPositionVec());
+                BlockPos pos = new BlockPos(this.origin.getPositionVec());
                 if(world.getBlockState(pos).getBlock() == ModBlocks.magick_crafting.get()) {
                     Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(this.origin.entityMap, Optional.empty());
                     if(matrix != null) {
@@ -133,7 +135,8 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                                 pr.getValue().remove();
                                 return true;
                             });
-                            spawnParticle();
+                            this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.5f, 2.0f);
+                            world.setEntityState(this, (byte) 14);
                         }
                     }
                 }
@@ -143,8 +146,27 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         return ActionResultType.PASS;
     }
 
-    public void spawnParticle() {
+    @Override
+    public void handleStatusUpdate(byte id) {
+        if(id == 14)
+            spawnParticle();
+        else
+            super.handleStatusUpdate(id);
+    }
 
+    public void spawnParticle() {
+        float scale = 1f;
+        for (int i = 0; i < 20; ++i) {
+            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + getPositionVec().x
+                    , getPositionVec().y + 0.2
+                    , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + getPositionVec().z)
+                    , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (40 * MagickCore.rand.nextFloat()), 20), ModElements.ORIGIN.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(-0.1f);
+            par.setColor(Color.BLUE_COLOR);
+            MagickCore.addMagickParticle(par);
+        }
     }
 
     @Override

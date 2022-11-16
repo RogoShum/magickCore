@@ -255,7 +255,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     @Override
     public float eyeHeight() {
-        return this.getHeight() / 2;
+        return this.getHeight() * 0.5f;
     }
 
     @Override

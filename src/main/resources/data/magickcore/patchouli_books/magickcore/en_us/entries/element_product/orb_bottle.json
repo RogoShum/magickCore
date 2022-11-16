@@ -14,7 +14,7 @@
       "title": "Element Bottle with Element Energy",
       "type": "spotlight",
       "item": "magickcore:orb_bottle{ELEMENT:\"arc\"}",
-      "text": "含有元素的容器可以将自身的元素能量传递到绵羊身上，右键绵羊即可将元素能量传入到绵羊体内。$(br2)击杀绵羊后我们可以收获到元素羊毛。"
+      "text": "The container containing elements can transfer its own element energy to the sheep, just right click on the sheep. $(br2)Waiting for sheep to die, we can harvest element wool."
     },
     {
       "type": "magickcore:element_recipe",
@@ -28,7 +28,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:element_string{ELEMENT:\"arc\"},magickcore:element_wool{ELEMENT:\"arc\"}",
-      "text": "元素容器也可以直接跟线还有羊毛合成。"
+      "text": "Element Bottle can also be crafted directly with string and wool."
     },
     {
       "type": "magickcore:element_recipe",
@@ -42,7 +42,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
-      "text": "元素容器也可以和种子合成，通过种植来收获更多。"
+      "text": "Element Bottle can also be crafted with seeds, which can be planted to harvest more."
     }
   ]
 }

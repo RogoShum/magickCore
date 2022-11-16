@@ -14,10 +14,7 @@ import com.rogoshum.magickcore.common.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.common.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
-import com.rogoshum.magickcore.common.entity.projectile.LampEntity;
-import com.rogoshum.magickcore.common.entity.projectile.ManaArrowEntity;
-import com.rogoshum.magickcore.common.entity.projectile.RayEntity;
-import com.rogoshum.magickcore.common.entity.projectile.ShadowEntity;
+import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.common.init.ModBuff;
 import com.rogoshum.magickcore.common.init.ModEffects;
@@ -112,6 +109,7 @@ public class MagickLogicEvent {
 				RenderEvent.tickParticle();
 				MagickPoint.points.forEach(MagickPoint::tick);
 			}, () -> {
+				EntityLightSourceManager.clear();
 				RenderEvent.clearParticle();
 				VertexShakerHelper.clear();
 			});
@@ -223,6 +221,10 @@ public class MagickLogicEvent {
 
 		if(event.getEntity() instanceof ShadowEntity) {
 			event.setVelocity(0.3f);
+		}
+
+		if(event.getEntity() instanceof WindEntity) {
+			event.setVelocity(0.65f);
 		}
 	}
 
@@ -358,7 +360,7 @@ public class MagickLogicEvent {
 
 		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
 			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
-				if(event.getEntityLiving().ticksExisted % 10 == 0)
+				if(event.getEntityLiving().ticksExisted % 20 == 0)
 					NBTTagHelper.consumeElementOnTool(stack, LibElements.ORIGIN);
 				mana += 0.25;
 			}
@@ -631,12 +633,14 @@ public class MagickLogicEvent {
 			state.setElementShieldMana(state.getElementShieldMana() - damage);
 			if(damage > 0.0f && event.getEntityLiving().hurtResistantTime <= 10)
 				spawnParticle(state.getElement().type(), event.getEntity());
+			event.getEntityLiving().playSound(SoundEvents.BLOCK_SNOW_BREAK, 1.0f, 0.0f);
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);
 		} else if(state.getElementShieldMana() > 0.0f) {
 			float amount = damage - state.getElementShieldMana();
 			state.hitElementShield();
 			state.setElementShieldMana(0.0f);
+			event.getEntityLiving().playSound(SoundEvents.BLOCK_GLASS_BREAK, 0.7f, 0.0f);
 			event.getEntityLiving().attackEntityFrom(event.getSource(), amount);
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);

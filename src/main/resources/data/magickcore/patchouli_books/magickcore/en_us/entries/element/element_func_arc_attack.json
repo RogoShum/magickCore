@@ -1,12 +1,12 @@
 {
-  "name": "§b电弧§7攻击",
+  "name": "§bArc §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_arc_attack",
   "icon": "magickcore:arc",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "攻击状态的电弧元素可以用电弧魔法伤害攻击实体，对麻痹状态的实体效果更加，一定条件下可以连锁攻击。"
+      "text": "Arc of the Attack can use arc magic damage to attack the entity, and the effect on the entity in the paralyzed state is more effective, and it can chain attack under certain conditions."
     }
   ]
 }

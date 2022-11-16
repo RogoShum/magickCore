@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.GravityLiftRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -14,6 +15,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Pose;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -46,6 +48,8 @@ public class GravityLiftEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
+        this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 0.3F, 2.0f);
+        this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 1.2F, 0.0f);
     }
 
     @Override

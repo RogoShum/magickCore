@@ -1,5 +1,5 @@
 {
-  "name": "下界之星核心",
+  "name": "§9Ender Core",
   "advancement": "magickcore:learn/ender_dragon_material",
   "icon": "magickcore:ender_dragon_material",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:ender_dragon_material",
-	  "text": "由末影龙掉落，与法术核心合成后可以提升法术核心的最高能量上限。"
+	  "text": "Dropped by the Ender Dragon, it can be combined with the context core to increase the maximum energy limit of the context core."
     },
     {
       "type": "magickcore:element_recipe",

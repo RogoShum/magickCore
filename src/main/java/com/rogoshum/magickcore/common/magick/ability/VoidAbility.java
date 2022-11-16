@@ -71,14 +71,18 @@ public class VoidAbility{
             } else if(!world.getGameRules().get(GameRules.MOB_GRIEFING).get()) return false;
 
             BlockState state = world.getBlockState(pos);
+            int har = state.getHarvestLevel();
             if(state.getHarvestLevel() > context.force) return false;
             Block block = state.getBlock();
             if (!block.isAir(state, world, pos) && !(block instanceof IFluidBlock) && state.getBlockHardness(world, pos) != -1) {
                 int exp = state.getExpDrop((IWorldReader) world, pos, (int) context.force, 1);
                 if(context.caster instanceof PlayerEntity) {
+                    /*
                     if (!state.canHarvestBlock(world, pos, (PlayerEntity) context.caster)) {
                         return false;
                     }
+
+                     */
                     BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (PlayerEntity) context.caster);
                     event.setExpToDrop(exp);
                     MinecraftForge.EVENT_BUS.post(event);

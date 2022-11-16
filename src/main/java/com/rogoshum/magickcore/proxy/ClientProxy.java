@@ -58,7 +58,15 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void checkRenderer() {
-		if(renderThread == null || renderThread.isInterrupted() || !renderThread.isAlive() || renderThread.getState().equals(Thread.State.WAITING) || renderThread.getState().equals(Thread.State.BLOCKED)) {
+		if(renderThread != null && renderThread.getState().equals(Thread.State.WAITING)) {
+			renderThread.notify();
+			return;
+		}
+		if(renderThread == null || renderThread.isInterrupted() || !renderThread.isAlive() || renderThread.getState().equals(Thread.State.BLOCKED)) {
+			if(renderThread != null && renderThread.isInterrupted())
+				MagickCore.LOGGER.info("Render Thread Interrupted");
+			if(renderThread != null && renderThread.getState().equals(Thread.State.BLOCKED))
+				MagickCore.LOGGER.info("Render Thread BLOCKED");
 			createRenderer();
 		}
 	}
@@ -127,8 +135,13 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void checkThread() {
-		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive() || magickThread.getState().equals(Thread.State.WAITING) || magickThread.getState().equals(Thread.State.BLOCKED))
+		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive() || magickThread.getState().equals(Thread.State.WAITING) || magickThread.getState().equals(Thread.State.BLOCKED)) {
+			if(magickThread != null && magickThread.isInterrupted())
+				MagickCore.LOGGER.info("Task Thread Interrupted");
+			if(magickThread != null && magickThread.getState().equals(Thread.State.BLOCKED))
+				MagickCore.LOGGER.info("Task Thread BLOCKED");
 			createThread();
+		}
 	}
 
 	public void createThread() {

@@ -1,5 +1,5 @@
 {
-  "name": "涡流法杖",
+  "name": "Orb Staff",
   "advancement": "magickcore:learn/orb_staff",
   "icon": "magickcore:orb_staff",
   "category": "spirit_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:orb_staff",
-	  "text": "涡流法杖是一种魔法道具，无法合成，无法替换完备法术。"
+	  "text": "The Orb staff is a kind of magic prop, which cannot be crafted and cannot replace Magick Context."
     }
   ]
 }

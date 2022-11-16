@@ -7,9 +7,11 @@ import com.rogoshum.magickcore.common.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.WandItem;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -27,6 +29,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -235,8 +238,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                     ExtraDataUtil.itemManaData(stack).spellContext().copy(context);
                     ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);
                     world.addEntity(entity);
-                }
-                spawnParticle();
+                    playSound(SoundEvents.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
+                } else
+                    spawnParticle();
                 getStacks().clear();
             } else
                 dropItem();
@@ -246,7 +250,18 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public void spawnParticle() {
-
+        float scale = 1f;
+        for (int i = 0; i < 20; ++i) {
+            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + getPositionVec().x
+                    , getPositionVec().y + 0.2
+                    , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + getPositionVec().z)
+                    , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (80 * MagickCore.rand.nextFloat()), 20), ModElements.ORIGIN.getRenderer());
+            par.setGlow();
+            par.setParticleGravity(-0.1f);
+            par.setColor(Color.BLUE_COLOR);
+            MagickCore.addMagickParticle(par);
+        }
     }
 
     @Override
@@ -289,6 +304,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
             });
         }
         coolDown = 40;
+        playSound(SoundEvents.BLOCK_BEACON_AMBIENT, 0.5f, 2.0f);
         getStacks().clear();
     }
 

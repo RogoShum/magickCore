@@ -78,7 +78,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 0.5f, entity.getHeight() * 0.5f, entity.getWidth() * 0.5f);
+        matrixStackIn.scale(entity.getWidth() * 0.5f, entity.getHeight() * 1.2f, entity.getWidth() * 0.5f);
         if(CYLINDER_INNER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER);
     }
@@ -88,7 +88,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 0.51f, entity.getHeight() * 0.5f, entity.getWidth() * 0.51f);
+        matrixStackIn.scale(entity.getWidth() * 0.501f, entity.getHeight() * 1.2f, entity.getWidth() * 0.501f);
         if(CYLINDER_OUTER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER);
     }
@@ -111,11 +111,11 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
         if(entity.initial) {
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16
-                    , 0, alphaC * 0.8f, 0.3f, ModElements.ORIGIN.getRenderer().getColor());
+                    , 0, alphaC * 0.8f, 0.4f, ModElements.ORIGIN.getRenderer().getColor());
             CYLINDER_INNER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
 
             context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16
-                    , 0, alphaC, 0.3f, entity.spellContext().element.getRenderer().getColor());
+                    , 0, alphaC, 0.4f, entity.spellContext().element.getRenderer().getColor());
             CYLINDER_OUTER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
         }
     }

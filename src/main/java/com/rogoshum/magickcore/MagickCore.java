@@ -44,9 +44,6 @@ public class MagickCore {
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "magickcore";
-	public static final String NAME = "MagickCore";
-	public static final String VERSION = "0.8.1";
-	
 	public static final String Data = MOD_ID + ":data";
 	public static final UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	

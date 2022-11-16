@@ -1,5 +1,5 @@
 {
-  "name": "魔力射程",
+  "name": "Mana Range",
   "advancement": "magickcore:learn/mana_blaze",
   "icon": "magickcore:mana_energy{item_extra_data:{item_extra_data:{RANGE:10.0f}}}",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_energy{item_extra_data:{item_extra_data:{RANGE:10.0f}}}",
-	  "text": "使用烈焰棒在魔法工作台转换而成。"
+	  "text": "Converted at a magick workbench using a blaze rod."
     }
   ]
 }

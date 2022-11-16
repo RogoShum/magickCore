@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7凝聚",
+  "name": "§8Taken §7Agglomerate",
   "advancement": "magickcore:learn/trigger_element_func_taken_agglomerate",
   "icon": "magickcore:taken",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "凝聚状态的夺魂能量可以强制让施法者成为可驯服生物的主人。"
+      "text": "Taken of the Diffusion can force the caster to be the master of tameable creatures."
     }
   ]
 }

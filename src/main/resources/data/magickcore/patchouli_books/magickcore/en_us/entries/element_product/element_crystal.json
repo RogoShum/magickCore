@@ -1,5 +1,5 @@
 {
-  "name": "元素水晶",
+  "name": "Element Crystal",
   "advancement": "magickcore:learn/element_crystal",
   "icon": "magickcore:element_crystal",
   "category": "element_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:element_crystal",
-	  "text": "使用石英在魔法工作台转换而成。元素水晶可以承载不同属性的魔力，也可以制作元素容器来收纳元素能量。有了它我们就可以着手转变自身的元素属性。释放不同功能的魔法。"
+	  "text": "Converted from Quartz at a Magic Workbench. Element crystal can carry the mana of different element, and can also be used to make Element Bottle to store element energy. With Element Bottle we can proceed to transform our own element. Cast the magic of different functions."
     },
     {
       "type": "magickcore:element_recipe",
@@ -21,7 +21,7 @@
       "item7": "magickcore:element_crystal",
       "item8": "minecraft:air",
       "output": "magickcore:orb_bottle",
-      "text": "元素容器合成。"
+      "text": "Element Bottle recipe"
     }
   ]
 }

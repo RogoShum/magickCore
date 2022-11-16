@@ -202,8 +202,8 @@
     "enchantment.magickcore.element_deprivation": "Element Deprivation",
 
     //block
-    "block.magickcore.magick_crafting": "Magick Crafting",
-    "block.magickcore.magick_container": "Mana Container",
+    "block.magickcore.magick_crafting": "Magick Workbench",
+    "block.magickcore.magick_container": "Mana Capacity",
     "block.magickcore.element_crystal": "Element Crystal",
     "block.magickcore.element_wool": "Element Wool",
     "block.magickcore.magick_barrier": "Magick Barrier",
@@ -280,14 +280,14 @@
     "magickcore.tool_attribute.origin": "§fMagic Affinity",
     "magickcore.tool_duration": "§7Durability：",
 
-    "entity.magickcore.mana_orb": "Mana Vortex",
+    "entity.magickcore.mana_orb": "Mana Orb",
     "entity.magickcore.mana_star": "Mana Star",
     "entity.magickcore.mana_laser": "Mana Laser",
     "entity.magickcore.mana_shield": "Dawn Ward",
     "entity.magickcore.mana_eye": "Eye",
     "entity.magickcore.mana_rift": "Rift",
     "entity.magickcore.mana_rune": "Rune",
-    "entity.magickcore.mana_sphere": "Vortex",
+    "entity.magickcore.mana_sphere": "Mana Vortex",
     "entity.magickcore.radiance_wall": "Radiance Wall",
     "entity.magickcore.chaos_reach": "Chaos Reach",
     "entity.magickcore.thorns_caress": "Thorns Caress",

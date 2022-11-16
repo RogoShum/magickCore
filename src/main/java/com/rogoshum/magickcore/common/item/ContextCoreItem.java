@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 
 public class ContextCoreItem extends BaseItem{
@@ -37,6 +38,7 @@ public class ContextCoreItem extends BaseItem{
                         contextCreator = (ContextCreatorEntity) createEntity;
                     contextCreator.setPosition(entity.getPosX(), entity.getPosY() - 3, entity.getPosZ());
                     entity.world.addEntity(contextCreator);
+                    entity.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
                 }
             }
         }

@@ -1,12 +1,12 @@
 {
-  "name": "§5虚空§7漫散",
+  "name": "§5Void §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_void_diffusion",
   "icon": "magickcore:void",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "漫散状态的虚空能量可以让目标瞬移。"
+      "text": "Void of the Diffusion allows the target to teleport."
     }
   ]
 }

@@ -31,12 +31,12 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     @Override
     protected void applyParticle() {
-        applyParticle(2);
+        applyParticle(3);
     }
 
     @Override
     public void successFX() {
-        applyParticle(20);
+        applyParticle(10);
     }
 
     @Nonnull
@@ -90,20 +90,19 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     protected void applyParticle(int particleAge) {
         Vector3d target = this.getPositionVec();
-        if(spellContext().containChild(LibContext.DIRECTION)) {
-            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            target = target.add(direction.normalize().scale(getLength()));
+        Vector3d dir = Vector3d.ZERO;
+        if(spellContext().containChild(LibContext.DIRECTION))
+            dir = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
+        else if (getOwner() != null)
+            dir = getOwner().getLookVec().normalize();
+        target = target.add(dir.scale(getLength()));
 
-            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, getLength());
-            if(entity != null)
-                target = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
-        } else if (getOwner() != null){
-            target = target.add(getOwner().getLookVec().normalize().scale(getLength()));
-
-            Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), getLength());
-            if(entity != null)
-                target = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
-        }
+        Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), dir, getLength());
+        if(entity != null)
+            target = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
+        BlockRayTraceResult result = this.world().rayTraceBlocks(new RayTraceContext(this.getPositionVec(), this.getPositionVec().add(getOwner().getLookVec().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+        if(result.getType() != RayTraceResult.Type.MISS)
+            target = Vector3d.copyCentered(result.getPos());
 
         int distance = (int) (50 * spellContext().range);
 

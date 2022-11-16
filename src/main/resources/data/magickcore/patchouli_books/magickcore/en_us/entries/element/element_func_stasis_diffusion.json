@@ -1,12 +1,12 @@
 {
-  "name": "§3冰影§7漫散",
+  "name": "§3Stasis §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_stasis_diffusion",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "漫散状态的冰影效果可以停滞\"朝施法者移动的非友军单位\"。"
+      "text": "Stasis of the Diffusion can stall \"non-friendly units\" moving towards the caster."
     }
   ]
 }

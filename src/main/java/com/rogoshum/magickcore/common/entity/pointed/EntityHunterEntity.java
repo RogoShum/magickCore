@@ -120,11 +120,10 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         if (ret.isSuccessOrConsume()) return ret;
         if (!this.world.isRemote && hand == Hand.MAIN_HAND) {
             if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
-                if(this.victim != null && !(this.victim instanceof PlayerEntity)) {
-                    this.victim.remove();
+                if(this.victim != null) {
                     ItemStack type = new ItemStack(ModItems.ENTITY_TYPE.get());
                     ExtraDataUtil.itemManaData(type, (data) -> data.spellContext().applyType(ApplyType.SPAWN_ENTITY).addChild(SpawnContext.create(victim.getType())));
-                    this.entityDropItem(type, this.getHeight() / 2);
+                    this.entityDropItem(type, this.getHeight() * 0.5f);
                 }
                 this.remove();
             }

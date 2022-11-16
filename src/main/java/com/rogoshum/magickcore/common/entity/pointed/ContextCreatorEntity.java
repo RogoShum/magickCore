@@ -242,6 +242,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;
+
         if (hand == Hand.MAIN_HAND) {
             if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
                 ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
@@ -250,7 +251,9 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);
                 world.addEntity(entity);
                 remove(false);
-                spawnParticle();
+                playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 0.5f, 2.0f);
+                if(world.isRemote)
+                    spawnParticle();
             } else
                 dropItem();
             return ActionResultType.CONSUME;
@@ -264,7 +267,30 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public void spawnParticle() {
-
+        float radius = getWidth() * 0.25f;
+        float rho, drho, theta, dtheta;
+        float x, y, z;
+        int stacks = 12;
+        drho = (float) (2.0f * Math.PI / stacks);
+        dtheta = (float) (2.0f * Math.PI / stacks);
+        for (int i = 0; i < stacks; i++) {
+            rho = i * drho;
+            for (int j = 0; j < stacks; j++) {
+                theta = j * dtheta;
+                x = (float) (-Math.sin(theta) * Math.sin(rho));
+                y = (float) (Math.cos(theta) * Math.sin(rho));
+                z = (float) Math.cos(rho);
+                Vector3d pos = new Vector3d(x * radius, y * radius, z * radius);
+                LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                        , pos.add(this.getPositionVec().add(0, getHeight() * 0.5, 0))
+                        , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                par.setGlow();
+                par.setParticleGravity(0);
+                par.setLimitScale();
+                par.addMotion(x * 0.2, y * 0.2, z * 0.2);
+                MagickCore.addMagickParticle(par);
+            }
+        }
     }
 
     @Override
@@ -306,6 +332,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 world.addEntity(entity);
             });
         }
+        playSound(SoundEvents.BLOCK_BEACON_AMBIENT, 0.5f, 2.0f);
         getInnerManaData().spellContext().clear();
         coolDown = 40;
         getStacks().clear();

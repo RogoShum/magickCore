@@ -1,5 +1,5 @@
 {
-  "name": "激光法杖",
+  "name": "Laser Staff",
   "advancement": "magickcore:learn/laser_staff",
   "icon": "magickcore:laser_staff",
   "category": "spirit_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:laser_staff",
-	  "text": "激光法杖是一种魔法道具，无法合成，无法替换完备法术。"
+	  "text": "The laser staff is a kind of magic prop, which cannot be crafted and cannot replace Magick Context."
     }
   ]
 }

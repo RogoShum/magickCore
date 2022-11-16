@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -18,7 +19,7 @@ import java.util.function.Predicate;
 public class SphereEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sphere.png");
     public final Predicate<Entity> inSphere = (entity ->
-            this.getDistanceSq(entity.getPositionVec().add(0, entity.getHeight() / 2, 0))
+            this.getDistanceSq(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0))
                     <= spellContext().range * spellContext().range);
     public SphereEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -78,5 +79,15 @@ public class SphereEntity extends ManaRadiateEntity {
                 MagickCore.addMagickParticle(par);
             }
         }
+    }
+
+    @Override
+    public List<BlockPos> findBlocks() {
+        int range = (int) spellContext().range;
+        List<BlockPos> posList = getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        float rangeCube = spellContext().range * spellContext().range;
+        posList.removeIf( pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                > rangeCube);
+        return posList;
     }
 }

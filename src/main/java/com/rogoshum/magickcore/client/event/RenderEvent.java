@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.event;
 
+import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.event.EntityEvents;
@@ -47,12 +48,12 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
-    private static final HashMap<ResourceLocation, List<LitParticle>> particles = new HashMap<>();
+    private static final HashMap<ResourceLocation, Queue<LitParticle>> particles = new HashMap<>();
 
     public static void addMagickParticle(LitParticle par) {
         if(par.getTexture() == null) return;
         if(!particles.containsKey(par.getTexture())) {
-            particles.put(par.getTexture(), new ArrayList<>());
+            particles.put(par.getTexture(), Queues.newConcurrentLinkedQueue());
         }
         particles.get(par.getTexture()).add(par);
         MagickCore.proxy.addRenderer(() -> par);
@@ -165,9 +166,8 @@ public class RenderEvent {
     public static void tickParticle() {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         for (ResourceLocation res : particles.keySet()) {
-            List<LitParticle> litParticles = particles.get(res);
-            for(int i = 0; i < litParticles.size(); ++i) {
-                LitParticle par = litParticles.get(i);
+            Queue<LitParticle> litParticles = particles.get(res);
+            for(LitParticle par : litParticles) {
                 if(par != null) {
                     if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
                         par.tick();
@@ -176,14 +176,13 @@ public class RenderEvent {
                     if (par.isDead())
                         litParticles.remove(par);
                 }
-                else
-                    litParticles.remove(i);
             }
         }
     }
 
     public static void clearParticle() {
-        particles.values().forEach(List::clear);
+        particles.values().forEach(list -> list.forEach(LitParticle::remove));
+        particles.values().forEach(Collection::clear);
     }
 
     @SubscribeEvent

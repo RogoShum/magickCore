@@ -52,6 +52,8 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     @Override
     public void tick() {
         super.tick();
+        if(world.isRemote) return;
+
         this.setMotion(getMotion().add(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne()).normalize().scale(0.1));
     }
 
@@ -66,16 +68,17 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     @Override
     protected void readAdditional(CompoundNBT compound) {
         manaCapacity().deserialize(compound);
+        super.readAdditional(compound);
     }
 
     @Override
     protected void writeAdditional(CompoundNBT compound) {
         manaCapacity().serialize(compound);
+        super.writeAdditional(compound);
     }
 
     @Override
     public void releaseMagick() {
-        if(world.isRemote) return;
         List<Entity> list = world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0.5), entity -> entity instanceof LivingEntity && entity.isAlive());
         if(!list.isEmpty()) {
             Entity entity = list.get(0);

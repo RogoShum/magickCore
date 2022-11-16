@@ -73,4 +73,13 @@ public class TaskThread extends Thread{
             }
         }
     }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        if(additionCatch != null) {
+            additionCatch.run();
+            additionCatch = null;
+        }
+    }
 }

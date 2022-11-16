@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -22,7 +23,7 @@ public class SectorEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sector.png");
     public final Predicate<Entity> inSector = (entity -> {
         Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        return this.getDistanceSq(pos) <= spellContext().range * spellContext().range && rightDirection(pos, entity);
+        return this.getDistanceSq(pos) <= spellContext().range * spellContext().range && rightDirection(pos, entity.getHeight());
     });
     public SectorEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -89,7 +90,7 @@ public class SectorEntity extends ManaRadiateEntity {
         }
     }
 
-    public boolean rightDirection(Vector3d vec, Entity entity) {
+    public boolean rightDirection(Vector3d vec, float offset) {
         Vector3d direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
@@ -100,9 +101,19 @@ public class SectorEntity extends ManaRadiateEntity {
         boolean inCone = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.2 * spellContext().range;
         if(!inCone) return false;
 
-        float halfHeight = entity.getHeight() * 0.5f;
+        float halfHeight = offset * 0.5f;
         double top = vec.add(0, halfHeight, 0).subtract(this.getPositionVec()).normalize().y;
         double bottom = vec.subtract(0, halfHeight, 0).subtract(this.getPositionVec()).normalize().y;
         return top > direction.y && bottom < direction.y;
+    }
+
+    @Override
+    public List<BlockPos> findBlocks() {
+        int range = (int) spellContext().range;
+        List<BlockPos> posList = getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        float rangeCube = spellContext().range * spellContext().range;
+        posList.removeIf( pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                > rangeCube || !rightDirection(Vector3d.copy(pos), 0));
+        return posList;
     }
 }

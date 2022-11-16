@@ -138,8 +138,9 @@ public class SolarAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
-        if(!(context.caster instanceof LivingEntity)) return false;
-        ((LivingEntity) context.caster).heal(context.force);
+        if(!(context.victim instanceof LivingEntity)) return false;
+        ((LivingEntity) context.victim).heal(context.force);
+        context.world.setEntityState(context.victim, (byte)7);
         return true;
     }
 }

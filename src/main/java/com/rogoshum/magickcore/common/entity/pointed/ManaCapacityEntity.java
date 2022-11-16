@@ -31,10 +31,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -165,27 +162,28 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     setTrans(false);
                     return;
                 }
-                if(!this.world.isRemote) {
-                    int manaTrans = 5;
-                    if(!getMode()) {
-                        if(manaCapacity().getMana() < manaCapacity().getMaxMana() && state.get().getManaValue() >= manaTrans)
-                            state.get().setManaValue(state.get().getManaValue() - manaTrans + manaCapacity().receiveMana(manaTrans));
-                        else
-                            setTrans(false);
-                    } else if(ticksExisted % 20 == 0){
-                        float needed = state.get().getMaxManaValue() - state.get().getManaValue();
-                        if(needed > manaTrans) {
-                            ManaElementOrbEntity elementOrb = ModEntities.ELEMENT_ORB.get().create(world);
-                            elementOrb.setPosition(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ());
-                            elementOrb.spellContext().element(spellContext().element);
-                            elementOrb.spellContext().tick(200);
-                            elementOrb.spellContext().addChild(TraceContext.create(getOwner()));
-                            elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
-                            elementOrb.setMotion(getOwner().getPositionVec().subtract(elementOrb.getPositionVec()).normalize().scale(0.1));
-                            world.addEntity(elementOrb);
-                        }
+
+                int manaTrans = 5;
+                if(!getMode()) {
+                    if(manaCapacity().getMana() < manaCapacity().getMaxMana() && state.get().getManaValue() >= manaTrans)
+                        state.get().setManaValue(state.get().getManaValue() - manaTrans + manaCapacity().receiveMana(manaTrans));
+                    else
+                        setTrans(false);
+                } else if(!this.world.isRemote && ticksExisted % 20 == 0){
+                    float needed = state.get().getMaxManaValue() - state.get().getManaValue();
+                    if(needed > manaTrans) {
+                        ManaElementOrbEntity elementOrb = ModEntities.ELEMENT_ORB.get().create(world);
+                        elementOrb.setPosition(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ());
+                        elementOrb.spellContext().element(spellContext().element);
+                        elementOrb.spellContext().tick(200);
+                        elementOrb.spellContext().addChild(TraceContext.create(getOwner()));
+                        elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
+                        elementOrb.setMotion(getOwner().getPositionVec().subtract(elementOrb.getPositionVec()).normalize().scale(0.1));
+                        world.addEntity(elementOrb);
                     }
-                } else if(!getMode()){
+                }
+
+                if(world.isRemote && !getMode()){
                     int distance = (int) (10 * dis);
                     float directionPoint = (float) (player.ticksExisted % distance) / distance;
                     int c = (int) (directionPoint * distance);
@@ -228,7 +226,19 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     protected void applyParticle() {
+        LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
+                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
+                , 0.1f, 0.1f, 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+        litPar.setGlow();
+        litPar.setParticleGravity(0f);
+        litPar.setLimitScale();
 
+        if(getMode()) {
+            litPar.addMotion(MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
+        }
+        MagickCore.addMagickParticle(litPar);
     }
 
     @Override
@@ -245,6 +255,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             }
             return ActionResultType.CONSUME;
         }
+        playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
         return ActionResultType.PASS;
     }
 

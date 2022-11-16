@@ -1,17 +1,17 @@
 {
-  "name": "魔法工作台",
+  "name": "Magick Workbench",
   "advancement": "magickcore:learn/magick_crafting",
   "icon": "magickcore:spirit_crystal",
   "category": "spirit_product",
   "pages": [
 	{
       "type": "text",
-      "text": "魔法工作台是一种辅助用于制作灵魂制品的工作台，只有使用灵魂制品才能引导出生命体内的因果之力，这个工作台同样可以转换普通的材料为魔力形式的材料。"
+      "text": "The magick workbench is a kind of workbench that is used to assist in the production of spirit products. Only the use of spirit products can lead the supracausal power in the living. This workbench can also convert ordinary materials into mana materials."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_wood_stick",
-      "text": "现在我们可以尝试一下把普通的木棍转换成灵魂木棍，直接把木棍丢在工作台上就可以开始转换。"
+      "text": "Now we can try to convert ordinary sticks into spirit wood sticks, simply drop the stick on the workbench to start the conversion."
     },
     {
       "type": "magickcore:element_recipe",
@@ -25,22 +25,22 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:wand",
-      "text": "灵魂木棍是制作魔杖的原材料，魔杖可以让我们操作魔法工作台来合成灵魂制品。"
+      "text": "The spirit wood stick is the raw material for making the wand, which allows us to operate the magick workbench to craft spirit products."
     },
     {
       "type": "text",
-      "text": "制作完成之后，我们可以把灵魂木棍摆放在工作台上，依次垒起来，达到三个之后用魔杖右键一下，就可以合成一个灵魂木法杖。"
+      "text": "After the crafting is complete, we can place the spirit wood sticks on the workbench and build them up one by one. After reaching three, right-click with the wand to craft a spirit wood staff."
     },
     {
       "type": "image",
-      "title": "灵魂木摆放方式",
+      "title": "placed like this",
       "images": ["magickcore:textures/book_image/wand.png"],
       "border": "true"
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "wood_staff",
-      "text": "魔力工作台的合成都需要用魔杖来完成合成。"
+      "text": "The carft of the magic workbench requires the use of a wand to complete the craft."
     }
   ]
 }

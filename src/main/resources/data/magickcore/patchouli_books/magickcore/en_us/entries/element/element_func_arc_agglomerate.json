@@ -1,12 +1,12 @@
 {
-  "name": "§b电弧§7凝聚",
+  "name": "§bArc §7Agglomerate",
   "advancement": "magickcore:learn/trigger_element_func_arc_agglomerate",
   "icon": "magickcore:arc",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "凝聚状态的电弧元素可以平缓的推动实体。"
+      "text": "Arc of the Agglomerate gently push entities."
     }
   ]
 }

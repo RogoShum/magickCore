@@ -196,31 +196,35 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public void tick() {
-        this.lPosX = this.posX;
-        this.lPosY = this.posY;
-        this.lPosZ = this.posZ;
-        this.age++;
-        this.motionY -= 0.04D * (double) this.particleGravity;
+        try {
+            this.lPosX = this.posX;
+            this.lPosY = this.posY;
+            this.lPosZ = this.posZ;
+            this.age++;
+            this.motionY -= 0.04D * (double) this.particleGravity;
 
-        if (this.traceTarget != null) {
-            Vector3d vec = this.traceTarget.getPositionVec().add(0, this.traceTarget.getHeight() / 2, 0).subtract(this.posX, this.posY, this.posZ).normalize();
-            double length = 0.3;
+            if (this.traceTarget != null) {
+                Vector3d vec = this.traceTarget.getPositionVec().add(0, this.traceTarget.getHeight() / 2, 0).subtract(this.posX, this.posY, this.posZ).normalize();
+                double length = 0.3;
 
-            this.motionX += (vec.x / 2 + MagickCore.getNegativeToOne()) * length;
-            this.motionY += (vec.y / 2 + MagickCore.getNegativeToOne()) * length * 0.1;
-            this.motionZ += (vec.z / 2 + MagickCore.getNegativeToOne()) * length;
+                this.motionX += (vec.x / 2 + MagickCore.getNegativeToOne()) * length;
+                this.motionY += (vec.y / 2 + MagickCore.getNegativeToOne()) * length * 0.1;
+                this.motionZ += (vec.z / 2 + MagickCore.getNegativeToOne()) * length;
+            }
+
+            this.move(this.motionX, this.motionY, this.motionZ);
+            this.motionX *= (double) 0.98F;
+            this.motionY *= (double) 0.98F;
+            this.motionZ *= (double) 0.98F;
+            if (this.onGround) {
+                this.motionX *= (double) 0.7F;
+                this.motionZ *= (double) 0.7F;
+            }
+
+            renderer.tickParticle(this);
+        } catch (Exception ignored) {
+            this.remove();
         }
-
-        this.move(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= (double) 0.98F;
-        this.motionY *= (double) 0.98F;
-        this.motionZ *= (double) 0.98F;
-        if (this.onGround) {
-            this.motionX *= (double) 0.7F;
-            this.motionZ *= (double) 0.7F;
-        }
-
-        renderer.tickParticle(this);
     }
 
     public void easyTick() {
@@ -327,7 +331,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
         if(shakeLimit <= 0.0f) {
             RenderHelper.callQuadVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
-        } else {
+        } else if(quad != null && color != null){
             Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
             BufferBuilder buffer = renderParams.buffer;
             BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
@@ -393,6 +397,10 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     @Override
     public boolean alive() {
         return !isDead();
+    }
+
+    public void remove() {
+        this.age = this.maxAge + 10;
     }
 
     @Override

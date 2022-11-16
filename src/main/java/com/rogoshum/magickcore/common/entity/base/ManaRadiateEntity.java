@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.common.entity.base;
 
 import com.rogoshum.magickcore.common.api.entity.IExistTick;
+import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.api.enums.TargetType;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
@@ -15,7 +17,10 @@ import net.minecraft.entity.Pose;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,20 +67,25 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
         }
 
-        List<BlockPos> blocks = findBlocks();
+        if(!released.get() && this.ticksExisted % 20 == 0) {
+            List<BlockPos> blocks = findBlocks();
 
-        for (BlockPos pos : blocks) {
-            MagickContext context = MagickContext.create(this.world, spellContext().postContext)
-                    .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
-                    .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
-                    .caster(getOwner()).projectile(this).noCost();
-            boolean success = MagickReleaseHelper.releaseMagick(context);
-            if(success)
-                released.set(true);
+            for (BlockPos pos : blocks) {
+                MagickContext context = MagickContext.create(this.world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK)
+                        .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
+                        .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
+                        .caster(getOwner()).projectile(this).noCost();
+                if (spellContext().postContext != null)
+                    context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
+                boolean success = MagickReleaseHelper.releaseMagick(context);
+                if(success)
+                    released.set(true);
+            }
         }
 
         if(released.get()) {
-            successFX();
+            if(!world.isRemote)
+                world.setEntityState(this, (byte)14);
             this.remove();
         }
     }
@@ -89,10 +99,28 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void handleStatusUpdate(byte id) {
+        if(id == 14)
+            successFX();
+        else
+            super.handleStatusUpdate(id);
+    }
+
     abstract public void successFX();
 
     @Override
     public int getTickThatNeedExistingBeforeRemove() {
         return 1;
+    }
+
+    public List<BlockPos> getAllInBoxMutable(BlockPos firstPos, BlockPos secondPos) {
+        List<BlockPos> collection = new ArrayList<BlockPos>();
+        Iterable<BlockPos> iterable = BlockPos.getAllInBoxMutable(firstPos, secondPos);
+        for (BlockPos e: iterable) {
+            collection.add(new BlockPos(e));
+        }
+        return collection;
     }
 }

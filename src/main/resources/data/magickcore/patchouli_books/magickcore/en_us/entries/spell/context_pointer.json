@@ -1,27 +1,27 @@
 {
-  "name": "法术指针",
+  "name": "Context Pointer",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:context_pointer",
   "category": "spell",
   "pages": [
     {
       "type": "spotlight",
-      "title": "法术指针",
+      "title": "Context Pointer",
       "item": "magickcore:context_pointer",
-      "text": "指引魔力走向的单行道。"
+      "text": "A one-way street that lead mana."
     },
     {
       "type": "text",
-      "text": "一般的完备法术只能完成一次施法，但是法术指针可以让我们实现多次施法。指针可以放置在地面上，只需要把完备法术的掉落物丢在指针上，完备法术就会按顺序排列起来。"
+      "text": "Generally, a Magick Context can only complete one casting, but the context pointer allows us to achieve multiple castings. The pointer can be placed on the ground, just drop the Magick Context on the pointer, and the Magick Context will be arranged in order."
     },
     {
       "type": "text",
-      "text": "我们只要用魔杖右键一下法术指针，里面的完备法术就会合多为一，释放魔法时里面的法术会按顺序执行。假如法术携带的施加方式是形态，那么后续法术会在形态触发目标后执行。"
+      "text": "As long as we right-click the context pointer with the wand, the Magick Context inside will be combined into one, and the Magick Contexts inside will be executed in order when the magic is released. If the Type carried by the Magick Context is Spell Form, then the subsequent spell will be executed after the form triggers the target."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "context_pointer",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

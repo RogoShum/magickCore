@@ -1,36 +1,36 @@
 {
-  "name": "法术核心",
+  "name": "Context Core",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:context_core",
   "category": "spell",
   "pages": [
     {
       "type": "spotlight",
-      "title": "法术核心",
+      "title": "Context Core",
       "item": "magickcore:context_core",
-      "text": "法术核心是制作法术的关键所在，将一个法术核心丢到地上之后，核心会上升几格高度，随后展开。之后我们需要往里面丢一些魔力材料的掉落物，法术的属性就取决于材料的种类和数量。"
+      "text": "The context core is the key to making spells. After throwing a context core on the ground, the core will rise a few blocks in height and then expanded. After that, we need to throw some mana material into it. The attribute of the spell depend on the type and quantity of the material."
     },
     {
       "type": "image",
-      "title": "展开后的法术核心",
+      "title": "Expanded Context Core",
       "images": ["magickcore:textures/book_image/context_core.png"],
-      "text": "可以敲击几次收回核心，也可以右键核心使里面的材料全部掉落",
+      "text": "You can hit several times to recover the core, or you can right-click the core to drop all the materials inside",
       "border": "true"
     },
     {
       "type": "text",
-      "text": "等到核心里面的材料达到我们满意的程度之后，我们可以用魔杖右键核心，完成这一次的核心编译，核心会被压缩回原来的大小，变成完备法术。"
+      "text": "After the materials in the core reach our satisfaction, we can right-click the core with the wand to complete the core compilation this time, and the core will be compressed back to its original size and become a magick context."
     },
     {
       "type": "spotlight",
-      "title": "完备法术",
+      "title": "Magick Context",
       "item": "magickcore:magick_context",
-      "text": "魔法的属性就取决于这个东西的数值，将魔法核心压缩成完备法术是一个不可逆的操作。"
+      "text": "The attribute of spell depends on the value of this thing, and compressing the context core into a magick context is an irreversible operation."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "spell_context",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

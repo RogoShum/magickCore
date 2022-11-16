@@ -1,5 +1,5 @@
 {
-  "name": "枯萎元素",
+  "name": "Wither",
   "advancement": "magickcore:learn/wither",
   "icon": "magickcore:wither",
   "category": "element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:wither",
-      "text": "枯萎元素是一种偏向暗影的魔力元素，是一种具有压制和削弱效果的元素。"
+      "text": "The wither element is a mana element that is biased towards dark, is an element with a suppressing and weakening effect."
     }
   ]
 }

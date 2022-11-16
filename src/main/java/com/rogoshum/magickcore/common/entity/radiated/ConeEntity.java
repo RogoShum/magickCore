@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
 public class ConeEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cone.png");
     public final Predicate<Entity> inCone = (entity -> {
-        Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() / 2, 0);
+        Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
         double range = spellContext().range * 1.75;
         return this.getDistanceSq(pos) <= range * range && rightDirection(pos);
     });
@@ -103,5 +104,15 @@ public class ConeEntity extends ManaRadiateEntity {
             direction = getOwner().getLookVec().normalize();
         }
         return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.05 * spellContext().range;
+    }
+
+    @Override
+    public List<BlockPos> findBlocks() {
+        int range = (int) (spellContext().range * 1.75);
+        List<BlockPos> posList = getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        float rangeCube = spellContext().range * spellContext().range;
+        posList.removeIf( pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                > rangeCube || !rightDirection(Vector3d.copy(pos)));
+        return posList;
     }
 }

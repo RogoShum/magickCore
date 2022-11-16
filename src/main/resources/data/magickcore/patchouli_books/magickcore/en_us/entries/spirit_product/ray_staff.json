@@ -1,5 +1,5 @@
 {
-  "name": "光线法杖",
+  "name": "Ray Staff",
   "advancement": "magickcore:learn/ray_staff",
   "icon": "magickcore:ray_staff",
   "category": "spirit_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:ray_staff",
-	  "text": "光线法杖是一种魔法道具，无法合成，无法替换完备法术。"
+	  "text": "The ray staff is a kind of magic prop, which cannot be crafted and cannot replace Magick Context."
     }
   ]
 }

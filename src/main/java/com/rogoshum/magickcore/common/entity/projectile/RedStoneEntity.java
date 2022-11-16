@@ -114,7 +114,10 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         MagickCore.addMagickParticle(par);
     }
 
-
+    @Override
+    public float eyeHeight() {
+        return 0;
+    }
 
     @Override
     public int getPower() {

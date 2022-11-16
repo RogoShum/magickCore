@@ -1,12 +1,12 @@
 {
-  "name": "§3冰影§7攻击",
+  "name": "§3Stasis §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_stasis_attack",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "攻击状态的冰影能量可以给予目标冰影魔法的伤害，对受冻状态的目标效果更佳。"
+      "text": "Stasis of the Attack can inflict stasis magic damage on the target, and the effect on the target in the chilly state is better."
     }
   ]
 }

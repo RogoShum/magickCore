@@ -4,15 +4,19 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -51,7 +55,7 @@ public class SquareEntity extends ManaRadiateEntity {
     protected void applyParticle(int particleAge) {
         float scale = 0.5f;
         double width = this.getBoundingBox().grow(spellContext().range).getXSize();
-        List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getHeight() / 2, 0), scale, width, width, width);
+        List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getHeight() * 0.5, 0), scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vector3d pos = list.get(i);
             LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
@@ -63,5 +67,13 @@ public class SquareEntity extends ManaRadiateEntity {
             par.addMotion(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f);
             MagickCore.addMagickParticle(par);
         }
+    }
+
+    @Override
+    public List<BlockPos> findBlocks() {
+        int range = (int) spellContext().range;
+        BlockPos start = new BlockPos(this.getPositionVec()).up(range).east(range).south(range);
+        BlockPos end = new BlockPos(this.getPositionVec()).down(range).west(range).north(range);
+        return getAllInBoxMutable(start, end);
     }
 }

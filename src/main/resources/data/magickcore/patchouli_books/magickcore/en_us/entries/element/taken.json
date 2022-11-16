@@ -1,5 +1,5 @@
 {
-  "name": "夺魂元素",
+  "name": "Taken",
   "advancement": "magickcore:learn/taken",
   "icon": "magickcore:taken",
   "category": "element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:taken",
-      "text": "夺魂元素是一种偏向暗影的魔力元素，是一种具有剥夺和同化性质的元素。"
+      "text": "The taken element is a mana element that is biased towards dark, is an element with deprivation and assimilation."
     }
   ]
 }
