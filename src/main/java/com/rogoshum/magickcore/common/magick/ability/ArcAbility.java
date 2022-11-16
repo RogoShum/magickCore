@@ -114,7 +114,7 @@ public class ArcAbility{
                     if(applyTypeContext.applyType == ApplyType.DIFFUSION)
                         extract = true;
                 }
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 2;
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 5;
                 if(!extract)
                     EnergyUtil.receiveEnergy(tile, mana);
                 else {
