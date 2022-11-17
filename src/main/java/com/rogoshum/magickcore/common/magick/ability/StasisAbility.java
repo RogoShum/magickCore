@@ -52,12 +52,15 @@ public class StasisAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
 
             BlockPos pos = new BlockPos(positionContext.pos);
-            if (context.world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock()))
+            if (context.world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock())) {
                 context.world.setBlockState(pos, Blocks.ICE.getDefaultState());
+                return true;
+            }
 
-            if (context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.SNOW.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0)))
+            if (context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.SNOW.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0))) {
                 context.world.setBlockState(pos.add(0, 1, 0), Blocks.SNOW.getDefaultState(), 2);
-            return true;
+                return true;
+            }
         }
         return false;
     }

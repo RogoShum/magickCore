@@ -72,6 +72,7 @@ public class TakenAbility{
                     CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
                     if(nbt.contains("SpawnData")) {
                         CompoundNBT entityTag = nbt.getCompound("SpawnData");
+                        boolean success = false;
                         for(int i = 0; i < context.force; i++) {
                             Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
                             if(optional.isPresent()) {
@@ -84,8 +85,10 @@ public class TakenAbility{
                                 randZ *= 1 + context.range;
                                 entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
                                 entity.world.addEntity(entity);
+                                success = true;
                             }
                         }
+                        return success;
                     }
                 }
             }

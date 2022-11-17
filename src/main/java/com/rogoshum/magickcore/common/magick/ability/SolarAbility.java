@@ -67,13 +67,17 @@ public class SolarAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
 
             BlockPos pos = new BlockPos(positionContext.pos);
-            if (context.world.getBlockState(pos).getBlock().equals(Blocks.ICE.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW_BLOCK.getBlock()))
+            if (context.world.getBlockState(pos).getBlock().equals(Blocks.ICE.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW_BLOCK.getBlock())) {
                 context.world.setBlockState(pos, Blocks.WATER.getDefaultState());
+                return true;
+            }
 
-            if (context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.FIRE.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0)))
+            if (context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.FIRE.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0))) {
                 context.world.setBlockState(pos.add(0, 1, 0), Blocks.FIRE.getDefaultState());
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     public static boolean applyBuff(MagickContext context) {

@@ -57,7 +57,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
             if(pass.get()) {
                 MagickContext context = MagickContext.create(this.world, spellContext().postContext)
-                        .replenishChild(DirectionContext.create(this.getPositionVec().subtract(living.getPositionVec())))
+                        .replenishChild(DirectionContext.create(living.getPositionVec().add(0, living.getHeight() * 0.5, 0).subtract(this.getPositionVec())))
                         .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
                         .caster(getOwner()).projectile(this)
                         .victim(living).noCost();
