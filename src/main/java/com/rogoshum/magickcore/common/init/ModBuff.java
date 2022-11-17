@@ -7,9 +7,13 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.network.EntityStatePack;
+import com.rogoshum.magickcore.common.network.Networking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -153,8 +157,16 @@ public class ModBuff{
             return false;
 
         AtomicBoolean applied = new AtomicBoolean(false);
-        ExtraDataUtil.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> applied.set(state.applyBuff(getBuff(type).setTick(tick).setForce(force))));
-
+        ExtraDataUtil.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
+            applied.set(state.applyBuff(getBuff(type).setTick(tick).setForce(force)));
+            if(applied.get() && !entity.world.isRemote) {
+                CompoundNBT tag = new CompoundNBT();
+                state.write(tag);
+                Networking.INSTANCE.send(
+                        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+                        new EntityStatePack(event.getEntity().getEntityId(), tag));
+            }
+        });
         return applied.get();
     }
 }

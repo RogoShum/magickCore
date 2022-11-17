@@ -686,7 +686,7 @@ public class MagickLogicEvent {
 		if(takenState != null && event.getEntity() instanceof MobEntity) {
 			takenState.tick((MobEntity) event.getEntity());
 			if(!event.getEntity().world.isRemote && !event.getEntity().removed) {
-				if(event.getEntity().ticksExisted % 40 == 0 || takenState.getOwnerUUID() != MagickCore.emptyUUID)
+				if(event.getEntity().ticksExisted % 40 == 0)
 					Networking.INSTANCE.send(
 							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
 							new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
@@ -730,11 +730,13 @@ public class MagickLogicEvent {
 					state.tick(event.getEntity());
 			}
 
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0)
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0) {
+				CompoundNBT tag = new CompoundNBT();
+				state.write(tag);
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new EntityStatePack(event.getEntity().getEntityId(), state.getElement().type(), state.getElementShieldMana(), state.getManaValue()
-								, state.getMaxElementShieldMana(), state.getMaxManaValue(), effect_tick, effect_force));
+						new EntityStatePack(event.getEntity().getEntityId(), tag));
+			}
 		}
 
 		if(event.getEntity() instanceof IManaCapacity) {

@@ -15,6 +15,8 @@ import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.TakenStatePack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +28,7 @@ import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Optional;
 
@@ -54,6 +57,9 @@ public class TakenAbility{
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUniqueID());
             state.setTime(context.tick);
+            Networking.INSTANCE.send(
+                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    new TakenStatePack(context.victim.getEntityId(), context.tick, context.victim.getUniqueID()));
             context.victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
         }
 
@@ -105,8 +111,11 @@ public class TakenAbility{
         if(context.victim instanceof MobEntity && ModBuff.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.victim.getUniqueID());
-            state.setTime((int) (context.tick * context.force));
-
+            int time = (int) (context.tick * context.force);
+            state.setTime(time);
+            Networking.INSTANCE.send(
+                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    new TakenStatePack(context.victim.getEntityId(), time, context.victim.getUniqueID()));
             return true;
         }
         return false;

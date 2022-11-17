@@ -38,6 +38,7 @@ public class LightShaderManager {
         //RenderSystem.activeTexture(33984);
         //RenderSystem.bindTexture(5);
         //RenderSystem.enableTexture();
+        if(true) return;
         if(RenderHelper.stopShader()) return;
         BlockPos pos = e.getRenderPosition();
         if(shader.isActive())
@@ -46,6 +47,7 @@ public class LightShaderManager {
 
     @SubscribeEvent
     public void onProfilerChange(ProfilerChangeEvent event) {
+        if(true) return;
         if(RenderHelper.stopShader()) return;
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         PlayerEntity player = Minecraft.getInstance().player;
@@ -130,6 +132,7 @@ public class LightShaderManager {
 
     @SubscribeEvent
     public void renderLast(RenderWorldLastEvent e) {
+        if(true) return;
         if(RenderHelper.stopShader()) return;
         postedLights = false;
         GlStateManager.disableLighting();

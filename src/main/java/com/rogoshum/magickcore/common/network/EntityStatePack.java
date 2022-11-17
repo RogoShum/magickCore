@@ -15,69 +15,33 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 
 public class EntityStatePack extends EntityPack{
-    private final String element;
-    private final float shield;
-    private final float mana;
-    private final float maxShield;
-    private final float maxMana;
-    private final CompoundNBT effect_tick;
-    private final CompoundNBT effect_force;
+    private final CompoundNBT tag;
 
     public EntityStatePack(PacketBuffer buffer) {
         super(buffer);
-        element = buffer.readString();
-        shield = buffer.readFloat();
-        mana = buffer.readFloat();
-        maxShield = buffer.readFloat();
-        maxMana = buffer.readFloat();
-        effect_tick = buffer.readCompoundTag();
-        effect_force = buffer.readCompoundTag();
+        tag = buffer.readCompoundTag();
     }
 
-    public EntityStatePack(int id, String element, float shield, float mana, float maxShield, float maxMana, CompoundNBT effect_tick, CompoundNBT effect_force) {
+    public EntityStatePack(int id, CompoundNBT tag) {
         super(id);
-        this.element = element;
-        this.shield = shield;
-        this.mana = mana;
-        this.maxShield = maxShield;
-        this.maxMana = maxMana;
-        this.effect_tick = effect_tick;
-        this.effect_force = effect_force;
+        this.tag = tag;
     }
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(this.element);
-        buf.writeFloat(this.shield);
-        buf.writeFloat(this.mana);
-        buf.writeFloat(this.maxShield);
-        buf.writeFloat(this.maxMana);
-        buf.writeCompoundTag(this.effect_tick);
-        buf.writeCompoundTag(this.effect_force);
+        buf.writeCompoundTag(this.tag);
     }
 
     @Override
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
+        if(tag == null) return;
         Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
         if(entity == null || entity.removed)
             return;
         EntityStateData state = ExtraDataUtil.entityStateData(entity);
         if(state != null) {
-            state.setElement(MagickRegistry.getElement(this.element));
-            state.setElementShieldMana(this.shield);
-            state.setManaValue(this.mana);
-            state.setMaxManaValue(this.maxMana);
-            state.setMaxElementShieldMana(this.maxShield);
-
-            Iterator<String> tick = effect_tick.keySet().iterator();
-            while(tick.hasNext()) {
-                String type = tick.next();
-                if(effect_force.contains(type))
-                {
-                    state.applyBuff(ModBuff.getBuff(type).setTick(effect_tick.getInt(type)).setForce(effect_force.getFloat(type)));
-                }
-            }
+            state.read(tag);
         }
     }
 }

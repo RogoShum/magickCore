@@ -9,11 +9,14 @@ import com.rogoshum.magickcore.common.init.ModBuff;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.common.network.EntityStatePack;
+import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Iterator;
