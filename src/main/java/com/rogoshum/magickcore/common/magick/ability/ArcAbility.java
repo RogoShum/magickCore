@@ -122,6 +122,7 @@ public class ArcAbility{
                     if(get > 0 && context.caster != null)
                         ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + get));
                 }
+                return true;
             }
         }
         return false;
