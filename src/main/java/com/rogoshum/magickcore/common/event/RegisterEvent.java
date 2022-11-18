@@ -184,6 +184,16 @@ public class RegisterEvent {
                         stack.setTag(tag);
                         e.setItem(stack);
                     }
+
+                    if (e.getItem().getItem().getRegistryName().toString().contains("string")) {
+                        int count = e.getItem().getCount();
+                        ItemStack stack = new ItemStack(ModItems.ELEMENT_STRING.get());
+                        CompoundNBT tag = new CompoundNBT();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        e.setItem(stack);
+                    }
                 });
             }
         });
@@ -203,7 +213,7 @@ public class RegisterEvent {
     }
 
     public static float getShieldCapacity(LivingEntity livingEntity) {
-        return MagickCore.rand.nextInt( (int)(livingEntity.getHealth() * 0.3f)) + livingEntity.getHealth() * 0.4f;
+        return MagickCore.rand.nextInt(Math.max(1,  (int)(livingEntity.getHealth() * 0.3f))) + livingEntity.getHealth() * 0.4f;
     }
 
 
@@ -224,6 +234,7 @@ public class RegisterEvent {
     }
 
     public static boolean testIfElement(LivingEntity living) {
+        if(!living.isAlive() || living.world.isRemote) return false;
         EntityStateData state = ExtraDataUtil.entityStateData(living);
         if(state == null) return false;
         if(!state.allowElement())

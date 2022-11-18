@@ -1,12 +1,12 @@
 {
   "name": "Mana Tick",
   "advancement": "magickcore:learn/mana_red",
-  "icon": "magickcore:mana_energy{item_extra_data:{item_extra_data:{TICK:200}}}",
+  "icon": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
   "category": "spell",
   "pages": [
 	{
       "type": "spotlight",
-	  "item": "magickcore:mana_energy{item_extra_data:{item_extra_data:{TICK:200}}}",
+	  "item": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
 	  "text": "Converted at a magick workbench using redstone dust."
     }
   ]

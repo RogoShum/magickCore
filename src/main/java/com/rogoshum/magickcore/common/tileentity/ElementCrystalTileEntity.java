@@ -78,6 +78,8 @@ public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITicka
         orb.setPosition(this.pos.getX() + 0.5 * world.rand.nextFloat(), this.pos.getY() + 0.5, this.pos.getZ() + 0.5 * world.rand.nextFloat());
         orb.spellContext().element(MagickRegistry.getElement(eType));
         orb.spellContext().tick(200);
+        orb.manaCapacity().setMana(5);
+        orb.setOrbType(true);
         world.addEntity(orb);
     }
 

@@ -47,7 +47,7 @@ public class ModLoots {
         @Nonnull
         @Override
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
-           if(context.getQueriedLootTableId().toString().contains("minecraft:chests")) {
+           if(context.getQueriedLootTableId().toString().contains("chests")) {
                while (context.getRandom().nextBoolean()) {
                    int lucky = 1;
                    while (context.getRandom().nextBoolean())

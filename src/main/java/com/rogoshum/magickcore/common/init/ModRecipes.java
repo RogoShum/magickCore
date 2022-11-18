@@ -278,6 +278,9 @@ public class ModRecipes {
         ItemStack rangeEnergy = manaEnergy.copy();
         ExtraDataUtil.itemManaData(rangeEnergy, (data) -> data.spellContext().range(0.5f));
 
+        ItemStack rangeEnergy_1 = manaEnergy.copy();
+        ExtraDataUtil.itemManaData(rangeEnergy_1, (data) -> data.spellContext().range(1.0f));
+
         ItemStack forceEnergy = manaEnergy.copy();
         ExtraDataUtil.itemManaData(forceEnergy, (data) -> data.spellContext().force(0.5f));
 
@@ -288,7 +291,8 @@ public class ModRecipes {
         registerExplosionRecipe(TagItemMatcher.create(Items.ROTTEN_FLESH.toString()), new ItemStack(ModItems.MANA_FLESH.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
-        registerExplosionRecipe(TagItemMatcher.create(Items.BLAZE_ROD.toString()), rangeEnergy);
+        registerExplosionRecipe(TagItemMatcher.create(Items.BLAZE_ROD.toString()), rangeEnergy_1);
+        registerExplosionRecipe(TagItemMatcher.create(Items.BLAZE_POWDER.toString()), rangeEnergy);
         registerExplosionRecipe(TagItemMatcher.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.MANA_GUNPOWDER.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.REDSTONE.toString()), tickEnergy);
         registerExplosionRecipe(TagItemMatcher.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.MANA_SPIDER_EYE.get()));

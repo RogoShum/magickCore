@@ -104,7 +104,7 @@ public class RayTraceEntity extends ManaRadiateEntity {
         if(result.getType() != RayTraceResult.Type.MISS)
             target = Vector3d.copyCentered(result.getPos());
 
-        int distance = (int) (50 * spellContext().range);
+        float distance = (50f * spellContext().range);
 
         float scale = 0.1f;
 

@@ -89,7 +89,7 @@ public class ParticleUtil {
 
     public static List<Vector3d> drawRectangle(Vector3d center, float space, double length, double width, double height) {
         net.minecraft.util.math.vector.Vector3d copy = center;
-        Vector3d axisMin = copy.subtract(length / 2, width / 2, height / 2);
+        Vector3d axisMin = copy.subtract(length * 0.5, width * 0.5, height * 0.5);
         List<Vector3d> list = new ArrayList<>();
         for (double x = 0; x <= length; x+=space) {
             for (double y = 0; y <= height; y+=space) {

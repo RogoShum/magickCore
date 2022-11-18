@@ -142,7 +142,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
             double d0 = getWidth() * 0.7f;
             Vector3d vector3d = new Vector3d(vertex[0], vertex[1], vertex[2]).scale(Math.sqrt(d0 * d0 * 2)).add(center1);
             double dis = vector3d.distanceTo(center);
-            int distance = (int) (10 * dis);
+            int distance = Math.max((int) (10 * dis), 1);
             float directionPoint = (float) (this.ticksExisted % distance) / distance;
             int b = (int) (directionPoint * distance);
 

@@ -93,8 +93,12 @@ public class OrbBottleItem extends BaseItem{
             if(entity instanceof ManaElementOrbEntity) {
                 ManaElementOrbEntity orb = (ManaElementOrbEntity) entity;
                 ItemStack stack = playerIn.getHeldItem(handIn);
-                CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+                ItemStack copy = stack.copy();
+                copy.setCount(1);
+                CompoundNBT tag = NBTTagHelper.getStackTag(copy);
                 tag.putString("ELEMENT", orb.spellContext().element.type());
+                playerIn.addItemStackToInventory(copy);
+                stack.shrink(1);
                 entity.remove();
                 flag = true;
             }

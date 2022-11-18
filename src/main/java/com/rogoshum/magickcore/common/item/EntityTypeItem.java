@@ -98,6 +98,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         SpellContext spellContext = data.spellContext();
+        spellContext.applyType(ApplyType.SPAWN_ENTITY);
         spellContext.merge(ExtraDataUtil.itemManaData(stack).spellContext());
         return true;
     }

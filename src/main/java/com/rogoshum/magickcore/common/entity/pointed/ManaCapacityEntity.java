@@ -185,7 +185,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                 }
 
                 if(world.isRemote && !getMode()){
-                    int distance = (int) (10 * dis);
+                    int distance = Math.max((int) (10 * dis), 1);
                     float directionPoint = (float) (player.ticksExisted % distance) / distance;
                     int c = (int) (directionPoint * distance);
 
