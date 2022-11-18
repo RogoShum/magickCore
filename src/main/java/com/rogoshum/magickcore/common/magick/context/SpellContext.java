@@ -142,14 +142,13 @@ public class SpellContext {
             child.serialize(childTag);
             childTags.put(child.getName(), childTag);
         });
-        if(!childTags.isEmpty())
-            tag.put("CHILD_CONTEXT", childTags);
+        tag.put("CHILD_CONTEXT", childTags);
 
+        CompoundNBT postTag = new CompoundNBT();
         if(postContext != null) {
-            CompoundNBT postTag = new CompoundNBT();
             postContext.serialize(postTag);
-            tag.put("POST", postTag);
         }
+        tag.put("POST", postTag);
     }
 
     public void deserialize(CompoundNBT tag) {
@@ -167,7 +166,10 @@ public class SpellContext {
                 childContexts.put(s, context);
             }
         }));
-        tagHelper.ifContainNBT("POST", (nbt) -> post(SpellContext.create(nbt)));
+        tagHelper.ifContainNBT("POST", (nbt) -> {
+            if(!nbt.isEmpty())
+                post(SpellContext.create(nbt));
+        });
     }
 
     @Override

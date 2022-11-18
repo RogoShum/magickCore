@@ -342,6 +342,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     public void remove() {
         dropItem();
         if(!dead) {
+            dead = true;
             ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_CORE.get(), 1);
             ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
             if(!this.world.isRemote)

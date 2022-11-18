@@ -323,5 +323,18 @@
     "entity.minecraft.villager.mage": "Mage",
     //book
     "magickcore.book.name": "MagickCore Guide Book",
-    "magickcore.book.landing_text": "What this mod brings to the world and what this mod can make you to do, part of the content will be explained for you."
+    "magickcore.book.landing_text": "What this mod brings to the world and what this mod can make you to do, part of the content will be explained for you.",
+
+    "death.attack.magickcore-void": "%1$s experienced §5Void magick",
+    "death.attack.magickcore-void.player": "%2$s let %1$s experienced §5Void magick",
+    "death.attack.magickcore-solar": "%1$s experienced §6Solar magick",
+    "death.attack.magickcore-solar.player": "%2$s let %1$s experienced §6Solar magick",
+    "death.attack.magickcore-wither": "%1$s experienced §2Wither energy",
+    "death.attack.magickcore-wither.player": "%2$s let %1$s experienced §2Wither magick",
+    "death.attack.magickcore-taken": "%1$s experienced §8Taken magick",
+    "death.attack.magickcore-taken.player": "%2$s let %1$s experienced §8Taken magick",
+    "death.attack.magickcore-arc": "%1$s experienced §bArc magick",
+    "death.attack.magickcore-arc.player": "%2$s let %1$s experienced §bArc magick",
+    "death.attack.magickcore-stasis": "%1$s experienced §3Stasis magick",
+    "death.attack.magickcore-stasis.player": "%2$s let %1$s experienced §3Stasis magick"
 }

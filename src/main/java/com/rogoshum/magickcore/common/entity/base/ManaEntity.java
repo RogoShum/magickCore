@@ -197,11 +197,6 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public boolean isAlive() {
-        if(!world.isRemote && getDamage() <= 0) {
-            this.world.setEntityState(this, (byte) 3);
-            if(!removed)
-                this.remove();
-        }
         return !this.removed && this.getDamage() > 0;
     }
 
@@ -210,6 +205,11 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         playHurtSound(null);
         setDamage(getDamage() - 1);
         lastDamageTick = this.ticksExisted;
+        if(!world.isRemote && getDamage() <= 0) {
+            this.world.setEntityState(this, (byte) 3);
+            if(!removed)
+                this.remove();
+        }
     }
 
     public void setDamage(int damage) {
@@ -251,7 +251,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
             MagickCore.proxy.addTask(this::doClientTask);
         } else
             MagickCore.proxy.addTask(this::doServerTask);
-        if(getDamage() < 3 && this.ticksExisted - lastDamageTick > 200)
+        if(getDamage() > 0 && getDamage() < 3 && this.ticksExisted - lastDamageTick > 200)
             setDamage(getDamage() + 1);
         reSize();
         releaseMagick();

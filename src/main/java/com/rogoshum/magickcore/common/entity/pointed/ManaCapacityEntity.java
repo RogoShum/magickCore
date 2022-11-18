@@ -97,6 +97,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public void remove() {
         if(!dead) {
+            dead = true;
             ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.MAGICK_CONTAINER.get(), 1);
             ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
             if (!this.world.isRemote)

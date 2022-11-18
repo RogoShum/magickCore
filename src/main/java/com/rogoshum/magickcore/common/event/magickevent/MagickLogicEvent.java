@@ -118,6 +118,7 @@ public class MagickLogicEvent {
 		}
 	}
 
+	/*
 	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Detonate event) {
 		if(event.getWorld().isRemote()) return;
@@ -136,6 +137,8 @@ public class MagickLogicEvent {
 			}
 		}
 	}
+
+	 */
 
 	@SubscribeEvent
 	public void onStateCooldown(EntityEvents.StateCooldownEvent event) {

@@ -24,7 +24,7 @@ public class MagickAttackTask<T extends LivingEntity> extends Task<T> {
     private final int range;
 
     public MagickAttackTask(int cooldown, int range) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleStatus.VALUE_ABSENT));
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleStatus.REGISTERED, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleStatus.VALUE_ABSENT));
         this.cooldown = cooldown;
         this.range = range;
     }
@@ -35,12 +35,14 @@ public class MagickAttackTask<T extends LivingEntity> extends Task<T> {
         if(!hasFight) return false;
 
         LivingEntity livingentity = this.getAttackTarget(owner);
+        if(livingentity == null) return false;
         return owner.getDistanceSq(livingentity) <= range * range && BrainUtil.isMobVisible(owner, livingentity);
     }
 
     protected void startExecuting(ServerWorld worldIn, T entityIn, long gameTimeIn) {
         if(!(entityIn instanceof IManaTaskMob)) return;
         LivingEntity livingentity = this.getAttackTarget(entityIn);
+        if(livingentity == null) return;
         BrainUtil.lookAt(entityIn, livingentity);
         entityIn.swingArm(Hand.MAIN_HAND);
         Queue<SpellContext> contextQueue = ((IManaTaskMob) entityIn).conditionSpellMap().get(Activity.REST);
@@ -68,6 +70,10 @@ public class MagickAttackTask<T extends LivingEntity> extends Task<T> {
     }
 
     private LivingEntity getAttackTarget(T mob) {
-        return mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get();
+        if(mob.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).isPresent())
+            return mob.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).get();
+        if(mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isPresent())
+            return mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get();
+        return null;
     }
 }

@@ -318,5 +318,18 @@
 
     //书
     "magickcore.book.name": "魔法核心指南",
-    "magickcore.book.landing_text": "这个模组为世界带来了什么，这个模组都能让你做到什么，部分内容会为你讲解。"
+    "magickcore.book.landing_text": "这个模组为世界带来了什么，这个模组都能让你做到什么，部分内容会为你讲解。",
+
+    "death.attack.magickcore-void": "%1$s 体验了一下 §5虚空魔法",
+    "death.attack.magickcore-void.player": "%2$s 让 %1$s 品尝了一番 §5虚空魔法",
+    "death.attack.magickcore-solar": "%1$s 体验了一下 §5烈焰魔法",
+    "death.attack.magickcore-solar.player": "%2$s 让 %1$s 品尝了一番 §5烈焰魔法",
+    "death.attack.magickcore-wither": "%1$s 体验了一下 §5枯萎魔法",
+    "death.attack.magickcore-wither.player": "%2$s 让 %1$s 品尝了一番 §5枯萎魔法",
+    "death.attack.magickcore-taken": "%1$s 体验了一下 §5夺魂魔法",
+    "death.attack.magickcore-taken.player": "%2$s 让 %1$s 品尝了一番 §5夺魂魔法",
+    "death.attack.magickcore-arc": "%1$s 体验了一下 §5电弧魔法",
+    "death.attack.magickcore-arc.player": "%2$s 让 %1$s 品尝了一番 §5电弧魔法",
+    "death.attack.magickcore-stasis": "%1$s 体验了一下 §5冰影魔法",
+    "death.attack.magickcore-stasis.player": "%2$s 让 %1$s 品尝了一番 §5冰影魔法"
 }
