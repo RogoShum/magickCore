@@ -62,7 +62,7 @@ public class LootUtil {
            float force = (float) Math.min(MagickCore.rand.nextInt(lucky) + MagickCore.rand.nextInt(lucky) * 1.1, material.getMana());
            int mana = 0;
            for (int i = 0; i < lucky; ++i) {
-               mana += MagickCore.rand.nextInt((int) (material.getMana() * 0.25));
+               mana += MagickCore.rand.nextInt(Math.max((int) (material.getMana() * 0.25), 1));
            }
 
            return createRandomManaItem(item, force, tick, mana, trace);
