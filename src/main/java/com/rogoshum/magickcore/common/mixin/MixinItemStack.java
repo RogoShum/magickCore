@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.api.itemstack.IItemData;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
@@ -23,10 +24,11 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 @Mixin(ItemStack.class)
-public class MixinItemStack implements IItemData {
-    private final HashMap<String, ItemExtraData> extraData = new HashMap<>();
+public class MixinItemStack{
+    //private final HashMap<String, ItemExtraData> extraData = new HashMap<>();
 
     @Shadow
     public int getMaxDamage() { return 0; }
@@ -37,6 +39,16 @@ public class MixinItemStack implements IItemData {
     @Shadow
     public void setDamage(int damage) {}
 
+    @Shadow
+    public CompoundNBT getTag() { return new CompoundNBT(); }
+
+    /*
+    @Override
+    public HashMap<String, ItemExtraData> extraData() {
+        return extraData;
+    }
+
+    /*
     @Inject(method = "getTag", at = @At("HEAD"))
     public void onGetTag(CallbackInfoReturnable<CompoundNBT> cir) {
         if(extraData().isEmpty()) return;
@@ -66,9 +78,6 @@ public class MixinItemStack implements IItemData {
             saveItemData(stackA);
     }
 
-    @Shadow
-    public CompoundNBT getTag() { return new CompoundNBT(); }
-
     public CompoundNBT originTag() {
         ItemStack thisStack = (ItemStack)(Object)this;
         return ObfuscationReflectionHelper.getPrivateValue(ItemStack.class, thisStack, "field_77990_d");
@@ -77,11 +86,7 @@ public class MixinItemStack implements IItemData {
     @Shadow
     public void setTag(@Nullable CompoundNBT nbt) { }
 
-    @Override
-    public HashMap<String, ItemExtraData> extraData() {
-        return extraData;
-    }
-
+    /*
     @Inject(method = "copy", at = @At("RETURN"))
     public void onCopy(CallbackInfoReturnable<ItemStack> stack) {
         if(stack.getReturnValue().isEmpty()) return;
@@ -91,19 +96,6 @@ public class MixinItemStack implements IItemData {
     @Inject(method = "write", at = @At("HEAD"))
     public void onWrite(CompoundNBT nbt, CallbackInfoReturnable<CompoundNBT> tag) {
         saveItemData();
-    }
-
-    @Inject(method = "write", at = @At("RETURN"))
-    public void onWriteEnd(CompoundNBT nbt, CallbackInfoReturnable<CompoundNBT> old) {
-        CompoundNBT tag = originTag();
-        if(tag == null) return;
-        if(tag.contains(ItemExtraData.ITEM_DATA)) {
-            CompoundNBT itemData = tag.getCompound(ItemExtraData.ITEM_DATA);
-            if(itemData.isEmpty())
-                tag.remove(ItemExtraData.ITEM_DATA);
-        }
-        if(tag.isEmpty())
-            setTag(null);
     }
 
     @Inject(method = "setTag", at = @At("RETURN"))
@@ -117,6 +109,9 @@ public class MixinItemStack implements IItemData {
         }
     }
 
+     */
+
+    /*
     @Inject(method = "<init>(Lnet/minecraft/util/IItemProvider;ILnet/minecraft/nbt/CompoundNBT;)V", at = @At("RETURN"), cancellable = true)
     protected void onConstructor(CallbackInfo info) {
         initItemData();
@@ -127,6 +122,7 @@ public class MixinItemStack implements IItemData {
         initItemData();
     }
 
+    /*
     private void copyItemData(ItemStack stack) {
         CompoundNBT itemData = new CompoundNBT();
         extraData.forEach((key, func) -> {
@@ -139,6 +135,7 @@ public class MixinItemStack implements IItemData {
                 func.read(itemData.getCompound(key));
         });
     }
+    /*
 
     private void saveItemData() {
         if(extraData().isEmpty()) return;
@@ -172,28 +169,32 @@ public class MixinItemStack implements IItemData {
             tag.put(ItemExtraData.ITEM_DATA, itemData);
     }
 
+
+     */
+
+     /*
     private void initItemData() {
         ItemStack thisStack = (ItemStack)(Object)this;
-        HashMap<String, Callable<ItemExtraData>> dataMap = new HashMap<>();
+        HashMap<String, Function<ItemStack, ItemExtraData>> dataMap = new HashMap<>();
         ExtraDataEvent.ItemStack event = new ExtraDataEvent.ItemStack(dataMap);
         MinecraftForge.EVENT_BUS.post(event);
         dataMap.forEach((key, value) -> {
             try {
-                ItemExtraData itemExtraData = value.call();
+                ItemExtraData itemExtraData = value.apply(thisStack);
                 if(itemExtraData.isItemSuitable(thisStack))
-                    extraData.put(key, value.call());
+                    extraData.put(key, value.apply(thisStack));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        readData();
+        //readData();
     }
 
+    /*
     private void readData() {
         if(extraData().isEmpty()) return;
         ItemStack thisStack = (ItemStack)(Object)this;
         if(originTag() == null || !originTag().contains(ItemExtraData.ITEM_DATA)) {
-            saveItemData();
             return;
         }
         CompoundNBT itemData = originTag().getCompound(ItemExtraData.ITEM_DATA);
@@ -208,6 +209,8 @@ public class MixinItemStack implements IItemData {
         if(itemData.isEmpty())
             originTag().remove(ItemExtraData.ITEM_DATA);
     }
+
+     */
 
     @Inject(method = "attemptDamageItem", at = @At("RETURN"), cancellable = true)
     public void onAttemptDamageItem(int amount, Random rand, @Nullable ServerPlayerEntity damager, CallbackInfoReturnable<Boolean> cir) {

@@ -27,7 +27,7 @@ public class LaserStaffItem extends ManaItem {
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
-        ExtraDataUtil.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+        ExtraDataUtil.itemManaData(stack, data -> {
             MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
             MagickContext context = MagickContext.create(playerIn.world, data.spellContext()).<MagickContext>applyType(ApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
             SpawnContext spawnContext = SpawnContext.create(ModEntities.MANA_LASER.get());

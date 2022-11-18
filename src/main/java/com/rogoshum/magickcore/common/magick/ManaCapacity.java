@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ManaCapacity {
-    private float capacity;
+    protected float capacity;
     private final float maxCapacity;
 
     public ManaCapacity(float maxCapacity) {

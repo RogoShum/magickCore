@@ -81,6 +81,7 @@ public class EntityLightSourceManager {
     }
 
     public static void addLightSource(ILightSourceEntity entity) {
+        if(true)return;
         if (!lightList.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
             lightList.add(entity);
         }

@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundNBT;
 
 public abstract class ItemExtraData {
     public static final String ITEM_DATA = "item_extra_data";
+    public ItemExtraData(ItemStack stack) {}
     public abstract boolean isItemSuitable(ItemStack item);
     public abstract void read(CompoundNBT nbt);
     public abstract void write(CompoundNBT nbt);

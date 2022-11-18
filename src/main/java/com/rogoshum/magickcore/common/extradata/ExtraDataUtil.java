@@ -20,17 +20,12 @@ public class ExtraDataUtil {
         return (IEntityData) entity;
     }
 
-    public static IItemData itemData(ItemStack item) {
-        return (IItemData)(Object)item;
-    }
-
     public static void itemManaData(ItemStack item, Consumer<ItemManaData> consumer) {
-        ((IItemData)(Object)item).execute(LibRegistry.ITEM_DATA, consumer);
+        consumer.accept(new ItemManaData(item));
     }
 
     public static ItemManaData itemManaData(ItemStack item) {
-        ItemManaData data = ((IItemData)(Object)item).get(LibRegistry.ITEM_DATA);
-        return data == null ? new ItemManaData() : data;
+        return new ItemManaData(item);
     }
 
     public static void entityStateData(Entity entity, Consumer<EntityStateData> consumer) {

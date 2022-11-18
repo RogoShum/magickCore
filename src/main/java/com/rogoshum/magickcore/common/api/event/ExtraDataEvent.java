@@ -2,10 +2,12 @@ package com.rogoshum.magickcore.common.api.event;
 
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.GenericEvent;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 public abstract class ExtraDataEvent<T, D> extends GenericEvent<T> {
     private final HashMap<String, D> dataMap;
@@ -25,8 +27,8 @@ public abstract class ExtraDataEvent<T, D> extends GenericEvent<T> {
         }
     }
 
-    public static class ItemStack extends ExtraDataEvent<ItemStack, Callable<ItemExtraData>> {
-        public ItemStack(HashMap<String, Callable<ItemExtraData>> dataMap) {
+    public static class ItemStack extends ExtraDataEvent<String, Function<net.minecraft.item.ItemStack, ItemExtraData>> {
+        public ItemStack(HashMap<String, Function<net.minecraft.item.ItemStack, ItemExtraData>> dataMap) {
             super(dataMap);
         }
     }

@@ -90,7 +90,7 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ServerTickEvent event) {
 		if(event.phase == TickEvent.Phase.END) {
-			EntityLightSourceManager.tick(event.side);
+			//EntityLightSourceManager.tick(event.side);
 			//MagickCore.proxy.tick(LogicalSide.SERVER);
 		}
 	}
@@ -114,7 +114,7 @@ public class MagickLogicEvent {
 				VertexShakerHelper.clear();
 			});
 			MagickCore.proxy.tick(LogicalSide.CLIENT);
-			EntityLightSourceManager.tick(LogicalSide.CLIENT);
+			//EntityLightSourceManager.tick(LogicalSide.CLIENT);
 		}
 	}
 

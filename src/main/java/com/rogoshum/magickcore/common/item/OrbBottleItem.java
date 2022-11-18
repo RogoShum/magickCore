@@ -74,8 +74,12 @@ public class OrbBottleItem extends BaseItem{
             if (tag.contains("ELEMENT") && (RegisterEvent.containAnimalType(target.getType()) || target instanceof AnimalEntity)) {
                 EntityStateData state = ExtraDataUtil.entityStateData(target);
                 state.setElement(MagickRegistry.getElement(tag.getString("ELEMENT")));
-                tag.remove("ELEMENT");
-                playerIn.setHeldItem(hand,stack);
+                ItemStack copy = stack.copy();
+                copy.setCount(1);
+                NBTTagHelper.getStackTag(copy).remove("ELEMENT");
+                playerIn.addItemStackToInventory(copy);
+                stack.shrink(1);
+                playerIn.setHeldItem(hand, stack);
             }
         }
         return super.itemInteractionForEntity(stack, playerIn, target, hand);

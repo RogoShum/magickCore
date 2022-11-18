@@ -24,7 +24,7 @@ public class SpellContext {
     public int tick;
     public float range;
     public float force;
-    private final HashMap<String, ChildContext> childContexts = new HashMap<>();
+    protected final HashMap<String, ChildContext> childContexts = new HashMap<>();
 
     public static SpellContext create(CompoundNBT tag) {
         SpellContext spellContext = create();

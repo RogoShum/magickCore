@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.api.itemstack;
 
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

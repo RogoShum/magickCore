@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.api.itemstack.IItemData;
 import com.rogoshum.magickcore.common.api.itemstack.IManaData;
+import com.rogoshum.magickcore.common.extradata.ItemExtraData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -51,7 +54,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Override
     public int getRGBDurabilityForDisplay(ItemStack stack) {
         AtomicInteger i = new AtomicInteger(MathHelper.hsvToRGB(0.0f, 0.0F, 1.0F));
-        ExtraDataUtil.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+        ExtraDataUtil.itemManaData(stack, data -> {
             com.rogoshum.magickcore.common.magick.Color color = data.spellContext().element.getRenderer().getColor();
             if(color.equals(com.rogoshum.magickcore.common.magick.Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
                 color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
@@ -88,7 +91,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        ExtraDataUtil.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
+        ExtraDataUtil.itemManaData(stack, data -> {
             String information = data.spellContext().toString();
             if(!information.isEmpty()) {
                 String[] tips = information.split("\n");
@@ -113,22 +116,11 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT nbt = super.getShareTag(stack);
-        /*if(nbt == null)
-            nbt = new CompoundNBT();
-        CompoundNBT tag = new CompoundNBT();
-        ExtraDataUtil.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> data.write(tag));
-        nbt.put(ItemExtraData.ITEM_DATA, tag);
-
-
-         */
-        return nbt;
+        return super.getShareTag(stack);
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-
-
         super.readShareTag(stack, nbt);
     }
 

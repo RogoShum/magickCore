@@ -32,6 +32,8 @@ public class PhantomRenderer extends EasyRenderer<PhantomEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        if(entity.getEntity() == null)
+            return map;
         map.put(RenderMode.ORIGIN_RENDER, this::render);
         return map;
     }
