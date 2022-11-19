@@ -68,7 +68,7 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
 
     @Override
     public boolean alive() {
-        return !tile.isRemoved() && tile.hasWorld();
+        return !tile.isRemoved() && tile.hasWorld() && tile.getWorld() == Minecraft.getInstance().world;
     }
 
     @Override

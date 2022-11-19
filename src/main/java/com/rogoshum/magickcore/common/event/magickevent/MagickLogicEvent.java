@@ -271,12 +271,12 @@ public class MagickLogicEvent {
 
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_RANGE.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_RANGE.orElse(null)).getAmplifier() + 1;
-			event.getContext().force((float) (event.getContext().range * Math.pow(1.4f, amplifier)));
+			event.getContext().range((float) (event.getContext().range * Math.pow(1.4f, amplifier)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_TICK.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_TICK.orElse(null)).getAmplifier() + 1;
-			event.getContext().force((float) (event.getContext().tick * Math.pow(1.5f, amplifier)));
+			event.getContext().tick((int) (event.getContext().tick * Math.pow(1.5f, amplifier)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.TRACE.orElse(null))
@@ -290,7 +290,7 @@ public class MagickLogicEvent {
 		
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_CONSUME_REDUCE.orElse(null))) {
 			float amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_CONSUME_REDUCE.orElse(null)).getAmplifier() + 1;
-			event.setMana((float) (event.getMana() * Math.pow(0.8f, amplifier)));
+			event.setMana((float) (event.getMana() * Math.pow(0.5f, amplifier)));
 		}
 
 		float level = 0;
@@ -299,7 +299,7 @@ public class MagickLogicEvent {
 				level += 1;
 			}
 		}
-		event.setMana((float) (event.getMana() * Math.pow(0.9f, level)));
+		event.setMana((float) (event.getMana() * Math.pow(0.8f, level)));
 
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntity());
 		if(event.getMana() <= 0 || event.getContext().noCost)
@@ -315,6 +315,7 @@ public class MagickLogicEvent {
 			boolean flag = false;
 
 			ItemStack stack = ((LivingEntity) event.getEntity()).getActiveItemStack();
+
 			ItemManaData item = ExtraDataUtil.itemManaData(stack);
 			if(item.manaCapacity().getMana() >= event.getMana()) {
 				item.manaCapacity().extractMana(event.getMana());
@@ -359,13 +360,13 @@ public class MagickLogicEvent {
 	public void onManaRegen(EntityEvents.ManaRegenerationEvent event) {
 		float mana = 0;
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.MANA_REGEN.orElse(null)))
-			mana = (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_REGEN.orElse(null)).getAmplifier() + 1);
+			mana = (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_REGEN.orElse(null)).getAmplifier() + 1) * 2;
 
 		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
 			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
 				if(event.getEntityLiving().ticksExisted % 20 == 0)
 					NBTTagHelper.consumeElementOnTool(stack, LibElements.ORIGIN);
-				mana += 0.25;
+				mana += 0.4;
 			}
 		}
 

@@ -29,7 +29,7 @@ public class ElementOnToolContainer extends NBTRecipeContainer {
 
         for (int i = 0; i < inv.getSizeInventory(); ++i) {
             ItemStack itemStack = inv.getStackInSlot(i);
-            if(itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getSlotForItemStack(itemStack).getSlotType().equals(EquipmentSlotType.Group.ARMOR))
+            if(itemStack.isDamageable() || itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getSlotForItemStack(itemStack).getSlotType().equals(EquipmentSlotType.Group.ARMOR))
                 stack = itemStack.copy();
             else if(NBTTagHelper.hasElement(itemStack)) {
                 element = NBTTagHelper.getElement(itemStack);

@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -46,7 +47,11 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
         MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
         MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
         MagickContext context = magickContext.caster(player).victim(entity).element(element);
-        MagickReleaseHelper.releaseMagick(MagickContext.create(player.world, context).applyType(ApplyType.HIT_ENTITY));
-        return MagickReleaseHelper.releaseMagick(context);
+        MagickReleaseHelper.releaseMagick(MagickContext.create(player.world, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
+        Hand hand = player.getHeldItemMainhand() == stack ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        player.setActiveHand(hand);
+        boolean success = MagickReleaseHelper.releaseMagick(context);
+        player.stopActiveHand();
+        return success;
     }
 }

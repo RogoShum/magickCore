@@ -85,7 +85,7 @@ public class MagickReleaseHelper {
             baseMana += (type.getHeight() + type.getWidth()) * 30;
         }
         if(context.containChild(LibContext.MULTI_RELEASE))
-            baseMana *= 1.5f;
+            baseMana *= 0.5f;
         return baseMana;
     }
 

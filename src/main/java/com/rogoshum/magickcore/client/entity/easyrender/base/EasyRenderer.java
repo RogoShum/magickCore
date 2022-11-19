@@ -91,7 +91,7 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
 
     @Override
     public boolean alive() {
-        return entity.isAlive() && entity.isAddedToWorld();
+        return entity.isAlive() && entity.isAddedToWorld() && entity.world == Minecraft.getInstance().world;
     }
 
     @Override

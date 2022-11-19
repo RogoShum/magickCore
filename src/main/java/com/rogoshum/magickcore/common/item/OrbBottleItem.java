@@ -77,7 +77,8 @@ public class OrbBottleItem extends BaseItem{
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
                 NBTTagHelper.getStackTag(copy).remove("ELEMENT");
-                playerIn.addItemStackToInventory(copy);
+                if(!playerIn.addItemStackToInventory(copy))
+                    playerIn.dropItem(copy, false, true);
                 stack.shrink(1);
                 playerIn.setHeldItem(hand, stack);
             }
@@ -97,7 +98,8 @@ public class OrbBottleItem extends BaseItem{
                 copy.setCount(1);
                 CompoundNBT tag = NBTTagHelper.getStackTag(copy);
                 tag.putString("ELEMENT", orb.spellContext().element.type());
-                playerIn.addItemStackToInventory(copy);
+                if(!playerIn.addItemStackToInventory(copy))
+                    playerIn.dropItem(copy, false, true);
                 stack.shrink(1);
                 entity.remove();
                 flag = true;

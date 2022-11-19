@@ -3,12 +3,14 @@ package com.rogoshum.magickcore.common.item;
 import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -38,6 +40,10 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
         MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
         MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
         MagickContext context = magickContext.caster(player).victim(player).element(element);
+        if(context.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.getChild(LibContext.TRACE);
+            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(player);
+        }
         MagickReleaseHelper.releaseMagick(context);
     }
 

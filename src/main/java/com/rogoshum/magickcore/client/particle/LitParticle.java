@@ -396,7 +396,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     @Override
     public boolean alive() {
-        return !isDead();
+        return !isDead() && world == Minecraft.getInstance().world;
     }
 
     public void remove() {

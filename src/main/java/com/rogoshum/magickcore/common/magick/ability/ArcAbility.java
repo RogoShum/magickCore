@@ -186,6 +186,7 @@ public class ArcAbility{
             Vector3d dir = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(0.2 * context.force);
             Vector3d originMotion = context.victim.getMotion();
             context.victim.setMotion(dir.scale(0.8).add(originMotion.scale(0.2)));
+            context.victim.setOnGround(true);
             return true;
         }
         return false;

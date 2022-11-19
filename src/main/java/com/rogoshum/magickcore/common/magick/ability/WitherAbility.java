@@ -84,12 +84,19 @@ public class WitherAbility{
     }
 
     public static boolean applyToolElement(MagickContext context) {
-        if(!context.containChild(LibContext.ITEM)) return false;
+        if(!context.containChild(LibContext.ITEM) || context.world.isRemote()) return false;
         ItemContext itemStack = context.getChild(LibContext.ITEM);
         if(!context.valid()) return false;
-        if(itemStack.itemStack.getDamage() > 0 && MagickCore.rand.nextInt(100) == 0) {
-            itemStack.itemStack.setDamage(itemStack.itemStack.getDamage() - 1);
+        if(itemStack.itemStack.getDamage() > 0) {
             NBTTagHelper.consumeElementOnTool(itemStack.itemStack, LibElements.WITHER);
+            int maxDamage = 3;
+            int damage;
+            if(itemStack.itemStack.getDamage() <= maxDamage)
+                damage = MagickCore.rand.nextInt(itemStack.itemStack.getDamage());
+            else {
+                damage = itemStack.itemStack.getDamage() - MagickCore.rand.nextInt(maxDamage);
+            }
+            itemStack.itemStack.setDamage(damage);
         }
         return true;
     }
