@@ -328,7 +328,6 @@ public class MagickLogicEvent {
 					state.setManaValue(state.getManaValue() + extraMana - event.getMana());
 					if(extraMana > 0) {
 						item.manaCapacity().setMana(0);
-						item.spellContext().element(MagickRegistry.getElement(LibElements.ORIGIN));
 					}
 				}
 				else
