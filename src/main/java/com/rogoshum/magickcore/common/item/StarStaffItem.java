@@ -28,7 +28,7 @@ public class StarStaffItem extends ManaItem {
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
-        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(playerIn).element(element);
         context.tick(Math.max(context.tick, 100));
         SpawnContext spawnContext = SpawnContext.create(ModEntities.MANA_STAR.get());

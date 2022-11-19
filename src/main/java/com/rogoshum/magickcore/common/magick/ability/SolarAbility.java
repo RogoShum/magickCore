@@ -21,6 +21,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -144,7 +146,14 @@ public class SolarAbility{
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
         ((LivingEntity) context.victim).heal(context.force);
-        context.world.setEntityState(context.victim, (byte)7);
+        IParticleData iparticledata = ParticleTypes.HEART;
+
+        for(int i = 0; i < 7; ++i) {
+            double d0 = MagickCore.rand.nextGaussian() * 0.02D;
+            double d1 = MagickCore.rand.nextGaussian() * 0.02D;
+            double d2 = MagickCore.rand.nextGaussian() * 0.02D;
+            context.victim.world.addParticle(iparticledata, context.victim.getPosXRandom(1.0D), context.victim.getPosYRandom() + 0.5D, context.victim.getPosZRandom(1.0D), d0, d1, d2);
+        }
         return true;
     }
 }

@@ -35,10 +35,9 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
     @Override
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
         super.onUsingTick(stack, player, count);
-        EntityStateData state = ExtraDataUtil.entityStateData(player);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
-        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(player).victim(player).element(element);
         if(context.containChild(LibContext.TRACE)) {
             TraceContext traceContext = context.getChild(LibContext.TRACE);

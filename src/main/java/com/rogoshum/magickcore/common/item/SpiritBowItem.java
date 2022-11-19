@@ -29,7 +29,7 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem {
         int tick = Math.min(40, (getUseDuration(stack) - timeLeft));
         magickContext.range(tick * 0.25f);
         magickContext.tick(tick * 4);
-        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(entityLiving).element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.ARROW.get());
         context.addChild(spawnContext);

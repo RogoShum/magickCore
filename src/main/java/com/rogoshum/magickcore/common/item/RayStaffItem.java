@@ -29,7 +29,7 @@ public class RayStaffItem extends ManaItem implements IManaContextItem {
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
-        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(playerIn).element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.RAY.get());
         context.tick(Math.max(context.tick, 100));

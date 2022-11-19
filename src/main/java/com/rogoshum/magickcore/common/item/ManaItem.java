@@ -42,8 +42,9 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return ActionResult.resultConsume(itemstack);
     }
 
     @Override
@@ -79,17 +80,6 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
-        AtomicReference<TranslationTextComponent> transText = new AtomicReference<>(new TranslationTextComponent(this.getTranslationKey(stack)));
-        /*
-        ExtraDataHelper.itemData(stack).<ItemManaData>execute(LibRegistry.ITEM_DATA, data -> {
-            transText.set(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + data.spellContext().getMaterial().getName()).appendString(" ").append(new TranslationTextComponent(super.getTranslationKey(stack))));
-        });
-        */
-        return transText.get();
-    }
-
-    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         ExtraDataUtil.itemManaData(stack, data -> {
             String information = data.spellContext().toString();
@@ -102,17 +92,6 @@ public abstract class ManaItem extends BaseItem implements IManaData {
         });
     }
 
-    @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        /*if (this.isInGroup(group)) {
-            ItemStack stack = new ItemStack(this);
-
-        }
-
-         */
-        super.fillItemGroup(group, items);
-    }
-
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
@@ -122,33 +101,6 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
         super.readShareTag(stack, nbt);
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-        //updateData(stack, entityIn, itemSlot);
-    }
-
-    @Override
-    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        //updateData(stack, entity, 0);
-        return super.onEntityItemUpdate(stack, entity);
-    }
-
-    private void updateData(ItemStack stack, Entity entityIn, int slot) {
-        /*
-        if(!entityIn.world.isRemote())
-        {
-            IManaCapacity data = (IManaCapacity)stack.getItem();
-            Networking.INSTANCE.send(
-                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entityIn),
-                    new ManaItemDataPack(entityIn.getEntityId(), slot, data.getElement(stack).getType(), data.getTrace(stack)
-                            , data.getManaType(stack).getLabel(), data.getRange(stack), data.getForce(stack)
-                            , data.getMana(stack), data.getTickTime(stack)));
-        }
-        *
-         */
     }
 
     @Override

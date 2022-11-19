@@ -42,10 +42,9 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
-        EntityStateData state = ExtraDataUtil.entityStateData(player);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
-        MagickElement element = data.manaCapacity().getMana() > 0 ? data.spellContext().element : state.getElement();
+        MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(player).victim(entity).element(element);
         MagickReleaseHelper.releaseMagick(MagickContext.create(player.world, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
         Hand hand = player.getHeldItemMainhand() == stack ? Hand.MAIN_HAND : Hand.OFF_HAND;
