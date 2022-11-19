@@ -67,7 +67,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
         }
 
-        if(!released.get() && this.ticksExisted % 20 == 0) {
+        if(!released.get() && (this.ticksExisted % 20 == 0 || this.ticksExisted == 1)) {
             List<BlockPos> blocks = findBlocks();
 
             for (BlockPos pos : blocks) {

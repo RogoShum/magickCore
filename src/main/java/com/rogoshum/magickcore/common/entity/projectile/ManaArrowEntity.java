@@ -115,6 +115,6 @@ public class ManaArrowEntity extends ManaProjectileEntity {
         float range = spellContext().range;
         if(range > 10)
             range = 10;
-        return ManaFactor.create((float) (this.getMotion().length() * range * 0.2 + 0.05), 1.0f, 1.0f);
+        return ManaFactor.create((float) (Math.pow(this.getMotion().length() * range, 1.8) * 0.2 + 0.05), 1.0f, 1.0f);
     }
 }
