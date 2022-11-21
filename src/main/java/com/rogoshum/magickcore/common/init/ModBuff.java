@@ -69,12 +69,12 @@ public class ModBuff{
             }
         }, true);
 
-        putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e) ->{
+        putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e) -> {
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
-                living.heal(living.getMaxHealth() * 0.1f);
+                living.heal(living.getMaxHealth() * 0.025f);
                 if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
-                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.1f);
+                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f);
                 }
                 living.hurtTime = 0;
             }

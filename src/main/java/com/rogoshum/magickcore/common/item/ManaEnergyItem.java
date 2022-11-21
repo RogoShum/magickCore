@@ -95,14 +95,14 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
         if (data instanceof IMaterialLimit) {
             SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
             Material limit = ((IMaterialLimit) data).getMaterial();
-            if(data.spellContext().force < limit.getForce() ||
-                    data.spellContext().tick < limit.getTick() ||
-                    data.spellContext().range < limit.getRange()) {
+            if((data.spellContext().force < limit.getForce() && item.force > 0) ||
+                    (data.spellContext().tick < limit.getTick() && item.tick > 0) ||
+                    (data.spellContext().range < limit.getRange() && item.range > 0)) {
                 data.spellContext().merge(item);
                 limit.limit(data.spellContext());
                 return true;
-            } else
-                return false;
+            }
+            return false;
         } else {
             data.spellContext().merge(ExtraDataUtil.itemManaData(stack).spellContext());
             return true;

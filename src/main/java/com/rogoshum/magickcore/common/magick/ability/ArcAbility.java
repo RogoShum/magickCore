@@ -130,31 +130,13 @@ public class ArcAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim instanceof LivingEntity)
-            return ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick, (int) context.force));
+            return ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick * 2, (int) context.force));
         return false;
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
         return ModBuff.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
-    }
-
-    public static boolean applyToolElement(MagickContext context) {
-        int level = (int) context.force;
-        if(!(context.caster instanceof LivingEntity)) return false;
-        LivingEntity entity = (LivingEntity) context.caster;
-        for(int i = 0; i < level; ++i) {
-            entity.ticksExisted+=MagickCore.rand.nextInt(2) + 1;
-            if(entity.isServerWorld())
-                entity.tick();
-        }
-
-        //entity.addPotionEffect(new EffectInstance(Effects.SPEED, 20, level));
-
-        if(entity.ticksExisted % 40 * level == 0) {
-            ExtraDataUtil.entityData(entity).<ElementToolData>execute(LibEntityData.ELEMENT_TOOL, data -> data.consumeElementOnTool(entity, LibElements.ARC));
-        }
-        return true;
     }
 
     public static boolean superEntity(MagickContext context) {

@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
-import com.rogoshum.magickcore.common.api.entity.IManaTaskMob;
 import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -21,7 +20,7 @@ public class ElementToolData extends EntityExtraData {
 
     @Override
     public boolean isEntitySuitable(Entity entity) {
-        return entity instanceof LivingEntity || entity instanceof IManaTaskMob;
+        return entity instanceof LivingEntity;
     }
 
     private float addtionDamage;
@@ -38,13 +37,17 @@ public class ElementToolData extends EntityExtraData {
                         stack.getTag().remove(LibElementTool.TOOL_ELEMENT);
                     }
 
-                    for (String key : tag.keySet()) {
-                        if(key.equals(LibElements.ORIGIN)) continue;
-                        MagickContext context = new MagickContext(entity.world).element(MagickRegistry.getElement(key)).force(1).applyType(ApplyType.ELEMENT_TOOL);
-                        context.addChild(ItemContext.create(stack));
-                        MagickReleaseHelper.releaseMagick(context.noCost());
-                        //MagickReleaseHelper.releaseMagick(MagickContext.create(entity.world).entity(entity).force(1).applyType(Enum));
-                        map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
+                    try {
+                        for (String key : tag.keySet()) {
+                            if(key != null && key.equals(LibElements.ORIGIN)) continue;
+                            MagickContext context = new MagickContext(entity.world).element(MagickRegistry.getElement(key)).force(1).applyType(ApplyType.ELEMENT_TOOL);
+                            context.addChild(ItemContext.create(stack));
+                            MagickReleaseHelper.releaseMagick(context.noCost());
+                            //MagickReleaseHelper.releaseMagick(MagickContext.create(entity.world).entity(entity).force(1).applyType(Enum));
+                            map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
+                        }
+                    } catch (Exception ignored) {
+
                     }
                 }
             }

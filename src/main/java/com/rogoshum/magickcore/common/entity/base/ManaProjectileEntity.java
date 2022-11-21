@@ -59,6 +59,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.FLOAT);
     public Entity victim;
+    public double maxMotion;
 
     public ManaProjectileEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
@@ -192,12 +193,21 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     public void tick() {
         victim = null;
         super.tick();
-        /*if (this.homePos == null)
-            this.homePos = this.getPositionVec();
-        else if (this.homePos.subtract(this.getPositionVec()).length() > this.getRange())
-            this.remove();
+        if(victim == null) {
+            Entity target = MagickReleaseHelper.getEntityRayTrace(this, new Vector3d(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ()), this.getMotion(), getWidth() * 0.5f);
+            if(target != null) {
+                if(target instanceof IManaRefraction) {
+                    if(!((IManaRefraction) target).refraction(spellContext()))
+                        this.victim = target;
+                } else
+                    this.victim = target;
+                if (victim != null && !this.world.isRemote) {
+                    EntityRayTraceResult result = new EntityRayTraceResult(target);
+                    onEntityHit(result);
+                }
+            }
+        }
 
-         */
         if (!world.isRemote)
             makeSound();
 
@@ -207,6 +217,9 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
             MagickCore.proxy.addTask(this::doClientTask);
         } else
             MagickCore.proxy.addTask(this::doServerTask);
+        double length = getMotion().length();
+        if(length > maxMotion)
+            maxMotion = length;
     }
 
     public void reSize() {
@@ -295,7 +308,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
             Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
             Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
 
-            double length = this.getMotion().length();
+            double length = maxMotion * 0.3;
             Vector3d motion = goal.subtract(self).normalize().scale(Math.max(length * 0.2, 0.02));
             this.setMotion(motion.add(this.getMotion().scale(0.8)));
         }
@@ -323,18 +336,16 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         par.setGlow();
         MagickCore.addMagickParticle(par);
 
-        for (int i = 0; i < 2; ++i) {
-            LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
-                    , 0.5f * this.getWidth(), 0.5f * this.getWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
-            litPar.setGlow();
-            litPar.setParticleGravity(0f);
-            litPar.setShakeLimit(15.0f);
-            litPar.setLimitScale();
-            MagickCore.addMagickParticle(litPar);
-        }
+        LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
+                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
+                , 0.5f * this.getWidth(), 0.5f * this.getWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+        litPar.setGlow();
+        litPar.setParticleGravity(0f);
+        litPar.setShakeLimit(15.0f);
+        litPar.setLimitScale();
+        MagickCore.addMagickParticle(litPar);
     }
 
     @Override
@@ -393,6 +404,11 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         if(victim == null)
             victim = this;
         releaseMagick();
+        removeEffect();
+        super.remove();
+    }
+
+    public void removeEffect() {
         if (!this.world.isRemote) {
             this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.5F, 1.0F + this.rand.nextFloat());
         }
@@ -421,7 +437,6 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
                 MagickCore.addMagickParticle(litPar);
             }
         }
-        super.remove();
     }
 
     @Override

@@ -121,7 +121,12 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         } else {
             context.copy(ExtraDataUtil.itemManaData(entity.getStacks().get(entity.getStacks().size() - 1).getItemStack()).spellContext());
             for(int i = entity.getStacks().size() - 2; i > -1; --i) {
-                context = ExtraDataUtil.itemManaData(entity.getStacks().get(i).getItemStack()).spellContext().copy().post(context);
+                SpellContext origin = ExtraDataUtil.itemManaData(entity.getStacks().get(i).getItemStack()).spellContext().copy();
+                SpellContext post = origin;
+                while (post.postContext != null)
+                    post = post.postContext;
+                post.post(context);
+                context = origin;
             }
         }
 

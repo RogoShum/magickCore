@@ -31,20 +31,22 @@ public class SuperItem extends BaseItem {
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
         if(!worldIn.isRemote) {
             EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
-            int mana = (int) state.getManaValue();
+            float mana = state.getManaValue();
             if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
                 mana = ManaLimit.MAX_MANA.getValue();
             MagickElement element = ExtraDataUtil.entityStateData(playerIn).getElement();
-            MagickContext context = MagickContext.create(worldIn).caster(playerIn).applyType(ApplyType.SUPER).tick(mana).element(element);
+            MagickContext context = MagickContext.create(worldIn).caster(playerIn).noCost().applyType(ApplyType.SUPER).tick((int) mana).element(element);
             MagickReleaseHelper.releaseMagick(context);
+            state.setManaValue(0);
         }
         return super.onItemUseFinish(stack, worldIn, playerIn);
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return ActionResult.resultConsume(itemstack);
     }
 
     @Override

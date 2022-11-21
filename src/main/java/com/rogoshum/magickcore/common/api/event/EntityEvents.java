@@ -85,10 +85,8 @@ public class EntityEvents {
         }
     }
 
-    public static class MagickAttackEvent extends LivingAttackEvent
-    {
-        public MagickAttackEvent(LivingEntity entity, DamageSource source, float amount)
-        {
+    public static class MagickAttackEvent extends LivingAttackEvent {
+        public MagickAttackEvent(LivingEntity entity, DamageSource source, float amount) {
             super(entity, source, amount);
         }
 

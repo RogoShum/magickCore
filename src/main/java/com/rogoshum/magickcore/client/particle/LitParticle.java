@@ -336,14 +336,19 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
             BufferBuilder buffer = renderParams.buffer;
             BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
             RenderHelper.begin(context);
-            buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 1.0f)
-                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
-            buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 0.0f)
-                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
-            buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 0.0f)
-                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
-            buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 1.0f)
-                    .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
+            try {
+                buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 1.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
+                buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 0.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
+                buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 0.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
+                buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 1.0f)
+                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
+            } catch (Exception ignored) {
+
+            }
+
             RenderHelper.finish(context);
         }
         matrixStackIn.pop();

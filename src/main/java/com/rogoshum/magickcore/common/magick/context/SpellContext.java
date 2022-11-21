@@ -192,8 +192,12 @@ public class SpellContext {
             toolTip.pop();
         });
 
-        if(postContext != null)
-            toolTip.builder.append(postContext.getString(1));
+        if(postContext != null) {
+            if(applyType.isForm())
+                toolTip.builder.append(postContext.getString(1));
+            else
+                toolTip.builder.append(postContext.getString(0));
+        }
 
         return toolTip.getString();
     }
@@ -219,8 +223,12 @@ public class SpellContext {
             toolTip.pop();
         });
 
-        if(postContext != null)
-            toolTip.builder.append(postContext.getString(tab + 1));
+        if(postContext != null) {
+            if(applyType.isForm())
+                toolTip.builder.append(postContext.getString(tab + 1));
+            else
+                toolTip.builder.append(postContext.getString(tab));
+        }
 
         toolTip.nextLine("}");
         return toolTip.getString();

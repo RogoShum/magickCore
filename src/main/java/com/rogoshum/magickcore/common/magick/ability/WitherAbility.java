@@ -75,7 +75,7 @@ public class WitherAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.DECAY, context.tick, context.force, true);
+        return ModBuff.applyBuff(context.victim, LibBuff.DECAY, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {

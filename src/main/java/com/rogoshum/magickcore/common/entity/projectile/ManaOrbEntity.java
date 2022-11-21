@@ -45,7 +45,7 @@ public class ManaOrbEntity extends ManaProjectileEntity {
                 , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
                 , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
                 , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.3f * getWidth(), 0.3f * getWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.2f * getWidth(), 0.2f * getWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

@@ -17,7 +17,9 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class StasisAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.STASIS, context.tick, context.force, true);
+        return ModBuff.applyBuff(context.victim, LibBuff.STASIS, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
@@ -81,16 +83,19 @@ public class StasisAbility{
         int level = (int) context.force;
         if(!(context.caster instanceof LivingEntity)) return false;
         LivingEntity entity = (LivingEntity) context.caster;
+
         boolean worked = false;
-        List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getBoundingBox().grow(level * 1.5));
+        List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getBoundingBox().grow(level * 2));
         for (Entity entity1 : list) {
-            if(!MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
-                entity1.setMotion(entity1.getMotion().scale(Math.pow(0.85, level)));
+            Vector3d dir = entity1.getPositionVec().add(0, entity1.getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize();
+
+            if(dir.dotProduct(entity.getLookVec()) > 0.3 && !MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
+                entity1.setMotion(entity1.getMotion().scale(Math.pow(0.7, level)));
                 worked = true;
             }
         }
 
-        if(worked && entity.ticksExisted % 40 == 0) {
+        if(worked && entity.ticksExisted % 20 == 0) {
             ElementToolData tool = ExtraDataUtil.elementToolData(entity);
             if (tool != null) {
                 tool.consumeElementOnTool(entity, LibElements.STASIS);
@@ -122,6 +127,6 @@ public class StasisAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.PURE, context.tick, context.force, true);
+        return ModBuff.applyBuff(context.victim, LibBuff.PURE, context.tick * 2, context.force, true);
     }
 }

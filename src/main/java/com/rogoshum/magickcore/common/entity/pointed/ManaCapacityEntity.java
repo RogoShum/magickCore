@@ -139,7 +139,23 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public void releaseMagick() {
         //this.manaCapacity().receiveMana(50f);
-        List<Entity> list = this.findEntity((entity) -> entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof IManaData);
+        List<Entity> list = this.findEntity((entity) -> entity instanceof ItemEntity);
+        list.removeIf( entity -> {
+            boolean remove = !(((ItemEntity) entity).getItem().getItem() instanceof IManaData);
+            if(manaCapacity().getMana() < manaCapacity().getMaxMana() && remove) {
+                ItemEntity item = (ItemEntity)entity;
+                if(item.getItem().isFood()) {
+                    int healing = item.getItem().getItem().getFood().getHealing();
+                    float saturation = item.getItem().getItem().getFood().getSaturation();
+                    boolean meat = item.getItem().getItem().getFood().isMeat();
+
+                    float mana = meat ? (healing * 20 + saturation * 10) * 1.5f : healing * 10 + saturation * 5;
+                    manaCapacity().receiveMana(mana);
+                    item.getItem().shrink(1);
+                }
+            }
+            return remove;
+        });
         for (Entity entity : list) {
             ItemEntity item = (ItemEntity)entity;
             float manaTrans = this.manaCapacity().extractMana(5);

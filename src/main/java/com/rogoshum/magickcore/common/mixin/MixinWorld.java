@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.common.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.common.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,6 +22,7 @@ import java.util.function.Consumer;
 public class MixinWorld {
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
     public void onGuardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn, CallbackInfo info) {
+        if(entityIn instanceof LivingEntity) return;
         EntityEvents.EntityUpdateEvent event = new EntityEvents.EntityUpdateEvent(entityIn);
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())

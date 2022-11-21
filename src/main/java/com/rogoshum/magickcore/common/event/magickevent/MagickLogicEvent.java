@@ -264,6 +264,19 @@ public class MagickLogicEvent {
 				}
 			}
 
+		float level = 0;
+		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
+			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
+				level += 1;
+			}
+		}
+		event.setMana((float) (event.getMana() * Math.pow(0.8f, level)));
+		if(level > 0) {
+			event.getContext().force((float) (event.getContext().force * Math.pow(1.05f, level)));
+			event.getContext().range((float) (event.getContext().range * Math.pow(1.07f, level)));
+			event.getContext().tick((int) (event.getContext().tick * Math.pow(1.1f, level)));
+		}
+
 		if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_FORCE.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_FORCE.orElse(null)).getAmplifier() + 1;
 			event.getContext().force((float) (event.getContext().force * Math.pow(1.3f, amplifier)));
@@ -292,14 +305,6 @@ public class MagickLogicEvent {
 			float amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_CONSUME_REDUCE.orElse(null)).getAmplifier() + 1;
 			event.setMana((float) (event.getMana() * Math.pow(0.5f, amplifier)));
 		}
-
-		float level = 0;
-		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
-			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
-				level += 1;
-			}
-		}
-		event.setMana((float) (event.getMana() * Math.pow(0.8f, level)));
 
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntity());
 		if(event.getMana() <= 0 || event.getContext().noCost)
@@ -361,11 +366,15 @@ public class MagickLogicEvent {
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.MANA_REGEN.orElse(null)))
 			mana = (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_REGEN.orElse(null)).getAmplifier() + 1) * 2;
 
+		boolean maxHealth = event.getEntityLiving().getHealth() == event.getEntityLiving().getMaxHealth();
 		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
 			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
 				if(event.getEntityLiving().ticksExisted % 20 == 0)
 					NBTTagHelper.consumeElementOnTool(stack, LibElements.ORIGIN);
-				mana += 0.4;
+				mana += 0.3;
+			}
+			if(maxHealth && NBTTagHelper.hasElementOnTool(stack, LibElements.ARC)) {
+				mana += 0.7;
 			}
 		}
 
@@ -373,31 +382,6 @@ public class MagickLogicEvent {
 			mana -= (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_STASIS.orElse(null)).getAmplifier() + 1);
 
 		event.setMana(event.getMana() + mana);
-	}
-
-	@SubscribeEvent
-	public void ManaObjectUpdateEvent(EntityEvents.EntityUpdateEvent event) {
-		if(event.getEntity() instanceof ISpellContext) {
-			SpellContext state = ((ISpellContext) event.getEntity()).spellContext();
-			if(state != null) {
-				if(!event.getEntity().world.isRemote && event.getEntity().ticksExisted == state.tick - 5) {
-					event.getEntity().playSound(SoundEvents.UI_TOAST_OUT, 3.0F, (1.0F + MagickCore.rand.nextFloat()));
-				}
-
-				int ticksExisted = event.getEntity().ticksExisted;
-				if(event.getEntity() instanceof IExistTick) {
-					IExistTick existTick = (IExistTick) event.getEntity();
-					ticksExisted -= existTick.getTickThatNeedExistingBeforeRemove();
-				}
-				if(ticksExisted > state.tick && state.tick >= 0)
-					event.getEntity().remove();
-			}
-		}
-		if(!event.getEntity().world.isRemote() && event.getEntity() instanceof MageVillagerEntity) {
-			if(!((MageVillagerEntity) event.getEntity()).getBrain().hasActivity(Activity.FIGHT)) {
-				((MageVillagerEntity) event.getEntity()).resetBrain((ServerWorld) event.getEntity().world);
-			}
-		}
 	}
 
 	@SubscribeEvent
@@ -412,18 +396,90 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onDeBuff(LivingEvent.LivingUpdateEvent event) {
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		if(event.getEntityLiving() instanceof MobEntity && state != null && state.allowElement())
 			RegisterEvent.testIfElement(event.getEntityLiving());
 
-		if(state != null && state.getBuffList().containsKey(LibBuff.PURE)) {
+		if(!event.getEntity().world.isRemote() && event.getEntity() instanceof MageVillagerEntity) {
+			if(!((MageVillagerEntity) event.getEntity()).getBrain().hasActivity(Activity.FIGHT)) {
+				((MageVillagerEntity) event.getEntity()).resetBrain((ServerWorld) event.getEntity().world);
+			}
+		}
+
+		if(Float.isNaN(event.getEntityLiving().getHealth()))
+			(event.getEntityLiving()).setHealth(0.0f);
+
+		ElementToolData tool = ExtraDataUtil.elementToolData(event.getEntity());
+		if (tool != null) {
+			tool.tick((LivingEntity) event.getEntity());
+		}
+
+		TakenEntityData takenState = ExtraDataUtil.takenEntityData(event.getEntity());
+		if(takenState != null) {
+			takenState.tick((MobEntity) event.getEntity());
+			if(!event.getEntity().world.isRemote && !event.getEntity().removed) {
+				if(event.getEntity().ticksExisted % 40 == 0)
+					Networking.INSTANCE.send(
+							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+							new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
+			}
+		}
+
+		if(state == null) return;
+
+		if(state.getElementShieldMana() < 0.0f)
+			state.setElementShieldMana(0.0f);
+
+		if(state.getMaxManaValue() < 50.0f)
+			state.setMaxManaValue(50f);
+
+		if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
+			((LivingEntity)event.getEntity()).setHealth(0.0f);
+
+		CompoundNBT effect_tick = new CompoundNBT();
+		for (String s : state.getBuffList().keySet()) {
+			ManaBuff buff = state.getBuffList().get(s);
+			effect_tick.putInt(buff.getType(), buff.getTick());
+		}
+
+		CompoundNBT effect_force = new CompoundNBT();
+		for (String s : state.getBuffList().keySet()) {
+			ManaBuff buff = state.getBuffList().get(s);
+			effect_force.putFloat(buff.getType(), buff.getForce());
+		}
+
+		state.tick(event.getEntity());
+
+		if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0) {
+			CompoundNBT tag = new CompoundNBT();
+			state.write(tag);
+			Networking.INSTANCE.send(
+					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+					new EntityStatePack(event.getEntity().getEntityId(), tag));
+		}
+
+		if(state.getBuffList().isEmpty()) return;
+
+		if(state.getBuffList().containsKey(LibBuff.STASIS)) {
+			float force = state.getBuffList().get(LibBuff.STASIS).getForce();
+			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
+
+			for(int i = 0; i< entityList.size(); ++i) {
+				Entity entity = entityList.get(i);
+				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity)) {
+					ModBuff.applyBuff(entity, LibBuff.SLOW, 20, force, true);
+				}
+			}
+		}
+
+		if(state.getBuffList().containsKey(LibBuff.PURE)) {
 			float force = state.getBuffList().get(LibBuff.PURE).getForce() * 0.5f;
 			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
 
 			for(int i = 0; i< entityList.size(); ++i) {
 				Entity entity = entityList.get(i);
-				if(entity instanceof ProjectileEntity) {
+				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity) && entity instanceof ProjectileEntity) {
 					double factor = entity.getMotion().normalize().dotProduct(event.getEntity().getPositionVec().add(0, event.getEntity().getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
 					if(factor > 0.8) {
 						Vector3d motion = entity.getMotion();
@@ -433,10 +489,10 @@ public class MagickLogicEvent {
 			}
 		}
 
-		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
+		if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			return;
 
-		if(state != null && state.getBuffList().containsKey(LibBuff.FREEZE)) {
+		if(state.getBuffList().containsKey(LibBuff.FREEZE)) {
 			if(event.getEntityLiving().hurtResistantTime > 0)
 				event.getEntityLiving().hurtResistantTime--;
 			if(event.getEntityLiving().hurtTime > 0)
@@ -453,20 +509,11 @@ public class MagickLogicEvent {
 				event.setCanceled(true);
 		}
 
-		if(state != null && state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
+		if(state.getBuffList().containsKey(LibBuff.CRIPPLE)) {
 			float force = state.getBuffList().get(LibBuff.CRIPPLE).getForce();
 			float maxHealth = event.getEntityLiving().getMaxHealth() - (event.getEntityLiving().getMaxHealth() * force * 0.05f);
 			if(event.getEntityLiving().getHealth() > maxHealth)
 				event.getEntityLiving().setHealth(maxHealth);
-		}
-
-		if(state != null && state.getBuffList().containsKey(LibBuff.STASIS)) {
-			float force = state.getBuffList().get(LibBuff.STASIS).getForce();
-			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
-
-			for(int i = 0; i< entityList.size(); ++i) {
-				ModBuff.applyBuff(entityList.get(i), LibBuff.SLOW, 20, force, true);
-			}
 		}
 	}
 
@@ -482,32 +529,33 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onWitherBuff(LivingHealEvent event) {
-		AtomicReference<EntityStateData> ref = new AtomicReference<>();
-		ExtraDataUtil.entityStateData(event.getEntityLiving(), ref::set);
-		EntityStateData state = ref.get();
+	public void onHealEvent(LivingHealEvent event) {
+		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		if(state != null && state.getBuffList().containsKey(LibBuff.WITHER))
 			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public void onWeakenBuff(LivingHurtEvent event) {
-		AtomicReference<EntityStateData> ref = new AtomicReference<>();
-		ExtraDataUtil.entityStateData(event.getEntityLiving(), ref::set);
-		EntityStateData state = ref.get();
+		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		Entity entity = event.getSource().getTrueSource();
 		if(entity instanceof LivingEntity) {
-			ExtraDataUtil.entityStateData(entity, ref::set);
-			EntityStateData attacker = ref.get();
-			if(attacker != null && attacker.getBuffList().containsKey(LibBuff.LIGHT))
-				event.setAmount(event.getAmount() * 1.5f);
+			EntityStateData attacker = ExtraDataUtil.entityStateData(entity);
+			if(attacker != null) {
+				if(attacker.getBuffList().containsKey(LibBuff.LIGHT)) {
+					float force = attacker.getBuffList().get(LibBuff.LIGHT).getForce();
+					event.setAmount((float) (event.getAmount() * Math.pow(1.3, force)));
+				} else if(attacker.getBuffList().containsKey(LibBuff.RADIANCE_WELL)){
+					event.setAmount(event.getAmount() * 1.3f);
+				}
+			}
 		}
 
 		if(state != null) {
 			state.hitElementShield();
 			if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MANA_CONVERT.orElse(null))) {
 				int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MANA_CONVERT.orElse(null)).getAmplifier() + 1;
-				state.setManaValue(state.getManaValue() + event.getAmount() * amplifier * 40);
+				state.setManaValue(state.getManaValue() + event.getAmount() * amplifier * 100);
 			}
 		}
 
@@ -571,16 +619,9 @@ public class MagickLogicEvent {
 
 	@SubscribeEvent
 	public void onApplyManaBuff(EntityEvents.ApplyManaBuffEvent event) {
-		AtomicReference<EntityStateData> ref = new AtomicReference<>();
-		ExtraDataUtil.entityStateData(event.getEntityLiving(), ref::set);
-		EntityStateData state = ref.get();
-		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI) && !event.getBeneficial())
+		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
+		if(state != null && !event.getBeneficial() && (state.getBuffList().containsKey(LibBuff.HYPERMUTEKI) || (state.getElementShieldMana() > 0 && !event.getType().getElement().equals(state.getElement().type()))))
 			event.setCanceled(true);
-
-		if(state != null && state.getElementShieldMana() > 0) {
-			if(!event.getType().getElement().equals(state.getElement().type()))
-				event.setCanceled(true);
-		}
 	}
 
 	@SubscribeEvent
@@ -618,14 +659,25 @@ public class MagickLogicEvent {
 		}
 
 		if(event.getSource().getTrueSource() instanceof LivingEntity) {
+			float chance = 0;
 			for (ItemStack stack : event.getSource().getTrueSource().getEquipmentAndArmor()) {
-				float chance = 0;
 				if (stack != null && NBTTagHelper.hasElementOnTool(stack, LibElements.TAKEN)) {
-					chance+=0.05;
-					chance*=1.25;
+					chance+=0.02;
+					chance*=1.15;
+					NBTTagHelper.consumeElementOnTool(stack, LibElements.TAKEN);
 				}
-				if(MagickCore.rand.nextFloat() < chance)
-					ModBuff.applyBuff(event.getEntityLiving(), LibBuff.TAKEN, 100, 1, true);
+			}
+			if(MagickCore.rand.nextFloat() < chance) {
+				ModBuff.applyBuff(event.getEntityLiving(), LibBuff.TAKEN, 100, 1, true);
+				MagickContext context = MagickContext.create(event.getSource().getTrueSource().world)
+						.caster(event.getSource().getTrueSource())
+						.victim(event.getEntity()).tick(100).force(1)
+						.applyType(ApplyType.DE_BUFF).element(MagickRegistry.getElement(LibElements.TAKEN));
+				MagickReleaseHelper.releaseMagickEvent(context);
+				event.getEntityLiving().setLastAttackedEntity(null);
+				event.getEntityLiving().setRevengeTarget(null);
+				if(event.getEntityLiving() instanceof MobEntity)
+					((MobEntity) event.getEntityLiving()).setAttackTarget(null);
 			}
 		}
 	}
@@ -670,76 +722,12 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void EntityStateUpdate(EntityEvents.EntityUpdateEvent event) {
-		if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
-			((LivingEntity)event.getEntity()).setHealth(0.0f);
-
-		if(event.getEntity() instanceof LivingEntity) {
-			AtomicReference<ElementToolData> ref = new AtomicReference<>();
-			ExtraDataUtil.elementToolData(event.getEntity(), ref::set);
-			ElementToolData tool = ref.get();
-			if (tool != null) {
-				tool.tick((LivingEntity) event.getEntity());
-			}
-		}
-
-		AtomicReference<TakenEntityData> ref = new AtomicReference<>();
-		ExtraDataUtil.takenEntityData(event.getEntity(), ref::set);
-		TakenEntityData takenState = ref.get();
-		if(takenState != null && event.getEntity() instanceof MobEntity) {
-			takenState.tick((MobEntity) event.getEntity());
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed) {
-				if(event.getEntity().ticksExisted % 40 == 0)
-					Networking.INSTANCE.send(
-							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-							new TakenStatePack(event.getEntity().getEntityId(), takenState.getTime(), takenState.getOwnerUUID()));
-			}
-		}
-
+	public void manaEntityUpdate(EntityEvents.EntityUpdateEvent event) {
 		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().ticksExisted % 40 == 0) {
 			if(!event.getEntity().world.isRemote && !event.getEntity().removed)
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
 						new OwnerStatePack(event.getEntity().getEntityId(), ((IOwnerEntity) event.getEntity()).getOwner().getUniqueID()));
-		}
-
-		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntity());
-		if(state != null) {
-			if(state.getElementShieldMana() < 0.0f)
-				state.setElementShieldMana(0.0f);
-
-			if(state.getMaxManaValue() < 50.0f)
-				state.setMaxManaValue(50f);
-
-			if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
-				((LivingEntity)event.getEntity()).setHealth(0.0f);
-
-			CompoundNBT effect_tick = new CompoundNBT();
-			for (String s : state.getBuffList().keySet()) {
-				ManaBuff buff = state.getBuffList().get(s);
-				effect_tick.putInt(buff.getType(), buff.getTick());
-			}
-
-			CompoundNBT effect_force = new CompoundNBT();
-			for (String s : state.getBuffList().keySet()) {
-				ManaBuff buff = state.getBuffList().get(s);
-				effect_force.putFloat(buff.getType(), buff.getForce());
-			}
-
-			state.tick(event.getEntity());
-
-			for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
-				if(stack != null && NBTTagHelper.hasElementOnTool(stack, LibElements.ARC))
-					state.tick(event.getEntity());
-			}
-
-			if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0) {
-				CompoundNBT tag = new CompoundNBT();
-				state.write(tag);
-				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new EntityStatePack(event.getEntity().getEntityId(), tag));
-			}
 		}
 
 		if(event.getEntity() instanceof IManaCapacity) {
@@ -748,6 +736,23 @@ public class MagickLogicEvent {
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
 						new ManaCapacityPack(event.getEntity().getEntityId(), data));
+			}
+		}
+
+		if(event.getEntity() instanceof ISpellContext) {
+			SpellContext state = ((ISpellContext) event.getEntity()).spellContext();
+			if(state != null) {
+				if(!event.getEntity().world.isRemote && event.getEntity().ticksExisted == state.tick - 5) {
+					event.getEntity().playSound(SoundEvents.UI_TOAST_OUT, 3.0F, (1.0F + MagickCore.rand.nextFloat()));
+				}
+
+				int ticksExisted = event.getEntity().ticksExisted;
+				if(event.getEntity() instanceof IExistTick) {
+					IExistTick existTick = (IExistTick) event.getEntity();
+					ticksExisted -= existTick.getTickThatNeedExistingBeforeRemove();
+				}
+				if(ticksExisted > state.tick && state.tick >= 0)
+					event.getEntity().remove();
 			}
 		}
 	}

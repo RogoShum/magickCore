@@ -37,12 +37,10 @@ public abstract class MixinMobEntity extends Entity {
     public abstract PathNavigator getNavigator();
 
     @Inject(method = "tick", at = @At("HEAD"))
-    public void onTick(CallbackInfo info)
-    {
+    public void onTick(CallbackInfo info) {
         LivingEntity entity = null;
         TakenEntityData taken = ExtraDataUtil.takenEntityData(this);
-        if(taken != null && taken.getTime() > 0 && this.world instanceof ServerWorld)
-        {
+        if(taken != null && taken.getTime() > 0 && this.world instanceof ServerWorld) {
             range = taken.getRange();
             entity = (LivingEntity) ((ServerWorld)this.world).getEntityByUuid(taken.getOwnerUUID());
         }

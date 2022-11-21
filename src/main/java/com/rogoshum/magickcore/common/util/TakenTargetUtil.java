@@ -38,8 +38,7 @@ public class TakenTargetUtil {
         return null;
     }
 
-    public static LivingEntity decideChangeTarget(Entity taken, LivingEntity host, LivingEntity target, double range)
-    {
+    public static LivingEntity decideChangeTarget(Entity taken, LivingEntity host, LivingEntity target, double range) {
         if(host != null) {
             LivingEntity newTarget = target;
             if(host.getUniqueID().equals(target.getUniqueID()))

@@ -138,7 +138,7 @@ public class ManaSphereEntity extends ManaPointEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
         MagickCore.addMagickParticle(litPar);
 
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        float scale = Math.max(this.getWidth(), 0.5f) * 0.6f;
         for (int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()

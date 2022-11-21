@@ -4,7 +4,6 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.entity.IManaTaskMob;
 import com.rogoshum.magickcore.common.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.common.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -141,7 +140,7 @@ public class MagickReleaseHelper {
             context.replenishChild(DirectionContext.create(context.projectile.getMotion()));
         }
 
-        if(context.projectile instanceof IManaEntity && context.applyType != ApplyType.SPAWN_ENTITY) {
+        if(context.projectile instanceof IManaEntity && !context.applyType.isForm()) {
             ManaFactor manaFactor = ((IManaEntity) context.projectile).getManaFactor();
             context.force(manaFactor.force * context.force);
             context.range(manaFactor.range * context.range);
@@ -150,7 +149,16 @@ public class MagickReleaseHelper {
         if(context.caster instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
         }
-        return MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
+        boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
+        if(!context.applyType.isForm()) {
+            SpellContext postContext = context.postContext;
+            if (postContext != null) {
+                boolean flag = MagickReleaseHelper.releaseMagick(MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost());
+                if(!flag)
+                    success = false;
+            }
+        }
+        return success;
     }
 
     public static boolean spawnEntity(MagickContext context) {
@@ -193,7 +201,7 @@ public class MagickReleaseHelper {
                 element = context.element;
             else if(context.caster instanceof ISpellContext)
                 element = ((ISpellContext) context.caster).spellContext().element;
-            else if(context.caster instanceof LivingEntity || context.caster instanceof IManaTaskMob)
+            else if(context.caster instanceof LivingEntity)
                 element = ExtraDataUtil.entityStateData(context.caster).getElement();
             spellContext.spellContext().element(element);
         }

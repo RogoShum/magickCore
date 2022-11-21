@@ -233,7 +233,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                     SpellContext context = ExtraDataUtil.itemManaData(stack).spellContext();
                     context.copy(ExtraDataUtil.itemManaData(getStacks().get(getStacks().size() - 1).getItemStack()).spellContext());
                     for(int i = getStacks().size() - 2; i > -1; --i) {
-                        context = ExtraDataUtil.itemManaData(getStacks().get(i).getItemStack()).spellContext().copy().post(context);
+                        SpellContext origin = ExtraDataUtil.itemManaData(getStacks().get(i).getItemStack()).spellContext().copy();
+                        SpellContext post = origin;
+                        while (post.postContext != null)
+                            post = post.postContext;
+                        post.post(context);
+                        context = origin;
                     }
                     ExtraDataUtil.itemManaData(stack).spellContext().copy(context);
                     ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);

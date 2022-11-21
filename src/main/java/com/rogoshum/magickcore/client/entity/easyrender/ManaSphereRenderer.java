@@ -36,7 +36,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.getWidth() * 1.6f;
+        scale = entity.getWidth() * 1.2f;
         if(entity.ticksExisted < 9)
             scale *= 1 - 1f / ((float)entity.ticksExisted + 1f);
 

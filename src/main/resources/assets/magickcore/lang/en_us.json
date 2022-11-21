@@ -271,12 +271,12 @@
     "magickcore.context.super": "Super",
 
     "magickcore.tool_description": "§9Element：",
-    "magickcore.tool_attribute.arc": "§bSpeed up your time",
+    "magickcore.tool_attribute.arc": "§bRegen more mana when your have max health",
     "magickcore.tool_attribute.solar": "§6Temporary increase your damage after a kill",
     "magickcore.tool_attribute.void": "§5Decrease melee attack cooldown",
-    "magickcore.tool_attribute.stasis": "§3Slow down the speed of projectiles around you",
+    "magickcore.tool_attribute.stasis": "§3Slow down the speed of projectiles around you facing direction",
     "magickcore.tool_attribute.wither": "§2Random recovery durability",
-    "magickcore.tool_attribute.taken": "§8Chance to half-taken creature when damaged creatures",
+    "magickcore.tool_attribute.taken": "§8Make creature neutralize when damaged creature",
     "magickcore.tool_attribute.origin": "§fMagic Affinity",
     "magickcore.tool_duration": "§7Durability：",
 

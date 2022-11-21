@@ -264,12 +264,12 @@
     "magickcore.context.super": "超能",
 
     "magickcore.tool_description": "§9元素属性：",
-    "magickcore.tool_attribute.arc": "§b加速自己的时间",
+    "magickcore.tool_attribute.arc": "§b满血时恢复更多魔力",
     "magickcore.tool_attribute.solar": "§6击杀后短时增加攻击力",
     "magickcore.tool_attribute.void": "§5减少攻击冷却",
-    "magickcore.tool_attribute.stasis": "§3小范围实体减速",
+    "magickcore.tool_attribute.stasis": "§3面向方向小范围实体减速",
     "magickcore.tool_attribute.wither": "§2随机触发耐久回复",
-    "magickcore.tool_attribute.taken": "§8伤害生物几率半傀儡化",
+    "magickcore.tool_attribute.taken": "§8伤害生物几率中立化",
     "magickcore.tool_attribute.origin": "§f魔力亲和",
     "magickcore.tool_duration": "§7磨损：",
 

@@ -104,9 +104,12 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         conditionSpellMap().clear();
         Queue<SpellContext> attackContext = Queues.newArrayDeque();
         SpellContext context = SpellContext.create().applyType(ApplyType.BUFF)
-                .tick(2).element(MagickRegistry.getElement(LibElements.SOLAR))
+                .tick(40).element(MagickRegistry.getElement(LibElements.SOLAR))
                 .addChild(ConditionContext.create(HealthCondition.create(0.7f)
                         .percentage(true).compare(HealthCondition.Compare.LESS_EQUAL)));
+        SpellContext post = SpellContext.create().applyType(ApplyType.DIFFUSION)
+                .tick(40).force(5).element(MagickRegistry.getElement(LibElements.STASIS));
+        context.post(post);
         attackContext.add(context);
         conditionSpellMap().put(Activity.REST, attackContext);
         attackContext = Queues.newArrayDeque();
@@ -116,6 +119,9 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         attackContext.add(context);
         context = SpellContext.create().applyType(ApplyType.ATTACK)
                 .force(3).tick(40).element(MagickRegistry.getElement(LibElements.VOID));
+        SpellContext deBuffContext = SpellContext.create().applyType(ApplyType.DE_BUFF)
+                .force(1).tick(20).element(MagickRegistry.getElement(LibElements.WITHER));
+        context.post(deBuffContext);
         SpellContext orbContext = SpellContext.create().applyType(ApplyType.SPAWN_ENTITY)
                 .addChild(SpawnContext.create(ModEntities.MANA_LASER.get()))
                 .tick(200).addChild(ConditionContext.create(AlwaysCondition.ALWAYS)).addChild(new TraceContext()).element(MagickRegistry.getElement(LibElements.VOID));

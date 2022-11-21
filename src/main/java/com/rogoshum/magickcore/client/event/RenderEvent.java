@@ -40,6 +40,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -186,40 +187,40 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void onClientEntityUpdate(EntityEvents.EntityUpdateEvent event) {
+    public void onClientEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         Entity entity = event.getEntity();
         if(!entity.world.isRemote) return;
-        ExtraDataUtil.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
-            for (ManaBuff buff : data.getBuffList().values()) {
-                if(buff.isBeneficial())
-                    applybuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
-                else
-                    applydeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
-            }
-            if(!(entity instanceof PlayerEntity) && !Objects.equals(data.getElement().type(), LibElements.ORIGIN)) {
-                applyAnimalParticle(entity, data.getElement().getRenderer(), Minecraft.getInstance().world);
-            }
+        EntityStateData state = ExtraDataUtil.entityStateData(entity);
+        if(state == null) return;
+        for (ManaBuff buff : state.getBuffList().values()) {
+            if(buff.isBeneficial())
+                applybuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+            else
+                applydeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+        }
+        if(!(entity instanceof PlayerEntity) && !Objects.equals(state.getElement().type(), LibElements.ORIGIN)) {
+            applyAnimalParticle(entity, state.getElement().getRenderer(), Minecraft.getInstance().world);
+        }
 
-            float value = data.getElementShieldMana();
-            if(value > 0) {
-                float alpha = value / ((LivingEntity)entity).getMaxHealth();
+        float value = state.getElementShieldMana();
+        if(value > 0) {
+            float alpha = value / ((LivingEntity)entity).getMaxHealth();
 
-                if(value > ((LivingEntity)entity).getMaxHealth())
-                    alpha = 1.0f;
-                alpha *= 0.8f;
-                LitParticle par = new LitParticle(entity.world, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_" + Integer.toString(MagickCore.rand.nextInt(5)) + ".png")
-                        , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosX()
-                        , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() / 2
-                        , MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosZ())
-                        , entity.getWidth() * 2, entity.getWidth() * 2, alpha, 60, data.getElement().getRenderer());
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setShakeLimit(5f);
-                par.useShader(LibShaders.opacity);
-                par.setLimitScale();
-                MagickCore.addMagickParticle(par);
-            }
-        });
+            if(value > ((LivingEntity)entity).getMaxHealth())
+                alpha = 1.0f;
+            alpha *= 0.8f;
+            LitParticle par = new LitParticle(entity.world, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_" + Integer.toString(MagickCore.rand.nextInt(5)) + ".png")
+                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosX()
+                    , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosZ())
+                    , entity.getWidth() * 2, entity.getWidth() * 2, alpha, 60, state.getElement().getRenderer());
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setShakeLimit(5f);
+            par.useShader(LibShaders.opacity);
+            par.setLimitScale();
+            MagickCore.addMagickParticle(par);
+        }
     }
 
     public static void applybuffParticle(Entity entity, ElementRenderer render, World world) {

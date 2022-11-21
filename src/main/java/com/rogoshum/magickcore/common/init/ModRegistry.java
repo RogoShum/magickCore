@@ -31,7 +31,6 @@ public class ModRegistry {
                     functions.add(ApplyType.HIT_ENTITY, ArcAbility::hitEntity);
                     functions.add(ApplyType.DE_BUFF, ArcAbility::applyDebuff);
                     functions.add(ApplyType.HIT_BLOCK, ArcAbility::hitBlock);
-                    functions.add(ApplyType.ELEMENT_TOOL, ArcAbility::applyToolElement);
                     functions.add(ApplyType.SUPER, ArcAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, ArcAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, ArcAbility::agglomerate);
