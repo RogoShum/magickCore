@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.magick.context;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibItem;

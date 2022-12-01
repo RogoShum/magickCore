@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -8,8 +8,8 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.block.Block;
@@ -35,25 +35,25 @@ import net.minecraftforge.fluids.IFluidBlock;
 public class VoidAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.WEAKEN, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.WEAKEN, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(ModBuff.hasBuff(context.victim, LibBuff.WEAKEN))
+        if(ModBuffs.hasBuff(context.victim, LibBuff.WEAKEN))
             context.force *= 2;
 
         boolean flag;
         if(context.caster != null && context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyProjectileVoidDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileVoidDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(context.caster), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityVoidDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityVoidDamage(context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityVoidDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamage.getVoidDamage(), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.getVoidDamage(), context.force);
         if(flag)
-            ModBuff.applyBuff(context.victim, LibBuff.FRAGILE, 10, 0, false);
+            ModBuffs.applyBuff(context.victim, LibBuff.FRAGILE, 10, 0, false);
 
         return flag;
     }
@@ -133,12 +133,12 @@ public class VoidAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.LIGHT, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.LIGHT, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.FRAGILE, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.FRAGILE, context.tick, context.force, false);
     }
 
     public static boolean applyToolElement(MagickContext context) {
@@ -180,6 +180,6 @@ public class VoidAbility{
 
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, context.tick * 10));
+        return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, context.tick * 10));
     }
 }

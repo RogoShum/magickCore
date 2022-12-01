@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.extradata.item;
 
-import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
-import com.rogoshum.magickcore.common.magick.context.ItemContext;
+import com.rogoshum.magickcore.common.magick.context.ItemSpellContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
 import net.minecraft.item.ItemStack;
@@ -18,7 +18,7 @@ public class ItemManaData extends ItemExtraData implements ISpellContext, IManaC
 
     public ItemManaData(ItemStack stack) {
         super(stack);
-        spellContext = ItemContext.create(stack);
+        spellContext = ItemSpellContext.create(stack);
         contextCore = new ContextCore(stack);
         capacity = new ItemManaCapacity(stack);
         if(stack.hasTag() && stack.getTag().contains(LibRegistry.ITEM_DATA))

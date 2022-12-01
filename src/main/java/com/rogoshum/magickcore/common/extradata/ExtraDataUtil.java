@@ -1,13 +1,11 @@
 package com.rogoshum.magickcore.common.extradata;
 
-import com.rogoshum.magickcore.common.api.itemstack.IItemData;
-import com.rogoshum.magickcore.common.api.entity.IEntityData;
+import com.rogoshum.magickcore.api.entity.IEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
-import com.rogoshum.magickcore.common.lib.LibRegistry;
 import net.minecraft.entity.Entity;
 
 import net.minecraft.item.ItemStack;

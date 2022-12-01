@@ -25,13 +25,13 @@ public class ModElements {
 
     public static final MagickElement ORIGIN = new MagickElement(LibElements.ORIGIN, ORIGIN_COLOR, DamageSource.MAGIC);
 
-    public static final MagickElement SOLAR = new MagickElement(LibElements.SOLAR, SOLAR_COLOR, ModDamage.getSolarDamage());
-    public static final MagickElement ARC = new MagickElement(LibElements.ARC, ARC_COLOR, ModDamage.getArcDamage());
-    public static final MagickElement VOID = new MagickElement(LibElements.VOID, VOID_COLOR, ModDamage.getVoidDamage());
+    public static final MagickElement SOLAR = new MagickElement(LibElements.SOLAR, SOLAR_COLOR, ModDamages.getSolarDamage());
+    public static final MagickElement ARC = new MagickElement(LibElements.ARC, ARC_COLOR, ModDamages.getArcDamage());
+    public static final MagickElement VOID = new MagickElement(LibElements.VOID, VOID_COLOR, ModDamages.getVoidDamage());
 
-    public static final MagickElement STASIS = new MagickElement(LibElements.STASIS, STASIS_COLOR, ModDamage.getStasisDamage());
-    public static final MagickElement WITHER = new MagickElement(LibElements.WITHER, WITHER_COLOR, ModDamage.getWitherDamage());
-    public static final MagickElement TAKEN = new MagickElement(LibElements.TAKEN, TAKEN_COLOR, ModDamage.getTakenDamage());
+    public static final MagickElement STASIS = new MagickElement(LibElements.STASIS, STASIS_COLOR, ModDamages.getStasisDamage());
+    public static final MagickElement WITHER = new MagickElement(LibElements.WITHER, WITHER_COLOR, ModDamages.getWitherDamage());
+    public static final MagickElement TAKEN = new MagickElement(LibElements.TAKEN, TAKEN_COLOR, ModDamages.getTakenDamage());
 
     public static final List<String> elements = new ArrayList<>();
 

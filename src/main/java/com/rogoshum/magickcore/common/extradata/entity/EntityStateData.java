@@ -1,21 +1,19 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
-import com.rogoshum.magickcore.common.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
-import com.rogoshum.magickcore.common.api.enums.ManaLimit;
+import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
-import com.rogoshum.magickcore.common.init.ModBuff;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibBuff;
-import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.network.EntityStatePack;
-import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,22 +28,32 @@ public class EntityStateData extends EntityExtraData {
     public static final String EFFECT_TICK = "EFFECT_TICK";
     public static final String EFFECT_FORCE = "EFFECT_FORCE";
     public static final String ALLOW_ELEMENT = "ALLOW_ELEMENT";
+    public static final String UPDATE_RATE = "UPDATE_RATE";
+    public static final String UPDATE_TICK = "UPDATE_TICK";
 
     private float maxManaValue;
     private float maxShieldValue;
     private float finalMaxShieldValue;
     private float manaValue;
     private float shieldValue;
-    private MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
+    private MagickElement element = ModElements.ORIGIN;
     private final HashMap<String, ManaBuff> buffList = new HashMap<>();
 
-    private int shieldCooldown;
-    private int manaCooldown;
-    private boolean IsDeprived;
+    private int shieldCoolDown;
+    private int manaCoolDown;
     private boolean allowElement;
+
+    private int updateRate = 1;
+    private int updateTick = 0;
 
     public void setElemented() {
         allowElement = true;
+    }
+
+    public void setUpdateRate(int rate) {
+        if(rate < 1)
+            rate = 1;
+        this.updateRate = rate;
     }
 
     public boolean allowElement() {
@@ -68,13 +76,13 @@ public class EntityStateData extends EntityExtraData {
         this.manaValue = Math.min(Math.max(0, mana), this.getMaxManaValue());
     }
 
-    public void hitElementShield() { shieldCooldown = 120; }
+    public void hitElementShield() { shieldCoolDown = 120; }
 
-    public int getElementCooldown() { return shieldCooldown; }
+    public int getElementCoolDown() { return shieldCoolDown; }
 
-    public void releaseMagick() { manaCooldown = 30; }
+    public void releaseMagick() { manaCoolDown = 30; }
 
-    public int getManaCooldown() { return manaCooldown; }
+    public int getManaCoolDown() { return manaCoolDown; }
 
     public float getElementShieldMana() {
         return this.shieldValue;
@@ -138,21 +146,27 @@ public class EntityStateData extends EntityExtraData {
     }
 
     public void tick(Entity entity) {
-        EntityEvents.StateCooldownEvent cEvent = new EntityEvents.StateCooldownEvent((LivingEntity) entity, shieldCooldown, false, true);
+        updateTick++;
+        if(updateTick % updateRate == 0) {
+            updateTick = 0;
+        } else
+            return;
+        EntityEvents.StateCooldownEvent cEvent = new EntityEvents.StateCooldownEvent((LivingEntity) entity, shieldCoolDown, false, true);
         MinecraftForge.EVENT_BUS.post(cEvent);
-        if(shieldCooldown > cEvent.getCooldown())
-            shieldCooldown = cEvent.getCooldown();
+        if(shieldCoolDown > cEvent.getCooldown())
+            shieldCoolDown = cEvent.getCooldown();
 
-        EntityEvents.StateCooldownEvent cEvent_m = new EntityEvents.StateCooldownEvent((LivingEntity) entity, manaCooldown, true, false);
+        EntityEvents.StateCooldownEvent cEvent_m = new EntityEvents.StateCooldownEvent((LivingEntity) entity, manaCoolDown, true, false);
         MinecraftForge.EVENT_BUS.post(cEvent_m);
-        if(manaCooldown > cEvent_m.getCooldown())
-            manaCooldown = cEvent_m.getCooldown();
+        if(manaCoolDown > cEvent_m.getCooldown())
+            manaCoolDown = cEvent_m.getCooldown();
 
-        if(shieldCooldown > 0)
-            shieldCooldown--;
+        if(shieldCoolDown > 0)
+            shieldCoolDown--;
 
-        if(this.getElementShieldMana() < this.getMaxElementShieldMana() && shieldCooldown <= 0) {
-            float shieldRegen = 1;
+
+        if(getElementShieldMana() < getMaxElementShieldMana() && shieldCoolDown <= 0) {
+            float shieldRegen = updateRate;
             EntityEvents.ShieldRegenerationEvent event = new EntityEvents.ShieldRegenerationEvent((LivingEntity) entity, shieldRegen);
             MinecraftForge.EVENT_BUS.post(event);
             shieldRegen = event.getAmount();
@@ -160,17 +174,18 @@ public class EntityStateData extends EntityExtraData {
                 this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana() + shieldRegen));
                 this.setManaValue(this.getManaValue() - 5);
             }
-        }
+        } else
+            this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana()));
 
         EntityEvents.ShieldCapacityEvent shield_value = new EntityEvents.ShieldCapacityEvent((LivingEntity) entity);
         MinecraftForge.EVENT_BUS.post(shield_value);
         this.setMaxElementShieldMana(shield_value.getCapacity() + finalMaxShieldValue);
 
-        if(manaCooldown > 0)
-            manaCooldown--;
+        if(manaCoolDown > 0)
+            manaCoolDown--;
 
-        if(manaCooldown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
-            float manaRegen = 1;
+        if(manaCoolDown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
+            float manaRegen = updateRate;
             EntityEvents.ManaRegenerationEvent eventMana = new EntityEvents.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
             MinecraftForge.EVENT_BUS.post(eventMana);
             manaRegen = eventMana.getMana();
@@ -182,7 +197,7 @@ public class EntityStateData extends EntityExtraData {
 
         while(i.hasNext()) {
             ManaBuff buff = buffList.get(i.next());
-            buff.setTick(buff.getTick() - 1).effectEntity(entity);
+            buff.setTick(buff.getTick() - updateRate).effectEntity(entity);
             if(buff.getTick() < 1) {
                 i.remove();
                 if(buff.getType().equals(LibBuff.FREEZE))
@@ -191,16 +206,11 @@ public class EntityStateData extends EntityExtraData {
         }
     }
 
-    public boolean getIsDeprived() {
-        return IsDeprived;
-    }
-
-    public void setDeprived() {
-        IsDeprived = true;
-    }
-
     public boolean isEntitySuitable(Entity entity) {
-        return entity instanceof LivingEntity;
+        boolean suitable = entity instanceof LivingEntity;
+        if(!(entity instanceof PlayerEntity))
+            setUpdateRate(5);
+        return suitable;
     }
 
     public void read(CompoundNBT nbt) {
@@ -216,9 +226,11 @@ public class EntityStateData extends EntityExtraData {
         this.setFinalMaxElementShield(nbt.getFloat(FINAL_MAX_SHIELD_VALUE));
         for (String type : effectTick.keySet()) {
             if (effectForce.contains(type)) {
-                this.applyBuff(ModBuff.getBuff(type).setTick(effectTick.getInt(type)).setForce(effectForce.getFloat(type)));
+                this.applyBuff(ModBuffs.getBuff(type).setTick(effectTick.getInt(type)).setForce(effectForce.getFloat(type)));
             }
         }
+        this.setUpdateRate(nbt.getInt(UPDATE_RATE));
+        this.updateTick = nbt.getInt(UPDATE_TICK);
     }
 
     public void write(CompoundNBT nbt) {
@@ -242,5 +254,7 @@ public class EntityStateData extends EntityExtraData {
             effectForce.putFloat(buff.getType(), buff.getForce());
         }
         nbt.put(EFFECT_FORCE, effectForce);
+        nbt.putInt(UPDATE_TICK, updateTick);
+        nbt.putInt(UPDATE_RATE, updateRate);
     }
 }

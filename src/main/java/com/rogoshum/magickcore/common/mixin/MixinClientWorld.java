@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.mixin;
 
-import com.rogoshum.magickcore.common.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvents;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;

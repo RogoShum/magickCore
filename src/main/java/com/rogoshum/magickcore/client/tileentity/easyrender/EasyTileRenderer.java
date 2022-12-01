@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.render.IEasyRender;
+import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.Minecraft;

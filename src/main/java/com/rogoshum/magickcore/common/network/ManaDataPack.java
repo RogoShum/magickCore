@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;

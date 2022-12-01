@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.mana.IManaMaterial;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;

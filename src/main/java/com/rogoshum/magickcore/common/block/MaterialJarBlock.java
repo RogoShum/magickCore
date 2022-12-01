@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.block;
 
-import com.rogoshum.magickcore.common.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.common.tileentity.MaterialJarTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

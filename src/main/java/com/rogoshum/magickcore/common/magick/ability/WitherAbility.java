@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -14,7 +14,6 @@ import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
@@ -25,23 +24,23 @@ import net.minecraft.world.server.ServerWorld;
 public class WitherAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(ModBuff.hasBuff(context.victim, LibBuff.WITHER))
+        if(ModBuffs.hasBuff(context.victim, LibBuff.WITHER))
             context.force *= 1.25;
 
         boolean flag = false;
         if(context.caster != null && context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityWitherDamage(context.caster), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityWitherDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityWitherDamage(context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityWitherDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamage.getWitherDamage(), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.getWitherDamage(), context.force);
 
         return flag;
     }
@@ -75,12 +74,12 @@ public class WitherAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.DECAY, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.DECAY, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick, context.force, false) && ModBuff.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick, context.force, false) && ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
     }
 
     public static boolean applyToolElement(MagickContext context) {

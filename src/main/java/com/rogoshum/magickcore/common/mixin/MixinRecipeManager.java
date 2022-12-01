@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.mixin;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
-import com.rogoshum.magickcore.common.api.event.RecipeLoadedEvent;
+import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;

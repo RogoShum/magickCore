@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.magick.materials.Material;
@@ -19,7 +19,6 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.HashMap;

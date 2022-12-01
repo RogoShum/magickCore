@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -55,13 +55,13 @@ public class SolarAbility{
             context.force *= 2;
 
         if(context.caster != null && context.projectile != null)
-            return context.victim.attackEntityFrom(ModDamage.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
+            return context.victim.attackEntityFrom(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            return context.victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(context.caster), context.force);
+            return context.victim.attackEntityFrom(ModDamages.applyEntitySolarDamage(context.caster), context.force);
         else if(context.projectile != null)
-            return context.victim.attackEntityFrom(ModDamage.applyEntitySolarDamage(context.projectile), context.force);
+            return context.victim.attackEntityFrom(ModDamages.applyEntitySolarDamage(context.projectile), context.force);
         else
-            return context.victim.attackEntityFrom(ModDamage.getSolarDamage(), context.force);
+            return context.victim.attackEntityFrom(ModDamages.getSolarDamage(), context.force);
     }
 
     public static boolean hitBlock(MagickContext context) {
@@ -84,7 +84,7 @@ public class SolarAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.RADIANCE_WELL, context.tick, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.RADIANCE_WELL, context.tick, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {

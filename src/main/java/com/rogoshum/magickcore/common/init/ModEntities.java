@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.*;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.entity.radiated.*;
@@ -33,7 +34,6 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<SilenceSquallEntity>> SILENCE_SQUALL = Entities.register(LibEntities.SILENCE_SQUALL, () -> EntityType.Builder.create(SilenceSquallEntity::new, EntityClassification.MISC).size(3.0f, 3.0f).build(LibEntities.SILENCE_SQUALL));
 	public static final RegistryObject<EntityType<AscendantRealmEntity>> ASCENDANT_REALM = Entities.register(LibEntities.ASCENDANT_REALM, () -> EntityType.Builder.create(AscendantRealmEntity::new, EntityClassification.MISC).size(10.0f, 2.0f).build(LibEntities.ASCENDANT_REALM));
 	public static final RegistryObject<EntityType<ManaElementOrbEntity>> ELEMENT_ORB = Entities.register(LibEntities.ELEMENT_ORB, () -> EntityType.Builder.create(ManaElementOrbEntity::new, EntityClassification.MISC).size(0.3f, 0.3f).build(LibEntities.ELEMENT_ORB));
-	public static final RegistryObject<EntityType<LifeStateEntity>> LIFE_STATE = Entities.register(LibEntities.LIFE_STATE, () -> EntityType.Builder.create(LifeStateEntity::new, EntityClassification.MISC).size(0.2f, 0.2f).build(LibEntities.LIFE_STATE));
 	public static final RegistryObject<EntityType<ContextCreatorEntity>> CONTEXT_CREATOR = Entities.register(LibEntities.CONTEXT_CREATOR, () -> EntityType.Builder.create(ContextCreatorEntity::new, EntityClassification.MISC).size(6.0f, 6.0f).build(LibEntities.CONTEXT_CREATOR));
 	public static final RegistryObject<EntityType<ManaCapacityEntity>> MANA_CAPACITY = Entities.register(LibEntities.MANA_CAPACITY, () -> EntityType.Builder.create(ManaCapacityEntity::new, EntityClassification.MISC).size(1.0f, 1.0f).build(LibEntities.MANA_CAPACITY));
 	public static final RegistryObject<EntityType<ContextPointerEntity>> CONTEXT_POINTER = Entities.register(LibEntities.CONTEXT_POINTER, () -> EntityType.Builder.create(ContextPointerEntity::new, EntityClassification.MISC).size(1.0f, 1.0f).build(LibEntities.CONTEXT_POINTER));
@@ -56,9 +56,12 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<PlaceableItemEntity>> PLACEABLE_ENTITY = Entities.register(LibEntities.PLACEABLE_ENTITY, () -> EntityType.Builder.create(PlaceableItemEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.PLACEABLE_ENTITY));
 	public static final RegistryObject<EntityType<MageVillagerEntity>> MAGE = Entities.register(LibEntities.MAGE, () -> EntityType.Builder.create(MageVillagerEntity::new, EntityClassification.CREATURE).size(0.6F, 1.95F).trackingRange(10).build(LibEntities.MAGE));
 	public static final RegistryObject<EntityType<PhantomEntity>> PHANTOM = Entities.register(LibEntities.PHANTOM, () -> EntityType.Builder.create(PhantomEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build(LibEntities.PHANTOM));
-	
+	public static final RegistryObject<EntityType<RepeaterEntity>> REPEATER = Entities.register(LibEntities.REPEATER, () -> EntityType.Builder.create(RepeaterEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build(LibEntities.REPEATER));
+	public static final RegistryObject<EntityType<JewelryBagEntity>> JEWELRY_BAG = Entities.register(LibEntities.JEWELRY_BAG, () -> EntityType.Builder.create(JewelryBagEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.JEWELRY_BAG));
+	public static final RegistryObject<EntityType<ArtificialLifeEntity>> ARTIFICIAL_LIFE = Entities.register(LibEntities.ARTIFICIAL_LIFE, () -> EntityType.Builder.create(ArtificialLifeEntity::new, EntityClassification.CREATURE).size(1.0F, 1.0F).trackingRange(10).build(LibEntities.ARTIFICIAL_LIFE));
+
 	public static Item registerEntitySpawnEgg(EntityType<?> type, int color1, int color2, String name) {
-		SpawnEggItem item = new SpawnEggItem(type, color1, color2, new Item.Properties().group(ModGroup.ITEM_GROUP));
+		SpawnEggItem item = new SpawnEggItem(type, color1, color2, new Item.Properties().group(ModGroups.ITEM_GROUP));
 		
 		item.setRegistryName(MagickCore.MOD_ID + "_" + name);
 		

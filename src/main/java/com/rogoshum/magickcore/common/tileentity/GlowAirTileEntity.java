@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.tileentity;
 
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.block.FakeAirBlock;
 import com.rogoshum.magickcore.common.block.FakeFluidBlock;
 import com.rogoshum.magickcore.common.init.ModTileEntities;

@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.common.api.event.ProfilerChangeEvent;
+import com.rogoshum.magickcore.api.event.ProfilerChangeEvent;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;

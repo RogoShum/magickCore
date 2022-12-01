@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.IExistTick;
+import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.enums.TargetType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -95,7 +95,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
         float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 5; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + x
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + y + this.getHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + z)

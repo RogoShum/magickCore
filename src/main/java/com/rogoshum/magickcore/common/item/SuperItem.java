@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.common.api.enums.ManaLimit;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ManaLimit;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;

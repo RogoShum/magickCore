@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.common.api.entity.IOwnerEntity;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;

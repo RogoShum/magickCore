@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.init.ModGroup;
+import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -58,7 +58,7 @@ public class ElementSeedsItem extends BlockItem{
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(group == ModGroup.ELEMENT_ITEM_GROUP) {
+        if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))
             );

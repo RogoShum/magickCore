@@ -2,10 +2,8 @@ package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;

@@ -1,9 +1,7 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -15,8 +13,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
 
 public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     public SpiritSwordItem(Properties properties) {
@@ -30,14 +26,7 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return 114514;
-    }
-
-    @Override
-    public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
-        EntityStateData state = ExtraDataUtil.entityStateData(player);
-        state.setMaxElementShieldMana((Math.min(count, 20)));
-        super.onUsingTick(stack, player, count);
+        return 0;
     }
 
     @Override

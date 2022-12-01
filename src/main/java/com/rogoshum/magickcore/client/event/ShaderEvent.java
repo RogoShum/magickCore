@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.common.init.ModShaders;

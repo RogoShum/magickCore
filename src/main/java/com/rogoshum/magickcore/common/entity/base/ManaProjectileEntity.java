@@ -1,13 +1,14 @@
 package com.rogoshum.magickcore.common.entity.base;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.common.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileFrameRenderer;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
@@ -16,7 +17,7 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -193,6 +194,22 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     public void tick() {
         victim = null;
         super.tick();
+        normalCollision();
+        if (!world.isRemote)
+            makeSound();
+
+        traceTarget();
+        reSize();
+        if(this.world.isRemote) {
+            MagickCore.proxy.addTask(this::doClientTask);
+        } else
+            MagickCore.proxy.addTask(this::doServerTask);
+        double length = getMotion().length();
+        if(length > maxMotion)
+            maxMotion = length;
+    }
+
+    public void normalCollision() {
         if(victim == null) {
             Entity target = MagickReleaseHelper.getEntityRayTrace(this, new Vector3d(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ()), this.getMotion(), getWidth() * 0.5f);
             if(target != null) {
@@ -207,19 +224,6 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
                 }
             }
         }
-
-        if (!world.isRemote)
-            makeSound();
-
-        traceTarget();
-        reSize();
-        if(this.world.isRemote) {
-            MagickCore.proxy.addTask(this::doClientTask);
-        } else
-            MagickCore.proxy.addTask(this::doServerTask);
-        double length = getMotion().length();
-        if(length > maxMotion)
-            maxMotion = length;
     }
 
     public void reSize() {
@@ -406,6 +410,15 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         releaseMagick();
         removeEffect();
         super.remove();
+    }
+
+    @Override
+    public Vector3d getPostDirection(Entity entity) {
+        if(entity == this) {
+            if(spellContext().containChild(LibContext.DIRECTION))
+                return spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
+        }
+        return IManaEntity.super.getPostDirection(entity);
     }
 
     public void removeEffect() {

@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.registry;
 
-import com.rogoshum.magickcore.common.api.IRegistry;
+import com.rogoshum.magickcore.api.IRegistry;
 
 import java.util.HashMap;
 

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;

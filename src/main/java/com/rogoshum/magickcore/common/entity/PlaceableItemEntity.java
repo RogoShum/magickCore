@@ -2,15 +2,15 @@ package com.rogoshum.magickcore.common.entity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.recipes.MagickCraftingRecipe;
-import com.rogoshum.magickcore.common.recipes.SpawnContext;
+import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
+import com.rogoshum.magickcore.common.recipe.SpawnContext;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.entity.*;

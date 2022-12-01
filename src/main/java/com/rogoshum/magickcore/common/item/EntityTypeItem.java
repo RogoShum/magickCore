@@ -1,18 +1,16 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.api.mana.IManaMaterial;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
-import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.init.ModGroup;
+import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
@@ -61,7 +59,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
         ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.SPAWN_ENTITY));
-        if (group == ModGroup.ENTITY_TYPE_GROUP) {
+        if (group == ModGroups.ENTITY_TYPE_GROUP) {
             List<EntityType<? extends LivingEntity>> livings = new ArrayList<>();
             List<EntityType<? extends IManaEntity>> mana = new ArrayList<>();
             ForgeRegistries.ENTITIES.getEntries().forEach(type -> {

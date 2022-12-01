@@ -1,19 +1,17 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.*;
-import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -33,23 +31,23 @@ import java.util.List;
 public class ArcAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(ModBuff.hasBuff(context.victim, LibBuff.PARALYSIS))
+        if(ModBuffs.hasBuff(context.victim, LibBuff.PARALYSIS))
             context.force *= 1.25f;
 
         boolean flag;
         if(context.caster != null && context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyProjectileArcDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityArcDamage(context.caster), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityArcDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityArcDamage(context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityArcDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamage.getArcDamage(), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.getArcDamage(), context.force);
 
         //if(flag && !victim.world.isRemote)
         //victim.func_241841_a((ServerWorld) victim.world, null);
@@ -58,7 +56,7 @@ public class ArcAbility{
             List<Entity> list = context.victim.world.getEntitiesWithinAABBExcludingEntity(context.victim, context.victim.getBoundingBox().grow(context.range));
 
             for(Entity entity1 : list) {
-                if(entity1 instanceof LivingEntity && !ModBuff.hasBuff(entity1, LibBuff.PARALYSIS) &&
+                if(entity1 instanceof LivingEntity && !ModBuffs.hasBuff(entity1, LibBuff.PARALYSIS) &&
                         !MagickReleaseHelper.sameLikeOwner(context.caster, entity1)) {
                     if(!context.victim.world.isRemote) {
                         ManaStarEntity starEntity = new ManaStarEntity(ModEntities.MANA_STAR.get(), context.victim.world);
@@ -136,7 +134,7 @@ public class ArcAbility{
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
     }
 
     public static boolean superEntity(MagickContext context) {
@@ -154,7 +152,7 @@ public class ArcAbility{
     public static boolean diffusion(MagickContext context) {
         if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof LivingEntity)) return false;
         float health = context.force * 0.5f;
-        if(context.victim.attackEntityFrom(ModDamage.getArcDamage(), health)) {
+        if(context.victim.attackEntityFrom(ModDamages.getArcDamage(), health)) {
             ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + health * 50));
             return true;
         }

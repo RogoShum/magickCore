@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.entity.base;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;

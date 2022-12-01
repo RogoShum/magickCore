@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
-import com.rogoshum.magickcore.common.api.enums.TargetType;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

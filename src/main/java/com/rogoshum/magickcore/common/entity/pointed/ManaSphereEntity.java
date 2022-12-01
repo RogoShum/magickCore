@@ -8,7 +8,7 @@ import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.init.ModBuff;
+import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import net.minecraft.entity.Entity;
@@ -75,7 +75,7 @@ public class ManaSphereEntity extends ManaPointEntity {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
 
-                if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && !ModBuff.hasBuff(entity, LibBuff.FREEZE))
+                if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && !ModBuffs.hasBuff(entity, LibBuff.FREEZE))
                     this.applyEntityCollision(entity);
             }
         }
@@ -130,7 +130,9 @@ public class ManaSphereEntity extends ManaPointEntity {
                 , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                 , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.5f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
+                , MagickCore.getRandFloat() * this.getWidth()
+                , MagickCore.getRandFloat() * this.getWidth()
+                , 0.5f * MagickCore.getRandFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(15.0f);

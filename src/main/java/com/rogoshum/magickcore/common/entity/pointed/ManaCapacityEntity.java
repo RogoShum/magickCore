@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
-import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
-import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
@@ -195,7 +195,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                         elementOrb.spellContext().tick(200);
                         elementOrb.spellContext().addChild(TraceContext.create(getOwner()));
                         elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
-                        elementOrb.setMotion(getOwner().getPositionVec().subtract(elementOrb.getPositionVec()).normalize().scale(0.1));
+                        elementOrb.setMotion(getOwner().getPositionVec().subtract(elementOrb.getPositionVec()).normalize());
                         world.addEntity(elementOrb);
                     }
                 }

@@ -1,16 +1,13 @@
 package com.rogoshum.magickcore;
 
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.api.itemstack.IItemData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.common.event.magickevent.ElementThingEvent;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.*;
-import com.rogoshum.magickcore.common.magick.lifestate.LifeState;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
@@ -19,7 +16,6 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -60,7 +56,6 @@ public class MagickCore {
         DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
         ModElements.registerElement();
         RegisterEvent.initElementMap();
-        LifeState.init();
         proxy.registerHandlers();
 
         // Register ourselves for server and other game events we are interested in
@@ -84,22 +79,25 @@ public class MagickCore {
         ModVillager.VILLAGER_PROFESSIONS.register(eventBus);
         ModVillager.SENSOR_TYPES.register(eventBus);
         ModVillager.init();
-        ModBuff.initBuff();
+        ModBuffs.initBuff();
         ManaMaterials.init();
         ModRegistry.init();
         Networking.registerMessage();
         //GeckoLib.initialize();
     }
 
-    public static float getNegativeToOne()
-    {
+    public static float getNegativeToOne() {
         return rand.nextFloat() - rand.nextFloat();
+    }
+
+    public static float getRandFloat() {
+        return Float.parseFloat(String.format("%.1f",rand.nextFloat()));
     }
     public static void addMagickParticle(LitParticle par) {proxy.addMagickParticle(par);}
 
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            ModBrew.registryBrewing();
+            ModBrews.registryBrewing();
             EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::canSpawnOn);
             ModRecipes.registerMagickRecipes();
         });

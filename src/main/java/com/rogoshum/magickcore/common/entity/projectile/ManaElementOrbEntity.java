@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.client.entity.easyrender.ElementOrbRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -52,9 +52,20 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     @Override
     public void tick() {
         super.tick();
-        if(world.isRemote) return;
+    }
 
-        this.setMotion(getMotion().add(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne()).normalize().scale(0.1));
+    @Override
+    public void normalCollision() {
+        List<Entity> list = world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0.5), entity -> entity instanceof LivingEntity && entity.isAlive());
+        if(!list.isEmpty()) {
+            Entity entity = list.get(0);
+            EntityStateData state = ExtraDataUtil.entityStateData(entity);
+            if(getOrbType())
+                state.setMaxManaValue(state.getMaxManaValue() + manaCapacity.getMana());
+            else
+                state.setManaValue(state.getManaValue() + manaCapacity.getMana());
+            remove();
+        }
     }
 
     public boolean getOrbType() {
@@ -79,15 +90,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
 
     @Override
     public void releaseMagick() {
-        List<Entity> list = world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0.5), entity -> entity instanceof LivingEntity && entity.isAlive());
-        if(!list.isEmpty()) {
-            Entity entity = list.get(0);
-            EntityStateData state = ExtraDataUtil.entityStateData(entity);
-            if(getOrbType())
-                state.setMaxManaValue(state.getMaxManaValue() + manaCapacity.getMana());
-            else
-                state.setManaValue(state.getManaValue() + manaCapacity.getMana());
-        }
+
     }
 
     @Override

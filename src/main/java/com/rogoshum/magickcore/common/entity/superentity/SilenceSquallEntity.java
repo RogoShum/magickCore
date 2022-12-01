@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.SilenceSqualRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;

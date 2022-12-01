@@ -17,7 +17,7 @@ public abstract class ElementRenderer {
     private ResourceLocation cycleTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/cycle.png");
     private ResourceLocation mistTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/mist.png");
     private ResourceLocation trailTex = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/trail.png");
-    private ResourceLocation particleSprite = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/magick_particle.png");
+    private ResourceLocation particleSprite = new ResourceLocation(MagickCore.MOD_ID + ":textures/particle/magick_particle.png");
     private ResourceLocation particleTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/magick_particle.png");
 
     private ResourceLocation ring_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/base/ring/ring_0.png");
@@ -74,30 +74,6 @@ public abstract class ElementRenderer {
 
     public void renderLaserParticle(MatrixStack matrix, BufferBuilder bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
         RenderHelper.renderLaserParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedLaserGlint(res, laserScale)), new RenderHelper.RenderContext(alpha, this.color), RenderHelper.EmptyVertexContext, length);
-    }
-
-    public void renderOrb(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
-        RenderHelper.renderParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getOrbTexture())), new RenderHelper.RenderContext(alpha, this.color));
-    }
-
-    public void renderStar(MatrixStack matrix, BufferBuilder bufferIn, float alpha, String shakeName, float limit){
-        RenderHelper.renderParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getStarTexture())), new RenderHelper.RenderContext(alpha, this.color), new RenderHelper.VertexContext(true, shakeName, limit));
-    }
-
-    public void renderParticle(MatrixStack matrix, BufferBuilder bufferIn, float alpha){
-        RenderHelper.renderParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedOrbGlow(this.getParticleTexture())), new RenderHelper.RenderContext(alpha, this.color));
-    }
-
-    public void renderSphere(BufferContext pack, int stacks, float alpha, VectorHitReaction[] hitReaction, boolean shake, String name, int packedLightIn) {
-        RenderHelper.renderSphere(pack, new RenderHelper.RenderContext(alpha, this.color, packedLightIn), new RenderHelper.VertexContext(hitReaction, shake, name, 0), stacks);
-    }
-
-    public void renderSphere(BufferContext pack, int stacks, float alpha, VectorHitReaction[] hitReaction, float limit, int packedLightIn) {
-        RenderHelper.renderSphere(pack, new RenderHelper.RenderContext(alpha, this.color, packedLightIn), new RenderHelper.VertexContext(hitReaction, limit), stacks);
-    }
-
-    public void renderSphere(BufferContext pack, int stacks, float alpha, int packedLightIn) {
-        RenderHelper.renderSphere(pack, new RenderHelper.RenderContext(alpha, this.color, packedLightIn), stacks);
     }
 
     public ResourceLocation getRingTexture() {

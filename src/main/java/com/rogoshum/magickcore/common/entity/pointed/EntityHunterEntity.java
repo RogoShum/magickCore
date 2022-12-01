@@ -1,18 +1,18 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.api.enums.TargetType;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.WandItem;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;

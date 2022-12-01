@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.render;
 
 import com.google.common.collect.Queues;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.render.IEasyRender;
+import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.ClippingHelper;
@@ -28,6 +28,10 @@ public class RenderThread extends Thread {
 
     public void addRenderer(IEasyRender renderer) {
         this.renderer.add(renderer);
+    }
+
+    public ConcurrentLinkedQueue<IEasyRender> getRenderer() {
+        return renderer;
     }
 
 
@@ -90,15 +94,28 @@ public class RenderThread extends Thread {
                         }
                     }
                 } catch (Exception e) {
+                    clearFunction();
                     glFunction = function;
                     needUpdate = false;
                     this.interrupt();
                     MagickCore.LOGGER.warn("Something wrong when render the entity!");
                     e.printStackTrace();
                 }
+                clearFunction();
                 glFunction = function;
                 needUpdate = false;
             }
         }
+    }
+
+    public void clearFunction() {
+        glFunction.keySet().forEach(renderMode -> glFunction.put(renderMode, Queues.newArrayDeque()));
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        renderer.clear();
+        clearFunction();
     }
 }

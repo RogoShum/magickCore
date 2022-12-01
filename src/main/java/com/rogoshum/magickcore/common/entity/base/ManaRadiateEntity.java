@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.entity.base;
 
-import com.rogoshum.magickcore.common.api.entity.IExistTick;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.enums.TargetType;
+import com.rogoshum.magickcore.api.entity.IExistTick;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;

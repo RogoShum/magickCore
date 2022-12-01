@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -11,7 +9,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.Iterator;
 import java.util.function.Supplier;
 
 public class EntityStatePack extends EntityPack{

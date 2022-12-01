@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.lib.LibElements;

@@ -1,12 +1,10 @@
 package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.IItemContainer;
-import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.api.IItemContainer;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.recipes.*;
-import com.rogoshum.magickcore.common.recipes.container.*;
+import com.rogoshum.magickcore.common.recipe.*;
+import com.rogoshum.magickcore.common.recipe.container.*;
 import com.rogoshum.magickcore.common.registry.ObjectRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -28,7 +26,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModRecipes {

@@ -1,13 +1,13 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -17,7 +17,6 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -26,25 +25,25 @@ import java.util.List;
 public class StasisAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.SLOW, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.SLOW, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(ModBuff.hasBuff(context.victim, LibBuff.SLOW))
+        if(ModBuffs.hasBuff(context.victim, LibBuff.SLOW))
             context.force *= 1.5;
 
         boolean flag = false;
         if(context.caster != null && context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(context.caster), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityStasisDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityStasisDamage(context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityStasisDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamage.getStasisDamage(), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.getStasisDamage(), context.force);
         if(flag)
-            ModBuff.applyBuff(context.victim, LibBuff.FREEZE, context.tick / 8, 0, false);
+            ModBuffs.applyBuff(context.victim, LibBuff.FREEZE, context.tick / 8, 0, false);
 
         return flag;
     }
@@ -69,14 +68,14 @@ public class StasisAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.STASIS, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.STASIS, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
         if(context.force >= 7)
-            return ModBuff.applyBuff(context.victim, LibBuff.FREEZE, context.tick, context.force, false);
-        return ModBuff.applyBuff(context.victim, LibBuff.SLOW, context.tick, context.force, false);
+            return ModBuffs.applyBuff(context.victim, LibBuff.FREEZE, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.SLOW, context.tick, context.force, false);
     }
 
     public static boolean applyToolElement(MagickContext context) {
@@ -127,6 +126,6 @@ public class StasisAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.PURE, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.PURE, context.tick * 2, context.force, true);
     }
 }

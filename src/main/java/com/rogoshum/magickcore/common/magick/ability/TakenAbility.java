@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.enums.ManaLimit;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
-import com.rogoshum.magickcore.common.init.ModBuff;
-import com.rogoshum.magickcore.common.init.ModDamage;
+import com.rogoshum.magickcore.common.init.ModBuffs;
+import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -35,25 +35,25 @@ import java.util.Optional;
 public class TakenAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.TAKEN, context.tick, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick, context.force, true);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(ModBuff.hasBuff(context.victim, LibBuff.TAKEN))
+        if(ModBuffs.hasBuff(context.victim, LibBuff.TAKEN))
             context.force *= 1.75;
 
         boolean flag;
         if(context.caster != null && context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(context.caster), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityTakenDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamage.applyEntityTakenDamage(context.projectile), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.applyEntityTakenDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamage.getTakenDamage(), context.force);
+            flag = context.victim.attackEntityFrom(ModDamages.getTakenDamage(), context.force);
 
-        if(flag && context.force >= ManaLimit.FORCE.getValue() * 1.75 && context.caster != null && context.victim instanceof MobEntity && ModBuff.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(flag && context.force >= ManaLimit.FORCE.getValue() * 1.75 && context.caster != null && context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUniqueID());
             state.setTime(context.tick);
@@ -104,11 +104,11 @@ public class TakenAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuff.applyBuff(context.victim, LibBuff.TAKEN_KING, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN_KING, context.tick * 2, context.force, true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
-        if(context.victim instanceof MobEntity && ModBuff.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.victim.getUniqueID());
             int time = (int) (context.tick * context.force);

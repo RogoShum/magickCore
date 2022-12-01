@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.util.ResourceLocation;
 
 public class ArcRenderer extends ElementRenderer {
-    private ResourceLocation sprite = new ResourceLocation(MagickCore.MOD_ID +":element/base/trail");
+    private ResourceLocation sprite = new ResourceLocation(MagickCore.MOD_ID +":element/base/trail.png");
 
     private ResourceLocation elec_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/arc/mist/elec_0.png");
     private ResourceLocation elec_1 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/arc/mist/elec_1.png");

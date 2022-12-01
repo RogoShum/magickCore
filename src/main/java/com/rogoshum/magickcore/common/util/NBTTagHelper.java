@@ -154,14 +154,33 @@ public class NBTTagHelper {
         return false;
     }
 
-    public static boolean putElementOnTool(ItemStack stack, String element) {
+    public static boolean consumeElementOnTool(ItemStack stack, String element, int count) {
+        if(!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT) && hasElementOnTool(stack, element)) {
+            CompoundNBT tag = getToolElementTable(stack);
+            int durability = tag.getInt(element);
+            if(durability > count)
+                tag.putInt(element, durability - count);
+            else
+                tag.remove(element);
+            return true;
+        }
+        return false;
+    }
+
+    public static void putElementOnTool(ItemStack stack, String element) {
         CompoundNBT tag = getToolElementTable(stack);
         tag.putInt(element, 300);
         CompoundNBT nbt = getStackTag(stack);
         nbt.put(LibElementTool.TOOL_ELEMENT, tag);
         stack.setTag(nbt);
+    }
 
-        return false;
+    public static void putElementOnTool(ItemStack stack, String element, int durability) {
+        CompoundNBT tag = getToolElementTable(stack);
+        tag.putInt(element, durability);
+        CompoundNBT nbt = getStackTag(stack);
+        nbt.put(LibElementTool.TOOL_ELEMENT, tag);
+        stack.setTag(nbt);
     }
 
     public static CompoundNBT getToolElementTable(ItemStack stack) {

@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.registry;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.IRegistry;
+import com.rogoshum.magickcore.api.IRegistry;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
@@ -12,7 +12,7 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.magick.context.child.ChildContext;
-import com.rogoshum.magickcore.common.recipes.MagickCraftingRecipe;
+import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import net.minecraft.util.Util;
 

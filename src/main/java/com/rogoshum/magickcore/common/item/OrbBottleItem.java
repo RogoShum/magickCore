@@ -11,8 +11,8 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.init.ModGroup;
+import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -130,12 +130,12 @@ public class OrbBottleItem extends BaseItem{
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(group == ModGroup.ELEMENT_ITEM_GROUP) {
+        if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))
             );
         }
-        if(group == ModGroup.ITEM_GROUP) {
+        if(group == ModGroups.ITEM_GROUP) {
             items.add(new ItemStack(this));
         }
     }

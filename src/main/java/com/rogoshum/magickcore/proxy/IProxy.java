@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.proxy;
 
-import com.rogoshum.magickcore.common.api.render.IEasyRender;
+import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;

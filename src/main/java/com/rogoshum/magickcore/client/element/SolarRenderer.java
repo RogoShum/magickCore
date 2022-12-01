@@ -16,9 +16,9 @@ public class SolarRenderer extends ElementRenderer {
     private ResourceLocation particle_1 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/solar/particle/particle_1.png");
     private ResourceLocation particle_2 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/solar/particle/particle_2.png");
 
-    private ResourceLocation particle_0_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_0");
-    private ResourceLocation particle_1_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_1");
-    private ResourceLocation particle_2_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_2");
+    private ResourceLocation particle_0_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_0.png");
+    private ResourceLocation particle_1_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_1.png");
+    private ResourceLocation particle_2_sprite = new ResourceLocation(MagickCore.MOD_ID +":element/solar/particle/particle_2.png");
 
     private ResourceLocation[] particle = new ResourceLocation[3];
     private ResourceLocation[] particle_sprite = new ResourceLocation[3];

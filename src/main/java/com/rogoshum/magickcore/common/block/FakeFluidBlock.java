@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.block;
 
-import com.rogoshum.magickcore.common.api.block.ILightingBlock;
+import com.rogoshum.magickcore.api.block.ILightingBlock;
 import net.minecraft.block.*;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.state.StateContainer;

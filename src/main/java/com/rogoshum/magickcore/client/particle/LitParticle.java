@@ -2,8 +2,8 @@ package com.rogoshum.magickcore.client.particle;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.common.api.render.IEasyRender;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.RenderHelper;

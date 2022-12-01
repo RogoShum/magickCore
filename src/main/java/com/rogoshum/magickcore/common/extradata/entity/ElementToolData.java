@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;

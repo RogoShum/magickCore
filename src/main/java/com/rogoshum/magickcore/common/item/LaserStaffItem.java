@@ -1,15 +1,13 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;

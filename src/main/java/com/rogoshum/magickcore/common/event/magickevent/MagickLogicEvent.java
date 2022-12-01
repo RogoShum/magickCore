@@ -5,26 +5,27 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
-import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.api.entity.IExistTick;
-import com.rogoshum.magickcore.common.api.entity.IOwnerEntity;
-import com.rogoshum.magickcore.common.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.common.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.entity.IExistTick;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
+import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
+import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
-import com.rogoshum.magickcore.common.init.ModBuff;
+import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModEffects;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
+import com.rogoshum.magickcore.common.item.SpiritSwordItem;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickPoint;
@@ -39,8 +40,7 @@ import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.entity.ManaItemEntity;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -54,11 +54,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -72,13 +70,11 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -215,6 +211,10 @@ public class MagickLogicEvent {
 			event.setInaccuracy(0);
 		}
 
+		if(event.getEntity() instanceof JewelryBagEntity) {
+			event.setInaccuracy(0);
+		}
+
 		if(event.getEntity() instanceof RayEntity) {
 			RayEntity ray = (RayEntity) event.getEntity();
 			float velocity = ray.spellContext().force * 0.5f - ray.spellContext().range * 0.5f;
@@ -347,7 +347,8 @@ public class MagickLogicEvent {
 		int mana = 0;
 		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.SHIELD_VALUE.orElse(null)))
 			mana += 25 * (event.getEntityLiving().getActivePotionEffect(ModEffects.SHIELD_VALUE.orElse(null)).getAmplifier() + 1);
-
+		if(event.getEntityLiving().getHeldItemMainhand().getItem() instanceof SpiritSwordItem || event.getEntityLiving().getHeldItemOffhand().getItem() instanceof SpiritSwordItem)
+			mana += event.getEntityLiving().getHealth();
 		event.setCapacity(event.getCapacity() + mana);
 	}
 
@@ -374,6 +375,8 @@ public class MagickLogicEvent {
 				mana += 0.3;
 			}
 			if(maxHealth && NBTTagHelper.hasElementOnTool(stack, LibElements.ARC)) {
+				if(event.getEntityLiving().ticksExisted % 20 == 0)
+					NBTTagHelper.consumeElementOnTool(stack, LibElements.ARC);
 				mana += 0.7;
 			}
 		}
@@ -382,6 +385,12 @@ public class MagickLogicEvent {
 			mana -= (event.getEntityLiving().getActivePotionEffect(ModEffects.MANA_STASIS.orElse(null)).getAmplifier() + 1);
 
 		event.setMana(event.getMana() + mana);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void onArtificialLifeManaRegen(EntityEvents.ManaRegenerationEvent event) {
+		if(event.getEntityLiving() instanceof ArtificialLifeEntity)
+			event.setMana(0);
 	}
 
 	@SubscribeEvent
@@ -468,7 +477,7 @@ public class MagickLogicEvent {
 			for(int i = 0; i< entityList.size(); ++i) {
 				Entity entity = entityList.get(i);
 				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity)) {
-					ModBuff.applyBuff(entity, LibBuff.SLOW, 20, force, true);
+					ModBuffs.applyBuff(entity, LibBuff.SLOW, 20, force, true);
 				}
 			}
 		}
@@ -611,7 +620,7 @@ public class MagickLogicEvent {
 			}
 
 			TakenEntityData taken = ExtraDataUtil.takenEntityData(event.getSource().getTrueSource());
-			if(taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0 && ModBuff.hasBuff(event.getSource().getTrueSource(), LibBuff.TAKEN_KING)) {
+			if(taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0 && ModBuffs.hasBuff(event.getSource().getTrueSource(), LibBuff.TAKEN_KING)) {
 				event.setAmount(event.getAmount() * 1.5f);
 			}
 		}
@@ -668,7 +677,7 @@ public class MagickLogicEvent {
 				}
 			}
 			if(MagickCore.rand.nextFloat() < chance) {
-				ModBuff.applyBuff(event.getEntityLiving(), LibBuff.TAKEN, 100, 1, true);
+				ModBuffs.applyBuff(event.getEntityLiving(), LibBuff.TAKEN, 100, 1, true);
 				MagickContext context = MagickContext.create(event.getSource().getTrueSource().world)
 						.caster(event.getSource().getTrueSource())
 						.victim(event.getEntity()).tick(100).force(1)
@@ -773,7 +782,7 @@ public class MagickLogicEvent {
 			state.setElementShieldMana(old.getElementShieldMana());
 			for (String s : old.getBuffList().keySet()) {
 				ManaBuff buff = old.getBuffList().get(s);
-				ModBuff.applyBuff(event.getPlayer(), buff.getType(), buff.getTick(), buff.getForce(), true);
+				ModBuffs.applyBuff(event.getPlayer(), buff.getType(), buff.getTick(), buff.getForce(), true);
 			}
 		}
 		else {

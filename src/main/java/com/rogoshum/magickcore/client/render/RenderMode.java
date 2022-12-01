@@ -16,7 +16,7 @@ public class RenderMode {
         this.originRender = false;
     }
 
-    public RenderMode() {
+    private RenderMode() {
         this.renderType = null;
         this.useShader = "";
         this.originRender = true;

@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.entity.ai.task;
 
 import com.google.common.collect.ImmutableMap;
-import com.rogoshum.magickcore.common.api.entity.IManaTaskMob;
+import com.rogoshum.magickcore.api.entity.IManaTaskMob;
 
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;

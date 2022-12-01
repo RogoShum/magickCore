@@ -1,13 +1,13 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.init.ModGroup;
+import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.Entity;
@@ -37,7 +37,7 @@ public class MagickContextItem extends ManaItem{
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(group == ModGroup.MAGICK_CONTEXT_GROUP) {
+        if(group == ModGroups.MAGICK_CONTEXT_GROUP) {
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
                 if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY) continue;

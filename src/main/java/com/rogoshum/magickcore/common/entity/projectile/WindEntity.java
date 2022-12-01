@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
-import com.rogoshum.magickcore.common.api.enums.TargetType;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;

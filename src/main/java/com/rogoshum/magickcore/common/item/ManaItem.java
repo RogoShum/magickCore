@@ -1,39 +1,29 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.api.itemstack.IItemData;
-import com.rogoshum.magickcore.common.api.itemstack.IManaData;
-import com.rogoshum.magickcore.common.extradata.ItemExtraData;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
-import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ManaItem extends BaseItem implements IManaData {
     public ManaItem(Properties properties) {

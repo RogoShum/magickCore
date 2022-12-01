@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.rogoshum.magickcore.common.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GameRenderer;

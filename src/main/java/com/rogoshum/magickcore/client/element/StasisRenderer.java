@@ -12,7 +12,7 @@ public class StasisRenderer extends ElementRenderer {
     private ResourceLocation[] mist = new ResourceLocation[3];
 
     private ResourceLocation particle = new ResourceLocation(MagickCore.MOD_ID +":textures/element/stasis/particle.png");
-    private ResourceLocation sprite = new ResourceLocation(MagickCore.MOD_ID +":element/stasis/particle");
+    private ResourceLocation sprite = new ResourceLocation(MagickCore.MOD_ID +":element/stasis/particle.png");
 
     private ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID +":textures/element/stasis/wind_center.png");
 

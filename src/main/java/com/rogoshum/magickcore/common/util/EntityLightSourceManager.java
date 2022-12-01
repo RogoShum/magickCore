@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
-import com.rogoshum.magickcore.common.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import net.minecraft.block.Block;

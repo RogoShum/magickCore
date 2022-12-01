@@ -1,9 +1,8 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.common.api.mana.IManaCapacity;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
@@ -13,7 +12,6 @@ import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.WandItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;

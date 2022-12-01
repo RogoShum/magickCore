@@ -106,7 +106,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
 
         if(buffMap.containsKey(LibBuff.TAKEN)) {
             buffMap.remove(LibBuff.TAKEN);
-            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(LibElements.TAKEN).getColor(), RenderHelper.CYLINDER_ROTATE);
+            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, 0, MagickCore.proxy.getElementRender(LibElements.TAKEN).getColor(), RenderHelper.CYLINDER_ROTATE);
         }
 
         if(buffMap.containsKey(LibBuff.FREEZE)) {

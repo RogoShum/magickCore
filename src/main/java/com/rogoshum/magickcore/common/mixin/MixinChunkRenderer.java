@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.mixin;
 
-import com.rogoshum.magickcore.common.api.event.PreRenderChunkEvent;
+import com.rogoshum.magickcore.api.event.PreRenderChunkEvent;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraftforge.common.MinecraftForge;

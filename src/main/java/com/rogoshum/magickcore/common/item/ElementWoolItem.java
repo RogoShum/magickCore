@@ -8,7 +8,7 @@ import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.init.ModBlocks;
-import com.rogoshum.magickcore.common.init.ModGroup;
+import com.rogoshum.magickcore.common.init.ModGroups;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,7 +50,7 @@ public class ElementWoolItem extends BlockItem{
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(group == ModGroup.ELEMENT_ITEM_GROUP) {
+        if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))
             );

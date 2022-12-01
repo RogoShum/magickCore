@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.block;
 
-import com.rogoshum.magickcore.common.api.block.ILightingBlock;
+import com.rogoshum.magickcore.api.block.ILightingBlock;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;

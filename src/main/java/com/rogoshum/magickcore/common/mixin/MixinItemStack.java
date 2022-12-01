@@ -1,30 +1,18 @@
 package com.rogoshum.magickcore.common.mixin;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.event.ExtraDataEvent;
-import com.rogoshum.magickcore.common.api.itemstack.IItemData;
-import com.rogoshum.magickcore.common.extradata.ItemExtraData;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 @Mixin(ItemStack.class)
 public class MixinItemStack{

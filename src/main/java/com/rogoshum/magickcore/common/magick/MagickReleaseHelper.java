@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.common.magick;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.api.entity.IManaEntity;
-import com.rogoshum.magickcore.common.api.entity.IOwnerEntity;
-import com.rogoshum.magickcore.common.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.entity.IOwnerEntity;
+import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -108,7 +107,7 @@ public class MagickReleaseHelper {
         }
     }
 
-    public static boolean releaseMagick(MagickContext context) {
+    public static boolean releaseMagick(MagickContext context, ManaFactor manaFactor) {
         if(context == null)
             return false;
         EntityEvents.MagickPreReleaseEvent preEvent = preReleaseMagickEvent(context);
@@ -140,12 +139,16 @@ public class MagickReleaseHelper {
             context.replenishChild(DirectionContext.create(context.projectile.getMotion()));
         }
 
-        if(context.projectile instanceof IManaEntity && !context.applyType.isForm()) {
-            ManaFactor manaFactor = ((IManaEntity) context.projectile).getManaFactor();
+        if(context.projectile instanceof IManaEntity) {
+            manaFactor = ((IManaEntity) context.projectile).getManaFactor();
+        }
+
+        if(!context.applyType.isForm()) {
             context.force(manaFactor.force * context.force);
             context.range(manaFactor.range * context.range);
             context.tick((int) (manaFactor.tick * context.tick));
         }
+
         if(context.caster instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
         }
@@ -153,12 +156,20 @@ public class MagickReleaseHelper {
         if(!context.applyType.isForm()) {
             SpellContext postContext = context.postContext;
             if (postContext != null) {
-                boolean flag = MagickReleaseHelper.releaseMagick(MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost());
+                MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();
+                if(!magickContext.applyType.isForm()) {
+                    magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
+                }
+                boolean flag = MagickReleaseHelper.releaseMagick(magickContext, manaFactor);
                 if(!flag)
                     success = false;
             }
         }
         return success;
+    }
+
+    public static boolean releaseMagick(MagickContext context) {
+        return releaseMagick(context, ManaFactor.DEFAULT);
     }
 
     public static boolean spawnEntity(MagickContext context) {
@@ -226,17 +237,19 @@ public class MagickReleaseHelper {
         if(context.caster != null && pro instanceof ProjectileEntity) {
             ((ProjectileEntity)pro).setShooter(context.caster);
 
-            if(context.victim != null && context.victim != context.caster) {
+            if(context.containChild(LibContext.DIRECTION)) {
+                Vector3d motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
+                ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
+            } else if(context.victim != null && context.victim != context.caster) {
                 Vector3d motion = context.victim.getPositionVec().add(0, (context.victim.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
-            }
-            else if(traceContext != null && traceContext.entity != null) {
+            } else if(traceContext != null && traceContext.entity != null) {
                 Vector3d motion = traceContext.entity.getPositionVec().add(0, (traceContext.entity.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
-            }
-            else
+            } else
                 ((ProjectileEntity)pro).shoot(context.caster.getLookVec().x, context.caster.getLookVec().y, context.caster.getLookVec().z, getVelocity(pro), getInaccuracy(pro));
         }
+
         if(pro instanceof IManaEntity)
             ((IManaEntity) pro).beforeJoinWorld(context);
 

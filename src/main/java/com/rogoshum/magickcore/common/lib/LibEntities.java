@@ -39,4 +39,7 @@ public class LibEntities {
     public static final String PLACEABLE_ENTITY = "placeable_entity";
     public static final String MAGE = "mage";
     public static final String PHANTOM = "phantom";
+    public static final String REPEATER = "repeater";
+    public static final String JEWELRY_BAG = "jewelry_bag";
+    public static final String ARTIFICIAL_LIFE = "artificial_life";
 }
