@@ -31,6 +31,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         super(type, worldIn);
     }
     public Vector3d clientMotion = Vector3d.ZERO;
+    private BlockPos blockPos;
 
     @Override
     public void onAddedToWorld() {
@@ -42,6 +43,14 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     public void tick() {
         super.tick();
         clientMotion = getMotion().add(clientMotion);
+        BlockPos pos = new BlockPos(this.getPositionVec());
+        if(!pos.equals(blockPos)) {
+            BlockPos prePos = blockPos;
+            blockPos = pos;
+            world.notifyNeighborsOfStateChange(pos, world.getBlockState(pos).getBlock());
+            if(prePos != null)
+                world.notifyNeighborsOfStateChange(prePos, world.getBlockState(prePos).getBlock());
+        }
     }
 
     @Override

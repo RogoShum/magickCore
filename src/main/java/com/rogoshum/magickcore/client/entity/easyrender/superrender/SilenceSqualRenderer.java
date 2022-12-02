@@ -77,7 +77,7 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(TYPE), this::renderCore);
-        map.put(new RenderMode(SPHERE, LibShaders.slime), this::render);
+        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.SLIME_SHADER), this::render);
         return map;
     }
 }

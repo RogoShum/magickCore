@@ -24,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Pose;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -211,8 +212,14 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     public void normalCollision() {
         if(victim == null) {
-            Entity target = MagickReleaseHelper.getEntityRayTrace(this, new Vector3d(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ()), this.getMotion(), getWidth() * 0.5f);
-            if(target != null) {
+            Vector3d vector3d = this.getMotion();
+            vector3d = vector3d.normalize().scale(getWidth() * 0.5);
+            World world = this.world;
+            Vector3d vector3d1 = this.getPositionVec();
+            Vector3d vector3d2 = vector3d1.add(vector3d);
+            EntityRayTraceResult raytraceResult = ProjectileHelper.rayTraceEntities(world, this, vector3d1, vector3d2, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), Entity::isAlive);
+            if (raytraceResult != null) {
+                Entity target = raytraceResult.getEntity();
                 if(target instanceof IManaRefraction) {
                     if(!((IManaRefraction) target).refraction(spellContext()))
                         this.victim = target;

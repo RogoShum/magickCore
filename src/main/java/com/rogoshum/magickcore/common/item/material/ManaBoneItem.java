@@ -1,8 +1,9 @@
-package com.rogoshum.magickcore.common.item;
+package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
-import com.rogoshum.magickcore.api.mana.IMaterialLimit;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -13,8 +14,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
-    public ManaForceUpgradeItem() {
+public class ManaBoneItem extends BaseItem implements IManaMaterial {
+    public ManaBoneItem() {
         super(properties());
     }
 
@@ -25,25 +26,17 @@ public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
 
     @Override
     public int getManaNeed(ItemStack stack) {
-        return 500;
+        return 200;
     }
 
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
-        if(data instanceof IMaterialLimit) {
-            if(data.spellContext().force < ((IMaterialLimit) data).getMaterial().getForce()) {
-                data.spellContext().force(data.spellContext().force + 0.5f);
-                return true;
-            } else
-                return false;
-        } else {
-            data.spellContext().force(data.spellContext().force + 0.5f);
-            return true;
-        }
+        data.spellContext().applyType(ApplyType.AGGLOMERATE);
+        return true;
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.MANA_GLOWSTONE));
+         tooltip.add(new TranslationTextComponent(LibItem.MANA_BONE));
     }
 }

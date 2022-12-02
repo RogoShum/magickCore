@@ -67,7 +67,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     private boolean noScale;
     private Entity traceTarget;
-    private String shader = "";
+    private RenderMode.ShaderList shader = RenderMode.ShaderList.create();
 
     private RenderType type;
     private RenderHelper.RenderContext renderContext;
@@ -130,7 +130,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public LitParticle useShader(String shader) {
-        this.shader = shader;
+        this.shader.addShader(shader);
         return this;
     }
 

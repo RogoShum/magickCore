@@ -40,6 +40,11 @@ public class SolarAbility{
                     ItemStack itemstack1 = itemstack.copy();
                     itemstack1.setCount(stack.getCount() * itemstack.getCount()); //Forge: Support smelting returning multiple
                     ((ItemEntity) context.victim).setItem(itemstack1);
+                    if(context.force >= 7) {
+                        ItemEntity entity = new ItemEntity(context.victim.world, context.victim.getPosX(), context.victim.getPosY(), context.victim.getPosZ(), itemstack1.copy());
+                        if(!entity.world.isRemote)
+                            entity.world.addEntity(entity);
+                    }
                     return true;
                 }
             }
@@ -145,7 +150,7 @@ public class SolarAbility{
 
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        ((LivingEntity) context.victim).heal(context.force);
+        ((LivingEntity) context.victim).heal(context.force * 0.5f);
         IParticleData iparticledata = ParticleTypes.HEART;
 
         for(int i = 0; i < 7; ++i) {

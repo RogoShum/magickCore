@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.item.SpiritCrystalStaffItem;
+import com.rogoshum.magickcore.common.item.tool.SpiritCrystalStaffItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;

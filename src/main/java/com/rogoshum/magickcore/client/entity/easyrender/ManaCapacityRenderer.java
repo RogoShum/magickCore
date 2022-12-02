@@ -84,9 +84,9 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(renderType_1), this::render);
         if(entity.getMode())
-            map.put(new RenderMode(renderType_2, LibShaders.opacity), this::renderCapacity);
+            map.put(new RenderMode(renderType_2, RenderMode.ShaderList.OPACITY_SHADER), this::renderCapacity);
         else
-            map.put(new RenderMode(renderType_2, LibShaders.slime), this::renderCapacity);
+            map.put(new RenderMode(renderType_2, RenderMode.ShaderList.SLIME_SHADER), this::renderCapacity);
         return map;
     }
 }

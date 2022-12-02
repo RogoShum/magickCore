@@ -1161,22 +1161,22 @@ public class RenderHelper {
 
     public static void setup(BufferContext bufferContext) {
         if(stopShader()) return;
-        if(!queueMode && bufferContext.renderShader != null) {
-            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader));
+        if(!queueMode && !bufferContext.renderShader.isEmpty()) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader.shaders[0]));
             if(shader != null) {
                 Framebuffer framebuffer = shader.getFramebufferRaw(
-                        Objects.requireNonNull(ShaderEvent.getShaderFrameName(bufferContext.renderShader)));
+                        Objects.requireNonNull(ShaderEvent.getShaderFrameName(bufferContext.renderShader.shaders[0])));
                 framebuffer.func_237506_a_(Minecraft.getInstance().getFramebuffer());
                 framebuffer.bindFramebuffer(false);
-                ShaderEvent.pushRender(bufferContext.renderShader);
+                ShaderEvent.pushRender(bufferContext.renderShader.shaders[0]);
             }
         }
     }
 
     public static void end(BufferContext bufferContext) {
         if(stopShader()) return;
-        if(!queueMode && bufferContext.renderShader != null) {
-            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader));
+        if(!queueMode && !bufferContext.renderShader.isEmpty()) {
+            ShaderGroup shader = ShaderEvent.getShaders(new ResourceLocation(bufferContext.renderShader.shaders[0]));
             if(shader != null) {
                 if (Minecraft.isFabulousGraphicsEnabled()) {
                     Minecraft.getInstance().worldRenderer.func_239228_q_().bindFramebuffer(false);
@@ -1192,6 +1192,15 @@ public class RenderHelper {
         double d1 = position.positionVec().y - y;
         double d2 = position.positionVec().z - z;
         double d3 = d0 * d0 + d1 * d1 + d2 * d2;
+        return isInRangeToRenderDist(position, d3);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static boolean isInRangeToRender3d(IPositionEntity position, double x, double y, double z, double scale) {
+        double d0 = position.positionVec().x - x;
+        double d1 = position.positionVec().y - y;
+        double d2 = position.positionVec().z - z;
+        double d3 = d0 * d0 + d1 * d1 + d2 * d2 * scale * scale;
         return isInRangeToRenderDist(position, d3);
     }
 

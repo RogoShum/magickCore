@@ -30,7 +30,11 @@ public class SingleBuffer implements IRenderTypeBuffer {
 
     @Nonnull
     public IVertexBuilder getBuffer(@Nonnull RenderType p_getBuffer_1_) {
-        if(p_getBuffer_1_ == RenderType.getGlintDirect()) {
+        if(p_getBuffer_1_ == RenderType.getGlintDirect()
+                || p_getBuffer_1_ == RenderType.getGlint()
+                || p_getBuffer_1_ == RenderType.getArmorGlint()
+                || p_getBuffer_1_ == RenderType.getArmorEntityGlint()
+                || p_getBuffer_1_ == RenderType.getEntityGlintDirect()) {
             if(!GlintBuffer.isDrawing())
                 GlintBuffer.begin(p_getBuffer_1_.getDrawMode(), p_getBuffer_1_.getVertexFormat());
             return GlintBuffer;

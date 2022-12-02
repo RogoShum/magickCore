@@ -11,7 +11,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.item.WandItem;
+import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaFactor;

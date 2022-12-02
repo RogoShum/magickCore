@@ -202,6 +202,12 @@ public class NBTTagHelper {
         nbt.putDouble(name + "Z", vec.z);
     }
 
+    public static void removeVectorDouble(CompoundNBT nbt, String name){
+        nbt.remove(name + "X");
+        nbt.remove(name + "Y");
+        nbt.remove(name + "Z");
+    }
+
     public static boolean hasVectorDouble(CompoundNBT nbt, String name){
         return nbt.contains(name + "X") && nbt.contains(name + "Y") && nbt.contains(name + "Z");
     }

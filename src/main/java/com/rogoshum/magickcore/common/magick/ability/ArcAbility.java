@@ -112,11 +112,11 @@ public class ArcAbility{
                     if(applyTypeContext.applyType == ApplyType.DIFFUSION)
                         extract = true;
                 }
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 5;
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 100;
                 if(!extract)
                     EnergyUtil.receiveEnergy(tile, mana);
                 else {
-                    int get = EnergyUtil.extractEnergy(tile, mana);
+                    int get = (int) (EnergyUtil.extractEnergy(tile, mana) * 0.03);
                     if(get > 0 && context.caster != null)
                         ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + get));
                 }
@@ -162,12 +162,22 @@ public class ArcAbility{
 
     public static boolean agglomerate(MagickContext context) {
         if(context.victim == null) return false;
+        Vector3d motion = Vector3d.ZERO;
         if(context.containChild(LibContext.DIRECTION)) {
-            Vector3d dir = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(0.2 * context.force);
-            Vector3d originMotion = context.victim.getMotion();
-            context.victim.setMotion(dir.scale(0.8).add(originMotion.scale(0.2)));
-            context.victim.setOnGround(true);
-            return true;
+            motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
+        } else if(context.projectile != null) {
+            motion = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0).subtract(context.projectile.getPositionVec().add(0, context.projectile.getHeight() * 0.5, 0)).normalize();
+        } else if(context.victim == context.caster)
+            motion = context.caster.getLookVec().normalize();
+        else
+            motion = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0).subtract(context.caster.getPositionVec().add(0, context.caster.getHeight() * 0.5, 0)).normalize();
+
+        motion = motion.scale(context.force * 0.2);
+        Vector3d originMotion = context.victim.getMotion();
+        context.victim.setMotion(motion.scale(0.8).add(originMotion.scale(0.2)));
+        context.victim.setOnGround(true);
+        if(context.victim instanceof LivingEntity) {
+            ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 60));
         }
         return false;
     }

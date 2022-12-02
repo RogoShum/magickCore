@@ -82,12 +82,15 @@ public class SphereEntity extends ManaRadiateEntity {
     }
 
     @Override
-    public List<BlockPos> findBlocks() {
-        int range = (int) spellContext().range;
-        List<BlockPos> posList = getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+    public Iterable<BlockPos> findBlocks() {
+        int range = (int) (spellContext().range);
+        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+    }
+
+    @Override
+    public Predicate<BlockPos> blockPosPredicate() {
         float rangeCube = spellContext().range * spellContext().range;
-        posList.removeIf( pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
-                > rangeCube);
-        return posList;
+        return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                <= rangeCube);
     }
 }

@@ -45,7 +45,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
     private static final DataParameter<Boolean> TRANS = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> MODE = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
-    private final ManaCapacity manaCapacity = ManaCapacity.create(5000);
+    private final ManaCapacity manaCapacity = ManaCapacity.create(20000);
     private boolean dead = false;
     public ManaCapacityEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -150,8 +150,10 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     boolean meat = item.getItem().getItem().getFood().isMeat();
 
                     float mana = meat ? (healing * 20 + saturation * 10) * 1.5f : healing * 10 + saturation * 5;
-                    manaCapacity().receiveMana(mana);
-                    item.getItem().shrink(1);
+                    if(manaCapacity().getMana() + mana <= manaCapacity().getMaxMana()) {
+                        manaCapacity().receiveMana(mana);
+                        item.getItem().shrink(1);
+                    }
                 }
             }
             return remove;

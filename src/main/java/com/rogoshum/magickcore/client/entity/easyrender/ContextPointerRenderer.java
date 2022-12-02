@@ -143,8 +143,8 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::renderItems);
-        map.put(new RenderMode(TYPE, LibShaders.slime), this::renderCyclone);
-        map.put(new RenderMode(TYPE, LibShaders.opacity), this::renderCylinder);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderCyclone);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.OPACITY_SHADER), this::renderCylinder);
         return map;
     }
 }

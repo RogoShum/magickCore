@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.api.event.ElementEvent;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class ElementThingEvent {
+public class ElementFunctionEvent {
 
     @SubscribeEvent
     public void applyFunction(ElementEvent.ElementFunctionApply event) {

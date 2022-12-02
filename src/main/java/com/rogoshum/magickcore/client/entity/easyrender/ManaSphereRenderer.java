@@ -29,7 +29,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
         if(SPHERE != null)
             RenderHelper.renderSphere(
-                BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(LibShaders.slime)
+                BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SHADER)
                 , SPHERE);
     }
 

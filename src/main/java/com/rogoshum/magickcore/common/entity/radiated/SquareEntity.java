@@ -70,10 +70,8 @@ public class SquareEntity extends ManaRadiateEntity {
     }
 
     @Override
-    public List<BlockPos> findBlocks() {
+    public Iterable<BlockPos> findBlocks() {
         int range = (int) spellContext().range;
-        BlockPos start = new BlockPos(this.getPositionVec()).up(range).east(range).south(range);
-        BlockPos end = new BlockPos(this.getPositionVec()).down(range).west(range).north(range);
-        return getAllInBoxMutable(start, end);
+        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
     }
 }

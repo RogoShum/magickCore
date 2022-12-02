@@ -101,9 +101,9 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(BLANK, LibShaders.slime), this::renderSphereSlime);
-        map.put(new RenderMode(SPHERE, LibShaders.opacity), this::renderSphereOpacity);
-        map.put(new RenderMode(CYLINDER, LibShaders.slime), this::renderCylinderSlime);
+        map.put(new RenderMode(BLANK, RenderMode.ShaderList.SLIME_SHADER), this::renderSphereSlime);
+        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.OPACITY_SHADER), this::renderSphereOpacity);
+        map.put(new RenderMode(CYLINDER, RenderMode.ShaderList.SLIME_SHADER), this::renderCylinderSlime);
         //map.put(new RenderMode(CYLINDER, LibShaders.opacity), this::renderCylinderOpacity);
         return map;
     }

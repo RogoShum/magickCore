@@ -8,7 +8,7 @@ public class BufferContext {
     public RenderType type;
     public MatrixStack matrixStack;
     public BufferBuilder buffer;
-    public String renderShader;
+    public RenderMode.ShaderList renderShader = RenderMode.ShaderList.EMPTY;
 
     private BufferContext(MatrixStack matrixStackIn, BufferBuilder bufferIn, RenderType type) {
         this.matrixStack = matrixStackIn;
@@ -20,7 +20,7 @@ public class BufferContext {
         return new BufferContext(matrixStackIn, bufferIn, type);
     }
 
-    public BufferContext useShader(String shader) {
+    public BufferContext useShader(RenderMode.ShaderList shader) {
         this.renderShader = shader;
         return this;
     }

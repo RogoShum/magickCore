@@ -28,7 +28,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         baseOffset(matrixStackIn);
         matrixStackIn.scale(scale, scale, scale);
         params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(LibShaders.slime)
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(RenderMode.ShaderList.SLIME_SHADER)
                 , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getEntityId(), 0.3f)
                 , 16);

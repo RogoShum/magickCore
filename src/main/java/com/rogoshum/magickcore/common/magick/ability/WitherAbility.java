@@ -15,16 +15,80 @@ import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.ITagCollection;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.server.ServerWorld;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WitherAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
+        if(context.victim instanceof ItemEntity) {
+            ItemEntity itemEntity = ((ItemEntity) context.victim);
+            ITagCollection<Item> itagcollection = ItemTags.getCollection();
+            AtomicReference<ITag<Item>> iTag = new AtomicReference<>();
+            AtomicBoolean ores = new AtomicBoolean(false);
+            itagcollection.getIDTagMap().forEach((key, itemITag) -> {
+                if((key.getPath().contains("ores/") || key.getPath().contains("ingots/")) && itemEntity.getItem().getItem().isIn(itemITag)) {
+                    ResourceLocation res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ingots", "dusts"));
+                    if(key.getPath().contains("ores")) {
+                        ores.set(true);
+                        res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "dusts"));
+                    }
+                    if(itagcollection.getIDTagMap().containsKey(res))
+                        iTag.set(itagcollection.getIDTagMap().get(res));
+                    else if(key.getPath().contains("ores/")){
+                        res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "gems"));
+                        if(itagcollection.getIDTagMap().containsKey(res))
+                            iTag.set(itagcollection.getIDTagMap().get(res));
+                    }
+                }
+            });
+            if(iTag.get() == null)
+                return false;
+            ITag<Item> itemITag = iTag.get();
+            Item item = itemEntity.getItem().getItem();
+            for (Item tagItem : itemITag.getAllElements()) {
+                if(tagItem.getRegistryName().getNamespace().equals(itemEntity.getItem().getItem().getRegistryName().getNamespace()))
+                    item = tagItem;
+                else if(!item.isIn(itemITag))
+                    item = tagItem;
+            }
+            if(item == itemEntity.getItem().getItem()) return false;
+            CompoundNBT nbt = itemEntity.getItem().write(new CompoundNBT());
+            ResourceLocation resourcelocation = Registry.ITEM.getKey(item);
+            nbt.putString("id", resourcelocation.toString());
+            ItemStack dustItem = ItemStack.read(nbt);
+            if(dustItem.isEmpty()) return false;
+            itemEntity.setItem(dustItem);
+            if(ores.get()) {
+                ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustItem.copy());
+                if(!entity.world.isRemote)
+                    entity.world.addEntity(entity);
+            }
+            if(context.force >= 7) {
+                ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustItem.copy());
+                if(!entity.world.isRemote)
+                    entity.world.addEntity(entity);
+            }
+            ParticleUtil.spawnBlastParticle();
+            return true;
+        } else
+            return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {

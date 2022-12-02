@@ -1,10 +1,11 @@
-package com.rogoshum.magickcore.common.item;
+package com.rogoshum.magickcore.common.item.material;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
+import com.rogoshum.magickcore.common.item.BaseItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;

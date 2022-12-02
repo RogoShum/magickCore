@@ -42,7 +42,7 @@ public abstract class MixinWorld {
         if(!list.isEmpty()) {
             int power = 0;
             for(Entity entity : list) {
-                if(((IRedStoneEntity) entity).getPower() > power)
+                if(pos.equals(new BlockPos(entity.getPositionVec())) && ((IRedStoneEntity) entity).getPower() > power)
                     power = ((IRedStoneEntity) entity).getPower();
             }
             if(power > cir.getReturnValue())

@@ -168,4 +168,8 @@ public class ParticleUtil {
         double y = factor * factor * height;
         return new Vector3d(tx, ty, tz).add(direction.scale(-y)).add(direction.scale(height));
     }
+
+    public static void spawnBlastParticle() {
+
+    }
 }

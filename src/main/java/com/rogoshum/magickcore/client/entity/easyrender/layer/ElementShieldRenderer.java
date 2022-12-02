@@ -90,7 +90,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
         //map.put(new RenderMode(CIRCLE_TYPE, LibShaders.opacity), this::renderCircle);
         if(BLOOM_TYPE != null) {
             //map.put(new RenderMode(BLOOM_TYPE), this::renderBloom);
-            map.put(new RenderMode(BLOOM_TYPE, LibShaders.opacity), this::renderBloom);
+            map.put(new RenderMode(BLOOM_TYPE, RenderMode.ShaderList.OPACITY_SHADER), this::renderBloom);
             map.put(new RenderMode(CIRCLE_TYPE), this::renderCircle);
         }
         return map;

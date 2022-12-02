@@ -115,7 +115,7 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::renderItems);
-        map.put(new RenderMode(RENDER_TYPE, LibShaders.slime), this::renderSphere);
+        map.put(new RenderMode(RENDER_TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderSphere);
         return map;
     }
 }

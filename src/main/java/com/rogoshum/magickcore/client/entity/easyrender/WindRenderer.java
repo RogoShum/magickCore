@@ -63,8 +63,8 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         if(TYPE != null) {
-            map.put(new RenderMode(TYPE, LibShaders.opacity), this::renderOpacity);
-            map.put(new RenderMode(TYPE, LibShaders.slime), this::renderSlime);
+            map.put(new RenderMode(TYPE, RenderMode.ShaderList.OPACITY_SHADER), this::renderOpacity);
+            map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderSlime);
         }
 
         return map;

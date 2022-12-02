@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
-import com.rogoshum.magickcore.common.event.magickevent.ElementThingEvent;
+import com.rogoshum.magickcore.common.event.magickevent.ElementFunctionEvent;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.common.init.*;
@@ -61,7 +61,7 @@ public class MagickCore {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new MagickLogicEvent());
-        MinecraftForge.EVENT_BUS.register(new ElementThingEvent());
+        MinecraftForge.EVENT_BUS.register(new ElementFunctionEvent());
         MinecraftForge.EVENT_BUS.register(new AdvancementsEvent());
         MinecraftForge.EVENT_BUS.register(new LivingLootsEvent());
         MinecraftForge.EVENT_BUS.register(new ModEntities());

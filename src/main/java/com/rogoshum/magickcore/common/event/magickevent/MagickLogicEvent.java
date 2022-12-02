@@ -25,7 +25,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
-import com.rogoshum.magickcore.common.item.SpiritSwordItem;
+import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickPoint;

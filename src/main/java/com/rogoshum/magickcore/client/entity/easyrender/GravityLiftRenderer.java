@@ -36,13 +36,13 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         RenderType laser = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f);
-        map.put(new RenderMode(laser, LibShaders.slime), this::renderLaser);
+        map.put(new RenderMode(laser, RenderMode.ShaderList.SLIME_SHADER), this::renderLaser);
 
         RenderType inner = RenderHelper.getTexedCylinderGlint(wind, height, 0f);
-        map.put(new RenderMode(inner, LibShaders.slime), this::renderInner);
+        map.put(new RenderMode(inner, RenderMode.ShaderList.SLIME_SHADER), this::renderInner);
 
         RenderType base = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
-        map.put(new RenderMode(base, LibShaders.opacity), this::renderBase);
+        map.put(new RenderMode(base, RenderMode.ShaderList.OPACITY_SHADER), this::renderBase);
 
         return map;
     }

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick {
     public ManaRadiateEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -67,10 +68,11 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
         }
 
-        if(!released.get() && (this.ticksExisted % 20 == 0 || this.ticksExisted == 1)) {
-            List<BlockPos> blocks = findBlocks();
-
+        if(!released.get() && this.ticksExisted == 1) {
+            Iterable<BlockPos> blocks = findBlocks();
+            Predicate<BlockPos> posPredicate = blockPosPredicate();
             for (BlockPos pos : blocks) {
+                if(!posPredicate.test(pos)) continue;
                 MagickContext context = MagickContext.create(this.world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK)
                         .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
                         .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
@@ -90,7 +92,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         }
     }
 
-    public List<BlockPos> findBlocks() {
+    public Iterable<BlockPos> findBlocks() {
         return Collections.emptyList();
     }
 
@@ -115,12 +117,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         return 1;
     }
 
-    public List<BlockPos> getAllInBoxMutable(BlockPos firstPos, BlockPos secondPos) {
-        List<BlockPos> collection = new ArrayList<BlockPos>();
-        Iterable<BlockPos> iterable = BlockPos.getAllInBoxMutable(firstPos, secondPos);
-        for (BlockPos e: iterable) {
-            collection.add(new BlockPos(e));
-        }
-        return collection;
+    public Predicate<BlockPos> blockPosPredicate() {
+        return (pos -> true);
     }
 }

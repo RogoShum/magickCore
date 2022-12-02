@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.ContextCoreItem;
-import com.rogoshum.magickcore.common.item.ManaMaterialItem;
+import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.CraftingInventory;

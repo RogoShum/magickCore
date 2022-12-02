@@ -61,7 +61,7 @@ public class RayTraceEntity extends ManaRadiateEntity {
     }
 
     @Override
-    public List<BlockPos> findBlocks() {
+    public Iterable<BlockPos> findBlocks() {
         BlockRayTraceResult result = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;

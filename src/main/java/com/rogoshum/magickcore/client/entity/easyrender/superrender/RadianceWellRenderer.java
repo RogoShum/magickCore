@@ -31,8 +31,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     float alphaS;
     float alphaC;
     final RenderType TYPE = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
-    final RenderType INNER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 2f, 0f);
-    final RenderType OUTER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 1f, 0f);
+    final RenderType INNER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 0.2f, 0f);
+    final RenderType OUTER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 0.15f, 0f);
     RenderHelper.RenderContext RENDER_5;
     RenderHelper.RenderContext RENDER_6;
     Queue<Queue<RenderHelper.VertexAttribute>> CYLINDER_INNER;
@@ -78,7 +78,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 0.5f, entity.getHeight() * 1.2f, entity.getWidth() * 0.5f);
+        matrixStackIn.scale(entity.getWidth() * 2f, entity.getHeight() * 2f, entity.getWidth() * 2f);
         if(CYLINDER_INNER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER);
     }
@@ -88,7 +88,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 0.501f, entity.getHeight() * 1.2f, entity.getWidth() * 0.501f);
+        matrixStackIn.scale(entity.getWidth() * 2.001f, entity.getHeight() * 2f, entity.getWidth() * 2.001f);
         if(CYLINDER_OUTER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER);
     }
@@ -110,12 +110,12 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         RENDER_6 = new RenderHelper.RenderContext(0.6f * alphaS, Color.ORIGIN_COLOR, packedLightIn);
 
         if(entity.initial) {
-            RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16
-                    , 0, alphaC * 0.8f, 0.4f, ModElements.ORIGIN.getRenderer().getColor());
+            RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
+                    , 0, alphaC * 0.8f, 1.5f, ModElements.ORIGIN.getRenderer().getColor());
             CYLINDER_INNER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
 
-            context = new RenderHelper.CylinderContext(2f, 2f, 1, 8.0f, 16
-                    , 0, alphaC, 0.4f, entity.spellContext().element.getRenderer().getColor());
+            context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
+                    , 0, alphaC, 1f, entity.spellContext().element.getRenderer().getColor());
             CYLINDER_OUTER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
         }
     }
@@ -124,10 +124,10 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::renderSword);
-        map.put(new RenderMode(TYPE, LibShaders.slime), this::renderSphere);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderSphere);
         if(entity.initial) {
-            map.put(new RenderMode(INNER_TYPE, LibShaders.slime), this::renderInnerLight);
-            map.put(new RenderMode(OUTER_TYPE, LibShaders.slime), this::renderOuterLight);
+            map.put(new RenderMode(INNER_TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderInnerLight);
+            map.put(new RenderMode(OUTER_TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderOuterLight);
         }
         return map;
     }

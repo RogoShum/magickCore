@@ -59,6 +59,7 @@ public class RenderThread extends Thread {
             if(needUpdate && clippinghelper != null) {
                 HashMap<RenderMode, Queue<Consumer<RenderParams>>> function = new HashMap<>();
                 Iterator<IEasyRender> it = renderer.iterator();
+                double scale = Math.max((renderer.size() * 0.001d), 1d);
                 try {
                     while (it.hasNext()) {
                         IEasyRender renderer = it.next();
@@ -69,7 +70,7 @@ public class RenderThread extends Thread {
                         if(!renderer.forceRender()) {
                             if(!clippinghelper.isBoundingBoxInFrustum(renderer.boundingBox())) continue;
                             Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-                            if(!RenderHelper.isInRangeToRender3d(renderer, vec.x, vec.y, vec.z)) continue;
+                            if(!RenderHelper.isInRangeToRender3d(renderer, vec.x, vec.y, vec.z, scale)) continue;
                             if(!RenderHelper.shouldRender(renderer.boundingBox())) continue;
                         }
                         renderer.update();
@@ -101,7 +102,6 @@ public class RenderThread extends Thread {
                     MagickCore.LOGGER.warn("Something wrong when render the entity!");
                     e.printStackTrace();
                 }
-                clearFunction();
                 glFunction = function;
                 needUpdate = false;
             }

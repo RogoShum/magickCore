@@ -9,34 +9,31 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
-import com.rogoshum.magickcore.common.item.WandItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArtificialLifeEntity extends LivingEntity implements ISpellContext, IManaRefraction, IEntityAdditionalSpawnData {
@@ -131,23 +128,12 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             if(world.isRemote)
                 spawnSupplierParticle((Entity) capacity);
         }
-        if(world.isRemote) {
-            float scale = 0.05f;
-            float width = state.getManaValue() / state.getMaxManaValue();
-
-            List<Vector3d> list = ParticleUtil.drawRectangle(this.getPositionVec().add(0, this.getHeight() * 0.5, 0), scale, width, width, width);
-            for(int i = 0; i < list.size(); ++i) {
-                Vector3d pos = list.get(i);
-                LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(state.getElement().type()).getParticleTexture()
-                        , pos
-                        , 0.05f, 0.05f, 1.0f, 3, MagickCore.proxy.getElementRender(state.getElement().type()));
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setLimitScale();
-                MagickCore.addMagickParticle(par);
-            }
-        }
         shouldRelease();
+    }
+
+    @Override
+    public boolean func_241845_aY() {
+        return this.isAlive();
     }
 
     public void spawnSupplierParticle(Entity supplier) {
@@ -249,5 +235,10 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
         spellContext().deserialize(additionalData.readCompoundTag());
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

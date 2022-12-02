@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.common.item;
+package com.rogoshum.magickcore.common.item.material;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;

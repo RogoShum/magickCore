@@ -10,11 +10,20 @@ public class MagickElement {
     private final String type;
     private final Color color;
     private final DamageSource damage;
+    private final float cardinality;
 
     public MagickElement(String type, Color color, DamageSource damage) {
         this.type = type;
         this.color = color;
         this.damage = damage;
+        this.cardinality = 1.0f;
+    }
+
+    public MagickElement(String type, Color color, DamageSource damage, float cardinality) {
+        this.type = type;
+        this.color = color;
+        this.damage = damage;
+        this.cardinality = cardinality;
     }
 
     public Color color() {
@@ -27,6 +36,9 @@ public class MagickElement {
 
     public String type() {
         return type;
+    }
+    public float cardinality() {
+        return cardinality;
     }
 
     @OnlyIn(Dist.CLIENT)

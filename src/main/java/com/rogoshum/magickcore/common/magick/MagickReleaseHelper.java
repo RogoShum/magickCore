@@ -283,6 +283,10 @@ public class MagickReleaseHelper {
         return getEntityRayTrace(e, new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ()), e.getLookVec(), 64);
     }
 
+    public static Entity getEntityLookedAt(Entity e, float distance) {
+        return getEntityRayTrace(e, new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ()), e.getLookVec(), distance);
+    }
+
     public static boolean canEntityTraceAnother(Entity e, Entity another) {
         return another == getEntityRayTrace(e, e.getPositionVec().add(0, e.getHeight() / 2, 0), another.getPositionVec().add(0, another.getHeight() / 2, 0).subtract(e.getPositionVec().add(0, e.getHeight() / 2, 0)).normalize(), 64);
     }
@@ -310,7 +314,7 @@ public class MagickReleaseHelper {
         double minDistance = distance;
 
         for (Entity entity : entitiesInBoundingBox) {
-            if (entity.canBeCollidedWith()) {
+            if (entity.isAlive() && entity.canBeCollidedWith()) {
                 float collisionBorderSize = entity.getCollisionBorderSize();
                 AxisAlignedBB hitbox = entity.getBoundingBox().grow(collisionBorderSize, collisionBorderSize, collisionBorderSize);
                 Optional<Vector3d> interceptPosition = hitbox.rayTrace(positionVector, reachVector);

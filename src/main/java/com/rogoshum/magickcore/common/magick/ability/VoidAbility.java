@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -60,7 +61,9 @@ public class VoidAbility{
 
     public static boolean hitBlock(MagickContext context) {
         if(context.force < 1) return false;
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+        if(!context.world.isRemote && context.containChild(LibContext.POSITION) && context.containChild(LibContext.APPLY_TYPE)) {
+            ExtraApplyTypeContext applyTypeContext = context.getChild(LibContext.APPLY_TYPE);
+            if (applyTypeContext.applyType != ApplyType.AGGLOMERATE) return false;
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
             World world = context.world;
@@ -170,7 +173,7 @@ public class VoidAbility{
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             Vector3d pos = positionContext.pos;
-            context.victim.setPosition(pos.x, pos.y, pos.z);
+            context.victim.setPositionAndUpdate(pos.x, pos.y, pos.z);
         } else {
             Vector3d pos = context.caster.getLookVec().scale(context.range).add(context.victim.getPositionVec());
             context.victim.setPosition(pos.x, pos.y, pos.z);
