@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaArrowRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.RayRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -23,6 +25,12 @@ public class ManaArrowEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new ManaArrowRenderer(this));
     }
 
     @Override
@@ -50,7 +58,13 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-
+        LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
+                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
+                , 0.15f * getWidth(), 0.15f * getWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
+        par.setGlow();
+        MagickCore.addMagickParticle(par);
     }
 
     public void addParticle(Vector3d pos, Vector3d direction, int count, float baseScale, float scale) {
@@ -69,6 +83,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
+        /*
         //float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
         int count = (int)Math.max(getWidth() * 7, 10);
         int tailCount = Math.max(count / 2, 5);
@@ -108,6 +123,8 @@ public class ManaArrowEntity extends ManaProjectileEntity {
         rotate = downPitch.add(yaw.scale(-1)).normalize().scale(space);
         addParticle(origin, rotate, tailCount, baseScale * 0.8f, scale);
         addParticle(tail, rotate, (int) (tailCount * 0.5), baseScale * 0.6f, scale);
+
+         */
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.SquareRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -31,10 +32,20 @@ public class SquareEntity extends ManaRadiateEntity {
         applyParticle(20);
     }
 
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new SquareRadiateRenderer(this));
+    }
+
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range), predicate);
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()), predicate);
+    }
+
+    public float getRange() {
+        return spellContext().range * 0.5f;
     }
 
     @Override
@@ -44,7 +55,6 @@ public class SquareEntity extends ManaRadiateEntity {
 
     @Override
     protected void applyParticle() {
-        applyParticle(2);
     }
 
     @Override
@@ -54,7 +64,7 @@ public class SquareEntity extends ManaRadiateEntity {
 
     protected void applyParticle(int particleAge) {
         float scale = 0.5f;
-        double width = this.getBoundingBox().grow(spellContext().range).getXSize();
+        double width = this.getBoundingBox().grow(getRange()).getXSize();
         List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getHeight() * 0.5, 0), scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vector3d pos = list.get(i);
@@ -71,7 +81,7 @@ public class SquareEntity extends ManaRadiateEntity {
 
     @Override
     public Iterable<BlockPos> findBlocks() {
-        int range = (int) spellContext().range;
+        int range = (int) getRange();
         return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
     }
 }

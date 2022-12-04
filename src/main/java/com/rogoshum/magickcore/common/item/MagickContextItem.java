@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -41,7 +42,9 @@ public class MagickContextItem extends ManaItem{
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
                 if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY) continue;
-                ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(type).force(10).range(5).tick(300));
+                ExtraDataUtil.itemManaData(sample, (data) -> {
+                    data.spellContext().applyType(type).force(10).range(5).tick(300).addChild(new TraceContext());
+                });
                 ItemStack itemStack = sample.copy();
                 items.add(itemStack);
             }

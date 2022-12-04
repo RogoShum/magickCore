@@ -35,7 +35,7 @@ public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.rotate(Vector3f.XN.rotationDegrees((float) (entity.getMotion().x * 360) / entity.getWidth()));
         matrixStackIn.rotate(Vector3f.ZN.rotationDegrees((float) (entity.getMotion().z * 360) / entity.getWidth()));
-        float scale = entity.getWidth();
+        float scale = entity.getWidth() * 0.99f;
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.push();
         scale = 1.01f;

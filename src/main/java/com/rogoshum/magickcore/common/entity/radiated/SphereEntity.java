@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.SphereRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -26,8 +27,13 @@ public class SphereEntity extends ManaRadiateEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new SphereRadiateRenderer(this));
+    }
+
+    @Override
     protected void applyParticle() {
-        applyParticle(2);
     }
 
     @Override

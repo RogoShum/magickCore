@@ -5,7 +5,9 @@ import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.ManaItemEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
@@ -15,6 +17,9 @@ import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
+import com.rogoshum.magickcore.common.network.ManaCapacityPack;
+import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
@@ -33,6 +38,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -75,10 +81,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
             coolDown-=1;
             return;
         }
-        List<Entity> items = this.findEntity((entity -> entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem));
+        List<Entity> items = this.findEntity((entity -> (entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem)));
 
         items.forEach(entity -> {
-            if(entity.isAlive() && entity.ticksExisted > 10) {
+            if(entity.isAlive() && entity.ticksExisted > 20) {
                 ItemEntity item = (ItemEntity) entity;
                 Vector3d relativeVec = relativeVec(item);
                 ItemStack stack = item.getItem().copy();
@@ -225,26 +231,64 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;
         if (hand == Hand.MAIN_HAND) {
-            if(player.getHeldItemMainhand().getItem() instanceof WandItem && getStacks().size() > 1) {
+            if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
+                boolean notClear = false;
                 if(!this.world.isRemote) {
-                    ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
-                    SpellContext context = ExtraDataUtil.itemManaData(stack).spellContext();
-                    context.copy(ExtraDataUtil.itemManaData(getStacks().get(getStacks().size() - 1).getItemStack()).spellContext());
-                    for(int i = getStacks().size() - 2; i > -1; --i) {
-                        SpellContext origin = ExtraDataUtil.itemManaData(getStacks().get(i).getItemStack()).spellContext().copy();
-                        SpellContext post = origin;
-                        while (post.postContext != null)
-                            post = post.postContext;
-                        post.post(context);
-                        context = origin;
+                    if(getStacks().size() > 1) {
+                        ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
+                        SpellContext context = ExtraDataUtil.itemManaData(stack).spellContext();
+                        context.copy(ExtraDataUtil.itemManaData(getStacks().get(getStacks().size() - 1).getItemStack()).spellContext());
+                        for(int i = getStacks().size() - 2; i > -1; --i) {
+                            SpellContext origin = ExtraDataUtil.itemManaData(getStacks().get(i).getItemStack()).spellContext().copy();
+                            SpellContext post = origin;
+                            while (post.postContext != null)
+                                post = post.postContext;
+                            post.post(context);
+                            context = origin;
+                        }
+                        ExtraDataUtil.itemManaData(stack).spellContext().copy(context);
+                        ItemEntity entity = new ManaItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);
+                        world.addEntity(entity);
+                        playSound(SoundEvents.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
+                    } else if(getStacks().size() == 1) {
+                        PosItem item = getStacks().get(0);
+                        ItemManaData data = ExtraDataUtil.itemManaData(item.itemStack);
+                        if(data.spellContext().postContext != null) {
+                            List<SpellContext> spellContexts = new ArrayList<>();
+                            SpellContext context = data.spellContext();
+                            while (context.postContext != null) {
+                                SpellContext spellContext1 = context.postContext;
+                                context.postContext = null;
+                                spellContexts.add(spellContext1);
+                                context = spellContext1;
+                            }
+
+                            for (SpellContext post : spellContexts) {
+                                ItemStack newCore = new ItemStack(ModItems.MAGICK_CORE.get());
+                                ItemManaData coreData = ExtraDataUtil.itemManaData(newCore);
+                                post.postContext = null;
+                                coreData.spellContext().copy(post);
+                                CompoundNBT tag = item.serialize(new CompoundNBT());
+                                PosItem posItem = new PosItem(Vector3d.ZERO, ItemStack.EMPTY, getStacks().size());
+                                CompoundNBT posTag = tag.getCompound("PosItem");
+                                posTag.put("ITEM", newCore.write(new CompoundNBT()));
+                                posItem.deserialize(tag);
+                                stacks.add(posItem);
+                            }
+                            data.spellContext().postContext = null;
+                            data.spellContext().copy(data.spellContext());
+                            playSound(SoundEvents.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
+                            notClear = true;
+                        }
                     }
-                    ExtraDataUtil.itemManaData(stack).spellContext().copy(context);
-                    ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);
-                    world.addEntity(entity);
-                    playSound(SoundEvents.BLOCK_PORTAL_AMBIENT, 0.5f, 2.0f);
                 } else
                     spawnParticle();
-                getStacks().clear();
+                if(!notClear)
+                    getStacks().clear();
+                else
+                    Networking.INSTANCE.send(
+                            PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this),
+                            new EntityCompoundTagPack(this.getEntityId(), this));
             } else
                 dropItem();
             return ActionResultType.CONSUME;

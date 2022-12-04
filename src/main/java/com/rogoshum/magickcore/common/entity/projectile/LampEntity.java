@@ -93,12 +93,12 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
         double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
         double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
-        for (int i = 0; i < 5; ++i) {
+        float scale = Math.max(this.getWidth(), 0.5f) * 0.5f;
+        for (int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + x
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + y + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + z)
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + x
+                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + y
+                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + z)
                     , scale, scale * 1.2f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);

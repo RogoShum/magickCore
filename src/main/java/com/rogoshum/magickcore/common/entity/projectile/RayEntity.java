@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.RayRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -23,6 +24,12 @@ public class RayEntity extends ManaProjectileEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(()->new RayRenderer(this));
+    }
+
+    @Override
     public float getSourceLight() {
         return 3;
     }
@@ -34,7 +41,7 @@ public class RayEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < 1; ++i) {
             LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
@@ -50,19 +57,6 @@ public class RayEntity extends ManaProjectileEntity {
     @Override
     protected float getGravityVelocity() {
         return 0;
-    }
-
-    @Override
-    public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
-                , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
-                , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.2f * this.getWidth(), 0.2f * this.getWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
-        par.setGlow();
-        par.setParticleGravity(0);
-        par.setLimitScale();
-        MagickCore.addMagickParticle(par);
     }
 
     @Override

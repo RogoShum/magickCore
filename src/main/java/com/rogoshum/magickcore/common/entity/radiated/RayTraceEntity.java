@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.RayRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -31,12 +32,17 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     @Override
     protected void applyParticle() {
-        applyParticle(3);
     }
 
     @Override
     public void successFX() {
         applyParticle(10);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new RayRadiateRenderer(this));
     }
 
     @Nonnull
@@ -100,11 +106,11 @@ public class RayTraceEntity extends ManaRadiateEntity {
         Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), dir, getLength());
         if(entity != null)
             target = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        BlockRayTraceResult result = this.world().rayTraceBlocks(new RayTraceContext(this.getPositionVec(), this.getPositionVec().add(getOwner().getLookVec().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+        BlockRayTraceResult result = this.world().rayTraceBlocks(new RayTraceContext(this.getPositionVec(), this.getPositionVec().add(dir.scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
         if(result.getType() != RayTraceResult.Type.MISS)
             target = Vector3d.copyCentered(result.getPos());
 
-        float distance = (50f * spellContext().range);
+        float distance = (10f * spellContext().range);
 
         float scale = 0.1f;
 

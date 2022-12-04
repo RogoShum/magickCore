@@ -315,7 +315,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         if(entity == null && traceContext.uuid != MagickCore.emptyUUID) {
             entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
             traceContext.entity = entity;
-        } else if(entity != null) {
+        } else if(entity != null && entity.isAlive()) {
             Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
             Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
 

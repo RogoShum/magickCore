@@ -44,7 +44,7 @@ public class ShadowEntity extends ManaProjectileEntity {
         if(entity == null && traceContext.uuid != MagickCore.emptyUUID) {
             entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
             traceContext.entity = entity;
-        } else if(entity != null) {
+        } else if(entity != null && entity.isAlive()) {
             Vector3d vec = entity.getPositionVec().subtract(this.getPositionVec()).scale(0.5);
             this.setPosition(vec.x + this.getPositionVec().getX(), vec.y + this.getPositionVec().getY(), vec.z + this.getPositionVec().getZ());
         }

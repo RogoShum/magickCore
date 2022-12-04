@@ -8,6 +8,9 @@ import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaLaserEntity;
+import com.rogoshum.magickcore.common.entity.projectile.RayEntity;
+import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
@@ -17,13 +20,14 @@ import net.minecraft.util.math.vector.Vector3f;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
-    private static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_top.png");
-    private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_mid.png");
-    private static final ResourceLocation LASER_BOTTOM = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_bottom.png");
+public class RayRenderer extends EasyRenderer<RayEntity> {
+    private static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_top.png");
+    private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_mid.png");
+    private static final ResourceLocation LASER_BOTTOM = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_bottom.png");
     private float length;
 
-    public ManaLaserRenderer(ManaLaserEntity entity) {
+
+    public RayRenderer(RayEntity entity) {
         super(entity);
     }
 

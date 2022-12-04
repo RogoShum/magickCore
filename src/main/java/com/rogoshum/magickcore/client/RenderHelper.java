@@ -30,7 +30,9 @@ import net.minecraft.util.math.vector.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -207,6 +209,24 @@ public class RenderHelper {
         });
     }
 
+    public static RenderState.TexturingState pointState(float size) {
+        return new RenderState.TexturingState(MagickCore.MOD_ID+"point_size" + size,
+                () -> {
+                    if (size != 1) {
+                        if (size > 1) {
+                            GL11.glPointSize(size);
+                        } else {
+                            GL11.glPointSize(Math.max(2.5F, (float)Minecraft.getInstance().getMainWindow().getFramebufferWidth() / 1920.0F * 2.5F));
+                        }
+                    }
+
+                }, () -> {
+            if (size != 1) {
+                GL11.glPointSize(1.0F);
+            }
+        });
+    }
+
     public static RenderType getTexedEntityGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
         RenderType.State rendertype$state =
                 RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false))
@@ -259,6 +279,11 @@ public class RenderHelper {
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Laser_Glint_" + glintScale, DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
     }
 
+    public static RenderType getTexedLaser(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SHADE_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(true);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Laser", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
+    }
+
     public static RenderType getTexedCylinderGlow(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).shadeModel(SHADE_ENABLED).alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Cylinder_Glow", DefaultVertexFormats.ENTITY, GL_TRIANGLE_STRIP, 256, false, false, rendertype$state);
@@ -307,9 +332,24 @@ public class RenderHelper {
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Sphere", DefaultVertexFormats.ENTITY, GL_QUAD_STRIP, 256, false, false, rendertype$state);
     }
 
-    public static RenderType getLineGlow(double width) {
-        RenderType.State rendertype$state = RenderType.State.getBuilder().writeMask(COLOR_WRITE).transparency(LIGHTNING_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).shadeModel(SHADE_ENABLED).overlay(OVERLAY_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
-        return RenderType.makeType(MagickCore.MOD_ID + ":LINES", DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, false, rendertype$state);
+    public static RenderType getLineLoopGlow(double width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":LINE_LOOP_" + width, DefaultVertexFormats.ENTITY, GL_LINE_LOOP, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getLineStripGlow(double width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":LINES_STRIP_" + width, DefaultVertexFormats.ENTITY, GL_LINE_STRIP, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getLinesGlow(double width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":LINES_" + width, DefaultVertexFormats.ENTITY, GL_LINES, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getPointsGlow(float width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).texturing(pointState(width)).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Points_" + width, DefaultVertexFormats.ENTITY, GL_POINTS, 256, false, false, rendertype$state);
     }
 
     public static final ResourceLocation TAKEN_LAYER = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
@@ -712,6 +752,105 @@ public class RenderHelper {
         pack.matrixStack.pop();
     }
 
+    public static void renderLaserTop(BufferContext pack, RenderContext renderContext, float length) {
+        Color color = renderContext.color;
+        float alpha = renderContext.alpha;
+
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
+        int light = renderLight;
+        float center = length * 0.9f;
+        float side = (length - center) * 0.5f;
+        float side1 = center + side;
+        buffer.pos(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, side1, 0.0F).endVertex();
+        buffer.pos(matrix4f, -1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, length, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, length, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, side1, 0.0F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side1, -0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, length, -0.866025F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, length, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, length, 0.866025F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, length, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side1, 0.866025F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side1, 0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, length, 0.866025F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, length, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, length, -0.866025F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, length, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side1, -0.866025F).endVertex();
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
+    }
+
+    public static void renderLaserMid(BufferContext pack, RenderContext renderContext, float length) {
+        Color color = renderContext.color;
+        float alpha = renderContext.alpha;
+
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
+        int light = renderLight;
+        float center = length * 0.9f;
+        float side = (length - center) * 0.5f;
+        float side1 = center + side;
+        buffer.pos(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, side, 0.0F).endVertex();
+        buffer.pos(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, side1, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, side1, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, side, 0.0F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side, -0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side1, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side1, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side, 0.866025F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side, 0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side1, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side1, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side, -0.866025F).endVertex();
+
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
+    }
+
+    public static void renderLaserBottom(BufferContext pack, RenderContext renderContext, float length) {
+        Color color = renderContext.color;
+        float alpha = renderContext.alpha;
+
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
+        int light = renderLight;
+        float center = length * 0.9f;
+        float side = (length - center) * 0.5f;
+        float side1 = center + side;
+
+        buffer.pos(matrix4f, -1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
+        buffer.pos(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-1.0F, side, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, side, 0.0F).endVertex();
+        buffer.pos(matrix4f, 1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(1.0F, 0.0F, 0.0F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, 0.0F, -0.866025F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, 0.0F, -0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, 0.0F, 0.866025F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, 0.0F, 0.866025F).endVertex();
+
+        buffer.pos(matrix4f, 0.5F, 0.0F, 0.866025F).color(color.r(), color.g(), color.b(), 0).tex(1.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, 0.0F, 0.866025F).endVertex();
+        buffer.pos(matrix4f, 0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(0.5F, side, 0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, side, -0.866025F).endVertex();
+        buffer.pos(matrix4f, -0.5F, 0.0F, -0.866025F).color(color.r(), color.g(), color.b(), 0).tex(0.0f, 1.0f).overlay(OverlayTexture.NO_OVERLAY).lightmap(light).normal(-0.5F, 0.0F, -0.866025F).endVertex();
+
+        finish(pack);
+        end(pack);
+        pack.matrixStack.pop();
+    }
+
     public static final VertexContext EmptyVertexContext = new VertexContext(false, "", 0.0f);
 
     public static void renderStaticParticle(BufferContext pack, RenderContext renderContext) {
@@ -804,7 +943,46 @@ public class RenderHelper {
             for (VertexBuffer vertexBuffer : vertexBuffers) {
                 vertexBuffer.bindBuffer();
                 DefaultVertexFormats.ENTITY.setupBufferState(0);
-                vertexBuffer.draw(matrixStack.getLast().getMatrix(), GL_QUADS);
+                vertexBuffer.draw(matrixStack.getLast().getMatrix(), type.getDrawMode());
+                VertexBuffer.unbindBuffer();
+                DefaultVertexFormats.ENTITY.clearBufferState();
+            }
+            type.clearRenderState();
+            end(context);
+        }
+    }
+
+    public static void renderPoint(BufferContext context, RenderContext renderContext, List<Vector3d> vector3dList) {
+        MatrixStack matrixStack = context.matrixStack;
+        BufferBuilder buffer = context.buffer;
+        RenderType type = context.type;
+        Color color = renderContext.color;
+        float alpha = renderContext.alpha;
+        int lightmap = renderContext.packedLightIn;
+
+        String hash = "POINT_VERTEX" + renderContext.hashCode() + "_" + vector3dList.hashCode();
+
+        if(!GL_LIST_INDEX.containsKey(hash)) {
+            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
+            VertexBuffer vertexBuffer = new VertexBuffer(DefaultVertexFormats.ENTITY);
+            setup(context);
+            begin(context);
+            for (Vector3d vector3d : vector3dList) {
+                buffer.pos(vector3d.x, vector3d.y, vector3d.z).color(color.r(), color.g(), color.b(), alpha).tex(0, 0).overlay(OverlayTexture.NO_OVERLAY).lightmap(lightmap).normal((float) vector3d.x, (float) vector3d.y, (float) vector3d.z).endVertex();
+            }
+            buffer.finishDrawing();
+            vertexBuffer.upload(buffer);
+            vertexBuffers.add(vertexBuffer);
+            GL_LIST_INDEX.put(hash, vertexBuffers);
+            end(context);
+        } else {
+            setup(context);
+            type.setupRenderState();
+            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
+            for (VertexBuffer vertexBuffer : vertexBuffers) {
+                vertexBuffer.bindBuffer();
+                DefaultVertexFormats.ENTITY.setupBufferState(0);
+                vertexBuffer.draw(matrixStack.getLast().getMatrix(), context.type.getDrawMode());
                 VertexBuffer.unbindBuffer();
                 DefaultVertexFormats.ENTITY.clearBufferState();
             }
@@ -878,7 +1056,7 @@ public class RenderHelper {
             for (VertexBuffer vertexBuffer : vertexBuffers) {
                 vertexBuffer.bindBuffer();
                 DefaultVertexFormats.ENTITY.setupBufferState(0);
-                vertexBuffer.draw(matrix4f, GL_QUAD_STRIP);
+                vertexBuffer.draw(matrix4f, pack.type.getDrawMode());
                 VertexBuffer.unbindBuffer();
                 DefaultVertexFormats.ENTITY.clearBufferState();
             }

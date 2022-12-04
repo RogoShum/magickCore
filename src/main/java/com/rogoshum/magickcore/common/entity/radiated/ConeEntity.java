@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.ConeRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.SectorRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -23,12 +25,18 @@ public class ConeEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cone.png");
     public final Predicate<Entity> inCone = (entity -> {
         Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        double range = spellContext().range * 2;
+        double range = getRange();
         return this.getDistanceSq(pos) <= range * range && rightDirection(pos);
     });
 
     public ConeEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new ConeRadiateRenderer(this));
     }
 
     @Override
@@ -39,7 +47,7 @@ public class ConeEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range * 2),
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()),
                 predicate != null ? predicate.and(inCone)
                         : inCone);
     }
@@ -54,8 +62,12 @@ public class ConeEntity extends ManaRadiateEntity {
         return ManaFactor.RADIATE_DEFAULT;
     }
 
+    public float getRange() {
+        return spellContext().range * 1.5f;
+    }
+
     protected void applyParticle(int particleAge) {
-        float range = spellContext().range;
+        float range = getRange();
         Vector3d direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
@@ -93,7 +105,7 @@ public class ConeEntity extends ManaRadiateEntity {
 
     @Override
     protected void applyParticle() {
-        applyParticle(2);
+        //applyParticle(2);
     }
 
     public boolean rightDirection(Vector3d vec) {
@@ -103,18 +115,18 @@ public class ConeEntity extends ManaRadiateEntity {
         } else if (getOwner() != null) {
             direction = getOwner().getLookVec().normalize();
         }
-        return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.05 * spellContext().range;
+        return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.05 * getRange();
     }
 
     @Override
     public Iterable<BlockPos> findBlocks() {
-        int range = (int) (spellContext().range * 2);
+        int range = (int) getRange();
         return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
-        float rangeCube = spellContext().range * spellContext().range;
+        float rangeCube = getRange() * getRange();
         return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
                 <= rangeCube && rightDirection(Vector3d.copy(pos)));
     }

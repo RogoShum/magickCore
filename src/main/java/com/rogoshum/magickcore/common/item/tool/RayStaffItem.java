@@ -21,7 +21,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class RayStaffItem extends ManaItem implements IManaContextItem {
+public class RayStaffItem extends ManaItem{
     public RayStaffItem() {
         super(properties().maxStackSize(1));
     }

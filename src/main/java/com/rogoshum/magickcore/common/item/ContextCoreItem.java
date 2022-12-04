@@ -22,7 +22,7 @@ public class ContextCoreItem extends BaseItem{
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         if(entity.ticksExisted > 20) {
             boolean upGround = true;
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 2; ++i) {
                 if(!entity.world.isAirBlock(entity.getPosition().add(0, -i, 0)))
                     upGround = false;
             }
@@ -36,7 +36,7 @@ public class ContextCoreItem extends BaseItem{
                     ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.world);
                     if(createEntity instanceof ContextCreatorEntity)
                         contextCreator = (ContextCreatorEntity) createEntity;
-                    contextCreator.setPosition(entity.getPosX(), entity.getPosY() - 3, entity.getPosZ());
+                    contextCreator.setPosition(entity.getPosX(), entity.getPosY() - 0.5, entity.getPosZ());
                     entity.world.addEntity(contextCreator);
                     entity.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
                 }

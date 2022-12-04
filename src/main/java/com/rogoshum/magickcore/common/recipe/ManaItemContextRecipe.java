@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.common.item.ContextCoreItem;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -82,10 +83,13 @@ public class ManaItemContextRecipe extends SpecialRecipe {
             if(magickContext != null)
                 return ItemStack.EMPTY;
             else {
-                ItemStack newContext = new ItemStack(ModItems.MAGICK_CORE.get());
-                ItemManaData manaData = ExtraDataUtil.itemManaData(newContext);
-                manaData.spellContext().copy(ExtraDataUtil.itemManaData(tool).spellContext());
-                return newContext;
+                ItemStack newTool = tool.copy();
+                ItemManaData manaData = ExtraDataUtil.itemManaData(newTool);
+                if(manaData.contextCore().haveMagickContext()) {
+                    manaData.contextCore().setHave(false);
+                    manaData.spellContext().clear();
+                }
+                return newTool;
             }
         } else {
             if(magickContext == null)
@@ -106,14 +110,9 @@ public class ManaItemContextRecipe extends SpecialRecipe {
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
             ItemStack item = inv.getStackInSlot(i);
-            if(item.getItem() instanceof IManaContextItem) {
-                ItemManaData manaData = ExtraDataUtil.itemManaData(item);
-                if(manaData.contextCore().haveMagickContext()) {
-                    manaData.contextCore().setHave(false);
-                    manaData.spellContext().clear();
-                    nonnulllist.set(i, item);
-                    inv.setInventorySlotContents(i, ItemStack.EMPTY);
-                }
+            if(item.getItem() instanceof MagickContextItem) {
+                nonnulllist.set(i, item);
+                inv.setInventorySlotContents(i, ItemStack.EMPTY);
             }
         }
 

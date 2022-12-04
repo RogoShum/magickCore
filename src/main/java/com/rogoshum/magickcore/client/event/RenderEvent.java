@@ -168,7 +168,7 @@ public class RenderEvent {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         for (ResourceLocation res : particles.keySet()) {
             Queue<LitParticle> litParticles = particles.get(res);
-            double scale = Math.max((litParticles.size() * 0.001d), 1d);
+            double scale = Math.max((litParticles.size() * 0.003d), 1d);
             for(LitParticle par : litParticles) {
                 if(par != null) {
                     if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z, scale))

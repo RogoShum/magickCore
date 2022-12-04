@@ -8,12 +8,15 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class RepeaterEntity extends ManaPointEntity {
+    private static final ManaFactor FACTOR = ManaFactor.create(0.2f, 1.0f, 0.2f);
     private static final List<Entity> EMPTY = Collections.emptyList();
     public byte cool_down = 0;
     public RepeaterEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -39,7 +43,22 @@ public class RepeaterEntity extends ManaPointEntity {
             MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
                     .caster(getOwner()).projectile(this).noCost();
-            if(spellContext().containChild(LibContext.DIRECTION)) {
+
+            if(spellContext().containChild(LibContext.TRACE)) {
+                TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
+                context.addChild(traceContext);
+                Entity entity = traceContext.entity;
+                if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.world.isRemote) {
+                    entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+                    traceContext.entity = entity;
+                } else if(entity != null && entity.isAlive()) {
+                    Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
+                    Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+                    context.replenishChild(DirectionContext.create(goal.subtract(self).normalize()));
+                } else if(spellContext().containChild(LibContext.DIRECTION)) {
+                    context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
+                }
+            } else if(spellContext().containChild(LibContext.DIRECTION)) {
                 context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
             }
             MagickReleaseHelper.releaseMagick(beforeCast(context));
@@ -70,7 +89,7 @@ public class RepeaterEntity extends ManaPointEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.DEFAULT;
+        return FACTOR;
     }
 
     @Override
@@ -80,22 +99,19 @@ public class RepeaterEntity extends ManaPointEntity {
                 , this.getPosY() + this.getHeight() * 0.5
                 , this.getPosZ())
                 , MagickCore.getRandFloat() * 0.25f, MagickCore.getRandFloat() * 0.25f
-                , 0.5f * MagickCore.getRandFloat()
+                , MagickCore.getRandFloat()
                 , this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
         litPar.setGlow();
-        litPar.setParticleGravity(0f);
-        litPar.setShakeLimit(15.0f);
-        litPar.setCanCollide(false);
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
 
-        float height = Float.parseFloat(String.format("%.1f", Math.max(0.8f, this.rand.nextFloat()))) * 0.3f;
-        float width = Float.parseFloat(String.format("%.1f", Math.max(0.8f, this.rand.nextFloat()))) * 0.3f;
-        LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
+        float height = Float.parseFloat(String.format("%.1f", this.rand.nextFloat())) * 0.6f;
+        float width = Float.parseFloat(String.format("%.1f", this.rand.nextFloat())) * 0.6f;
+        LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
                 , new Vector3d(this.getPosX()
                 , this.getPosY() + this.getHeight() * 0.5
                 , this.getPosZ())
-                , width, height, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , width, height, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0f);
         par.setLimitScale();

@@ -96,7 +96,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox(), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && item.ticksExisted > 10 && item.getPositionVec().squareDistanceTo(this.getPositionVec()) <= 8) {
+            if(item.isAlive() && item.ticksExisted > 10 && item.getPositionVec().squareDistanceTo(this.getPositionVec()) <= 2.25) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 if(material.upgradeManaItem(item.getItem(), innerManaData)) {
                     Vector3d relativeVec = relativeVec(item);
@@ -374,7 +374,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
 
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), (entity -> this.getPositionVec().squareDistanceTo(entity.getPositionVec()) <= 9 && (predicate == null || predicate.test(entity))));
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), (entity -> this.getPositionVec().squareDistanceTo(entity.getPositionVec()) <= 2.25 && (predicate == null || predicate.test(entity))));
     }
 
     public static class InnerManaData implements ISpellContext, IMaterialLimit {
@@ -428,8 +428,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             }
             this.prePos = pos;
             this.pos = this.pos.add(this.motion);
-            if(this.pos.lengthSquared() > 9)
-                this.pos = this.pos.normalize().scale(3);
+            if(this.pos.lengthSquared() > 2.25)
+                this.pos = this.pos.normalize().scale(1.5);
             if(this.pos.lengthSquared() < 1)
                 this.pos = this.pos.normalize().scale(1);
             age++;

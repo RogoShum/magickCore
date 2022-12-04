@@ -8,12 +8,15 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +40,20 @@ public class JewelryBagEntity extends ManaProjectileEntity {
                 itemEntity.remove();
                 spellContext().addChild(context);
             }
+        }
+    }
+
+    @Override
+    protected void traceTarget() {
+        if (!this.spellContext().containChild(LibContext.TRACE) || this.world.isRemote) return;
+        Entity entity = getOwner();
+        if(entity != null && entity.isAlive()) {
+            Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
+            Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+
+            double length = maxMotion * 0.3;
+            Vector3d motion = goal.subtract(self).normalize().scale(Math.max(length * 0.2, 0.02));
+            this.setMotion(motion.add(this.getMotion().scale(0.8)));
         }
     }
 

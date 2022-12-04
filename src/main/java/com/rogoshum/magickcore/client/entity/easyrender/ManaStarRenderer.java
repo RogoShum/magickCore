@@ -26,6 +26,8 @@ public class ManaStarRenderer extends EasyRenderer<ManaStarEntity> {
             baseOffset(renderParams.matrixStack);
             renderParams.matrixStack.scale(entity.getWidth(), entity.getWidth(), entity.getWidth());
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
         });
 
         return map;

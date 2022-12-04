@@ -86,7 +86,7 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.getWidth() * 1.2f;
+        scale = entity.getWidth() * 1.1f;
         if(entity.ticksExisted == 0)
             scale *= 0;
         else if(entity.ticksExisted < 30)

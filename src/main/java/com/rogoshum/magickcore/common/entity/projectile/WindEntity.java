@@ -56,7 +56,7 @@ public class WindEntity extends ManaProjectileEntity {
             }
             if(pass.get()) {
                 Vector3d motion = this.getPositionVec().add(0, getHeight() / 2, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() / 2, 0)).normalize();
-                motion = motion.scale(0.04 * getWidth());
+                motion = motion.scale(0.08 * getWidth());
                 entity.addVelocity(motion.x, motion.y, motion.z);
             }
         }

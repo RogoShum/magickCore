@@ -59,7 +59,7 @@ public class RenderThread extends Thread {
             if(needUpdate && clippinghelper != null) {
                 HashMap<RenderMode, Queue<Consumer<RenderParams>>> function = new HashMap<>();
                 Iterator<IEasyRender> it = renderer.iterator();
-                double scale = Math.max((renderer.size() * 0.001d), 1d);
+                double scale = Math.max((renderer.size() * 0.002d), 1d);
                 try {
                     while (it.hasNext()) {
                         IEasyRender renderer = it.next();

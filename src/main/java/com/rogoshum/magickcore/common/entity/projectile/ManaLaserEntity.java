@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaLaserRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -24,12 +25,19 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new ManaLaserRenderer(this));
+    }
+
+    @Override
     protected float getGravityVelocity() {
         return 0.0F;
     }
 
     @Override
     protected void applyParticle() {
+        /*
         int count = (int) (20 * getWidth());
         double scaleX = (this.getPosX() - this.lastTickPosX)/count;
         double scaleY = (this.getPosY() - this.lastTickPosY)/count;
@@ -46,6 +54,8 @@ public class ManaLaserEntity extends ManaProjectileEntity {
             //par.addMotion(this.getMotion().x / 2, this.getMotion().y / 2, this.getMotion().z / 2);
             MagickCore.addMagickParticle(par);
         }
+
+         */
 
         LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()

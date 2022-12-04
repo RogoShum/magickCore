@@ -75,6 +75,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
     }
 
     default boolean suitableEntity(Entity entity) {
+        if(!entity.isAlive()) return false;
         ApplyType applyType = spellContext().applyType;
         if(spellContext().postContext != null)
             applyType = spellContext().postContext.applyType;

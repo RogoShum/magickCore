@@ -28,10 +28,10 @@ public class Networking {
                 .consumer(EntityStatePack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(ManaDataPack.class, nextID())
-                .encoder(ManaDataPack::toBytes)
-                .decoder(ManaDataPack::new)
-                .consumer(ManaDataPack::handler)
+        INSTANCE.messageBuilder(EntityCompoundTagPack.class, nextID())
+                .encoder(EntityCompoundTagPack::toBytes)
+                .decoder(EntityCompoundTagPack::new)
+                .consumer(EntityCompoundTagPack::handler)
                 .add();
 
         INSTANCE.messageBuilder(ManaCapacityPack.class, nextID())

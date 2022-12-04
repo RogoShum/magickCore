@@ -178,6 +178,8 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public float getAlpha(float alpha) {
+        if(this.maxAge <= 3)
+            return alpha;
         float f = ((float) this.age) / (float) this.maxAge;
         if(f > .7)
             f -= Math.pow(1-f, 1.1);
@@ -186,7 +188,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public float getScale(float scale) {
-        if(noScale)
+        if(this.maxAge <= 3 || noScale)
             return scale;
         float f = (float) this.age / (float) this.maxAge;
         if (f <= 0.5f)

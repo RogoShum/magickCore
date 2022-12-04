@@ -153,7 +153,7 @@ public class MagickReleaseHelper {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
         }
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
-        if(!context.applyType.isForm()) {
+        if(context.applyType.continueCast()) {
             SpellContext postContext = context.postContext;
             if (postContext != null) {
                 MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();

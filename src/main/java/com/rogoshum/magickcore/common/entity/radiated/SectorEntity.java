@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.SectorRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -23,7 +24,7 @@ public class SectorEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sector.png");
     public final Predicate<Entity> inSector = (entity -> {
         Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        return this.getDistanceSq(pos) <= spellContext().range * spellContext().range && rightDirection(pos, entity.getHeight());
+        return this.getDistanceSq(pos) <= getRange() * getRange() && rightDirection(pos, (entity.getHeight() + entity.getWidth()) * 0.5f);
     });
     public SectorEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -31,7 +32,13 @@ public class SectorEntity extends ManaRadiateEntity {
 
     @Override
     protected void applyParticle() {
-        applyParticle(2);
+        //applyParticle(2);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new SectorRadiateRenderer(this));
     }
 
     @Override
@@ -39,10 +46,14 @@ public class SectorEntity extends ManaRadiateEntity {
         applyParticle(20);
     }
 
+    public float getRange() {
+        return spellContext().range * 1.5f;
+    }
+
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range),
+        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()),
                 predicate != null ? predicate.and(inSector)
                         : inSector);
     }
@@ -58,7 +69,7 @@ public class SectorEntity extends ManaRadiateEntity {
     }
 
     protected void applyParticle(int particleAge) {
-        float range = spellContext().range;
+        float range = getRange();
         Vector3d direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
@@ -67,7 +78,7 @@ public class SectorEntity extends ManaRadiateEntity {
         }
         if(direction == null) return;
 
-        List<Vector3d> vectors = ParticleUtil.drawSector(this.getPositionVec(), direction.normalize().scale(range), (double) (9 * range), (int) (range));
+        List<Vector3d> vectors = ParticleUtil.drawSector(this.getPositionVec(), direction.normalize().scale(range), 90, 15);
         for (Vector3d vector : vectors) {
             LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , vector
@@ -98,8 +109,8 @@ public class SectorEntity extends ManaRadiateEntity {
             direction = getOwner().getLookVec().normalize();
         }
         if(direction == null) return false;
-        boolean inCone = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.2 * spellContext().range;
-        if(!inCone) return false;
+        //boolean inCone = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.2 * getRange();
+        //if(!inCone) return false;
 
         float halfHeight = offset * 0.5f;
         double top = vec.add(0, halfHeight, 0).subtract(this.getPositionVec()).normalize().y;
@@ -109,14 +120,14 @@ public class SectorEntity extends ManaRadiateEntity {
 
     @Override
     public Iterable<BlockPos> findBlocks() {
-        int range = (int) spellContext().range;
+        int range = (int) getRange();
         return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
-        float rangeCube = spellContext().range * spellContext().range;
+        float rangeCube = getRange() * getRange();
         return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
-                <= rangeCube && rightDirection(Vector3d.copy(pos), 0));
+                <= rangeCube && rightDirection(Vector3d.copyCentered(pos).subtract(0, 0.5, 0), 1));
     }
 }

@@ -7,8 +7,11 @@ import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.common.entity.projectile.ManaLaserEntity;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.rogoshum.magickcore.common.entity.radiated.RayTraceEntity;
+import com.rogoshum.magickcore.common.entity.radiated.SphereEntity;
+import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -17,33 +20,40 @@ import net.minecraft.util.math.vector.Vector3f;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
-    private static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_top.png");
-    private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_mid.png");
-    private static final ResourceLocation LASER_BOTTOM = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/laser_bottom.png");
+public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
+    private static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_top.png");
+    private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_mid.png");
+    private static final ResourceLocation LASER_BOTTOM = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_bottom.png");
     private float length;
 
-    public ManaLaserRenderer(ManaLaserEntity entity) {
+    public RayRadiateRenderer(RayTraceEntity entity) {
         super(entity);
     }
 
     @Override
     public void baseOffset(MatrixStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
-        Vector3d dir = entity.getMotion().scale(-1).normalize();
+        Vector3d dir = Vector3d.ZERO;
+        if(entity.spellContext().containChild(LibContext.DIRECTION))
+            dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
+        else if (entity.getOwner() != null)
+            dir = entity.getOwner().getLookVec().normalize();
         Vector2f rota = getRotationFromVector(dir);
-        float scale = 0.5f * entity.getWidth();
-        double length = this.length * scale;
-        matrixStackIn.translate(dir.x * length - dir.x * entity.getWidth(), dir.y * length - dir.y * entity.getWidth(), dir.z * length - dir.z * entity.getWidth());
+        float scale = 0.25f;
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
         matrixStackIn.scale(scale, scale, scale);
     }
 
     @Override
+    public boolean forceRender() {
+        return entity.isAlive();
+    }
+
+    @Override
     public void update() {
         super.update();
-        length = (float) Math.max(entity.getMotion().length() * 30 + 1, 1);
+        length = entity.spellContext().range * 20;
     }
 
     public void renderTop(RenderParams params) {
