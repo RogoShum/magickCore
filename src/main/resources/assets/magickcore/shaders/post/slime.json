@@ -1,8 +1,7 @@
 {
     "targets": [
         "magickcore:slime_swap",
-        "magickcore:slime_final",
-        "magickcore:slime_zbuffer"
+        "magickcore:slime_final"
     ],
     "passes": [{
         "name": "magickcore:slime",

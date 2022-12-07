@@ -218,7 +218,7 @@ public class RenderEvent {
             par.setGlow();
             par.setParticleGravity(0);
             par.setShakeLimit(5f);
-            par.useShader(LibShaders.opacity);
+            par.useShader(LibShaders.OPACITY);
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
         }

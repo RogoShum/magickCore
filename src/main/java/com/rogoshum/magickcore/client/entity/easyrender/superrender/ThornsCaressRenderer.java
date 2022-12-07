@@ -25,12 +25,6 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     float preRotate;
     float postRotate;
     float rotate;
-    private static final ElementRenderer originRender = ModElements.ORIGIN.getRenderer();
-    Queue<Queue<RenderHelper.VertexAttribute>> SPHERE_0;
-    Queue<Queue<RenderHelper.VertexAttribute>> SPHERE_1;
-    Queue<Queue<RenderHelper.VertexAttribute>> CYLINDER_0;
-    Queue<Queue<RenderHelper.VertexAttribute>> CYLINDER_1;
-    private static final RenderType CYLINDER = RenderHelper.getTexedCylinderGlint(cylinder_rotate, 1f, 0f);
     private static final RenderType BLANK = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
     private static final RenderType SPHERE = RenderHelper.getTexedSphereGlow(sphere_rotate, 1f, 0f);
     float degrees;
@@ -46,15 +40,6 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         postRotate = (entity.ticksExisted + 1) % 11;
         rotate = MathHelper.lerp(Minecraft.getInstance().getRenderPartialTicks(), preRotate, postRotate);
         degrees = 360f * (rotate / 10);
-        Color color = entity.spellContext().element.color();
-        SPHERE_0 = RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight), new RenderHelper.VertexContext(entity.getHitReactions(), 2.10f));
-        SPHERE_1 = RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.9f, color, RenderHelper.renderLight), new RenderHelper.VertexContext(entity.getHitReactions(), 2.10f));
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(1.0f, 1.0f, 1, 1.0f, 8
-                , 0.2f, 0.7f, 0.3f, color);
-        CYLINDER_0 = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.5f);
-        context = new RenderHelper.CylinderContext(1.0f, 1.0f, 1, 1.0f, 8
-                , 0.4f, 1.0f, 0.3f, originRender.getColor());
-        CYLINDER_1 = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.5f);
     }
 
     @Override
@@ -68,7 +53,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, BLANK), SPHERE_0);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, BLANK), new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight), 6);
     }
 
     public void renderSphereOpacity(RenderParams params) {
@@ -76,26 +61,15 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), SPHERE_1);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.color(), RenderHelper.renderLight), 6);
     }
 
-    public void renderCylinderSlime(RenderParams params) {
+    public void renderSphereDistortion(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(degrees));
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, CYLINDER)
-                , CYLINDER_0);
-    }
-
-    public void renderCylinderOpacity(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
-        baseOffset(matrixStackIn);
-        BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(degrees));
-        matrixStackIn.scale(1.1f, 1.1f, 1.1f);
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, CYLINDER)
-                , CYLINDER_1);
+        matrixStackIn.scale(1.45f, 1.45f, 1.45f);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.color(), RenderHelper.renderLight), 6);
     }
 
     @Override
@@ -103,8 +77,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(BLANK, RenderMode.ShaderList.SLIME_SHADER), this::renderSphereSlime);
         map.put(new RenderMode(SPHERE, RenderMode.ShaderList.OPACITY_SHADER), this::renderSphereOpacity);
-        map.put(new RenderMode(CYLINDER, RenderMode.ShaderList.SLIME_SHADER), this::renderCylinderSlime);
-        //map.put(new RenderMode(CYLINDER, LibShaders.opacity), this::renderCylinderOpacity);
+        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderSphereDistortion);
         return map;
     }
 }

@@ -60,10 +60,6 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     protected void doClientTask() {
-        {
-            Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-            this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.02F));
-        }
         super.doClientTask();
     }
 

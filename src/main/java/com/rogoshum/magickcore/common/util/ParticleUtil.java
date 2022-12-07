@@ -1,12 +1,18 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.magick.MagickElement;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +65,36 @@ public class ParticleUtil {
         }
         return vectors;
     }
+
     public static Vector3d[] drawCone(Vector3d center, Vector3d direction, double degrees, int frequency) {
+        degrees = MathHelper.abs((float) degrees);
+        if(degrees >= 90) {
+            direction = direction.scale(-1);
+            degrees = 179 - degrees;
+            if(degrees < 0) {
+                return new Vector3d[]{center.add(direction)};
+            }
+        }
+        if(frequency < 3)
+            frequency = 3;
+        double length = direction.length();
+        Vector3d forward = center.add(direction);
+        Vector3d[] vector = new Vector3d[frequency];
+        float part = 360f / frequency;
+        Vector2f pitchYaw = getRotationForVector(direction);
+        for (int i = 0; i < frequency; ++i) {
+            float ratio = i * part * ((float)Math.PI / 180F);
+            Vector3d pitchTransform = getVectorForRotation(pitchYaw.x-90, pitchYaw.y).scale(MathHelper.cos(ratio));
+            Vector3d yawTransform = getVectorForRotation(0, pitchYaw.y-90).scale(MathHelper.sin(ratio));
+            Vector3d rotate = pitchTransform.add(yawTransform).normalize();
+            rotate = rotate.scale(Math.tan(degrees * Math.PI / 180F) * length);
+
+            vector[i] = forward.add(rotate).subtract(center).normalize().scale(length).add(center);//
+        }
+        return vector;
+    }
+
+    public static Vector3d[] drawCircle(Vector3d center, Vector3d direction, double degrees, int frequency) {
         degrees = MathHelper.abs((float) degrees);
         if(degrees >= 90) {
             direction = direction.scale(-1);
@@ -169,7 +204,69 @@ public class ParticleUtil {
         return new Vector3d(tx, ty, tz).add(direction.scale(-y)).add(direction.scale(height));
     }
 
-    public static void spawnBlastParticle() {
+    public static void spawnBlastParticle(World world, Vector3d center, float force, MagickElement element, ParticleType type) {
+        float count = (10 * force);
+        float scale = Math.max(0.1f, 0.05f * force);
+        if(!world.isRemote) {
+            for (int i = 0; i < count; ++i) {
+                double randX = MagickCore.getNegativeToOne() * 0.01 * force;
+                double randY = MagickCore.getNegativeToOne() * 0.01 * force;
+                double randZ = MagickCore.getNegativeToOne() * 0.01 * force;
 
+                ParticleBuilder builder = ParticleBuilder.create(world, type, center, scale, scale, 1.0f, 30, element.type());
+                builder.grav(0);
+                builder.glow();
+                builder.limitSize();
+                builder.motion(new Vector3d(randX * force, randY * force, randZ * force));
+                builder.send();
+            }
+        } else {
+            ResourceLocation res = ParticleType.getResourceLocation(type, element);
+            for (int i = 0; i < count; ++i) {
+                double randX = MagickCore.getNegativeToOne() * 0.01 * force;
+                double randY = MagickCore.getNegativeToOne() * 0.01 * force;
+                double randZ = MagickCore.getNegativeToOne() * 0.01 * force;
+                LitParticle par = new LitParticle(world, res
+                        , new Vector3d(center.x, center.y, center.z), scale, scale, 1.0f, 30, element.getRenderer());
+                par.setParticleGravity(0);
+                par.setLimitScale();
+                par.setGlow();
+                par.addMotion(randX * force, randY * force, randZ * force);
+                MagickCore.addMagickParticle(par);
+            }
+        }
+    }
+
+    public static void spawnImpactParticle(World world, Vector3d center, float force, Vector3d motion, MagickElement element, ParticleType type) {
+        float count = (10 * force);
+        float scale = Math.max(0.1f, 0.05f * force);
+        if(!world.isRemote) {
+            for (int i = 0; i < count; ++i) {
+                double randX = MagickCore.getNegativeToOne() * 0.05;
+                double randY = MagickCore.getNegativeToOne() * 0.05;
+                double randZ = MagickCore.getNegativeToOne() * 0.05;
+
+                ParticleBuilder builder = ParticleBuilder.create(world, type, center, scale, scale, 1.0f, 20, element.type());
+                builder.grav(0);
+                builder.glow();
+                builder.limitSize();
+                builder.motion(new Vector3d(motion.x + randX * force, motion.y + randY * force, motion.z + randZ * force));
+                builder.send();
+            }
+        } else {
+            ResourceLocation res = ParticleType.getResourceLocation(type, element);
+            for (int i = 0; i < count; ++i) {
+                double randX = MagickCore.getNegativeToOne() * 0.05;
+                double randY = MagickCore.getNegativeToOne() * 0.05;
+                double randZ = MagickCore.getNegativeToOne() * 0.05;
+                LitParticle par = new LitParticle(world, res
+                        , new Vector3d(center.x, center.y, center.z), scale, scale, 1.0f, 20, element.getRenderer());
+                par.setParticleGravity(0);
+                par.setLimitScale();
+                par.setGlow();
+                par.addMotion(motion.x + randX * force, motion.y + randY * force, motion.z + randZ * force);
+                MagickCore.addMagickParticle(par);
+            }
+        }
     }
 }

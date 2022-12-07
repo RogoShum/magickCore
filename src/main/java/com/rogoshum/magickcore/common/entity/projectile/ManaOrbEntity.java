@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ManaOrbRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaOrbRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;

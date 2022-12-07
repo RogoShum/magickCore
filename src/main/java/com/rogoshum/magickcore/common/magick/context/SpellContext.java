@@ -108,6 +108,10 @@ public class SpellContext {
         return childContexts.containsKey(s);
     }
 
+    public void removeChild(String s) {
+        childContexts.remove(s);
+    }
+
     public <T extends ChildContext> T getChild(String s) {
         return (T) childContexts.get(s);
     }

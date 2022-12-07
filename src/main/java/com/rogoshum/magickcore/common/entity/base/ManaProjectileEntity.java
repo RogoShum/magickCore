@@ -403,7 +403,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         context.addChild(positionContext);
         if (spellContext().postContext != null)
             context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
-        MagickReleaseHelper.releaseMagick(context);
+        MagickReleaseHelper.releaseMagick(beforeCast(context));
 
         if (hitBlockRemove(p_230299_1_) && !this.world.isRemote) {
             this.remove();

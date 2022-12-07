@@ -74,7 +74,7 @@ public class GravityLiftEntity extends ManaPointEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.DEFAULT;
+        return ManaFactor.POINT_DEFAULT;
     }
 
     @Override

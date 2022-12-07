@@ -68,8 +68,7 @@ public class ShaderEvent {
         return null;
     }
 
-    public void initShaderGroup()
-    {
+    public void initShaderGroup() {
         this.framebufferWidth = this.framebufferHeight = -1;
         shadersResource.forEach( (s, s2) -> {
             ResourceLocation resourceLocation = new ResourceLocation(s);

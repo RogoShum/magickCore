@@ -43,7 +43,7 @@ public class MagickContextItem extends ManaItem{
             for (ApplyType type : ApplyType.values()) {
                 if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY) continue;
                 ExtraDataUtil.itemManaData(sample, (data) -> {
-                    data.spellContext().applyType(type).force(10).range(5).tick(300).addChild(new TraceContext());
+                    data.spellContext().applyType(type).force(7).range(7).tick(300).addChild(new TraceContext());
                 });
                 ItemStack itemStack = sample.copy();
                 items.add(itemStack);

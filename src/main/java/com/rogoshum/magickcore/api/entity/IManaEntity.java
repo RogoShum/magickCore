@@ -85,6 +85,10 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
             return false;
         }
 
+        if(applyType.getBeneficial() == ApplyType.Beneficial.BENEFICIAL && !sameLikeOwner) {
+            return false;
+        }
+
         boolean refraction = false;
         if(entity instanceof IManaRefraction)
             refraction = ((IManaRefraction) entity).refraction(spellContext());

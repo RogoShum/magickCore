@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -105,9 +107,18 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        ExtraDataUtil.entityData(entityLiving).<EntityStateData>execute(LibEntityData.ENTITY_STATE, data -> releaseMagick(entityLiving, data, stack));
+        EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
+        if(state != null) {
+            boolean success = releaseMagick(entityLiving, state, stack);
+            if(success)
+                spawnParticle(entityLiving, state);
+        }
 
         return super.onItemUseFinish(stack, worldIn, entityLiving);
+    }
+
+    public void spawnParticle(LivingEntity playerIn, EntityStateData state) {
+        ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
     }
 
     public abstract boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack);

@@ -332,7 +332,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
         if(shakeLimit <= 0.0f) {
-            RenderHelper.callQuadVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
+            RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
         } else if(quad != null && color != null){
             Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
             BufferBuilder buffer = renderParams.buffer;
@@ -340,13 +340,13 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
             RenderHelper.begin(context);
             try {
                 buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 1.0f)
-                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
+                        .lightmap(RenderHelper.renderLight).endVertex();
                 buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 0.0f)
-                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
+                        .lightmap(RenderHelper.renderLight).endVertex();
                 buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 0.0f)
-                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
+                        .lightmap(RenderHelper.renderLight).endVertex();
                 buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 1.0f)
-                        .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
+                        .lightmap(RenderHelper.renderLight).endVertex();
             } catch (Exception ignored) {
 
             }
@@ -383,7 +383,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         Vector3d[] Quad = new Vector3d[4];
         Quad[0] = V0; Quad[1] = V1; Quad[2] = V2; Quad[3] = V3;
         quad = Quad;
-        type = isGlow ? RenderHelper.getTexedOrbGlow(texture) : RenderHelper.getTexedOrb(texture);
+        type = isGlow ? RenderHelper.getTexedParticleGlow(texture) : RenderHelper.getTexedParticle(texture);
         renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
 
         float partialTicks = Minecraft.getInstance().getRenderPartialTicks();

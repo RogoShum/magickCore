@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.IndirectEntityDamageSource;
@@ -18,29 +19,64 @@ public class ModDamages {
 
     public static DamageSource getArcDamage() { return arc; }
     public static DamageSource applyEntityArcDamage(Entity entity) { return new EntityDamageSource(arc.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage().setDamageIsAbsolute(); }
-    public static DamageSource applyProjectileArcDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(arc.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setDamageIsAbsolute(); }
+    public static DamageSource applyProjectileArcDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(arc.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage().setDamageIsAbsolute();
+        else
+            return new IndirectEntityDamageSource(arc.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setDamageIsAbsolute();
+    }
 
     public static DamageSource getSolarDamage() { return solar; }
     public static DamageSource applyEntitySolarDamage(Entity entity) { return new EntityDamageSource(solar.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage().setFireDamage(); }
-    public static DamageSource applyProjectileSolarDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(solar.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setFireDamage(); }
+    public static DamageSource applyProjectileSolarDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(solar.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage().setFireDamage();
+        else
+            return new IndirectEntityDamageSource(solar.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setFireDamage();
+    }
 
     public static DamageSource getVoidDamage() { return voidDamage; }
     public static DamageSource applyEntityVoidDamage(Entity entity) { return new EntityDamageSource(voidDamage.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage().setDamageAllowedInCreativeMode(); }
-    public static DamageSource applyProjectileVoidDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(voidDamage.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setDamageAllowedInCreativeMode(); }
+    public static DamageSource applyProjectileVoidDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(voidDamage.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage().setDamageAllowedInCreativeMode();
+        else
+            return new IndirectEntityDamageSource(voidDamage.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage().setDamageAllowedInCreativeMode();
+    }
 
     public static DamageSource getStasisDamage() { return stasis; }
     public static DamageSource applyEntityStasisDamage(Entity entity) { return new EntityDamageSource(stasis.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
-    public static DamageSource applyProjectileStasisDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(stasis.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
+    public static DamageSource applyProjectileStasisDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(stasis.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage();
+        else
+            return new IndirectEntityDamageSource(stasis.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage();
+    }
 
     public static DamageSource getWitherDamage() { return wither; }
     public static DamageSource applyEntityWitherDamage(Entity entity) { return new EntityDamageSource(wither.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
-    public static DamageSource applyProjectileWitherDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(wither.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
+    public static DamageSource applyProjectileWitherDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(wither.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage();
+        else
+            return new IndirectEntityDamageSource(wither.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage();
+    }
 
     public static DamageSource getTakenDamage() { return taken; }
     public static DamageSource applyEntityTakenDamage(Entity entity) { return new EntityDamageSource(taken.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
-    public static DamageSource applyProjectileTakenDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(taken.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
+    public static DamageSource applyProjectileTakenDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(taken.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage();
+        else
+            return new IndirectEntityDamageSource(taken.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage();
+    }
 
     public static DamageSource getAirDamage() { return air; }
     public static DamageSource applyEntityAirDamage(Entity entity) { return new EntityDamageSource(air.getDamageType(), entity).setDamageBypassesArmor().setMagicDamage(); }
-    public static DamageSource applyProjectileAirDamage(Entity entity, Entity projectile) { return new IndirectEntityDamageSource(air.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage(); }
+    public static DamageSource applyProjectileAirDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof ProjectileEntity)
+            return new IndirectEntityDamageSource(air.getDamageType(), projectile, entity).setProjectile().setDamageBypassesArmor().setMagicDamage();
+        else
+            return new IndirectEntityDamageSource(air.getDamageType(), projectile, entity).setDamageBypassesArmor().setMagicDamage();
+    }
 }

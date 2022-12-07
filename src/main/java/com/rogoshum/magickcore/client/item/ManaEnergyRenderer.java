@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -36,19 +37,27 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Queue;
 
 public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation TAKEN = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
+    private static final HashMap<ApplyType, ResourceLocation> APPLY_TYPE_TEXTURES = new HashMap<>();
     private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphere(blank);
     private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlow(TAKEN, 1, 0);
     private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.15f, ModElements.ORIGIN_COLOR, RenderHelper.halfLight);
-    private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.3f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.15f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_2 = new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
     private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_1 = RenderHelper.drawSphere(6, RENDER_CONTEXT_1 , RenderHelper.EmptyVertexContext);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_2 = RenderHelper.drawSphere(6, RENDER_CONTEXT_2 , RenderHelper.EmptyVertexContext);
     private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_0 = RenderHelper.drawSphere(6, RENDER_CONTEXT_0 , RenderHelper.EmptyVertexContext);
     private static final HashSet<EntityType<?>> ERROR_TYPE = new HashSet<>();
+
+    public static void addApplyTypeTexture(ApplyType type, ResourceLocation res) {
+        APPLY_TYPE_TEXTURES.put(type, res);
+    }
 
     @Override
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
@@ -123,8 +132,14 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
                 , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.1f, spellContext.element.color(), combinedLight)
                         , RenderHelper.EmptyVertexContext));
         matrixStack.scale(1.1f, 1.1f, 1.1f);
-        if(stack.getItem() instanceof MagickContextItem)
-            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1), INNER_SPHERE_1);
+        if(stack.getItem() instanceof MagickContextItem) {
+            if(!APPLY_TYPE_TEXTURES.containsKey(spellContext.applyType))
+                RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1), INNER_SPHERE_1);
+            else {
+                ResourceLocation res = APPLY_TYPE_TEXTURES.get(spellContext.applyType);
+                RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphereGlow(res, 1, 0)), INNER_SPHERE_2);
+            }
+        }
         else
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0), INNER_SPHERE_0);
         matrixStack.pop();
@@ -207,7 +222,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             IVertexBuilder builder = bufferIn.getBuffer(RenderHelper.getTexedOrbGlow(icon));
             Color color = manaEntity.spellContext().element.color();
             Matrix4f matrix4f = matrixStack.getLast().getMatrix();
-            float alpha = 0.35f;
+            float alpha = 0.5f;
             float scale = 0.4f;
             matrixStack.scale(scale, scale, scale);
             matrixStack.rotate(Vector3f.YN.rotationDegrees(45));

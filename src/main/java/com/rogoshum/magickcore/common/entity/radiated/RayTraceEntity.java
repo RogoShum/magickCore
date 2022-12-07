@@ -1,13 +1,14 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.RayRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.RayRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,12 +50,24 @@ public class RayTraceEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
+        if(spellContext().containChild(LibContext.TRACE)) {
+            TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
+            Entity entity = traceContext.entity;
+            if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.world.isRemote) {
+                entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+                traceContext.entity = entity;
+            } else if(entity != null && entity.isAlive()) {
+                Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
+                Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+                spellContext().addChild(DirectionContext.create(goal.subtract(self).normalize()));
+            }
+        }
         Entity target = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
-            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), direction, getLength());
+            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec().add(direction.scale(0.5)), direction, getLength(), false);
         } else if (getOwner() != null) {
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec(), getOwner().getLookVec(), getLength());
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.getPositionVec().add(getOwner().getLookVec().scale(0.5)), getOwner().getLookVec(), getLength(), false);
         }
 
         List<Entity> list = new ArrayList<>();
@@ -91,7 +105,7 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.create(0.5f, 1.0f, 1.0f);
+        return ManaFactor.RADIATE_DEFAULT;
     }
 
     protected void applyParticle(int particleAge) {

@@ -1,9 +1,8 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ConeRadiateRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.SectorRadiateRenderer;
-import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.ConeRadiateRenderer;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -75,32 +74,33 @@ public class ConeEntity extends ManaRadiateEntity {
             direction = getOwner().getLookVec().normalize();
         }
         if(direction == null) return;
-
+        ParticleUtil.spawnImpactParticle(world, this.getPositionVec(), range, direction, spellContext().element, ParticleType.PARTICLE);
+        /*
         for (int i = 1; i <= range; ++i) {
-            Vector3d[] vectors = ParticleUtil.drawCone(this.getPositionVec(), direction.normalize().scale(range * 2), 4.5 * i, i * 2);
+            Vector3d[] vectors = ParticleUtil.drawCone(this.getPositionVec(), direction.normalize().scale(getRange()), 4.5 * i, i * 2);
             for (Vector3d vector : vectors) {
                 Vector3d dir = this.getPositionVec().subtract(vector);
                 LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                         , vector
-                        , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                        , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setGlow();
                 par.setParticleGravity(0);
                 par.setLimitScale();
                 par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
                 MagickCore.addMagickParticle(par);
 
-                if(rand.nextFloat() > 0.8) {
-                    par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                            , vector
-                            , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
-                    par.setGlow();
-                    par.setParticleGravity(0);
-                    par.setLimitScale();
-                    par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
-                    MagickCore.addMagickParticle(par);
-                }
+                par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                        , vector
+                        , 0.2f, 0.2f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                par.setGlow();
+                par.setParticleGravity(0);
+                par.setLimitScale();
+                par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
+                MagickCore.addMagickParticle(par);
             }
         }
+
+         */
     }
 
     @Override
@@ -115,7 +115,8 @@ public class ConeEntity extends ManaRadiateEntity {
         } else if (getOwner() != null) {
             direction = getOwner().getLookVec().normalize();
         }
-        return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.05 * getRange();
+
+        return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= Math.toRadians(getRange() * 2.25);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -25,11 +26,17 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class RepeaterEntity extends ManaPointEntity {
-    private static final ManaFactor FACTOR = ManaFactor.create(0.2f, 1.0f, 0.2f);
+    private static final ManaFactor FACTOR = ManaFactor.create(0.2f, 1.0f, 0.5f);
     private static final List<Entity> EMPTY = Collections.emptyList();
     public byte cool_down = 0;
+    private Entity spawnEntity;
     public RepeaterEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    public void setSpawnEntity(Entity entity) {
+        if(entity instanceof IManaEntity)
+            spawnEntity = entity;
     }
 
     @Override
@@ -37,8 +44,9 @@ public class RepeaterEntity extends ManaPointEntity {
         if(!spellContext().valid()) return;
 
         if(cool_down >= 0)
-            cool_down -= this.spellContext().force * 3 + 1;
+            cool_down -= this.spellContext().force * 3;
 
+        if(spawnEntity != null && spawnEntity.isAlive()) return;
         if(cool_down < 0) {
             MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))

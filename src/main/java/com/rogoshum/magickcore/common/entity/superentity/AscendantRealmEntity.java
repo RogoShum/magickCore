@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.entity.superentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.AscendantRealmRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -28,6 +29,12 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ascendant_realm.png");
     public AscendantRealmEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new AscendantRealmRenderer(this));
     }
 
     @Override
@@ -82,9 +89,9 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
                 continue;
             TakenEntityData state = ExtraDataUtil.takenEntityData(living);
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
-                MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
+                MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(this.spellContext().tick / 4).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.ATTACK);
+                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.ATTACK);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }

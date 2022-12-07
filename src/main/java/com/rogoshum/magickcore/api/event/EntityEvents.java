@@ -40,9 +40,25 @@ public class EntityEvents {
     }
 
     public static class EntityAddedToWorldEvent extends EntityEvent {
-        public EntityAddedToWorldEvent(Entity entity)
-        {
+        public EntityAddedToWorldEvent(Entity entity) {
             super(entity);
+        }
+    }
+
+    public static class MagickSpawnEntityEvent extends EntityEvent {
+        private final MagickContext context;
+        public MagickSpawnEntityEvent(MagickContext context, Entity entity) {
+            super(entity);
+            this.context = context;
+        }
+
+        public MagickContext getMagickContext() {
+            return context;
+        }
+
+        @Override
+        public boolean isCancelable() {
+            return true;
         }
     }
 

@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ManaLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -13,7 +13,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class ManaLaserEntity extends ManaProjectileEntity {
-    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
+    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 0.3f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_laser.png");
     public ManaLaserEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);

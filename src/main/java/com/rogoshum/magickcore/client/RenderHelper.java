@@ -146,6 +146,20 @@ public class RenderHelper {
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Orb_Solid", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
     }
 
+    public static RenderType getTexedParticle(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder()
+                .texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED)
+                .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(LIGHTMAP_ENABLED).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Particle", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL_QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexedParticleGlow(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder()
+                .texture(new RenderState.TextureState(locationIn, false, false))
+                .transparency(LIGHTNING_TRANSPARENCY).lightmap(LIGHTMAP_ENABLED).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Particle_Glow", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL_QUADS, 256, false, false, rendertype$state);
+    }
+
     public static RenderType getTexedOrb(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder()
                 .texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED)
@@ -186,6 +200,14 @@ public class RenderHelper {
                 .overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
                 .lightmap(LIGHTMAP_ENABLED).depthTest(DEPTH_LEQUAL).build(true);
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Entity", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexedEntityGlint(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false))
+                .transparency(TRANSLUCENT_TRANSPARENCY).shadeModel(SHADE_ENABLED)
+                .alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
+                .lightmap(LIGHTMAP_ENABLED).texturing(getEntityGlint(2.0f, 0.0f)).build(true);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Entity_Glint_Solid", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
     }
 
     public static RenderState.TexturingState getEntityGlint(float glintScale, float glintRotate) {
@@ -243,6 +265,15 @@ public class RenderHelper {
                         .alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
                         .lightmap(LIGHTMAP_ENABLED).texturing(getEntityGlint(glintScale, glintRotate)).build(true);
         return RenderType.makeType(MagickCore.MOD_ID + ":Layer_Entity_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getLayerEntityGlintSolid(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        RenderType.State rendertype$state =
+                RenderType.State.getBuilder().texture(new RenderState.TextureState(locationIn, false, false))
+                        .transparency(TRANSLUCENT_TRANSPARENCY).depthTest(DEPTH_EQUAL)
+                        .alpha(DEFAULT_ALPHA).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED).diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
+                        .lightmap(LIGHTMAP_ENABLED).texturing(getEntityGlint(glintScale, glintRotate)).build(true);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Layer_Entity_Glint_Solid_" + glintScale + "_" + glintRotate, DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
     }
 
     public static RenderType getLayerEntityGlint(ResourceLocation locationIn) {
@@ -352,6 +383,11 @@ public class RenderHelper {
         return RenderType.makeType(MagickCore.MOD_ID + ":Points_" + width, DefaultVertexFormats.ENTITY, GL_POINTS, 256, false, false, rendertype$state);
     }
 
+    public static RenderType getDistortion(ResourceLocation locationIn) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(TRANSLUCENT_TRANSPARENCY).texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED).texturing(getEntityGlint(1, 0)).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":Distortion", DefaultVertexFormats.POSITION_COLOR_TEX, GL_QUAD_STRIP, 256, rendertype$state);
+    }
+
     public static final ResourceLocation TAKEN_LAYER = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
     public static final ResourceLocation EMPTY_TEXTURE = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cycle.png");
     public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/enchanted_item_glint.png");
@@ -384,6 +420,29 @@ public class RenderHelper {
 
     public static void renderParticle(BufferContext pack, RenderContext renderContext) {
         renderParticle(pack, renderContext, EmptyVertexContext);
+    }
+
+    public static void callParticleVertex(BufferContext context, RenderContext renderContext) {
+        MatrixStack matrixStack = context.matrixStack;
+        Matrix4f matrix4f = matrixStack.getLast().getMatrix();
+        BufferBuilder buffer = context.buffer;
+        Color color = renderContext.color;
+        float alpha = renderContext.alpha;
+        int lightmap = renderContext.packedLightIn;
+        Vector3d[] quad = RenderHelper.QuadVector;
+
+        setup(context);
+        begin(context);
+        buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 1.0f)
+                .lightmap(lightmap).endVertex();
+        buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), alpha).tex(1.0f, 0.0f)
+                .lightmap(lightmap).endVertex();
+        buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 0.0f)
+                .lightmap(lightmap).endVertex();
+        buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), alpha).tex(0.0f, 1.0f)
+                .lightmap(lightmap).endVertex();
+        finish(context);
+        end(context);
     }
 
     public static void callQuadVertex(BufferContext context, RenderContext renderContext) {
@@ -545,6 +604,83 @@ public class RenderHelper {
             this.shakeName = "";
             this.limit = limit;
         }
+    }
+
+    public static void renderDistortion(BufferContext pack, RenderContext renderContext, VertexContext vertexContext, int stacks) {
+        if (stacks <= 2)
+            stacks = 2;
+
+        if (stacks % 2 != 0)
+            stacks++;
+
+        if(vertexContext.hitReaction.length == 0) {
+            renderDistortion(pack, renderContext, stacks);
+            return;
+        }
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, vertexContext);
+
+        setup(pack);
+        Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
+        while (it.hasNext()) {
+            Iterator<VertexAttribute> innerIt = it.next().iterator();
+            pack.matrixStack.push();
+            begin(pack);
+            while (innerIt.hasNext()) {
+                VertexAttribute vertex = innerIt.next();
+                buffer.pos(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).tex(vertex.texU, vertex.texV).endVertex();
+            }
+            finish(pack);
+            pack.matrixStack.pop();
+        }
+        end(pack);
+        pack.matrixStack.pop();
+    }
+
+    public static void renderDistortion(BufferContext pack, RenderContext renderContext, int stacks) {
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+        String hash =stacks +"Distortion"+renderContext.hashCode();
+
+        if(!GL_LIST_INDEX.containsKey(hash)) {
+            Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, EmptyVertexContext);
+            setup(pack);
+            begin(pack);
+            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
+            Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
+            while (it.hasNext()) {
+                Iterator<VertexAttribute> innerIt = it.next().iterator();
+                begin(pack);
+                VertexBuffer vertexBuffer = new VertexBuffer(DefaultVertexFormats.POSITION_COLOR_TEX);
+                while (innerIt.hasNext()) {
+                    VertexAttribute vertex = innerIt.next();
+                    buffer.pos(vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).tex(vertex.texU, vertex.texV).endVertex();
+                }
+                pack.buffer.finishDrawing();
+                vertexBuffer.upload(pack.buffer);
+                vertexBuffers.add(vertexBuffer);
+            }
+
+            GL_LIST_INDEX.put(hash, vertexBuffers);
+            end(pack);
+        } else {
+            setup(pack);
+            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
+            pack.type.setupRenderState();
+            for (VertexBuffer vertexBuffer : vertexBuffers) {
+                vertexBuffer.bindBuffer();
+                DefaultVertexFormats.POSITION_COLOR_TEX.setupBufferState(0);
+                vertexBuffer.draw(matrix4f, pack.type.getDrawMode());
+                VertexBuffer.unbindBuffer();
+                DefaultVertexFormats.POSITION_COLOR_TEX.clearBufferState();
+            }
+            pack.type.clearRenderState();
+            end(pack);
+        }
+        pack.matrixStack.pop();
     }
 
     public static void renderCylinder(BufferContext pack, CylinderContext context) {
@@ -1140,6 +1276,28 @@ public class RenderHelper {
                 VertexAttribute vertex = innerIt.next();
                 buffer.pos(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).tex(vertex.texU, vertex.texV)
                         .overlay(OverlayTexture.NO_OVERLAY).lightmap(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
+            }
+            finish(pack);
+            pack.matrixStack.pop();
+        }
+        end(pack);
+        pack.matrixStack.pop();
+    }
+
+    public static void renderDistortion(BufferContext pack, Queue<Queue<VertexAttribute>> vertexQueue) {
+        pack.matrixStack.push();
+        Matrix4f matrix4f = pack.matrixStack.getLast().getMatrix();
+        IVertexBuilder buffer = pack.buffer;
+
+        setup(pack);
+        Iterator<Queue<VertexAttribute>> it = vertexQueue.iterator();
+        while (it.hasNext()) {
+            Iterator<VertexAttribute> innerIt = it.next().iterator();
+            pack.matrixStack.push();
+            begin(pack);
+            while (innerIt.hasNext()) {
+                VertexAttribute vertex = innerIt.next();
+                buffer.pos(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).tex(vertex.texU, vertex.texV).endVertex();
             }
             finish(pack);
             pack.matrixStack.pop();

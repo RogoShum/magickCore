@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.common.entity.projectile;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.entity.easyrender.RedStoneRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.RedStoneRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -32,6 +32,15 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
     public Vector3d clientMotion = Vector3d.ZERO;
     private BlockPos blockPos;
+    private boolean dead = false;
+
+    @Override
+    public void remove() {
+        dead = true;
+        if(blockPos != null)
+            world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+        super.remove();
+    }
 
     @Override
     public void onAddedToWorld() {
@@ -130,6 +139,6 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
 
     @Override
     public int getPower() {
-        return 15;
+        return dead ? 0 : 15;
     }
 }

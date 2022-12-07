@@ -1,17 +1,21 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.SectorRadiateRenderer;
+import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.SectorRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.common.util.PanelUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -78,26 +82,24 @@ public class SectorEntity extends ManaRadiateEntity {
         }
         if(direction == null) return;
 
-        List<Vector3d> vectors = ParticleUtil.drawSector(this.getPositionVec(), direction.normalize().scale(range), 90, 15);
+        List<Vector3d> vectors = ParticleUtil.drawSector(this.getPositionVec(), direction.normalize().scale(range*2), 90, 15);
         for (Vector3d vector : vectors) {
             LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , vector
-                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
             Vector3d dir = this.getPositionVec().subtract(vector);
-            if(rand.nextFloat() > 0.8) {
-                par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                        , vector
-                        , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setLimitScale();
-                par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
-                MagickCore.addMagickParticle(par);
-            }
+            par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                    , vector
+                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setLimitScale();
+            par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
+            MagickCore.addMagickParticle(par);
         }
     }
 
@@ -113,9 +115,22 @@ public class SectorEntity extends ManaRadiateEntity {
         //if(!inCone) return false;
 
         float halfHeight = offset * 0.5f;
-        double top = vec.add(0, halfHeight, 0).subtract(this.getPositionVec()).normalize().y;
-        double bottom = vec.subtract(0, halfHeight, 0).subtract(this.getPositionVec()).normalize().y;
-        return top > direction.y && bottom < direction.y;
+        Vector2f pitchYaw = ParticleUtil.getRotationForVector(direction);
+        Vector3d normal = ParticleUtil.getVectorForRotation(pitchYaw.x + 90, pitchYaw.y);
+        Vector3d top = vec.add(normal.scale(halfHeight));
+        Vector3d bottom = vec.subtract(normal.scale(halfHeight));
+
+        double a = normal.x, b = normal.y, c = normal.z;
+        double d = - (a * getPositionVec().x + b * getPositionVec().y + c * getPositionVec().z);
+
+        double x0 = top.x, y0 = top.y, z0 = top.z;
+        double t = - (a * x0 + b * y0 + c * z0 + d) / (a * a + b * b + c * c);
+
+        double x = x0 + a * t;
+        double y = y0 + b * t;
+        double z = z0 + c * t;
+        Vector3d foot = new Vector3d(x, y, z);
+        return top.subtract(foot).dotProduct(bottom.subtract(foot)) <= 0;
     }
 
     @Override
@@ -128,6 +143,6 @@ public class SectorEntity extends ManaRadiateEntity {
     public Predicate<BlockPos> blockPosPredicate() {
         float rangeCube = getRange() * getRange();
         return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
-                <= rangeCube && rightDirection(Vector3d.copyCentered(pos).subtract(0, 0.5, 0), 1));
+                <= rangeCube && rightDirection(Vector3d.copyCentered(pos), 1));
     }
 }

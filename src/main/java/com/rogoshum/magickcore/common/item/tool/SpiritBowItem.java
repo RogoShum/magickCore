@@ -38,9 +38,12 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem {
         if(context.postContext.containChild(LibContext.TRACE)) {
             TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(entityLiving);
+            context.addChild(traceContext);
         }
         context.applyType(ApplyType.SPAWN_ENTITY);
-        MagickReleaseHelper.releaseMagick(context);
+        boolean success = MagickReleaseHelper.releaseMagick(context);
+        if(success)
+            spawnParticle(entityLiving, state);
         super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
     }
 

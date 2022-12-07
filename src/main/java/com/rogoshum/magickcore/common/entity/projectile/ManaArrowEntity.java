@@ -1,17 +1,13 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ManaArrowRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.RayRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaArrowRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -25,6 +21,9 @@ public class ManaArrowEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+        double length = getMotion().length() * 3;
+        if(length > maxMotion)
+            maxMotion = length;
     }
 
     @Override

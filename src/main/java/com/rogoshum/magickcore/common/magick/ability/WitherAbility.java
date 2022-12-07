@@ -2,8 +2,10 @@ package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -14,6 +16,7 @@ import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.block.BlockState;
@@ -29,6 +32,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,16 +80,25 @@ public class WitherAbility{
             if(dustItem.isEmpty()) return false;
             itemEntity.setItem(dustItem);
             if(ores.get()) {
-                ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustItem.copy());
-                if(!entity.world.isRemote)
-                    entity.world.addEntity(entity);
+                ItemStack dustCopy = itemEntity.getItem().copy();
+                dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
+                if(!dustCopy.isEmpty()) {
+                    ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustCopy);
+                    if(!entity.world.isRemote)
+                        entity.world.addEntity(entity);
+                }
             }
             if(context.force >= 7) {
-                ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustItem.copy());
-                if(!entity.world.isRemote)
-                    entity.world.addEntity(entity);
+                ItemStack dustCopy = itemEntity.getItem().copy();
+                dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
+                if(!dustCopy.isEmpty()) {
+                    ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustCopy);
+                    if(!entity.world.isRemote)
+                        entity.world.addEntity(entity);
+                }
             }
-            ParticleUtil.spawnBlastParticle();
+            itemEntity.setItem(dustItem);
+            ParticleUtil.spawnBlastParticle(context.world, itemEntity.getPositionVec().add(0, itemEntity.getHeight(), 0), 2, ModElements.WITHER, ParticleType.PARTICLE);
             return true;
         } else
             return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
@@ -143,7 +156,7 @@ public class WitherAbility{
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick, context.force, false) && ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick, context.force, false);
     }
 
     public static boolean applyToolElement(MagickContext context) {

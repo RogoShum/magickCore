@@ -4,7 +4,6 @@ import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class RenderMode {
@@ -69,8 +68,11 @@ public class RenderMode {
 
     public static class ShaderList {
         public static final ShaderList EMPTY = RenderMode.ShaderList.create();
-        public static final ShaderList SLIME_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.slime);
-        public static final ShaderList OPACITY_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.opacity);
+        public static final ShaderList SLIME_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.SLIME);
+        public static final ShaderList OPACITY_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.OPACITY);
+        public static final ShaderList DISTORTION_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.DISTORTION);
+        public static final ShaderList DISTORTION_MID_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.DISTORTION_MID);
+        public static final ShaderList DISTORTION_SMALL_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.DISTORTION_SMALL);
 
         public String[] shaders = new String[0];
 

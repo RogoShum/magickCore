@@ -15,6 +15,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.common.init.ModBuffs;
@@ -65,6 +66,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
@@ -184,12 +186,6 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onLiftClick(LivingAttackEvent event) {
-		if(event.getSource().getTrueSource() instanceof LivingEntity)
-			event.getSource().getTrueSource().getEquipmentAndArmor().forEach((s) -> NBTTagHelper.consumeElementOnTool(s, LibElements.VOID));
-	}
-
-	@SubscribeEvent
 	public void voidElement(ItemAttributeModifierEvent event) {
 		if(event.getSlotType() == EquipmentSlotType.MAINHAND) {
 			if(NBTTagHelper.hasElementOnTool(event.getItemStack(), LibElements.VOID)) {
@@ -253,6 +249,7 @@ public class MagickLogicEvent {
 		if(!event.getContext().containChild(LibContext.MULTI_RELEASE))
 			if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MULTI_RELEASE.orElse(null))) {
 				int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MULTI_RELEASE.orElse(null)).getAmplifier() + 1;
+				amplifier = Math.min(2, amplifier);
 				event.getContext().addChild(MultiReleaseContext.create());
 				for (int i = 0; i < amplifier; ++i) {
 					MagickContext copy = MagickContext.create(event.getContext().world, event.getContext());
@@ -587,6 +584,66 @@ public class MagickLogicEvent {
 		}
 	}
 
+	public void reduceDamage(LivingEvent event, float reduceAmount) {
+		if(event instanceof LivingDamageEvent) {
+			LivingDamageEvent damageEvent = (LivingDamageEvent) event;
+			damageEvent.setAmount(damageEvent.getAmount() - reduceAmount);
+			if(damageEvent.getAmount() <= 0)
+				event.setCanceled(true);
+			else
+				damageEvent.setAmount(damageEvent.getAmount() * 0.75f);
+		} else if (event instanceof LivingAttackEvent) {
+			LivingAttackEvent damageEvent = (LivingAttackEvent) event;
+			float amount = damageEvent.getAmount() - reduceAmount;
+			if(amount <= 0)
+				event.setCanceled(true);
+		}
+	}
+
+	public void onDamage(DamageSource damageSource, LivingEvent event, EntityStateData state, Entity trueSource) {
+		float reduceAmount = state.getMaxManaValue() * 0.002f;
+
+		if(state.getElement() == ModElements.SOLAR) {
+			if(damageSource.isFireDamage() || damageSource.isExplosion()) {
+				reduceDamage(event, reduceAmount);
+			}
+		} else if(state.getElement() == ModElements.VOID) {
+			if(damageSource.isUnblockable()) {
+				reduceDamage(event, reduceAmount);
+			}
+		} else if(state.getElement() == ModElements.ARC) {
+			if(damageSource.isFireDamage()
+					|| damageSource.isMagicDamage()
+					|| damageSource.damageType.contains("lightning")
+					|| damageSource.damageType.contains("elc")
+					|| damageSource.damageType.contains("arc")) {
+				reduceDamage(event, reduceAmount);
+			}
+		} else if(state.getElement() == ModElements.WITHER) {
+			if(damageSource.damageType.contains("wither")
+					|| damageSource.damageType.contains("starve")
+					|| damageSource.damageType.contains("inWall")
+					|| damageSource.damageType.contains("drown")
+					|| damageSource.damageType.contains("fallingBlock")) {
+				reduceDamage(event, reduceAmount);
+			}
+		} else if(state.getElement() == ModElements.TAKEN) {
+			if(trueSource instanceof LivingEntity) {
+				reduceDamage(event, reduceAmount);
+			}
+		} else if(state.getElement() == ModElements.STASIS) {
+			if(trueSource != null) {
+				if(!(trueSource instanceof LivingEntity)) {
+					reduceDamage(event, reduceAmount);
+				} else {
+					EntityStateData attackerState = ExtraDataUtil.entityStateData(trueSource);
+					if(attackerState.getBuffList().containsKey(LibBuff.FREEZE) || attackerState.getBuffList().containsKey(LibBuff.SLOW))
+						reduceDamage(event, reduceAmount);
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void onDamage(LivingDamageEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
@@ -596,7 +653,14 @@ public class MagickLogicEvent {
 		if(state != null && state.getBuffList().containsKey(LibBuff.WEAKEN))
 			event.setAmount(event.getAmount() * 1.3f);
 
+		if(state != null && state.getBuffList().containsKey(LibBuff.RADIANCE_WELL) && (event.getSource().isFireDamage() || event.getSource().isExplosion()))
+			event.setCanceled(true);
+
 		Entity entity = event.getSource().getTrueSource();
+
+		if(state != null) {
+			onDamage(event.getSource(), event, state, entity);
+		}
 
 		if(entity instanceof LivingEntity || entity instanceof IMob) {
 			ElementToolData tool = ExtraDataUtil.elementToolData(entity);
@@ -634,12 +698,23 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
+	public void onManaEntitySpawn(EntityEvents.MagickSpawnEntityEvent event) {
+		if(event.getMagickContext().projectile instanceof RepeaterEntity)
+			((RepeaterEntity) event.getMagickContext().projectile).setSpawnEntity(event.getEntity());
+	}
+
+	@SubscribeEvent
 	public void onElementShield(LivingAttackEvent event) {
-		AtomicReference<EntityStateData> ref = new AtomicReference<>();
-		ExtraDataUtil.entityStateData(event.getEntityLiving(), ref::set);
-		EntityStateData state = ref.get();
+		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			event.setCanceled(true);
+
+		if(event.getSource().getTrueSource() instanceof LivingEntity)
+			event.getSource().getTrueSource().getEquipmentAndArmor().forEach((s) -> NBTTagHelper.consumeElementOnTool(s, LibElements.VOID));
+
+		if(state != null) {
+			onDamage(event.getSource(), event, state, event.getSource().getTrueSource());
+		}
 
 		if(state != null) {
 			if(event.getEntityLiving().hurtResistantTime > 0.0f && state.getElementShieldMana() > 0.0f)

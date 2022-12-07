@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -9,6 +10,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.lib.LibItem;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,8 +39,11 @@ public class SuperItem extends BaseItem {
                 mana = ManaLimit.MAX_MANA.getValue();
             MagickElement element = ExtraDataUtil.entityStateData(playerIn).getElement();
             MagickContext context = MagickContext.create(worldIn).caster(playerIn).noCost().applyType(ApplyType.SUPER).tick((int) mana).element(element);
-            MagickReleaseHelper.releaseMagick(context);
-            state.setManaValue(0);
+            boolean success = MagickReleaseHelper.releaseMagick(context);
+            if(success) {
+                state.setManaValue(0);
+                ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 5, state.getElement(), ParticleType.PARTICLE);
+            }
         }
         return super.onItemUseFinish(stack, worldIn, playerIn);
     }

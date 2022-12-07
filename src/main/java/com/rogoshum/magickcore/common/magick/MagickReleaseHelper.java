@@ -144,10 +144,11 @@ public class MagickReleaseHelper {
         }
 
         if(!context.applyType.isForm()) {
-            context.force(manaFactor.force * context.force);
-            context.range(manaFactor.range * context.range);
-            context.tick((int) (manaFactor.tick * context.tick));
+
         }
+        context.force(manaFactor.force * context.force);
+        context.range(manaFactor.range * context.range);
+        context.tick((int) (manaFactor.tick * context.tick));
 
         if(context.caster instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
@@ -158,8 +159,9 @@ public class MagickReleaseHelper {
             if (postContext != null) {
                 MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();
                 if(!magickContext.applyType.isForm()) {
-                    magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
+
                 }
+                magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
                 boolean flag = MagickReleaseHelper.releaseMagick(magickContext, manaFactor);
                 if(!flag)
                     success = false;
@@ -253,8 +255,13 @@ public class MagickReleaseHelper {
         if(pro instanceof IManaEntity)
             ((IManaEntity) pro).beforeJoinWorld(context);
 
-        context.world.addEntity(pro);
-        return true;
+        EntityEvents.MagickSpawnEntityEvent event = new EntityEvents.MagickSpawnEntityEvent(context, pro);
+        MinecraftForge.EVENT_BUS.post(event);
+        if(!event.isCanceled()) {
+            context.world.addEntity(pro);
+            return true;
+        }
+            return false;
     }
 
     private static float getVelocity(Entity entity) {
@@ -296,10 +303,14 @@ public class MagickReleaseHelper {
     }
 
     public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction, float finalD) {
+        return getEntityRayTrace(e, vec, diraction, finalD, true);
+    }
+
+    public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction, float finalD, boolean traceBlock) {
         Entity foundEntity = null;
 
         double distance = finalD;
-        RayTraceResult pos = raycast(e, vec, diraction, finalD);
+        RayTraceResult pos = traceBlock ? raycast(e, vec, diraction, finalD) : null;
         Vector3d positionVector = vec;
 
         if (pos != null) {

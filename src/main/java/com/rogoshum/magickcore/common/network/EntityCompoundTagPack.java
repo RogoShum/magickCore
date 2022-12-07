@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -38,5 +39,12 @@ public class EntityCompoundTagPack extends EntityPack{
             return;
 
         entity.read(nbt);
+    }
+
+    public static void updateEntity(Entity entity) {
+        if(entity.world.isRemote) return;
+        Networking.INSTANCE.send(
+                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
+                new EntityCompoundTagPack(entity.getEntityId(), entity));
     }
 }

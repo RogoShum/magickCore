@@ -8,18 +8,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class ParticleBuilder {
-    private World world;
-    private ParticleType texture;
-    private Vector3d position;
-    private float scaleWidth;
-    private float scaleHeight;
-    private float alpha;
-    private int maxAge;
-    private String element;
+    private final World world;
+    private final ParticleType texture;
+    private final Vector3d position;
+    private Vector3d motion;
+    private final float scaleWidth;
+    private final float scaleHeight;
+    private final float alpha;
+    private final int maxAge;
+    private final String element;
 
     private boolean glow;
+    private boolean limitSize;
     private float grav;
     private int trace;
+
+    private boolean canCollide = true;
 
     private ParticleBuilder(World world, ParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element)
     {
@@ -39,6 +43,12 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder limitSize()
+    {
+        this.limitSize = true;
+        return this;
+    }
+
     public ParticleBuilder grav(float grav)
     {
         this.grav = grav;
@@ -51,14 +61,22 @@ public class ParticleBuilder {
         return this;
     }
 
-    public static ParticleBuilder create (World world, ParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element)
-    {
+    public ParticleBuilder motion(Vector3d motion) {
+        this.motion = motion;
+        return this;
+    }
+
+    public ParticleBuilder canCollide(boolean canCollide) {
+        this.canCollide = canCollide;
+        return this;
+    }
+
+    public static ParticleBuilder create (World world, ParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element) {
         return new ParticleBuilder(world, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element);
     }
 
-    public void send ()
-    {
-        ParticlePack pack = new ParticlePack(0, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element, glow, trace, grav);
+    public void send () {
+        ParticlePack pack = new ParticlePack(0, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element, glow, trace, grav, limitSize, motion, canCollide);
         Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
                 position.x, position.y, position.z, 32, world.getDimensionKey()
         )), pack);

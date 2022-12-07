@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.SphereRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.SphereRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -77,7 +77,7 @@ public class SphereEntity extends ManaRadiateEntity {
                 Vector3d pos = new Vector3d(x * radius, y * radius, z * radius);
                 LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                         , pos.add(this.getPositionVec())
-                        , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                        , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setGlow();
                 par.setParticleGravity(0);
                 par.setLimitScale();

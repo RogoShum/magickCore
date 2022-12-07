@@ -111,21 +111,7 @@ public class ManaSphereEntity extends ManaPointEntity {
                 }
     }
 
-    protected void applyParticle()
-    {
-        /*
-        for(int i = 0; i < 2; ++i) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getPosX()
-                    , this.getPosY() + this.getHeight() / 2
-                    , this.getPosZ())
-                    , 0.15f, 0.15f, this.rand.nextFloat(), 40, this.spellContext().element.getRenderer());
-            par.setGlow();
-            par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
-            MagickCore.addMagickParticle(par);
-        }
-         */
-
+    protected void applyParticle() {
         LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                 , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
@@ -140,12 +126,12 @@ public class ManaSphereEntity extends ManaPointEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
         MagickCore.addMagickParticle(litPar);
 
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.6f;
+        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosX()
+                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosY() + this.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosZ())
                     , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);
@@ -167,6 +153,6 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.DEFAULT;
+        return ManaFactor.POINT_DEFAULT;
     }
 }

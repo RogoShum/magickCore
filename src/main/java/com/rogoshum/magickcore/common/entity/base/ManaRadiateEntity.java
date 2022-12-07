@@ -88,6 +88,8 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         if(released.get()) {
             if(!world.isRemote)
                 world.setEntityState(this, (byte)14);
+            else
+                successFX();
             this.remove();
         }
     }

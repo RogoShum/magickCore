@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.render.*;
+import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderParams;
@@ -27,6 +29,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.settings.ParticleStatus;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
@@ -178,6 +181,11 @@ public class ClientProxy implements IProxy {
 			entityRenderers.register(elementType, EntityRenderers.create());
 			renderFunctions.register(elementType, RenderFunctions.create());
 		});
+		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.ATTACK, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/attack.png"));
+		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.BUFF, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/buff.png"));
+		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.DE_BUFF, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/debuff.png"));
+		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.AGGLOMERATE, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/agglomerate.png"));
+		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.DIFFUSION, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/diffusion.png"));
 	}
 
 	public void registerEntityRenderer(FMLClientSetupEvent event) {

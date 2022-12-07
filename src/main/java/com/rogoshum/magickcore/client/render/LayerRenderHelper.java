@@ -135,8 +135,7 @@ public class LayerRenderHelper extends LivingRenderer {
         matrixStackIn.pop();
     }
 
-    public RenderType getEntityRenderType(EntityRenderer renderer, LivingEntity entityIn)
-    {
+    public RenderType getEntityRenderType(EntityRenderer renderer, LivingEntity entityIn) {
         boolean flag = this.isVisible(entityIn);
         boolean flag1 = !flag && !entityIn.isInvisibleToPlayer(Minecraft.getInstance().player);
         boolean flag2 = Minecraft.getInstance().isEntityGlowing(entityIn);

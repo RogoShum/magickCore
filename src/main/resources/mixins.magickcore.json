@@ -1,12 +1,10 @@
 {
   "required": true,
-  "package": "com.rogoshum.magickcore.common.mixin",
+  "package": "com.rogoshum.magickcore.mixin",
   "mixins": [
-    "MixinChunkRenderer",
     "MixinEntity",
     "MixinItemStack",
     "MixinLivingEntity",
-    "MixinLivingRender",
     "MixinMobEntity",
     "MixinProfilerChange",
     "MixinRecipeManager",
@@ -19,6 +17,8 @@
     "defaultRequire": 1
   },
   "client": [
+    "MixinChunkRenderer",
+    "MixinLivingRender",
     "MixinClientWorld",
     "MixinWorldRender"
   ]

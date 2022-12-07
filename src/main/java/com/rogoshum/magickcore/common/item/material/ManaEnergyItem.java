@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -47,10 +48,10 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
                         ((ItemEntity) entity1).getItem().getItem() instanceof ManaEnergyItem));
 
         if(entities.size() > 0) {
-            ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, -32768, "field_70292_b");
+            ItemStackUtil.setItemEntityAge(entity, -32768);
         }
         entities.forEach(entity1 -> {
-            ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, (ItemEntity)entity1, -32768, "field_70292_b");
+            ItemStackUtil.setItemEntityAge((ItemEntity)entity1, -32768);
             double speed = entity1.getMotion().length();
             Vector3d motion = entity.getPositionVec().subtract(entity1.getPositionVec()).normalize().scale(speed);
             entity1.setMotion(entity1.getMotion().scale(0.4).add(motion.scale(0.6)));
