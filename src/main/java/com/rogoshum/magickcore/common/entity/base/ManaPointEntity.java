@@ -18,10 +18,13 @@ public abstract class ManaPointEntity extends ManaEntity {
         super.tick();
 
         if(world.isRemote) return;
+        /*
         if(point == null)
             this.point = this.getPositionVec();
         else if(!point.equals(this.getPositionVec())) {
             this.setPosition(this.point.x, this.point.y, this.point.z);
         }
+
+         */
     }
 }

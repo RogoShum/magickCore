@@ -179,6 +179,6 @@ public class ArcAbility{
         if(context.victim instanceof LivingEntity) {
             ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 60));
         }
-        return false;
+        return true;
     }
 }

@@ -1,17 +1,31 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import com.rogoshum.magickcore.common.lib.LibItem;
+import com.rogoshum.magickcore.common.lib.LibMaterial;
+import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ContextCoreItem extends BaseItem{
     public ContextCoreItem() {
@@ -44,6 +58,22 @@ public class ContextCoreItem extends BaseItem{
         }
 
         return false;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
+        if(worldIn != null) {
+            Entity entity = NBTTagHelper.createEntityByItem(stack, worldIn);
+            if(entity instanceof ContextCreatorEntity) {
+                ContextCreatorEntity contextCreator = (ContextCreatorEntity) entity;
+                material = contextCreator.getMaterial();
+            }
+        }
+        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName())));
+        tooltip.add((new TranslationTextComponent(LibItem.FORCE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getForce()))));
+        tooltip.add((new TranslationTextComponent(LibItem.RANGE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getRange()))));
+        tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick()))));
     }
 
     @Override

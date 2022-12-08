@@ -57,4 +57,6 @@ public class LibItem {
     public static final String MANA_NETHER_WART = MagickCore.MOD_ID + ".description.mana_nether_wart";
     public static final String MANA_FLESH = MagickCore.MOD_ID + ".description.mana_flesh";
     public static final String MANA_BONE = MagickCore.MOD_ID + ".description.mana_bone";
+    public static final String COMPLETELY_SELF = MagickCore.MOD_ID + ".description.completely_self";
+    public static final String REVERSE = MagickCore.MOD_ID + ".description.reverse";
 }

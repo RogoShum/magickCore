@@ -36,6 +36,13 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
+        EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
+        boolean success = false;
+        if(state != null) {
+            success = releaseMagick(playerIn, state, itemstack);
+            if(success)
+                spawnParticle(playerIn, state);
+        }
         return ActionResult.resultConsume(itemstack);
     }
 
@@ -101,24 +108,13 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
-        return 10;
-    }
-
-    @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
-        if(state != null) {
-            boolean success = releaseMagick(entityLiving, state, stack);
-            if(success)
-                spawnParticle(entityLiving, state);
-        }
-
         return super.onItemUseFinish(stack, worldIn, entityLiving);
     }
 
     public void spawnParticle(LivingEntity playerIn, EntityStateData state) {
-        ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
+        if(state != null)
+            ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
     }
 
     public abstract boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack);

@@ -226,6 +226,8 @@ public class ClientProxy implements IProxy {
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MAGE.get(), MageRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.PHANTOM.get(), ManaObjectRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ARTIFICIAL_LIFE.get(), ArtificialLifeEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CHAIN.get(), ManaEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SPIN.get(), ManaEntityRenderer::new);
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {

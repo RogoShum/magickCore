@@ -26,6 +26,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
+import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -53,6 +54,7 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -242,6 +244,11 @@ public class MagickLogicEvent {
 	public void preMagickRelease(EntityEvents.MagickPreReleaseEvent event) {
 		if(!(event.getEntity() instanceof LivingEntity))
 			return;
+		if(event.getContext().containChild(LibContext.SPAWN)) {
+			EntityType<?> type = event.getContext().<SpawnContext>getChild(LibContext.SPAWN).entityType;
+			if(ModEntities.REPEATER.get().equals(type))
+				event.setMana(event.getMana() + 50);
+		}
 		if(event.getContext().containChild(LibContext.POSITION)) {
 			PositionContext positionContext = event.getContext().getChild(LibContext.POSITION);
 			event.setMana((float) (event.getMana() + positionContext.pos.distanceTo(event.getEntity().getPositionVec())));

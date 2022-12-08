@@ -5,6 +5,10 @@ import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.ParticlePack;
+import com.rogoshum.magickcore.common.network.ParticleSamplePack;
+import net.minecraft.client.renderer.tileentity.EndPortalTileEntityRenderer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -13,6 +17,7 @@ import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -208,18 +213,10 @@ public class ParticleUtil {
         float count = (10 * force);
         float scale = Math.max(0.1f, 0.05f * force);
         if(!world.isRemote) {
-            for (int i = 0; i < count; ++i) {
-                double randX = MagickCore.getNegativeToOne() * 0.01 * force;
-                double randY = MagickCore.getNegativeToOne() * 0.01 * force;
-                double randZ = MagickCore.getNegativeToOne() * 0.01 * force;
-
-                ParticleBuilder builder = ParticleBuilder.create(world, type, center, scale, scale, 1.0f, 30, element.type());
-                builder.grav(0);
-                builder.glow();
-                builder.limitSize();
-                builder.motion(new Vector3d(randX * force, randY * force, randZ * force));
-                builder.send();
-            }
+            ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 0, element.type(), Vector3d.ZERO);
+            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                    center.x, center.y, center.z, 48, world.getDimensionKey()
+            )), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
             for (int i = 0; i < count; ++i) {
@@ -241,18 +238,10 @@ public class ParticleUtil {
         float count = (10 * force);
         float scale = Math.max(0.1f, 0.05f * force);
         if(!world.isRemote) {
-            for (int i = 0; i < count; ++i) {
-                double randX = MagickCore.getNegativeToOne() * 0.05;
-                double randY = MagickCore.getNegativeToOne() * 0.05;
-                double randZ = MagickCore.getNegativeToOne() * 0.05;
-
-                ParticleBuilder builder = ParticleBuilder.create(world, type, center, scale, scale, 1.0f, 20, element.type());
-                builder.grav(0);
-                builder.glow();
-                builder.limitSize();
-                builder.motion(new Vector3d(motion.x + randX * force, motion.y + randY * force, motion.z + randZ * force));
-                builder.send();
-            }
+            ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 1, element.type(), motion);
+            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                    center.x, center.y, center.z, 48, world.getDimensionKey()
+            )), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
             for (int i = 0; i < count; ++i) {

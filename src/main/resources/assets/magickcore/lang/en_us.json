@@ -215,7 +215,7 @@
 
     //description
     "magickcore.description.element": "Element",
-    "magickcore.description.material": "Material",
+    "magickcore.description.material": "Core",
     "magickcore.description.force": "Force",
     "magickcore.description.mana": "Mana",
     "magickcore.description.range": "Range",

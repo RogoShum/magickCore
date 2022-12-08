@@ -9,10 +9,10 @@ import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Objects;
 
-public class LivingEntityCondition extends Condition implements IConditionOnlyEntity {
+public class NonLivingEntityCondition extends Condition implements IConditionOnlyEntity {
     @Override
     public String getName() {
-        return LibConditions.LIVING_ENTITY;
+        return LibConditions.NON_LIVING_ENTITY;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class LivingEntityCondition extends Condition implements IConditionOnlyEn
 
     @Override
     public boolean test(Entity entity) {
-        return entity instanceof LivingEntity;
+        return !(entity instanceof LivingEntity);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.tool;
 
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.item.ManaItem;
@@ -12,10 +13,12 @@ import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.world.World;
 
 public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
@@ -34,6 +37,11 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
+    }
+
+    @Override
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
         super.onUsingTick(stack, player, count);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
@@ -44,7 +52,9 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
             TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(player);
         }
-        MagickReleaseHelper.releaseMagick(context);
+        EntityStateData state = ExtraDataUtil.entityStateData(player);
+        if(MagickReleaseHelper.releaseMagick(context))
+            ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getHeight() * 0.5, 0), 2, state.getElement(), ParticleType.PARTICLE);
     }
 
 

@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -13,6 +15,7 @@ import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +28,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
@@ -170,14 +174,20 @@ public class VoidAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(context.victim == null || context.caster == null) return false;
+        Vector3d pos = context.victim.getPositionVec();
+        ParticleUtil.spawnBlastParticle(context.world, context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
-            Vector3d pos = positionContext.pos;
-            context.victim.setPositionAndUpdate(pos.x, pos.y, pos.z);
+            pos = positionContext.pos;
+        } else if(context.projectile != null){
+            pos = context.projectile.getPositionVec();
+
         } else {
-            Vector3d pos = context.caster.getLookVec().scale(context.range).add(context.victim.getPositionVec());
-            context.victim.setPosition(pos.x, pos.y, pos.z);
+            pos = context.caster.getLookVec().scale(context.range).add(context.victim.getPositionVec());
         }
+        context.victim.setPositionAndUpdate(pos.x, pos.y, pos.z);
+        context.victim.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);
+        ParticleUtil.spawnBlastParticle(context.world, context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         return true;
     }
 

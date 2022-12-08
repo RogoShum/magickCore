@@ -1,16 +1,22 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.IConditionOnlyEntity;
+import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.JewelryBagRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
+import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.entity.Entity;
@@ -26,12 +32,15 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class JewelryBagEntity extends ManaProjectileEntity {
+public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefraction {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.7f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ray.png");
     public JewelryBagEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
@@ -41,7 +50,27 @@ public class JewelryBagEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         if(!spellContext().containChild(LibContext.ITEM) && !world.isRemote) {
+            Entity entity = null;
+            UUID uuid = MagickCore.emptyUUID;
+            if(spellContext().containChild(LibContext.TRACE)) {
+                TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
+                uuid = traceContext.uuid;
+                if(traceContext.entity != null)
+                    entity = traceContext.entity;
+                else if(traceContext.uuid != MagickCore.emptyUUID) {
+                    entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+                    traceContext.entity = entity;
+                }
+            }
+
+            Entity finalEntity = entity;
+            UUID finalUuid = uuid;
             List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox().grow(1.0), Objects::nonNull);
+            items.removeIf((entity1 -> {
+                if(finalEntity != null && entity1 != finalEntity)
+                    return true;
+                return finalUuid != MagickCore.emptyUUID && !entity1.getUniqueID().equals(finalUuid);
+            }));
             if(items.size() > 0) {
                 ItemEntity itemEntity = items.get(0);
                 if(itemEntity.isAlive()) {
@@ -50,7 +79,7 @@ public class JewelryBagEntity extends ManaProjectileEntity {
                     ItemContext context = ItemContext.create(itemEntity.getItem());
                     itemEntity.remove();
                     spellContext().addChild(context);
-                    EntityCompoundTagPack.updateEntity(this);
+                    doNetworkUpdate();
                 }
             }
         }
@@ -60,8 +89,20 @@ public class JewelryBagEntity extends ManaProjectileEntity {
 
     @Override
     protected void traceTarget() {
-        if (!this.spellContext().containChild(LibContext.TRACE) || !this.spellContext().containChild(LibContext.ITEM) || this.world.isRemote) return;
-        Entity entity = getOwner();
+        if (!this.spellContext().containChild(LibContext.TRACE) || this.world.isRemote) return;
+        Entity entity = null;
+        if (!this.spellContext().containChild(LibContext.ITEM)) {
+            TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
+
+            if(traceContext.entity != null)
+                entity = traceContext.entity;
+            else if(traceContext.uuid != MagickCore.emptyUUID) {
+                entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+                traceContext.entity = entity;
+            }
+        } else
+            entity = getOwner();
+
         if(entity != null && entity.isAlive()) {
             Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
             Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
@@ -92,6 +133,7 @@ public class JewelryBagEntity extends ManaProjectileEntity {
 
     @Override
     public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+        if(world.isRemote) return false;
         BlockPos pos = blockRayTraceResult.getPos();
         TileEntity tile = world.getTileEntity(pos);
         if(tile instanceof IInventory) {
@@ -118,6 +160,24 @@ public class JewelryBagEntity extends ManaProjectileEntity {
                 return super.hitBlockRemove(blockRayTraceResult);
         } else if(spellContext().containChild(LibContext.ITEM))
             return false;
+        else if (spellContext().containChild(LibContext.TRACE)) {
+            TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
+            if(traceContext.entity == null && traceContext.uuid != MagickCore.emptyUUID) {
+                traceContext.entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+            }
+            if(traceContext.entity instanceof ItemEntity)
+                return false;
+        }
+        else if(spellContext().containChild(LibContext.CONDITION)) {
+            AtomicBoolean entityOnly = new AtomicBoolean(false);
+            ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
+            condition.conditions.forEach(condition1 -> {
+                if(condition1 instanceof IConditionOnlyEntity)
+                    entityOnly.set(true);
+            });
+            if(entityOnly.get())
+                return false;
+        }
         return super.hitBlockRemove(blockRayTraceResult);
     }
 
@@ -131,8 +191,10 @@ public class JewelryBagEntity extends ManaProjectileEntity {
                     context.itemStack = ItemStackUtil.mergeStacks(context.itemStack, entity.getItem(), 64);
                 }
                 //spellContext().addChild(context);
-                EntityCompoundTagPack.updateEntity(this);
+                doNetworkUpdate();
             }
+            return false;
+        } else if(entityRayTraceResult.getEntity() instanceof JewelryBagEntity) {
             return false;
         }
         return super.hitEntityRemove(entityRayTraceResult);
@@ -190,5 +252,10 @@ public class JewelryBagEntity extends ManaProjectileEntity {
     @Override
     public ManaFactor getManaFactor() {
         return MANA_FACTOR;
+    }
+
+    @Override
+    public boolean refraction(SpellContext context) {
+        return true;
     }
 }

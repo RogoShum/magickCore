@@ -60,9 +60,8 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
             matrixStackIn.translate(x, y - entity.getHeight() / 2, z);
             float f3 = ((float)item.age + partialTicks) / 20.0F + item.hoverStart;
             matrixStackIn.rotate(Vector3f.YP.rotation(f3));
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(item.getItemStack(), null, null);
             IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(params.buffer);
-            Minecraft.getInstance().getItemRenderer().renderItem(item.getItemStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            Minecraft.getInstance().getItemRenderer().renderItem(item.getItemStack(), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, renderTypeBuffer);
             renderTypeBuffer.finish();
             matrixStackIn.pop();
         }

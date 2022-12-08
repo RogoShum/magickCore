@@ -25,6 +25,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     float c;
     RenderHelper.CylinderContext INNER_CYLINDER;
     RenderHelper.CylinderContext BASE_CYLINDER;
+    RenderHelper.CylinderContext AIR_CYLINDER;
     Queue<RenderHelper.CylinderContext> OUTER_CYLINDER;
     int outerCount;
 
@@ -71,7 +72,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
 
         BASE_CYLINDER = new RenderHelper.CylinderContext(2f, 2f, 2f
                 , 0.5f, 16
-                , 0.0f, 0.8f, 0.6f, entity.spellContext().element.color());
+                , 0.0f, 0.8f, 0.1f, entity.spellContext().element.color());
 
         c = entity.ticksExisted % 30;
         Queue<RenderHelper.CylinderContext> cylinders = Queues.newArrayDeque();
@@ -111,6 +112,18 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
                         wind, height, 0f))
                 , INNER_CYLINDER);
+    }
+
+    private void renderOuter(RenderParams renderParams) {
+        MatrixStack matrixStackIn = renderParams.matrixStack;
+        baseOffset(matrixStackIn);
+        matrixStackIn.translate(0,  height * 0.5-1, 0);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 19)));
+        if(AIR_CYLINDER != null)
+            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
+                            wind, height, 0f))
+                    , AIR_CYLINDER);
     }
 
     private void renderBase(RenderParams renderParams) {

@@ -286,7 +286,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                 if(!notClear)
                     getStacks().clear();
                 else
-                    EntityCompoundTagPack.updateEntity(this);
+                    doNetworkUpdate();
             } else
                 dropItem();
             return ActionResultType.CONSUME;

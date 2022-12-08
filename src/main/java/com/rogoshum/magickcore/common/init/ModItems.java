@@ -65,6 +65,10 @@ public class ModItems {
     public static final RegistryObject<Item> MANA_FLESH = ITEMS.register("mana_flesh", ManaFleshItem::new);
     public static final RegistryObject<Item> POSITION_MEMORY = ITEMS.register("position_memory", PositionMemoryItem::new);
     public static final RegistryObject<Item> DIRECTION_MEMORY = ITEMS.register("direction_memory", DirectionMemoryItem::new);
+    public static final RegistryObject<Item> OFFSET_MEMORY = ITEMS.register("offset_memory", OffsetMemoryItem::new);
+    public static final RegistryObject<Item> COMPLETELY_SELF = ITEMS.register("completely_self", CompletelySelfItem::new);
+    public static final RegistryObject<Item> CONDITION = ITEMS.register("condition", ConditionItem::new);
+    public static final RegistryObject<Item> REVERSE = ITEMS.register("reverse", ReverseItem::new);
     public static final RegistryObject<Item> ELEMENT_CRYSTAL_SEEDS = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.element_crystal.get(), BaseItem.properties()));
     public static final RegistryObject<Item> ORB_BOTTLE = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(

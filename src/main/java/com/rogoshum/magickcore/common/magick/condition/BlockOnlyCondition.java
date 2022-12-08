@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
-import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import net.minecraft.entity.Entity;
@@ -9,10 +8,10 @@ import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Objects;
 
-public class LivingEntityCondition extends Condition implements IConditionOnlyEntity {
+public class BlockOnlyCondition extends Condition{
     @Override
     public String getName() {
-        return LibConditions.LIVING_ENTITY;
+        return LibConditions.BLOCK_ONLY;
     }
 
     @Override
@@ -22,7 +21,7 @@ public class LivingEntityCondition extends Condition implements IConditionOnlyEn
 
     @Override
     public boolean test(Entity entity) {
-        return entity instanceof LivingEntity;
+        return false;
     }
 
     @Override

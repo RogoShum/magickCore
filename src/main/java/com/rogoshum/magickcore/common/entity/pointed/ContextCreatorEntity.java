@@ -93,10 +93,10 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             coolDown-=1;
             return;
         }
-        List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox(), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
+        List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox().grow(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && item.ticksExisted > 10 && item.getPositionVec().squareDistanceTo(this.getPositionVec()) <= 2.25) {
+            if(item.isAlive() && item.ticksExisted > 10 && item.getPositionVec().squareDistanceTo(this.getPositionVec()) <= 2.5) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 if(material.upgradeManaItem(item.getItem(), innerManaData)) {
                     Vector3d relativeVec = relativeVec(item);

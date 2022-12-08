@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -49,18 +50,19 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
 
     default void releaseMagick() {
         if(!spellContext().valid()) return;
-
+        ConditionContext condition = null;
+        if(spellContext().containChild(LibContext.CONDITION))
+            condition = spellContext().getChild(LibContext.CONDITION);
         List<Entity> livings = findEntity();
         for(Entity living : livings) {
             if(living != this && !suitableEntity(living)) continue;
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
-            if(spellContext().containChild(LibContext.CONDITION)) {
-                ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                context.conditions.forEach((condition -> {
-                    if(condition.getType() == TargetType.TARGET) {
-                        if(!condition.test(living))
+            if(condition != null) {
+                condition.conditions.forEach((condition1 -> {
+                    if(condition1.getType() == TargetType.TARGET) {
+                        if(!condition1.test(living))
                             pass.set(false);
-                    } else if(!condition.test(this.getOwner()))
+                    } else if(!condition1.test(this.getOwner()))
                         pass.set(false);
                 }));
             }
@@ -114,4 +116,8 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
     default void renderFrame(float partialTicks) {}
 
     ManaFactor getManaFactor();
+
+    default void doNetworkUpdate() {
+        EntityCompoundTagPack.updateEntity((Entity) this);
+    }
 }

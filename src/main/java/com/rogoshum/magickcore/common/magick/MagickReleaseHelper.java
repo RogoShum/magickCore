@@ -122,6 +122,14 @@ public class MagickReleaseHelper {
         }
 
         context = releaseEvent.getContext();
+        boolean reverse = context.containChild(LibContext.REVERSE);
+        if(reverse && context.containChild(LibContext.DIRECTION)) {
+            context.addChild(DirectionContext.create(context.<DirectionContext>getChild(LibContext.DIRECTION).direction.scale(-1)));
+        }
+
+        if(context.containChild(LibContext.SELF))
+            context.victim(context.caster);
+
         MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
 
         if(context.element != null && !LibElements.ORIGIN.equals(context.element.type()))
@@ -134,9 +142,9 @@ public class MagickReleaseHelper {
             element = ExtraDataUtil.entityStateData(context.caster).getElement();
 
         if(context.caster != null) {
-            context.replenishChild(DirectionContext.create(context.caster.getLookVec()));
+            context.replenishChild(DirectionContext.create(reverse ? context.caster.getLookVec().scale(-1) : context.caster.getLookVec()));
         } else if (context.projectile != null) {
-            context.replenishChild(DirectionContext.create(context.projectile.getMotion()));
+            context.replenishChild(DirectionContext.create(reverse ? context.projectile.getMotion().scale(-1) : context.projectile.getMotion()));
         }
 
         if(context.projectile instanceof IManaEntity) {
@@ -238,18 +246,26 @@ public class MagickReleaseHelper {
 
         if(context.caster != null && pro instanceof ProjectileEntity) {
             ((ProjectileEntity)pro).setShooter(context.caster);
-
+            boolean reverse = context.containChild(LibContext.REVERSE);
             if(context.containChild(LibContext.DIRECTION)) {
                 Vector3d motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
             } else if(context.victim != null && context.victim != context.caster) {
                 Vector3d motion = context.victim.getPositionVec().add(0, (context.victim.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
+                if(reverse)
+                    motion = motion.scale(-1);
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
             } else if(traceContext != null && traceContext.entity != null) {
                 Vector3d motion = traceContext.entity.getPositionVec().add(0, (traceContext.entity.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
+                if(reverse)
+                    motion = motion.scale(-1);
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
-            } else
-                ((ProjectileEntity)pro).shoot(context.caster.getLookVec().x, context.caster.getLookVec().y, context.caster.getLookVec().z, getVelocity(pro), getInaccuracy(pro));
+            } else {
+                Vector3d motion = context.caster.getLookVec();
+                if(reverse)
+                    motion = motion.scale(-1);
+                ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));;
+            }
         }
 
         if(pro instanceof IManaEntity)

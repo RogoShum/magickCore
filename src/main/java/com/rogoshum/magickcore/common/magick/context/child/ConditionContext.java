@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.common.magick.context.child;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
+import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -33,6 +35,10 @@ public class ConditionContext extends ChildContext{
             compoundNBT.put(condition.getName(), conditionTag);
         });
         tag.put("Conditions", compoundNBT);
+    }
+
+    public void addCondition(Condition... conditions) {
+        this.conditions.addAll(Arrays.asList(conditions));
     }
 
     public boolean test(Entity self, Entity target) {
@@ -71,6 +77,17 @@ public class ConditionContext extends ChildContext{
 
     @Override
     public String getString(int tab) {
-        return "";
+        if(conditions.isEmpty())
+            return "";
+        ToolTipHelper toolTip = new ToolTipHelper();
+        toolTip.tab = tab;
+        toolTip.nextLine("{");
+        conditions.forEach((condition) -> {
+            toolTip.push();
+            toolTip.nextTrans(MagickCore.MOD_ID + ".condition." + condition.getName(), ToolTipHelper.GREY);
+            toolTip.pop();
+        });
+        toolTip.nextLine("}");
+        return toolTip.getString();
     }
 }

@@ -59,16 +59,20 @@ public class RepeaterEntity extends ManaPointEntity {
                 if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.world.isRemote) {
                     entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
                     traceContext.entity = entity;
+                    if(entity == null)
+                        traceContext.uuid = MagickCore.emptyUUID;
                 } else if(entity != null && entity.isAlive()) {
                     Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
                     Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
                     context.replenishChild(DirectionContext.create(goal.subtract(self).normalize()));
                 } else if(spellContext().containChild(LibContext.DIRECTION)) {
                     context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
-                }
+                } else
+                    return;
             } else if(spellContext().containChild(LibContext.DIRECTION)) {
                 context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
-            }
+            } else
+                return;
             MagickReleaseHelper.releaseMagick(beforeCast(context));
             cool_down = 20;
         }

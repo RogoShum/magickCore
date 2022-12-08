@@ -59,6 +59,8 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<RepeaterEntity>> REPEATER = Entities.register(LibEntities.REPEATER, () -> EntityType.Builder.create(RepeaterEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build(LibEntities.REPEATER));
 	public static final RegistryObject<EntityType<JewelryBagEntity>> JEWELRY_BAG = Entities.register(LibEntities.JEWELRY_BAG, () -> EntityType.Builder.create(JewelryBagEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.JEWELRY_BAG));
 	public static final RegistryObject<EntityType<ArtificialLifeEntity>> ARTIFICIAL_LIFE = Entities.register(LibEntities.ARTIFICIAL_LIFE, () -> EntityType.Builder.create(ArtificialLifeEntity::new, EntityClassification.CREATURE).size(1.0F, 1.0F).trackingRange(10).build(LibEntities.ARTIFICIAL_LIFE));
+	public static final RegistryObject<EntityType<SpinEntity>> SPIN = Entities.register(LibEntities.SPIN, () -> EntityType.Builder.create(SpinEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.SPIN));
+	public static final RegistryObject<EntityType<ChainEntity>> CHAIN = Entities.register(LibEntities.CHAIN, () -> EntityType.Builder.create(ChainEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.CHAIN));
 
 	public static Item registerEntitySpawnEgg(EntityType<?> type, int color1, int color2, String name) {
 		SpawnEggItem item = new SpawnEggItem(type, color1, color2, new Item.Properties().group(ModGroups.ITEM_GROUP));

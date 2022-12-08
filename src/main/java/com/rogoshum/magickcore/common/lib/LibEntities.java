@@ -42,4 +42,6 @@ public class LibEntities {
     public static final String REPEATER = "repeater";
     public static final String JEWELRY_BAG = "jewelry_bag";
     public static final String ARTIFICIAL_LIFE = "artificial_life";
+    public static final String SPIN = "spin";
+    public static final String CHAIN = "chain";
 }

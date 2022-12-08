@@ -97,12 +97,16 @@ public class ModRegistry {
         childContexts.register(LibContext.DIRECTION, DirectionContext::new);
         childContexts.register(LibContext.MULTI_RELEASE, MultiReleaseContext::new);
         childContexts.register(LibContext.APPLY_TYPE, ExtraApplyTypeContext::new);
+        childContexts.register(LibContext.SELF, SelfContext::new);
+        childContexts.register(LibContext.REVERSE, ReverseContext::new);
 
         ObjectRegistry<Callable<Condition>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);
         conditions.register(LibConditions.ENTITY_TYPE, EntityTypeCondition::new);
         conditions.register(LibConditions.INJURABLE, InjurableEntityCondition::new);
         conditions.register(LibConditions.LIVING_ENTITY, LivingEntityCondition::new);
+        conditions.register(LibConditions.NON_LIVING_ENTITY, NonLivingEntityCondition::new);
+        conditions.register(LibConditions.BLOCK_ONLY, BlockOnlyCondition::new);
         conditions.register(LibConditions.HEALTH, HealthCondition::new);
         conditions.register(LibConditions.DISTANCE, DistanceCondition::new);
     }

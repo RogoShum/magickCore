@@ -93,7 +93,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         if(stack.getItem() instanceof MagickContextItem) {
             spellContext().copy(ExtraDataUtil.itemManaData(stack).spellContext());
             return ActionResultType.CONSUME;
-        } else
+        } else if(player.isSneaking())
             spellContext().clear();
 
         return ActionResultType.PASS;

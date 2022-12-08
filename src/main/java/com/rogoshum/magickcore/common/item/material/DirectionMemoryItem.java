@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.util.ITooltipFlag;
@@ -26,6 +27,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
+    public DirectionMemoryItem(Properties properties) {
+        super(properties);
+    }
+
     public DirectionMemoryItem() {
         super(properties());
     }
@@ -44,7 +49,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         if(stack.hasTag() && NBTTagHelper.hasVectorDouble(stack.getTag(), "direction")) {
             Vector3d vector3d = NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction");
-            data.spellContext().addChild(PositionContext.create(vector3d));
+            data.spellContext().addChild(DirectionContext.create(vector3d));
             return true;
         }
         return false;
