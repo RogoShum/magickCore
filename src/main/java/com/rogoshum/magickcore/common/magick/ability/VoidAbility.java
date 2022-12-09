@@ -173,7 +173,7 @@ public class VoidAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
-        if(context.victim == null || context.caster == null) return false;
+        if(context.victim == null || !context.victim.isAlive() || context.caster == null) return false;
         Vector3d pos = context.victim.getPositionVec();
         ParticleUtil.spawnBlastParticle(context.world, context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         if(context.containChild(LibContext.POSITION)) {

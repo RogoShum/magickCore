@@ -2,7 +2,10 @@ package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.GravityLiftRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.DawnWardRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
@@ -23,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class GravityLiftEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/gravity_lift.png");
@@ -40,9 +44,12 @@ public class GravityLiftEntity extends ManaPointEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new GravityLiftRenderer(this));
+    protected boolean fixedPosition() {
+        return false;
+    }
+    @Override
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new GravityLiftRenderer(this);
     }
 
     @Override

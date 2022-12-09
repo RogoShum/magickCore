@@ -106,7 +106,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
     }
 
     default Vector3d getPostDirection(Entity entity) {
-        return entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0).subtract(((Entity) this).getPositionVec().add(0, ((Entity) this).getHeight() * 0.5, 0));
+        return entity.getPositionVec().add(0, entity.getHeight() * 0.75, 0).subtract(((Entity) this).getPositionVec().add(0, ((Entity) this).getHeight() * 0.5, 0));
     }
 
     @OnlyIn(Dist.CLIENT)

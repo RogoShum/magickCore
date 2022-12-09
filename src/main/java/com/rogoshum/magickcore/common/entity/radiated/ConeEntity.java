@@ -2,8 +2,12 @@ package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiate.ConeRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
+import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
@@ -18,7 +22,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ConeEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cone.png");
@@ -33,9 +39,8 @@ public class ConeEntity extends ManaRadiateEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ConeRadiateRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ConeRadiateRenderer(this);
     }
 
     @Override

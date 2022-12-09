@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaArrowRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -10,6 +12,10 @@ import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class ManaArrowEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/arrow.png");
@@ -26,10 +32,9 @@ public class ManaArrowEntity extends ManaProjectileEntity {
             maxMotion = length;
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaArrowRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new ManaArrowRenderer(this);
     }
 
     @Override
@@ -78,52 +83,6 @@ public class ManaArrowEntity extends ManaProjectileEntity {
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
         }
-    }
-
-    @Override
-    public void renderFrame(float partialTicks) {
-        /*
-        //float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
-        int count = (int)Math.max(getWidth() * 7, 10);
-        int tailCount = Math.max(count / 2, 5);
-        double space = Math.max(getWidth() * 0.07f, 0.03f);
-        float baseScale = Math.max(getWidth() * 0.09f, 0.05f);
-        float scale = 0.9f;
-        Vector3d direction = this.getMotion().normalize();
-        double x = MathHelper.lerp(partialTicks, this.lastTickPosX, this.getPosX());
-        double y = MathHelper.lerp(partialTicks, this.lastTickPosY, this.getPosY());
-        double z = MathHelper.lerp(partialTicks, this.lastTickPosZ, this.getPosZ());
-        x = x + direction.x * this.getWidth() * 0.5;
-        y = y + direction.y * this.getWidth() * 0.5;
-        z = z + direction.z * this.getWidth() * 0.5;
-        direction = direction.scale(space);
-        Vector3d origin = new Vector3d(x, y, z);
-        Vector3d tail = origin.subtract(direction.scale(count));
-
-        addParticle(origin, direction, count, baseScale, scale);
-
-        Vector2f dirPitchYaw = ParticleUtil.getRotationForVector(direction);
-        Vector3d upPitch = ParticleUtil.getVectorForRotation(dirPitchYaw.x-30f, dirPitchYaw.y);
-        Vector3d downPitch = ParticleUtil.getVectorForRotation(dirPitchYaw.x+30f, dirPitchYaw.y);
-        Vector3d yaw = ParticleUtil.getVectorForRotation(0, dirPitchYaw.y+90f);
-
-        Vector3d rotate = upPitch.add(yaw).normalize().scale(space);
-        addParticle(origin, rotate, tailCount, baseScale * 0.8f, scale);
-        addParticle(tail, rotate, (int) (tailCount * 0.5), baseScale * 0.6f, scale);
-
-        rotate = upPitch.add(yaw.scale(-1)).normalize().scale(space);
-        addParticle(origin, rotate, tailCount, baseScale * 0.8f, scale);
-        addParticle(tail, rotate, (int) (tailCount * 0.5), baseScale * 0.6f, scale);
-
-        rotate = downPitch.add(yaw).normalize().scale(space);
-        addParticle(origin, rotate, tailCount, baseScale * 0.8f, scale);
-        addParticle(tail, rotate, (int) (tailCount * 0.5), baseScale * 0.6f, scale);
-
-        rotate = downPitch.add(yaw.scale(-1)).normalize().scale(space);
-        addParticle(origin, rotate, tailCount, baseScale * 0.8f, scale);
-        addParticle(tail, rotate, (int) (tailCount * 0.5), baseScale * 0.6f, scale);
-
-         */
     }
 
     @Override

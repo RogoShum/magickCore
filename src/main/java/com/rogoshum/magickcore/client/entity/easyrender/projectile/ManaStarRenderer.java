@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
@@ -17,6 +18,12 @@ public class ManaStarRenderer extends EasyRenderer<ManaStarEntity> {
 
     public ManaStarRenderer(ManaStarEntity entity) {
         super(entity);
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
     }
 
     @Override

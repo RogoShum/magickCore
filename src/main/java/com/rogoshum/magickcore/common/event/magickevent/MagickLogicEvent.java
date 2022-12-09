@@ -15,6 +15,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
@@ -708,6 +709,8 @@ public class MagickLogicEvent {
 	public void onManaEntitySpawn(EntityEvents.MagickSpawnEntityEvent event) {
 		if(event.getMagickContext().projectile instanceof RepeaterEntity)
 			((RepeaterEntity) event.getMagickContext().projectile).setSpawnEntity(event.getEntity());
+		if(event.getMagickContext().projectile instanceof ChainEntity)
+			((ChainEntity) event.getMagickContext().projectile).setPostEntity(event.getEntity());
 	}
 
 	@SubscribeEvent

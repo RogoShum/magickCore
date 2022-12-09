@@ -6,7 +6,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public abstract class ManaPointEntity extends ManaEntity {
-    private Vector3d point;
+    protected Vector3d point;
     public ManaPointEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -18,13 +18,16 @@ public abstract class ManaPointEntity extends ManaEntity {
         super.tick();
 
         if(world.isRemote) return;
-        /*
-        if(point == null)
-            this.point = this.getPositionVec();
-        else if(!point.equals(this.getPositionVec())) {
-            this.setPosition(this.point.x, this.point.y, this.point.z);
+        if(fixedPosition()) {
+            if(point == null)
+                this.point = this.getPositionVec();
+            else if(!point.equals(this.getPositionVec())) {
+                this.setPosition(this.point.x, this.point.y, this.point.z);
+            }
         }
+    }
 
-         */
+    protected boolean fixedPosition() {
+        return true;
     }
 }

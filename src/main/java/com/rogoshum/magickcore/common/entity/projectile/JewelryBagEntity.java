@@ -5,6 +5,8 @@ import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.BubbleRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.JewelryBagRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -33,12 +35,15 @@ import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefraction {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.7f, 1.0f, 1.0f);
@@ -125,10 +130,9 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
         super.remove();
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new JewelryBagRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new JewelryBagRenderer(this);
     }
 
     @Override
@@ -146,10 +150,12 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                     if(slot.isEmpty()) {
                         inventory.setInventorySlotContents(i, stack);
                         spellContext().removeChild(LibContext.ITEM);
+                        inventory.markDirty();
                         break;
                     } else if(ItemStackUtil.canMergeStacks(slot, stack)) {
                         ItemStack newSlot = ItemStackUtil.mergeInventoryStacks(slot, stack, Math.min(inventory.getInventoryStackLimit(), slot.getMaxStackSize()));
                         inventory.setInventorySlotContents(i, newSlot);
+                        inventory.markDirty();
                         if(stack.isEmpty()) {
                             spellContext().removeChild(LibContext.ITEM);
                             break;
@@ -183,6 +189,8 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
 
     @Override
     public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+        if(spellContext().containChild(LibContext.ITEM) && entityRayTraceResult.getEntity() == getOwner())
+            return true;
         if(entityRayTraceResult.getEntity() instanceof ItemEntity) {
             if(spellContext().containChild(LibContext.ITEM)) {
                 ItemEntity entity = (ItemEntity) entityRayTraceResult.getEntity();
@@ -195,6 +203,8 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
             }
             return false;
         } else if(entityRayTraceResult.getEntity() instanceof JewelryBagEntity) {
+            return false;
+        } else if (suitableEntity(entityRayTraceResult.getEntity())) {
             return false;
         }
         return super.hitEntityRemove(entityRayTraceResult);

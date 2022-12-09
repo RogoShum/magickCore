@@ -2,6 +2,8 @@ package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.PhantomRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.RayRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -20,6 +22,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class PhantomEntity extends ManaProjectileEntity {
     private Entity entity;
@@ -27,10 +33,10 @@ public class PhantomEntity extends ManaProjectileEntity {
         super(type, worldIn);
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new PhantomRenderer(this));
+
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new PhantomRenderer(this);
     }
 
     @Override

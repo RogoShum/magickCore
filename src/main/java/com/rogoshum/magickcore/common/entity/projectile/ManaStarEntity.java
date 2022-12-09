@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.PhantomRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaStarRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -10,6 +12,10 @@ import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class ManaStarEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_star.png");
@@ -17,10 +23,9 @@ public class ManaStarEntity extends ManaProjectileEntity {
         super(type, worldIn);
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaStarRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new ManaStarRenderer(this);
     }
 
     @Override

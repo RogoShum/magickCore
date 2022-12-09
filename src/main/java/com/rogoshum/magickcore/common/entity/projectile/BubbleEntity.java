@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.BubbleRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -12,6 +13,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class BubbleEntity extends ManaProjectileEntity {
     public static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/bubble.png");
@@ -26,10 +31,9 @@ public class BubbleEntity extends ManaProjectileEntity {
         super.tick();
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new BubbleRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new BubbleRenderer(this);
     }
 
     @Override

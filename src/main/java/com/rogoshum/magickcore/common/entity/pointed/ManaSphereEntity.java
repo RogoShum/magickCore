@@ -1,9 +1,12 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -21,6 +24,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ManaSphereEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_sphere.png");
@@ -30,9 +34,13 @@ public class ManaSphereEntity extends ManaPointEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaSphereRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ManaSphereRenderer(this);
+    }
+
+    @Override
+    protected boolean fixedPosition() {
+        return false;
     }
 
     @Override

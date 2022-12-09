@@ -81,7 +81,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         }
         float width = getWidth();
         float height = getHeight();
-        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity) && entity.getHeight() < height && entity.getWidth() < width;
+        Predicate<Entity> entityPredicate = entity -> (entity instanceof LivingEntity && spellContext().force > 7) && entity.getHeight() < height && entity.getWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)
@@ -130,6 +130,11 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
             return ActionResultType.CONSUME;
         }
         return ActionResultType.PASS;
+    }
+
+    @Override
+    protected boolean fixedPosition() {
+        return false;
     }
 
     @Override

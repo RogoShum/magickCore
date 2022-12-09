@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaOrbRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaStarRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -10,6 +12,10 @@ import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class ManaOrbEntity extends ManaProjectileEntity {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.5f, 1.0f, 1.0f);
@@ -23,10 +29,10 @@ public class ManaOrbEntity extends ManaProjectileEntity {
         super.tick();
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaOrbRenderer(this));
+
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new ManaOrbRenderer(this);
     }
 
     @Override

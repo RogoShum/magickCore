@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaLaserEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;

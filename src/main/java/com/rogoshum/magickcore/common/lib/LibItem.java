@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.MagickCore;
 public class LibItem {
     public static final String MATERIAL_JAR = "material_jar";
     public static final String SPIRIT_ORE = "spirit_ore";
+    public static final String ITEM_EXTRACTOR = "item_extractor";
     public static final String LASER_STAFF = "laser_staff";
     public static final String RAY_STAFF = "ray_staff";
     public static final String SPIRIT_BOW = "spirit_bow";
@@ -19,6 +20,7 @@ public class LibItem {
     public static final String STAFF = "staff";
     public static final String SPIRIT_CRYSTAL_STAFF = "spirit_crystal_staff";
     public static final String ENTITY_TYPE_ITEM = "entity_type";
+    public static final String POTION_TYPE_ITEM = "potion_type";
 
     public static final String ARC = "arc";
     public static final String SOLAR = "solar";

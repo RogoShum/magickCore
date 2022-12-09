@@ -5,7 +5,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
-import com.rogoshum.magickcore.common.tileentity.CanSeeTileEntity;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaItemDurationBarRenderer;
@@ -61,8 +60,6 @@ public class RenderEvent {
 
         //EntityLightSourceHandler.addLightSource(par);
     }
-
-    private static final HashMap<CanSeeTileEntity, Integer> tileRenderTick = new HashMap<CanSeeTileEntity, Integer>();
 
     @SubscribeEvent
     public void onOverlayRender(RenderGameOverlayEvent event) {

@@ -3,36 +3,33 @@ package com.rogoshum.magickcore.common.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
-import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
-import com.rogoshum.magickcore.common.item.placeable.SpiritCrystalItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class MagickCraftingTileEntity extends CanSeeTileEntity implements ITickableTileEntity {
+public class MagickCraftingTileEntity extends TileEntity implements ITickableTileEntity {
+    public int ticksExisted;
     public static final int transNeed = 120;
     public int transTick;
     private PlaceableItemEntity corePlaceable;
     private final HashSet<PlaceableItemEntity> craftingSides = new HashSet<>();
 
     public MagickCraftingTileEntity() {
-        super(ModTileEntities.magick_crafting_tileentity.get());
+        super(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get());
     }
 
     @Override

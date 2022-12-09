@@ -58,17 +58,17 @@ public class EntityLightSourceManager {
         boolean done = false;
         if (block.equals(Blocks.AIR)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.fake_air.get().withLight((int) entity.getSourceLight()));
+            entity.world().setBlockState(pos, ModBlocks.FAKE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.CAVE_AIR)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.fake_cave_air.get().withLight((int) entity.getSourceLight()));
+            entity.world().setBlockState(pos, ModBlocks.FAKE_CAVE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.WATER)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.fake_water.get().withLightAndFluid((int) entity.getSourceLight(), entity.world().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
+            entity.world().setBlockState(pos, ModBlocks.FAKE_WATER.get().withLightAndFluid((int) entity.getSourceLight(), entity.world().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
         }
 
         if(done) {

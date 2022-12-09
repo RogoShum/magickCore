@@ -27,13 +27,21 @@ public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
         params.matrixStack.scale(9.999f, 1.999f, 9.999f);
         RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer
                 , TYPE)
-                , new RenderHelper.RenderContext(0.1f, Color.BLACK_COLOR, 0));
+                , new RenderHelper.RenderContext(0.12f, Color.BLACK_COLOR, 0));
+    }
+
+    public void renderDistortion(RenderParams params) {
+        baseOffset(params.matrixStack);
+        params.matrixStack.scale(9.999f, 1.999f, 9.999f);
+        RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer
+                        , TYPE)
+                , new RenderHelper.RenderContext(1.0f, Color.BLACK_COLOR, 0));
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE, RenderMode.ShaderList.DISTORTION_SHADER), this::render);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.DISTORTION_SHADER), this::renderDistortion);
         map.put(new RenderMode(TYPE), this::render);
         return map;
     }

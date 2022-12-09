@@ -6,9 +6,14 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextCreatorRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.ConeRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.AscendantRealmRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.common.entity.radiated.ConeEntity;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
@@ -39,7 +44,9 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ContextCreatorEntity extends ManaPointEntity implements IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/items/context_core.png");
@@ -56,9 +63,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ContextCreatorRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ContextCreatorRenderer(this);
     }
 
     public void setMaterial(Material material) {

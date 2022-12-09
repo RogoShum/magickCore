@@ -4,8 +4,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.ManaItemEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -43,6 +46,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ContextPointerEntity extends ManaPointEntity implements IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/context_pointer.png");
@@ -56,9 +60,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ContextPointerRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ContextPointerRenderer(this);
     }
 
     @Override

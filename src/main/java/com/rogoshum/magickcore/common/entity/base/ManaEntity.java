@@ -3,6 +3,9 @@ package com.rogoshum.magickcore.common.entity.base;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.render.IEasyRender;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -34,6 +37,9 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class ManaEntity extends Entity implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
     protected final ConcurrentHashMap<Integer, VectorHitReaction> hitReactions = new ConcurrentHashMap<>();
@@ -328,6 +334,18 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     public void onAddedToWorld() {
         super.onAddedToWorld();
         EntityLightSourceManager.addLightSource(this);
+        if(world.isRemote) {
+            Supplier<EasyRenderer<? extends ManaEntity>> renderer = getRenderer();
+            if(renderer == null)
+                MagickCore.proxy.addRenderer(() -> new ManaEntityRenderer(this));
+            else
+                MagickCore.proxy.addRenderer(renderer::get);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return null;
     }
 
     @Override
@@ -352,7 +370,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public float eyeHeight() {
-        return this.getHeight() / 2;
+        return this.getHeight() * 0.5f;
     }
 
     @Override

@@ -47,10 +47,11 @@ public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMateri
                 Vector3d fir = NBTTagHelper.getVectorFromNBT(stack.getTag(), "position");
                 NBTTagHelper.putVectorDouble(stack.getTag(), "direction", vec.subtract(fir));
                 NBTTagHelper.removeVectorDouble(stack.getTag(), "position");
-            } else
+            } else {
                 NBTTagHelper.putVectorDouble(stack.getTag(), "position", vec);
-            if(NBTTagHelper.hasVectorDouble(stack.getTag(), "direction"))
-                NBTTagHelper.removeVectorDouble(stack.getTag(), "direction");
+                if(NBTTagHelper.hasVectorDouble(stack.getTag(), "direction"))
+                    NBTTagHelper.removeVectorDouble(stack.getTag(), "direction");
+            }
         } else
             NBTTagHelper.putVectorDouble(stack.getOrCreateTag(), "position", vec);
     }

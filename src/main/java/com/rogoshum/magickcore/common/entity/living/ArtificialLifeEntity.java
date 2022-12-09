@@ -143,7 +143,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         double dis = start.subtract(end).length();
         if(dis < 0.2)
             dis = 0.2;
-        int distance = (int) (8 * dis);
+        int distance = (int) (6 * dis);
         if(distance < 1)
             distance = 1;
         float directionPoint = (float) (supplier.ticksExisted % distance) / distance;
@@ -167,9 +167,9 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         }
         for (int i = 0; i < distance; ++i) {
             if(i == c)
-                scale = 0.3f;
+                scale = 0.1f;
             else
-                scale = 0.15f;
+                scale = 0.05f;
 
             double trailFactor = i / (distance - 1.0D);
             Vector3d pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);

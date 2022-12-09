@@ -39,10 +39,12 @@ public class RepeaterEntity extends ManaPointEntity {
             spawnEntity = entity;
     }
 
+
+
     @Override
     public void releaseMagick() {
         if(!spellContext().valid()) return;
-
+        if(world.isRemote) return;
         if(cool_down >= 0)
             cool_down -= this.spellContext().force * 3;
 
@@ -61,21 +63,25 @@ public class RepeaterEntity extends ManaPointEntity {
                     traceContext.entity = entity;
                     if(entity == null)
                         traceContext.uuid = MagickCore.emptyUUID;
-                } else if(entity != null && entity.isAlive()) {
+                }
+                if(entity != null && entity.isAlive()) {
                     Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
                     Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
                     context.replenishChild(DirectionContext.create(goal.subtract(self).normalize()));
                 } else if(spellContext().containChild(LibContext.DIRECTION)) {
                     context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
-                } else
-                    return;
+                }
             } else if(spellContext().containChild(LibContext.DIRECTION)) {
                 context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
-            } else
-                return;
+            }
             MagickReleaseHelper.releaseMagick(beforeCast(context));
             cool_down = 20;
         }
+    }
+
+    @Override
+    protected boolean fixedPosition() {
+        return false;
     }
 
     @Override

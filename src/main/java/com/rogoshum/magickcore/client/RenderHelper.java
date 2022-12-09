@@ -714,7 +714,7 @@ public class RenderHelper {
             for (VertexBuffer vertexBuffer : vertexBuffers) {
                 vertexBuffer.bindBuffer();
                 DefaultVertexFormats.ENTITY.setupBufferState(0);
-                vertexBuffer.draw(matrix4f, GL_TRIANGLE_STRIP);
+                vertexBuffer.draw(matrix4f, pack.type.getDrawMode());
                 VertexBuffer.unbindBuffer();
                 DefaultVertexFormats.ENTITY.clearBufferState();
             }

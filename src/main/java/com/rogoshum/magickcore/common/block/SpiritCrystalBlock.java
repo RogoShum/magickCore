@@ -51,7 +51,7 @@ public class SpiritCrystalBlock extends BaseBlock {
         BlockPattern.PatternHelper patternHelper = MAGICK_CRAFTING.match(worldIn, pos);
         if(patternHelper != null) {
             BlockPos target = patternHelper.translateOffset(1, 1, 0).getPos();
-            worldIn.setBlockState(target, ModBlocks.magick_crafting.get().getDefaultState());
+            worldIn.setBlockState(target, ModBlocks.MAGICK_CRAFTING.get().getDefaultState());
         }
     }
 

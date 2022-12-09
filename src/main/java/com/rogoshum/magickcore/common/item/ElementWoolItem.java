@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ElementWoolItem extends BlockItem{
     public ElementWoolItem() {
-        super(ModBlocks.element_wool.get(), BaseItem.properties().maxStackSize(64).setISTER(() -> ElementWoolRenderer::new));
+        super(ModBlocks.ELEMENT_WOOL.get(), BaseItem.properties().maxStackSize(64).setISTER(() -> ElementWoolRenderer::new));
     }
 
     @Override

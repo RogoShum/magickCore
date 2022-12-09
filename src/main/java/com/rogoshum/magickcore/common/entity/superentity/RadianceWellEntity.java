@@ -2,10 +2,13 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.RadianceWellLaserRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.RadianceWellRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -24,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/radiance_well.png");
@@ -42,8 +46,12 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public void onAddedToWorld() {
         super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new RadianceWellRenderer(this));
         MagickCore.proxy.addRenderer(() -> new RadianceWellLaserRenderer(this));
+    }
+
+    @Override
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new RadianceWellRenderer(this);
     }
 
     @Nonnull

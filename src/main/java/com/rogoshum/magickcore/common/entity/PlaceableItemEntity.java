@@ -124,7 +124,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                 nextNode(stack, Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z));
             } else if (stack.getItem() == ModItems.WAND.get()) {
                 BlockPos pos = new BlockPos(this.origin.getPositionVec());
-                if(world.getBlockState(pos).getBlock() == ModBlocks.magick_crafting.get()) {
+                if(world.getBlockState(pos).getBlock() == ModBlocks.MAGICK_CRAFTING.get()) {
                     Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(this.origin.entityMap, Optional.empty());
                     if(matrix != null) {
                         Optional<MagickCraftingRecipe> optional = MagickRegistry.matchMagickCraftingRecipe(matrix);

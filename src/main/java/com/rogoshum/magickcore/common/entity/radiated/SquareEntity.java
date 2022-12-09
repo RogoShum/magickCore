@@ -1,8 +1,11 @@
 package com.rogoshum.magickcore.common.entity.radiated;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiate.SquareRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.SilenceSqualRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
@@ -17,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class SquareEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cube.png");
@@ -30,9 +34,8 @@ public class SquareEntity extends ManaRadiateEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new SquareRadiateRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new SquareRadiateRenderer(this);
     }
 
     @Nonnull
@@ -67,7 +70,7 @@ public class SquareEntity extends ManaRadiateEntity {
             Vector3d pos = list.get(i);
             LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , pos
-                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();

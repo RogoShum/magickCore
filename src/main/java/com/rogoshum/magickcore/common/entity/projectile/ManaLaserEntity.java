@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaOrbRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -11,6 +13,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Supplier;
 
 public class ManaLaserEntity extends ManaProjectileEntity {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 0.3f);
@@ -24,10 +30,9 @@ public class ManaLaserEntity extends ManaProjectileEntity {
         super.tick();
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaLaserRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new ManaLaserRenderer(this);
     }
 
     @Override
@@ -74,10 +79,6 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     @Override
     public ResourceLocation getEntityIcon() {
         return ICON;
-    }
-
-    @Override
-    public void renderFrame(float partialTicks) {
     }
 
     @Override

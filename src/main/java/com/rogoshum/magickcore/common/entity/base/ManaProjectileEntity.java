@@ -4,17 +4,17 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileFrameRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileRenderer;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.common.magick.context.child.*;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -53,7 +53,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public abstract class ManaProjectileEntity extends ThrowableEntity implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
@@ -254,7 +257,18 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     public void onAddedToWorld() {
         super.onAddedToWorld();
         EntityLightSourceManager.addLightSource(this);
-        MagickCore.proxy.addRenderer(() -> new ManaProjectileFrameRenderer(this));
+        if(world.isRemote) {
+            Supplier<EasyRenderer<? extends ManaProjectileEntity>> renderer = getRenderer();
+            if(renderer == null)
+                MagickCore.proxy.addRenderer(() -> new ManaProjectileRenderer(this));
+            else
+                MagickCore.proxy.addRenderer(renderer::get);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return null;
     }
 
     @Override
@@ -381,8 +395,23 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     @Override
     protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
         if(suitableEntity(p_213868_1_.getEntity())) {
-            EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-            MinecraftForge.EVENT_BUS.post(event);
+            ConditionContext condition = null;
+            if(spellContext().containChild(LibContext.CONDITION))
+                condition = spellContext().getChild(LibContext.CONDITION);
+            AtomicReference<Boolean> pass = new AtomicReference<>(true);
+            if(condition != null) {
+                condition.conditions.forEach((condition1 -> {
+                    if(condition1.getType() == TargetType.TARGET) {
+                        if(!condition1.test(p_213868_1_.getEntity()))
+                            pass.set(false);
+                    } else if(!condition1.test(this.getOwner()))
+                        pass.set(false);
+                }));
+            }
+            if(pass.get()) {
+                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+                MinecraftForge.EVENT_BUS.post(event);
+            }
         }
 
         if (victim != null && !this.world.isRemote) {

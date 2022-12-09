@@ -3,6 +3,8 @@ package com.rogoshum.magickcore.common.entity.projectile;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.client.entity.easyrender.ElementOrbRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -27,6 +29,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaCapacity {
     private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
@@ -43,10 +46,9 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
         }
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ElementOrbRenderer(this));
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new ElementOrbRenderer(this);
     }
 
     @Override

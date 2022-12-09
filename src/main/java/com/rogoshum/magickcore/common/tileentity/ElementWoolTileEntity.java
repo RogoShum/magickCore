@@ -13,16 +13,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class ElementWoolTileEntity extends CanSeeTileEntity implements ILightSourceEntity {
+public class ElementWoolTileEntity extends TileEntity implements ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
     public ElementWoolTileEntity() {
-        super(ModTileEntities.element_wool_tileentity.get());
+        super(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get());
     }
 
     @Override

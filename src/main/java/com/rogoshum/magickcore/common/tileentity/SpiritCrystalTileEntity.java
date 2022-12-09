@@ -6,6 +6,6 @@ import net.minecraft.tileentity.TileEntity;
 public class SpiritCrystalTileEntity extends TileEntity{
 
     public SpiritCrystalTileEntity() {
-        super(ModTileEntities.spirit_crystal_tileentity.get());
+        super(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get());
     }
 }

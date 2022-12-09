@@ -3,8 +3,10 @@ package com.rogoshum.magickcore.common.entity.superentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.AscendantRealmRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -23,7 +25,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntity{
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ascendant_realm.png");
@@ -32,9 +36,8 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new AscendantRealmRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new AscendantRealmRenderer(this);
     }
 
     @Override

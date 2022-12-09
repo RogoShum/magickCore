@@ -44,6 +44,12 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
     }
 
     @Override
+    public void update() {
+        super.update();
+        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
+    }
+
+    @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(TYPE), (renderParams) -> {

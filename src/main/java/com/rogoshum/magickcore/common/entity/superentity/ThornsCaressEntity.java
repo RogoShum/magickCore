@@ -2,10 +2,13 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.ThornsCaressLaserRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.superrender.ChaosReachRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -18,11 +21,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/thorns_caress.png");
@@ -33,8 +40,12 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public void onAddedToWorld() {
         super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ThornsCaressRenderer(this));
         MagickCore.proxy.addRenderer(() -> new ThornsCaressLaserRenderer(this));
+    }
+
+    @Override
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ThornsCaressRenderer(this);
     }
 
     @Override

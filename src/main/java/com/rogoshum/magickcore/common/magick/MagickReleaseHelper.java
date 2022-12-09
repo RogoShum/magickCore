@@ -10,10 +10,7 @@ import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.common.magick.context.child.*;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -234,7 +231,7 @@ public class MagickReleaseHelper {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             pro.setPosition(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
         } else if(context.projectile != null) {
-            pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + pro.getEyeHeight(), context.projectile.getPosZ());
+            pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + context.projectile.getHeight() * 0.5 + pro.getEyeHeight(), context.projectile.getPosZ());
         } else if(context.caster != null) {
             if(pro instanceof ProjectileEntity)
                 pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * (1.25 + pro.getWidth() * 0.5),
@@ -242,6 +239,13 @@ public class MagickReleaseHelper {
                         context.caster.getPosZ() + context.caster.getLookVec().z * (1.25 + pro.getWidth() * 0.5));
             else
                 pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + context.caster.getHeight() * 0.5, context.caster.getPosZ());
+        }
+
+        if(context.containChild(LibContext.OFFSET)) {
+            OffsetContext offsetContext = context.getChild(LibContext.OFFSET);
+            Vector3d pos = pro.getPositionVec();
+            pos = pos.add(offsetContext.direction);
+            pro.setPosition(pos.x, pos.y, pos.z);
         }
 
         if(context.caster != null && pro instanceof ProjectileEntity) {

@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -26,11 +27,11 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
-public class ElementCrystalTileEntity extends CanSeeTileEntity implements ITickableTileEntity, ILightSourceEntity {
+public class ElementCrystalTileEntity extends TileEntity implements ITickableTileEntity, ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
     public int age;
     public ElementCrystalTileEntity() {
-        super(ModTileEntities.element_crystal_tileentity.get());
+        super(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get());
     }
 
     @Override

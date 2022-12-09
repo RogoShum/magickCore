@@ -26,6 +26,8 @@ public class ModItems {
             , BaseItem.properties().setISTER(() -> MaterialJarItemRenderer::new)));
     public static final RegistryObject<Item> SPIRIT_ORE = ITEMS.register(LibItem.SPIRIT_ORE, () -> new BlockItem(ModBlocks.SPIRIT_ORE.get()
             , BaseItem.properties()));
+    public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new BlockItem(ModBlocks.ITEM_EXTRACTOR.get()
+            , BaseItem.properties().setISTER(() -> ItemExtractorRenderer::new)));
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_CRYSTAL = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties().setISTER(() -> SpiritWoodStickRenderer::new), 0.4f, 0.4f));
     public static final RegistryObject<Item> MAGICK_CONTAINER = ITEMS.register("magick_container", ManaCapacityItem::new);
@@ -46,6 +48,7 @@ public class ModItems {
     public static final RegistryObject<Item> MAGICK_CORE = ITEMS.register(LibItem.MAGICK_CONTEXT, MagickContextItem::new);
     public static final RegistryObject<Item> CONTEXT_POINTER = ITEMS.register(LibItem.CONTEXT_POINTER, ContextPointerItem::new);
     public static final RegistryObject<Item> ENTITY_TYPE = ITEMS.register(LibItem.ENTITY_TYPE_ITEM, EntityTypeItem::new);
+    public static final RegistryObject<Item> POTION_TYPE = ITEMS.register(LibItem.POTION_TYPE_ITEM, PotionTypeItem::new);
     public static final RegistryObject<Item> MANA_ENERGY = ITEMS.register(LibItem.MANA_ENERGY, ManaEnergyItem::new);
 
     public static final RegistryObject<Item> ARC = ITEMS.register(LibItem.ARC, () -> new ElementItem(LibElements.ARC));
@@ -69,7 +72,7 @@ public class ModItems {
     public static final RegistryObject<Item> COMPLETELY_SELF = ITEMS.register("completely_self", CompletelySelfItem::new);
     public static final RegistryObject<Item> CONDITION = ITEMS.register("condition", ConditionItem::new);
     public static final RegistryObject<Item> REVERSE = ITEMS.register("reverse", ReverseItem::new);
-    public static final RegistryObject<Item> ELEMENT_CRYSTAL_SEEDS = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.element_crystal.get(), BaseItem.properties()));
+    public static final RegistryObject<Item> ELEMENT_CRYSTAL_SEEDS = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.ELEMENT_CRYSTAL.get(), BaseItem.properties()));
     public static final RegistryObject<Item> ORB_BOTTLE = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(
             new Food.Builder().meat().saturation(3f).fastToEat().setAlwaysEdible().effect(() -> new EffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));

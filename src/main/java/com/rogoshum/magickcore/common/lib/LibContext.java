@@ -4,6 +4,7 @@ public class LibContext {
     public static final String SPAWN = "spawn";
     public static final String TRACE = "trace";
     public static final String ITEM = "item";
+    public static final String POTION = "potion";
     public static final String POSITION = "position";
     public static final String DIRECTION = "direction";
     public static final String OFFSET = "offset";

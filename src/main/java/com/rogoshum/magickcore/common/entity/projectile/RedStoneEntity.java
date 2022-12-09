@@ -3,7 +3,9 @@ package com.rogoshum.magickcore.common.entity.projectile;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.RedStoneRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -22,7 +24,11 @@ import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.function.Supplier;
 
 public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEntity {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.1f, 1.0f, 1.0f);
@@ -42,10 +48,10 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         super.remove();
     }
 
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new RedStoneRenderer(this));
+
+    @OnlyIn(Dist.CLIENT)
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new RedStoneRenderer(this);
     }
 
     @Override
@@ -78,12 +84,8 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
-        EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
-        MinecraftForge.EVENT_BUS.post(event);
-        if(!suitableEntity(p_213868_1_.getEntity())) return;
-        MagickContext context = MagickContext.create(world, spellContext().postContext).noCost().caster(this.getOwner()).projectile(this).victim(p_213868_1_.getEntity()).force(this.spellContext().force);
-        MagickReleaseHelper.releaseMagick(context);
+    public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+        return false;
     }
 
     @Override

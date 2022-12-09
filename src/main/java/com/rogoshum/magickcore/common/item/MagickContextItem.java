@@ -41,9 +41,9 @@ public class MagickContextItem extends ManaItem{
         if(group == ModGroups.MAGICK_CONTEXT_GROUP) {
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
-                if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY) continue;
+                if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY || type == ApplyType.POTION) continue;
                 ExtraDataUtil.itemManaData(sample, (data) -> {
-                    data.spellContext().applyType(type).force(7).range(7).tick(300).addChild(new TraceContext());
+                    data.spellContext().applyType(type).force(7).range(7).tick(300);
                 });
                 ItemStack itemStack = sample.copy();
                 items.add(itemStack);

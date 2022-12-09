@@ -2,6 +2,8 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiate.SectorRadiateRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.SilenceSqualRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
@@ -21,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/silence_squall.png");
@@ -29,9 +32,8 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new SilenceSqualRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new SilenceSqualRenderer(this);
     }
 
     @Override

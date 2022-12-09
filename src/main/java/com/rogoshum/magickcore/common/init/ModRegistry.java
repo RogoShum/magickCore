@@ -21,6 +21,7 @@ public class ModRegistry {
         MagickRegistry.<MagickElement>getRegistry(LibRegistry.ELEMENT).registry().forEach((type, o) -> {
             ElementFunctions functions = MagickRegistry.<ElementFunctions>getRegistry(LibRegistry.ELEMENT_FUNCTION).registry().get(type);
             functions.add(ApplyType.SPAWN_ENTITY, MagickReleaseHelper::spawnEntity);
+            functions.add(ApplyType.POTION, OriginAbility::potion);
             switch (type) {
                 case LibElements.ORIGIN:
                     functions.add(ApplyType.ATTACK, OriginAbility::damageEntity);
@@ -99,6 +100,8 @@ public class ModRegistry {
         childContexts.register(LibContext.APPLY_TYPE, ExtraApplyTypeContext::new);
         childContexts.register(LibContext.SELF, SelfContext::new);
         childContexts.register(LibContext.REVERSE, ReverseContext::new);
+        childContexts.register(LibContext.OFFSET, OffsetContext::new);
+        childContexts.register(LibContext.POTION, PotionContext::new);
 
         ObjectRegistry<Callable<Condition>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);

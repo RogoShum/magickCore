@@ -251,16 +251,18 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void initBlockRenderer() {
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.magick_crafting_tileentity.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.magick_crafting.get(), RenderType.getCutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.spirit_crystal_tileentity.get(), SpiritCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.spirit_crystal.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.getCutout());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.getCutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_crystal_tileentity.get(), ElementCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.element_crystal.get(), RenderType.getCutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.element_wool_tileentity.get(), ElementWoolRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.element_wool.get(), RenderType.getSolid());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.getCutout());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.getTranslucent());
+		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
+		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.getSolid());
 	}
 
 	private void putElementRenderer() {

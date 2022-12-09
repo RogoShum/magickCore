@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaOrbEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
@@ -17,6 +18,13 @@ public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity> {
 
     public ManaOrbRenderer(ManaOrbEntity entity) {
         super(entity);
+    }
+
+
+    @Override
+    public void update() {
+        super.update();
+        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
     }
 
     @Override

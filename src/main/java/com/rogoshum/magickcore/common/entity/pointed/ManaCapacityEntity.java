@@ -4,8 +4,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.client.entity.easyrender.GravityLiftRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -40,6 +43,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
@@ -60,9 +64,8 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-        MagickCore.proxy.addRenderer(() -> new ManaCapacityRenderer(this));
+    public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
+        return () -> new ManaCapacityRenderer(this);
     }
 
     @Override
