@@ -27,8 +27,7 @@ public class TagItemMatcher extends NBTRecipeContainer.ItemMatcher {
 
     @Override
     public boolean matches(ItemStack stack) {
-        if(stack.getItem().getRegistryName().toString().contains(item))
-        {
+        if(stack.getItem().getRegistryName().toString().contains(item)) {
             if(stack.hasTag()) {
                 for (String key : map.keySet()) {
                     if (!stack.getTag().contains(key) || !stack.getTag().get(key).equals(map.get(key)))

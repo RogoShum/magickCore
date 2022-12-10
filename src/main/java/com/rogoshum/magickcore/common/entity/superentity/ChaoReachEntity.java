@@ -24,6 +24,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,7 +49,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new ChaosReachLaserRenderer(this));
     }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ChaosReachRenderer(this);

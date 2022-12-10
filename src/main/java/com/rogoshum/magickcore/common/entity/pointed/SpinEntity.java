@@ -19,6 +19,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +30,7 @@ import java.util.function.Supplier;
 
 public class SpinEntity extends ManaPointEntity {
     protected Vector3d hitPoint = this.getPositionVec();
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/spin.png");
     public SpinEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -38,6 +41,7 @@ public class SpinEntity extends ManaPointEntity {
         return world.getEntitiesInAABBexcluding(this, new AxisAlignedBB(getHitPoint(), getHitPoint()).grow(getRange()), predicate);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new SpinRenderer(this);
@@ -59,7 +63,7 @@ public class SpinEntity extends ManaPointEntity {
 
     @Override
     public ResourceLocation getEntityIcon() {
-        return null;
+        return ICON;
     }
 
     @Override

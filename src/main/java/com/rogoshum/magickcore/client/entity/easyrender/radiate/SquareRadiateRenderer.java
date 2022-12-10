@@ -44,7 +44,7 @@ public class SquareRadiateRenderer extends EasyRenderer<SquareEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::render);
+        map.put(new RenderMode(TYPE), this::render);
         return map;
     }
 }

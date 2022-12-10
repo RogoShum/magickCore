@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.client.item;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.model.OrbBottleModel;
+import com.rogoshum.magickcore.client.item.model.OrbBottleModel;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;

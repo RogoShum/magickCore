@@ -27,10 +27,10 @@ public class MaterialJarRenderer extends TileEntityRenderer<MaterialJarTileEntit
     @Override
     public void render(MaterialJarTileEntity tile, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.push();
-        matrixStackIn.translate(0.5, 0.1901, 0.5);
+        matrixStackIn.translate(0.5, 0.5, 0.5);
 
         matrixStackIn.push();
-        matrixStackIn.scale(0.3f, 0.38f, 0.3f);
+        matrixStackIn.scale(0.6f, 0.99f, 0.6f);
         RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
@@ -38,24 +38,26 @@ public class MaterialJarRenderer extends TileEntityRenderer<MaterialJarTileEntit
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.pop();
 
+/*
         matrixStackIn.push();
-        matrixStackIn.translate(0, 0.2, 0.0);
-        matrixStackIn.scale(0.2f, 0.08f, 0.2f);
+        matrixStackIn.translate(0, 0.5, 0.0);
+        matrixStackIn.scale(0.3f, 0.1f, 0.3f);
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbSolid(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(1.0f, Color.create(0.4f, 0.3f, 0), combinedLightIn));
         matrixStackIn.pop();
+ */
 
         if(!tile.getStack().isEmpty()) {
             matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
             matrixStackIn.push();
-            matrixStackIn.translate(0, 0.15, 0);
+            matrixStackIn.translate(0, 0.3, 0);
             matrixStackIn.scale(0.01f, 0.01f, .01f);
             matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(180));
             String count = String.valueOf(tile.getCount());
             Minecraft.getInstance().fontRenderer.drawString(matrixStackIn, count, -count.length()*3, 2, 0);
             matrixStackIn.pop();
-            matrixStackIn.translate(0, -0.12f, 0);
-            matrixStackIn.scale(0.5f, 0.5f,0.5f);
+            matrixStackIn.translate(0, -0.2f, 0);
+            //matrixStackIn.scale(0.5f, 0.5f,0.5f);
             IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tile.getStack(), null, null);
             IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
             Minecraft.getInstance().getItemRenderer().renderItem(tile.getStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel_);

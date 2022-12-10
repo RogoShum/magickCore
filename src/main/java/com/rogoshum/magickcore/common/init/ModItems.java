@@ -7,10 +7,7 @@ import com.rogoshum.magickcore.common.item.material.*;
 import com.rogoshum.magickcore.common.item.placeable.*;
 
 import com.rogoshum.magickcore.common.item.tool.*;
-import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.lib.LibEntities;
-import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.lib.LibMaterial;
+import com.rogoshum.magickcore.common.lib.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
@@ -70,8 +67,11 @@ public class ModItems {
     public static final RegistryObject<Item> DIRECTION_MEMORY = ITEMS.register("direction_memory", DirectionMemoryItem::new);
     public static final RegistryObject<Item> OFFSET_MEMORY = ITEMS.register("offset_memory", OffsetMemoryItem::new);
     public static final RegistryObject<Item> COMPLETELY_SELF = ITEMS.register("completely_self", CompletelySelfItem::new);
-    public static final RegistryObject<Item> CONDITION = ITEMS.register("condition", ConditionItem::new);
     public static final RegistryObject<Item> REVERSE = ITEMS.register("reverse", ReverseItem::new);
+    public static final RegistryObject<Item> CONDITION_BLOCK = ITEMS.register("condition_block", () -> new ConditionItem(LibConditions.BLOCK_ONLY));
+    public static final RegistryObject<Item> CONDITION_NON_LIVING = ITEMS.register("condition_non_living", () -> new ConditionItem(LibConditions.NON_LIVING_ENTITY));
+    public static final RegistryObject<Item> CONDITION_LIVING = ITEMS.register("condition_living", () -> new ConditionItem(LibConditions.LIVING_ENTITY));
+
     public static final RegistryObject<Item> ELEMENT_CRYSTAL_SEEDS = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.ELEMENT_CRYSTAL.get(), BaseItem.properties()));
     public static final RegistryObject<Item> ORB_BOTTLE = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(

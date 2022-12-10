@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class MaterialJarBlock extends BaseBlock{
-    protected static final VoxelShape SHAPE = Block.makeCuboidShape(3.0D, 0.0D, 5.5D, 13.0D, 16.0D, 13.0D);
+    protected static final VoxelShape SHAPE = Block.makeCuboidShape(3.0D, 0.0D, 3.0D, 13.0D, 16.0D, 13.0D);
     public MaterialJarBlock(Properties properties) {
         super(properties);
     }

@@ -104,7 +104,7 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         conditionSpellMap().clear();
         Queue<SpellContext> attackContext = Queues.newArrayDeque();
         SpellContext context = SpellContext.create().applyType(ApplyType.BUFF)
-                .tick(40).element(MagickRegistry.getElement(LibElements.SOLAR))
+                .tick(40).force(5).element(MagickRegistry.getElement(LibElements.SOLAR))
                 .addChild(ConditionContext.create(HealthCondition.create(0.7f)
                         .percentage(true).compare(HealthCondition.Compare.LESS_EQUAL)));
         SpellContext post = SpellContext.create().applyType(ApplyType.DIFFUSION)

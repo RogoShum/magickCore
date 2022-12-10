@@ -68,13 +68,14 @@ public class ItemExtractorTileEntity extends TileEntity implements ITickableTile
 
         if(item != null) {
             if(item.isAlive()) {
+                item.setMotion(Vector3d.ZERO);
                 double y = pos.getY() + 0.2;
-                if(item.getPositionVec().distanceTo(Vector3d.copyCentered(pos)) > 1.0) {
+                if(item.getPositionVec().add(0, 0.3, 0).distanceTo(Vector3d.copyCentered(pos)) > 1.0) {
                     item = null;
                     return;
                 }
                 item.setPosition(pos.getX() + 0.5, y, pos.getZ() + 0.5);
-                if(item.getAge() > 120)
+                if(ItemStackUtil.getItemEntityAge(item) > 120)
                     ItemStackUtil.setItemEntityAge(item, 0);
                 ItemExtractorBlock.updatePower(world, pos, world.getBlockState(pos), Math.max(1, (int) (item.getItem().getCount() * 0.25)));
                 tile = world.getTileEntity(pos.add(state.get(ItemExtractorBlock.FACING).getDirectionVec()));

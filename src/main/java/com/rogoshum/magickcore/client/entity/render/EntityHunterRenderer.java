@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.client.entity.render;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.model.EntityHunterModel;
+import com.rogoshum.magickcore.client.entity.model.EntityHunterModel;
 import com.rogoshum.magickcore.common.entity.pointed.EntityHunterEntity;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

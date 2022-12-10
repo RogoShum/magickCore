@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibConditions;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
@@ -28,8 +29,10 @@ import net.minecraft.util.math.vector.Vector3d;
 import java.util.List;
 
 public class ConditionItem extends ManaItem implements IManaMaterial {
-    public ConditionItem() {
+    private final String condition;
+    public ConditionItem(String condition) {
         super(properties());
+        this.condition = condition;
     }
 
     @Override
@@ -50,7 +53,14 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         SpellContext spellContext = data.spellContext();
-        spellContext.merge(ExtraDataUtil.itemManaData(stack).spellContext());
+        if(spellContext.containChild(LibContext.CONDITION)) {
+            ConditionContext context = spellContext.getChild(LibContext.CONDITION);
+            context.addCondition(MagickRegistry.getCondition(this.condition));
+            spellContext.addChild(context);
+        } else {
+            ConditionContext context = ConditionContext.create(MagickRegistry.getCondition(this.condition));
+            spellContext.addChild(context);
+        }
         return true;
     }
 
@@ -58,15 +68,8 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         if (this.isInGroup(group)) {
             ItemStack condition = new ItemStack(this);
-            ItemStack living = condition.copy();
-            ExtraDataUtil.itemManaData(living, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(LibConditions.LIVING_ENTITY))));
-            ItemStack block = condition.copy();
-            ExtraDataUtil.itemManaData(block, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(LibConditions.BLOCK_ONLY))));
-            ItemStack non_living = condition.copy();
-            ExtraDataUtil.itemManaData(non_living, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(LibConditions.NON_LIVING_ENTITY))));
-            items.add(living);
-            items.add(non_living);
-            items.add(block);
+            ExtraDataUtil.itemManaData(condition, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(this.condition))));
+            items.add(condition);
         }
     }
 

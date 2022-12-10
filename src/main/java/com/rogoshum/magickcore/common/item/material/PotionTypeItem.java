@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModGroups;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -25,7 +26,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -60,11 +64,30 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
         items.add(itemStack);
     }
 
+    public static boolean canTransform(ItemStack stack) {
+        if(stack.getItem() == Items.POTION.getItem()) {
+            return !PotionUtils.getPotionFromItem(stack).getEffects().isEmpty();
+        }
+        return false;
+    }
+
+    public static ItemStack transformToType(ItemStack stack) {
+        if(stack.getItem() == Items.POTION.getItem()) {
+            ItemStack sample = new ItemStack(ModItems.POTION_TYPE.get());
+            ExtraDataUtil.itemManaData(sample, (data) -> {
+                data.spellContext().applyType(ApplyType.POTION);
+                data.spellContext().addChild(PotionContext.create(stack));
+            });
+            return sample;
+        }
+        return ItemStack.EMPTY;
+    }
+
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
         ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.POTION));
-        if (group == ModGroups.ENTITY_TYPE_GROUP) {
+        if (group == ModGroups.POTION_TYPE_GROUP) {
             ForgeRegistries.POTION_TYPES.forEach(potion -> fillPotion(items, sample, potion));
         }
     }

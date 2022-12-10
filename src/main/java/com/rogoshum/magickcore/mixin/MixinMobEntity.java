@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity extends Entity {
+    @Shadow
+    private LivingEntity attackTarget;
 
     public MixinMobEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -55,17 +57,23 @@ public abstract class MixinMobEntity extends Entity {
 
     @Inject(method = "getAttackTarget", at = @At("RETURN"), cancellable = true)
     public void onGetAttackTarget(CallbackInfoReturnable<LivingEntity> cir) {
-        if(cir.getReturnValue() != null)
-            cir.setReturnValue(TakenTargetUtil.decideChangeTarget(this, host, cir.getReturnValue(), this.range));
-        else
-            cir.setReturnValue(TakenTargetUtil.getTakenTarget(this, range));
+        if(cir.getReturnValue() != null) {
+            attackTarget = TakenTargetUtil.decideChangeTarget(this, host, cir.getReturnValue(), this.range);
+            cir.setReturnValue(attackTarget);
+        }
+        else {
+            attackTarget = TakenTargetUtil.getTakenTarget(this, range);
+            cir.setReturnValue(attackTarget);
+        }
     }
 
-    @Inject(method = "setAttackTarget", at = @At("HEAD"))
-    public void onSetAttackTarget(LivingEntity entitylivingbaseIn, CallbackInfo info) {
-        if(entitylivingbaseIn != null)
-            entitylivingbaseIn = TakenTargetUtil.decideChangeTarget(this, host, entitylivingbaseIn, this.range);
+/*
+    @Inject(method = "setAttackTarget", at = @At("RETURN"))
+    public void onSetAttackTarget(LivingEntity entitylivingbaseIn, CallbackInfo ci) {
+        if(attackTarget != null)
+            attackTarget = TakenTargetUtil.decideChangeTarget(this, host, attackTarget, this.range);
         else
-            entitylivingbaseIn = TakenTargetUtil.getTakenTarget(this, range);
+            attackTarget = TakenTargetUtil.getTakenTarget(this, range);
     }
+ */
 }

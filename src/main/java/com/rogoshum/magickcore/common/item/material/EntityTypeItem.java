@@ -7,7 +7,10 @@ import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.item.ManaItem;
+import com.rogoshum.magickcore.common.lib.LibItem;
+import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -17,6 +20,7 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -25,17 +29,33 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 public class EntityTypeItem extends ManaItem implements IManaMaterial {
     private static final HashSet<EntityType<?>> ERROR_TYPE = new HashSet<>();
+    private static final HashMap<EntityType<?>, ManaFactor> BENEFICIAL_ENERGY = new HashMap<>();
     public EntityTypeItem() {
         super(properties().setISTER(() -> ManaEnergyRenderer::new));
+    }
+
+    public static ManaFactor getBeneficialEnergy(EntityType<?> entityType) {
+        if(BENEFICIAL_ENERGY.containsKey(entityType))
+            return BENEFICIAL_ENERGY.get(entityType);
+        return ManaFactor.NON_MANA;
+    }
+
+    public static void addBeneficialEnergy(EntityType<?> entityType, ManaFactor factor) {
+        BENEFICIAL_ENERGY.put(entityType, factor);
     }
 
     @Override
@@ -55,6 +75,25 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
             data.spellContext().applyType(ApplyType.SPAWN_ENTITY);
         });
         items.add(itemStack);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        if(data.spellContext().containChild(LibContext.SPAWN)) {
+            EntityType<?> type = data.spellContext().<SpawnContext>getChild(LibContext.SPAWN).entityType;
+            ManaFactor factor = getBeneficialEnergy(type);
+            if(factor.force > 0 || factor.range > 0 || factor.tick > 0) {
+                tooltip.add(new TranslationTextComponent("magickcore.description.beneficial_energy").append(new StringTextComponent(":")));
+                if(factor.force > 0)
+                    tooltip.add(new TranslationTextComponent(LibItem.FORCE));
+                if(factor.range > 0)
+                    tooltip.add(new TranslationTextComponent(LibItem.RANGE));
+                if(factor.tick > 0)
+                    tooltip.add(new TranslationTextComponent(LibItem.TICK));
+            }
+        }
     }
 
     @Override

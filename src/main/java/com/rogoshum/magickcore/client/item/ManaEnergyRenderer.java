@@ -16,6 +16,7 @@ import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.magick.materials.Material;
@@ -34,7 +35,9 @@ import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -149,12 +152,24 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             renderMaterial(material, matrixStack, bufferIn, combinedLight);
         }
 
-
         matrixStack.push();
         matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
-                , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.1f, spellContext.element.color(), combinedLight)
-                        , RenderHelper.EmptyVertexContext));
+        if(spellContext.containChild(LibContext.POTION)) {
+            PotionContext potionContext = spellContext.getChild(LibContext.POTION);
+            int color = PotionUtils.getPotionColorFromEffectList(potionContext.effectInstances);
+            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1)
+                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, Color.create(color), combinedLight)
+                            , RenderHelper.EmptyVertexContext));
+        } else if(spellContext.element.color().equals(Color.ORIGIN_COLOR)) {
+            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
+                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.1f, spellContext.element.color(), combinedLight)
+                            , RenderHelper.EmptyVertexContext));
+        } else {
+            RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
+                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, spellContext.element.color(), combinedLight)
+                            , RenderHelper.EmptyVertexContext));
+        }
+
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         if(stack.getItem() instanceof MagickContextItem) {
             if(!APPLY_TYPE_TEXTURES.containsKey(spellContext.applyType))

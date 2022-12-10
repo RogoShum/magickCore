@@ -37,6 +37,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,7 +64,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     public boolean canBeCollidedWith() {
         return true;
     }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ManaCapacityRenderer(this);

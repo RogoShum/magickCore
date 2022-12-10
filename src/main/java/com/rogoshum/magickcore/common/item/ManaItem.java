@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +24,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,18 +53,12 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     public int getRGBDurabilityForDisplay(ItemStack stack) {
-        AtomicInteger i = new AtomicInteger(MathHelper.hsvToRGB(0.0f, 0.0F, 1.0F));
-        ExtraDataUtil.itemManaData(stack, data -> {
-            com.rogoshum.magickcore.common.magick.Color color = data.spellContext().element.getRenderer().getColor();
-            if(color.equals(com.rogoshum.magickcore.common.magick.Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
-                color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
-            }
-            float[] hsv = Color.RGBtoHSB((int)(color.r() * 255), (int)(color.g() * 255), (int)(color.b() * 255), null);
-
-            i.set(MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]));
-        });
-
-        return i.get();
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        Color color = data.spellContext().element.getRenderer().getColor();
+        if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
+            color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
+        }
+        return color.getDecimalColor();
     }
 
     @Override

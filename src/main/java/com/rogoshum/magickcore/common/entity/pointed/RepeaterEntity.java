@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 public class RepeaterEntity extends ManaPointEntity {
     private static final ManaFactor FACTOR = ManaFactor.create(0.2f, 1.0f, 0.5f);
     private static final List<Entity> EMPTY = Collections.emptyList();
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/repeater.png");
     public byte cool_down = 0;
     private Entity spawnEntity;
     public RepeaterEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -102,7 +103,7 @@ public class RepeaterEntity extends ManaPointEntity {
 
     @Override
     public ResourceLocation getEntityIcon() {
-        return null;
+        return ICON;
     }
 
     @Override

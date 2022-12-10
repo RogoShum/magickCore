@@ -22,21 +22,14 @@ public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
     public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.push();
         matrixStackIn.translate(0.5, 0.1901, 0.5);
-
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
         matrixStackIn.push();
-        matrixStackIn.scale(0.3f, 0.38f, 0.3f);
+        matrixStackIn.scale(0.3f, 0.42f, 0.3f);
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStackIn.pop();
-
-        matrixStackIn.push();
-        matrixStackIn.translate(0, 0.2, 0.0);
-        matrixStackIn.scale(0.2f, 0.08f, 0.2f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbSolid(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(1.0f, Color.create(0.4f, 0.3f, 0), combinedLight));
         matrixStackIn.pop();
 
         if(!stack.hasTag()) {
@@ -58,7 +51,7 @@ public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
             Minecraft.getInstance().fontRenderer.drawString(matrixStackIn, count, -count.length()*3, 2, 0);
             matrixStackIn.pop();
             matrixStackIn.translate(0, -0.12f, 0);
-            matrixStackIn.scale(0.5f, 0.5f,0.5f);
+            matrixStackIn.scale(0.5f, 0.5f, .5f);
             IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack1, null, null);
             IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
             Minecraft.getInstance().getItemRenderer().renderItem(stack1, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);

@@ -482,7 +482,7 @@ public class MagickLogicEvent {
 			for(int i = 0; i< entityList.size(); ++i) {
 				Entity entity = entityList.get(i);
 				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity)) {
-					ModBuffs.applyBuff(entity, LibBuff.SLOW, 20, force, true);
+					ModBuffs.applyBuff(entity, LibBuff.SLOW, 20, force * 2, true);
 				}
 			}
 		}
@@ -493,7 +493,7 @@ public class MagickLogicEvent {
 
 			for(int i = 0; i< entityList.size(); ++i) {
 				Entity entity = entityList.get(i);
-				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity) && entity instanceof ProjectileEntity) {
+				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity) && !(entity instanceof LivingEntity)) {
 					double factor = entity.getMotion().normalize().dotProduct(event.getEntity().getPositionVec().add(0, event.getEntity().getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
 					if(factor > 0.8) {
 						Vector3d motion = entity.getMotion();
@@ -558,7 +558,7 @@ public class MagickLogicEvent {
 			if(attacker != null) {
 				if(attacker.getBuffList().containsKey(LibBuff.LIGHT)) {
 					float force = attacker.getBuffList().get(LibBuff.LIGHT).getForce();
-					event.setAmount((float) (event.getAmount() * Math.pow(1.3, force)));
+					event.setAmount((float) (event.getAmount() * Math.pow(1.1, force)));
 				} else if(attacker.getBuffList().containsKey(LibBuff.RADIANCE_WELL)){
 					event.setAmount(event.getAmount() * 1.3f);
 				}
@@ -692,8 +692,16 @@ public class MagickLogicEvent {
 			}
 
 			TakenEntityData taken = ExtraDataUtil.takenEntityData(event.getSource().getTrueSource());
-			if(taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0 && ModBuffs.hasBuff(event.getSource().getTrueSource(), LibBuff.TAKEN_KING)) {
-				event.setAmount(event.getAmount() * 1.5f);
+			if(event.getSource().getTrueSource() instanceof MobEntity && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0) {
+				if(entity.world instanceof ServerWorld) {
+					Entity entity1 = ((ServerWorld) entity.world).getEntityByUuid(taken.getOwnerUUID());
+					if(entity1 instanceof LivingEntity) {
+						EntityStateData ownerState = ExtraDataUtil.entityStateData(entity1);
+						if(ownerState != null && ownerState.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
+							event.setAmount(event.getAmount() * 1.1f * state.getBuffList().get(LibBuff.TAKEN_KING).getForce());
+						}
+					}
+				}
 			}
 		}
 	}

@@ -22,6 +22,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +50,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new RadianceWellLaserRenderer(this));
     }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new RadianceWellRenderer(this);

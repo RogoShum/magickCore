@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
+import com.rogoshum.magickcore.common.item.material.PotionTypeItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
@@ -84,6 +85,11 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
         List<ItemEntity> list = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(0.5), null);
         for (ItemEntity item : list) {
             ItemStack stack = ModRecipes.findExplosionOutput(item.getItem()).copy();
+            if(stack.isEmpty() || stack.equals(item.getItem(), false)) {
+                if(PotionTypeItem.canTransform(item.getItem())) {
+                    stack = PotionTypeItem.transformToType(item.getItem());
+                }
+            }
             if(!stack.isEmpty() && !stack.equals(item.getItem(), false)) {
                 transTick+=2;
                 if(world.isRemote)

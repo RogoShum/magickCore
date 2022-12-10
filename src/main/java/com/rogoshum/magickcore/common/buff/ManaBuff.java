@@ -22,7 +22,7 @@ public abstract class ManaBuff implements Cloneable {
         return beneficial;
     }
 
-    public abstract void effectEntity(Entity entity);
+    public abstract void effectEntity(Entity entity, float force);
 
     public String getType() { return type; }
 

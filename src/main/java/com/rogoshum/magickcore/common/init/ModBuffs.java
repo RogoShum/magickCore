@@ -17,49 +17,38 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ModBuffs {
     private static HashMap<String, ManaBuff> buff = new HashMap<>();
 
-    public static void initBuff()
-    {
-        putBuff(LibBuff.PARALYSIS, LibElements.ARC, false, (e) -> {
-            ExtraDataUtil.entityData(e).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                float force = state.getBuffList().get(LibBuff.PARALYSIS).getForce();
-                force = Math.max(force, 1);
-                e.setMotion(e.getMotion().scale(1d/(force + 1d)*2d));
-            });
+    public static void initBuff() {
+        putBuff(LibBuff.PARALYSIS, LibElements.ARC, false, (e, force) -> {
+            force = Math.max(force, 1);
+            e.setMotion(e.getMotion().scale(1d/(force + 1d)*2d));
         } , true);
 
-        putBuff(LibBuff.SLOW, LibElements.STASIS, false, (e) -> {
-            ExtraDataUtil.entityData(e).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                float force = state.getBuffList().get(LibBuff.SLOW).getForce();
-                force = Math.max(force, 1);
-                e.setMotion(e.getMotion().scale(1d/(force + 0.5d)));
-            });
+        putBuff(LibBuff.SLOW, LibElements.STASIS, false, (e, force) -> {
+            force = Math.max(force, 1);
+            e.setMotion(e.getMotion().scale(1d/(force + 0.5d)));
         } , true);
 
-        putBuff(LibBuff.WITHER, LibElements.WITHER, false, (e) -> {
-            ExtraDataUtil.entityData(e).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                if(e instanceof LivingEntity && ((LivingEntity)e).getHealth() > 0.01f)
-                    ((LivingEntity)e).setHealth(Math.max(0.01f, ((LivingEntity)e).getHealth() - 0.025f * state.getBuffList().get(LibBuff.WITHER).getForce()));
-            });
+        putBuff(LibBuff.WITHER, LibElements.WITHER, false, (e, force) -> {
+            if(e instanceof LivingEntity && ((LivingEntity)e).getHealth() > 0.01f)
+                ((LivingEntity)e).setHealth(Math.max(0.01f, ((LivingEntity)e).getHealth() - 0.025f * force));
         } , false);
 
-        putBuff(LibBuff.FRAGILE, LibElements.VOID, false, (e) -> {
-            ExtraDataUtil.entityData(e).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                if(state.getBuffList().get(LibBuff.FRAGILE).getForce() > 5)
-                {
-                    if(e.hurtResistantTime > 7)
-                        e.hurtResistantTime = 7;
-                }
-                else if(e.hurtResistantTime > 13)
-                    e.hurtResistantTime = 13;
-            });
+        putBuff(LibBuff.FRAGILE, LibElements.VOID, false, (e, force) -> {
+            if(force > 5) {
+                if(e.hurtResistantTime > 7)
+                    e.hurtResistantTime = 7;
+            }
+            else if(e.hurtResistantTime > 13)
+                e.hurtResistantTime = 13;
         } , false);
 
-        putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e) ->{
+        putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e, force) ->{
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
                 living.setHealth(living.getMaxHealth());
@@ -69,46 +58,39 @@ public class ModBuffs {
             }
         }, true);
 
-        putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e) -> {
+        putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e, force) -> {
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
-                living.heal(living.getMaxHealth() * 0.025f);
+                living.heal(living.getMaxHealth() * 0.05f * force);
                 if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
-                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f);
+                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f * force);
                 }
                 living.hurtTime = 0;
             }
         }, true);
 
-        putBuff(LibBuff.DECAY, LibElements.WITHER, true, (e) ->{
+        putBuff(LibBuff.DECAY, LibElements.WITHER, true, (e, force) ->{
             if(e instanceof LivingEntity) {
-                ExtraDataUtil.entityData(e).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                    ((LivingEntity) e).getActivePotionMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActivePotionMap().get(effect).getAmplifier() <= (int) state.getBuffList().get(LibBuff.DECAY).getForce());
-                });
+                ((LivingEntity) e).getActivePotionMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActivePotionMap().get(effect).getAmplifier() <= force);
             }
         }, true);
 
-        putBuff(LibBuff.TAKEN_KING, LibElements.TAKEN, true, (e) ->{
-            if(e instanceof LivingEntity) {
-                ExtraDataUtil.entityStateData(e, state -> ((LivingEntity) e).heal(state.getBuffList().get(LibBuff.TAKEN_KING).getForce() / 20f));
-            }
-        }, true);
-
-        putBuff(LibBuff.WEAKEN, LibElements.VOID, false, (e) ->{}, false);
-        putBuff(LibBuff.TAKEN, LibElements.TAKEN, false, (e) ->{}, true);
-        putBuff(LibBuff.CRIPPLE, LibElements.WITHER, false, (e) ->{}, false);
-        putBuff(LibBuff.FREEZE, LibElements.STASIS, false, (e) ->{}, false);
-        putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e) ->{}, true);
-        putBuff(LibBuff.LIGHT, LibElements.VOID, true, (e) ->{}, true);
-        putBuff(LibBuff.INVISIBILITY, LibElements.VOID, true, (e) ->{}, true);
-        putBuff(LibBuff.PURE, LibElements.STASIS, true, (e) ->{}, true);
+        putBuff(LibBuff.TAKEN_KING, LibElements.TAKEN, true, (e, force) ->{}, true);
+        putBuff(LibBuff.WEAKEN, LibElements.VOID, false, (e, force) ->{}, false);
+        putBuff(LibBuff.TAKEN, LibElements.TAKEN, false, (e, force) ->{}, true);
+        putBuff(LibBuff.CRIPPLE, LibElements.WITHER, false, (e, force) ->{}, false);
+        putBuff(LibBuff.FREEZE, LibElements.STASIS, false, (e, force) ->{}, false);
+        putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e, force) ->{}, true);
+        putBuff(LibBuff.LIGHT, LibElements.VOID, true, (e, force) ->{}, true);
+        putBuff(LibBuff.INVISIBILITY, LibElements.VOID, true, (e, force) ->{}, true);
+        putBuff(LibBuff.PURE, LibElements.STASIS, true, (e, force) ->{}, true);
     }
 
-    protected static void putBuff(String s, String element, boolean beneficial, Consumer<? super Entity> func, boolean canRefreshBuff) {
+    protected static void putBuff(String s, String element, boolean beneficial, BiConsumer<? super Entity, Float> func, boolean canRefreshBuff) {
         ManaBuff buf = new ManaBuff(s, element) {
             @Override
-            public void effectEntity(Entity entity) {
-                func.accept(entity);
+            public void effectEntity(Entity entity, float force) {
+                func.accept(entity, force);
             }
 
             @Override
@@ -155,18 +137,21 @@ public class ModBuffs {
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())
             return false;
+        if(force < 1 && force > 0.4)
+            force = 1;
 
-        AtomicBoolean applied = new AtomicBoolean(false);
-        ExtraDataUtil.entityData(entity).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-            applied.set(state.applyBuff(getBuff(type).setTick(tick).setForce(force)));
-            if(applied.get() && !entity.world.isRemote) {
+        boolean applied = false;
+        EntityStateData state = ExtraDataUtil.entityStateData(entity);
+        if(state != null) {
+            applied = (state.applyBuff(getBuff(type).setTick(tick).setForce(force)));
+            if(applied && !entity.world.isRemote) {
                 CompoundNBT tag = new CompoundNBT();
                 state.write(tag);
                 Networking.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
                         new EntityStatePack(event.getEntity().getEntityId(), tag));
             }
-        });
-        return applied.get();
+        }
+        return applied;
     }
 }

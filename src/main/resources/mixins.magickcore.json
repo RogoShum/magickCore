@@ -18,8 +18,9 @@
   },
   "client": [
     "MixinChunkRenderer",
-    "MixinLivingRender",
     "MixinClientWorld",
+    "MixinDisplayEffectsScreen",
+    "MixinLivingRender",
     "MixinWorldRender"
   ]
 }

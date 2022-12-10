@@ -14,15 +14,31 @@ public class Color {
     private final float r;
     private final float g;
     private final float b;
+    private final int decimal;
 
     private Color(float r, float g, float b) {
         this.r = r;
         this.g = g;
         this.b = b;
+        this.decimal = ((0xFF) << 24) |
+                (((int)(r * 255) & 0xFF) << 16) |
+                (((int)(g * 255) & 0xFF) << 8)  |
+                (((int)(b * 255) & 0xFF));
+    }
+
+    private Color(int decimal) {
+        this.r = ((decimal >> 16) & 0xFF) / 255f;
+        this.g = ((decimal >> 8) & 0xFF) / 255f;
+        this.b = ((decimal) & 0xFF) / 255f;
+        this.decimal = decimal;
     }
 
     public static Color create(float r, float g, float b) {
         return new Color(r, g, b);
+    }
+
+    public static Color create(int decimal) {
+        return new Color(decimal);
     }
 
     public float r() {
@@ -35,6 +51,9 @@ public class Color {
 
     public float b() {
         return b;
+    }
+    public int getDecimalColor() {
+        return decimal;
     }
 
     @Override

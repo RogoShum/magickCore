@@ -42,8 +42,9 @@ void main() {
 
     vec4 blurred = vec4(0.0);
     float count = 1.0;
-    bulrDir0 = vec2(max(BlurScale * size * 2.0, 1.0), 0.0);
-    bulrDir1 = vec2(0.0, max(BlurScale * size * 2.0, 1.0));
+    float scale = max(BlurScale * size * 2.0, 1.0);
+    bulrDir0 = vec2(scale, 0.0);
+    bulrDir1 = vec2(0.0, scale);
     blurred = texture2D(DiffuseSampler, texCoord);
     float totalAlpha = center.a;
     bool nonEmpty = false;

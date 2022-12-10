@@ -5,6 +5,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.client.gui.ElementShieldGUI;
+import com.rogoshum.magickcore.client.gui.ManaBuffGUI;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaItemDurationBarRenderer;
@@ -62,19 +64,21 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void onOverlayRender(RenderGameOverlayEvent event) {
-        if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
-            return;
-        }
-
+    public void onOverlayRender(RenderGameOverlayEvent.Post event) {
         if (Minecraft.getInstance().player == null) {
             return;
         }
-
-        ExtraDataUtil.entityData(Minecraft.getInstance().player).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
-            ManaBarGUI manaBarGUI = new ManaBarGUI(event.getMatrixStack(), data);
+        EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+            ManaBarGUI manaBarGUI = new ManaBarGUI(event.getMatrixStack(), state);
             manaBarGUI.render();
-        });
+        } else if(event.getType() == RenderGameOverlayEvent.ElementType.POTION_ICONS) {
+            ManaBuffGUI manaBuffGUI = new ManaBuffGUI(event.getMatrixStack(), state);
+            manaBuffGUI.render();
+        } else if(event.getType() == RenderGameOverlayEvent.ElementType.HELMET) {
+            ElementShieldGUI elementShieldGUI = new ElementShieldGUI(state);
+            elementShieldGUI.render();
+        }
     }
 
     @SubscribeEvent
@@ -209,7 +213,7 @@ public class RenderEvent {
             alpha *= 0.8f;
             LitParticle par = new LitParticle(entity.world, new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/ripple/ripple_" + Integer.toString(MagickCore.rand.nextInt(5)) + ".png")
                     , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosX()
-                    , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() / 2
+                    , MagickCore.getNegativeToOne() * entity.getHeight() * 1.2f + entity.getPosY() + entity.getHeight() * 0.5
                     , MagickCore.getNegativeToOne() * entity.getWidth() * 1.5f + entity.getPosZ())
                     , entity.getWidth() * 2, entity.getWidth() * 2, alpha, 60, state.getElement().getRenderer());
             par.setGlow();
@@ -222,26 +226,24 @@ public class RenderEvent {
     }
 
     public static void applybuffParticle(Entity entity, ElementRenderer render, World world) {
-        for(int i = 0; i < 3; ++i) {
-            LitParticle litPar = new LitParticle(world, render.getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 2 + entity.getPosX()
-                    , MagickCore.getNegativeToOne() * entity.getHeight() * 2 + entity.getPosY() + entity.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * entity.getWidth()  * 2 + entity.getPosZ())
-                    , entity.getWidth() / 3.5f * MagickCore.rand.nextFloat(), entity.getWidth() / 3.5f * MagickCore.rand.nextFloat(), 0.7f + (MagickCore.rand.nextFloat() * 0.3f), 40, render);
-            litPar.setGlow();
-            litPar.setParticleGravity(0f);
-            litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
-            litPar.setTraceTarget(entity);
-            MagickCore.addMagickParticle(litPar);
-        }
+        LitParticle litPar = new LitParticle(world, render.getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 2 + entity.getPosX()
+                , MagickCore.getNegativeToOne() * entity.getHeight() * 2 + entity.getPosY() + entity.getHeight() * 0.5
+                , MagickCore.getNegativeToOne() * entity.getWidth()  * 2 + entity.getPosZ())
+                , entity.getWidth() / 3.5f * MagickCore.rand.nextFloat(), entity.getWidth() / 3.5f * MagickCore.rand.nextFloat(), 0.7f + (MagickCore.rand.nextFloat() * 0.3f), 20, render);
+        litPar.setGlow();
+        litPar.setParticleGravity(0f);
+        litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+        litPar.setTraceTarget(entity);
+        MagickCore.addMagickParticle(litPar);
     }
 
     public static void applyAnimalParticle(Entity entity, ElementRenderer render, World world) {
         for(int i = 0; i < 4; ++i) {
             LitParticle litPar = new LitParticle(world, render.getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()
-                    , MagickCore.getNegativeToOne() * entity.getHeight() / 2f + entity.getPosY() + entity.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosZ())
+                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosX()
+                    , MagickCore.getNegativeToOne() * entity.getHeight() * 0.5f + entity.getPosY() + entity.getHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosZ())
                     , entity.getWidth() / 8f * MagickCore.rand.nextFloat(), entity.getWidth() / 8f * MagickCore.rand.nextFloat(), 0.8f * MagickCore.rand.nextFloat(), 20, render);
             litPar.setGlow();
             litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
@@ -252,9 +254,9 @@ public class RenderEvent {
 
     public static void applydeBuffParticle(Entity entity, ElementRenderer render, World world) {
         LitParticle par = new LitParticle(world, render.getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()
-                , MagickCore.getNegativeToOne() * entity.getHeight() / 2f + entity.getPosY() + entity.getHeight() / 2f
-                , MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosZ())
+                , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosX()
+                , MagickCore.getNegativeToOne() * entity.getHeight() * 0.5f + entity.getPosY() + entity.getHeight() * 0.5f
+                , MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosZ())
                 , (entity.getWidth() + MagickCore.rand.nextFloat())/ 2, (entity.getWidth() + MagickCore.rand.nextFloat())/ 2, 0.5f * MagickCore.rand.nextFloat(), render.getParticleRenderTick(), render);
         par.setGlow();
         par.setParticleGravity(0f);
@@ -262,15 +264,13 @@ public class RenderEvent {
         par.addMotion(MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15);
         MagickCore.addMagickParticle(par);
 
-        for(int i = 0; i < 2; ++i) {
-            LitParticle litPar = new LitParticle(world, render.getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosX()
-                    , MagickCore.getNegativeToOne() * entity.getHeight() / 2f + entity.getPosY() + entity.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * entity.getWidth() / 2f + entity.getPosZ())
-                    , entity.getWidth() / 3f, entity.getWidth() / 3f, 0.8f * MagickCore.rand.nextFloat(), 20, render);
-            litPar.setGlow();
-            litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
-            MagickCore.addMagickParticle(litPar);
-        }
+        LitParticle litPar = new LitParticle(world, render.getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosX()
+                , MagickCore.getNegativeToOne() * entity.getHeight() * 0.5f + entity.getPosY() + entity.getHeight() * 0.5
+                , MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosZ())
+                , entity.getWidth() / 3f, entity.getWidth() / 3f, 0.8f * MagickCore.rand.nextFloat(), 20, render);
+        litPar.setGlow();
+        litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+        MagickCore.addMagickParticle(litPar);
     }
 }

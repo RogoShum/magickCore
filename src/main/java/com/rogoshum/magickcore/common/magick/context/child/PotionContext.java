@@ -26,13 +26,21 @@ public class PotionContext extends ChildContext{
 
     public static PotionContext create(ItemStack stack) {
         PotionContext context = new PotionContext();
-        context.effectInstances = PotionUtils.getEffectsFromStack(stack);
+        for(EffectInstance effectInstance : PotionUtils.getEffectsFromStack(stack)) {
+            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+            tag.putInt("Duration", effectInstance.getDuration() / 10);
+            context.effectInstances.add(EffectInstance.read(tag));
+        }
         return context;
     }
 
     public static PotionContext create(Potion potion) {
         PotionContext context = new PotionContext();
-        context.effectInstances = potion.getEffects();
+        for(EffectInstance effectInstance : potion.getEffects()) {
+            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+            tag.putInt("Duration", effectInstance.getDuration() / 10);
+            context.effectInstances.add(EffectInstance.read(tag));
+        }
         return context;
     }
 

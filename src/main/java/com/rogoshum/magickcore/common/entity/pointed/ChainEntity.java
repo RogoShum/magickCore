@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ChainEntity extends ManaPointEntity {
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/chain.png");
     protected Entity postEntity;
     protected Entity victimEntity;
     public ChainEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -95,13 +96,12 @@ public class ChainEntity extends ManaPointEntity {
                 Vector3d postPos = postEntity.getPositionVec().add(0,  postEntity.getHeight() * 0.5, 0);
                 Vector3d fasterPos = postPos;
                 Vector3d direction = vicPos.subtract(postPos).normalize();
-                if(postEntity.getMotion().lengthSquared() <= 0.3) {
+                if(spellContext().containChild(LibContext.TRACE)) {
                     slower = postEntity;
                     fasterPos = vicPos;
                     direction = postPos.subtract(vicPos).normalize();
                 }
                 direction = fasterPos.add(direction.scale(range));
-                slower.setMotion(Vector3d.ZERO);
                 slower.setPosition(direction.x, direction.y - slower.getHeight() * 0.5, direction.z);
             }
         } else if(victimEntity != null) {
@@ -121,7 +121,7 @@ public class ChainEntity extends ManaPointEntity {
 
     @Override
     public ResourceLocation getEntityIcon() {
-        return null;
+        return ICON;
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ChainEntity extends ManaPointEntity {
         double dis = Math.max(start.subtract(end).length() * 10, 1);
         float scale = 0.10f;
         for (int i = 0; i < dis; i++) {
-            double trailFactor = i / (dis - 1.0D);
+            double trailFactor = i / Math.max((dis - 1.0D), 1);
             Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
             LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
                     , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 1, spellContext().element.getRenderer());

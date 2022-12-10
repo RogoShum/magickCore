@@ -24,6 +24,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +42,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new DawnWardRenderer(this);
     }

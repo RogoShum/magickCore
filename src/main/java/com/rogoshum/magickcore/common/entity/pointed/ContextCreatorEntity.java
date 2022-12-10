@@ -61,7 +61,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
     }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ContextCreatorRenderer(this);

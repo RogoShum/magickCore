@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.render.*;
+import com.rogoshum.magickcore.client.gui.ManaBuffGUI;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -17,6 +18,8 @@ import com.rogoshum.magickcore.client.tileentity.*;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
 import com.rogoshum.magickcore.common.init.*;
+import com.rogoshum.magickcore.common.lib.LibBuff;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.ObjectRegistry;
 import com.rogoshum.magickcore.common.registry.elementmap.EntityRenderers;
@@ -186,6 +189,19 @@ public class ClientProxy implements IProxy {
 		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.DE_BUFF, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/debuff.png"));
 		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.AGGLOMERATE, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/agglomerate.png"));
 		ManaEnergyRenderer.addApplyTypeTexture(ApplyType.DIFFUSION, new ResourceLocation(MagickCore.MOD_ID, "textures/apply_type/diffusion.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.CRIPPLE, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/cripple.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.DECAY, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/decay.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.FRAGILE, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/fragile.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.FREEZE, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/freeze.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.LIGHT, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/light.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.PARALYSIS, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/paralysis.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.PURE, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/pure.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.TAKEN, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/taken.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.TAKEN_KING, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/taken_king.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.WEAKEN, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/weaken.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.SLOW, new ResourceLocation("textures/mob_effect/slowness.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.RADIANCE_WELL, new ResourceLocation("textures/mob_effect/regeneration.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
 	}
 
 	public void registerEntityRenderer(FMLClientSetupEvent event) {

@@ -65,7 +65,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
             if(!suitable) {
                 living.heal(getHealth());
             } else {
-                living.setHealth(living.getHealth() * 0.5f);
+                living.setHealth(Math.max(living.getHealth() * 0.5f, 0.001f));
                 this.setHealth(getHealth() * 0.5f);
                 setBack(true);
             }

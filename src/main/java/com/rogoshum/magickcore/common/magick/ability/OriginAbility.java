@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.PotionItem;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
@@ -29,13 +30,16 @@ public class OriginAbility {
     public static boolean potion(MagickContext context) {
         if(!context.containChild(LibContext.POTION) || !(context.victim instanceof LivingEntity)) return false;
         PotionContext potionContext = context.getChild(LibContext.POTION);
-        for(EffectInstance effectinstance : potionContext.effectInstances) {
-            if (effectinstance.getPotion().isInstant()) {
-                effectinstance.getPotion().affectEntity(context.caster, context.projectile, (LivingEntity) context.victim, effectinstance.getAmplifier(), 1.0D);
+        for(EffectInstance effectInstance : potionContext.effectInstances) {
+            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+            tag.putInt("Duration", (int) (effectInstance.getDuration() * context.force));
+            EffectInstance effect = EffectInstance.read(tag);
+            if (effect.getPotion().isInstant()) {
+                effect.getPotion().affectEntity(context.caster, context.projectile, (LivingEntity) context.victim, (int) Math.min(effect.getAmplifier(), context.force), 1.0D);
             } else {
-                ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(effectinstance));
+                ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(effect));
             }
         }
-        return false;
+        return !potionContext.effectInstances.isEmpty();
     }
 }

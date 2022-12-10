@@ -95,6 +95,13 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
+        if(playerIn.isSneaking() && itemstack.hasTag()) {
+            if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "direction"))
+                NBTTagHelper.removeVectorDouble(itemstack.getTag(), "direction");
+            if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "position"))
+                NBTTagHelper.removeVectorDouble(itemstack.getTag(), "position");
+            return ActionResult.resultSuccess(itemstack);
+        }
         Vector3d dir = playerIn.getLookVec();
         Entity entity = MagickReleaseHelper.getEntityLookedAt(playerIn, 4);
         if(entity != null) {

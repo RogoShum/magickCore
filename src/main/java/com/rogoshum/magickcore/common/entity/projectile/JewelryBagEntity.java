@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 
 public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefraction {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.7f, 1.0f, 1.0f);
-    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ray.png");
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/bag.png");
     public JewelryBagEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
     }
@@ -224,7 +224,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
 
     @Override
     public ResourceLocation getEntityIcon() {
-        return null;
+        return ICON;
     }
 
     @Override

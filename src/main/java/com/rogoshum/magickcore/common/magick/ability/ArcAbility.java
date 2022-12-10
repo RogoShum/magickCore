@@ -127,8 +127,12 @@ public class ArcAbility{
     }
 
     public static boolean applyBuff(MagickContext context) {
-        if(context.victim instanceof LivingEntity)
-            return ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick * 2, (int) context.force));
+        if(context.force >= 1 && context.victim instanceof LivingEntity) {
+            boolean flag = ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick * 2, (int) (context.force - 1)));
+            if(((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.HASTE, context.tick * 2, (int) (context.force - 1))))
+                flag = true;
+            return flag;
+        }
         return false;
     }
 

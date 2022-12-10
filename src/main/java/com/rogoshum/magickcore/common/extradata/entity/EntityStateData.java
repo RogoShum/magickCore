@@ -197,7 +197,7 @@ public class EntityStateData extends EntityExtraData {
 
         while(i.hasNext()) {
             ManaBuff buff = buffList.get(i.next());
-            buff.setTick(buff.getTick() - updateRate).effectEntity(entity);
+            buff.setTick(buff.getTick() - updateRate).effectEntity(entity, buff.getForce());
             if(buff.getTick() < 1) {
                 i.remove();
                 if(buff.getType().equals(LibBuff.FREEZE))

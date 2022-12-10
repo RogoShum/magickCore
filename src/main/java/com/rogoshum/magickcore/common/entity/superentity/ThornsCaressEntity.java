@@ -42,7 +42,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new ThornsCaressLaserRenderer(this));
     }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ThornsCaressRenderer(this);

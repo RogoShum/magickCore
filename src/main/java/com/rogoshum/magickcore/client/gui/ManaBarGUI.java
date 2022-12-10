@@ -47,7 +47,7 @@ public class ManaBarGUI extends AbstractGui {
         float f = (float)(i % 110000L) / 110000.0F;
         float f1 = (float)(i % 30000L) / 30000.0F;
 
-        if(state.getManaValue() < state.getMaxManaValue() || Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof IManaData || Minecraft.getInstance().player.getHeldItemOffhand().getItem() instanceof IManaData) {
+        if(RenderHelper.showDebug() || state.getManaValue() < state.getMaxManaValue() || Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof IManaData || Minecraft.getInstance().player.getHeldItemOffhand().getItem() instanceof IManaData) {
             matrixStack.push();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             this.minecraft.getTextureManager().bindTexture(mana_bar_bg);
@@ -103,7 +103,7 @@ public class ManaBarGUI extends AbstractGui {
             }
         }
 
-        if(state.getElementShieldMana() > 0) {
+        if(RenderHelper.showDebug() || state.getElementShieldMana() > 0) {
             y -= 6;
             matrixStack.push();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);

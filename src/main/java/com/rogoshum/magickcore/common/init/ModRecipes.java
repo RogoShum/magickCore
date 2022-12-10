@@ -2,9 +2,14 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
+import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.recipe.*;
 import com.rogoshum.magickcore.common.recipe.container.*;
+import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.registry.ObjectRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -284,6 +289,29 @@ public class ModRecipes {
         ItemStack tickEnergy = manaEnergy.copy();
         ExtraDataUtil.itemManaData(tickEnergy, (data) -> data.spellContext().tick(10));
 
+        ItemStack condition_block = new ItemStack(ModItems.CONDITION_BLOCK.get());
+        SpellContext spellContext = ExtraDataUtil.itemManaData(condition_block).spellContext();
+        ConditionContext context = ConditionContext.create(MagickRegistry.getCondition(LibConditions.BLOCK_ONLY));
+        spellContext.addChild(context);
+
+        ItemStack condition_living = new ItemStack(ModItems.CONDITION_LIVING.get());
+        spellContext = ExtraDataUtil.itemManaData(condition_living).spellContext();
+        context = ConditionContext.create(MagickRegistry.getCondition(LibConditions.LIVING_ENTITY));
+        spellContext.addChild(context);
+
+        ItemStack condition_non_living = new ItemStack(ModItems.CONDITION_NON_LIVING.get());
+        spellContext = ExtraDataUtil.itemManaData(condition_non_living).spellContext();
+        context = ConditionContext.create(MagickRegistry.getCondition(LibConditions.NON_LIVING_ENTITY));
+        spellContext.addChild(context);
+
+        registerExplosionRecipe(TagItemMatcher.create(Items.FEATHER.toString()), condition_living);
+        registerExplosionRecipe(TagItemMatcher.create(Items.COAL.toString()), condition_non_living);
+        registerExplosionRecipe(TagItemMatcher.create(Items.COBBLESTONE.toString()), condition_block);
+        registerExplosionRecipe(TagItemMatcher.create(Items.ENDER_PEARL.toString()), new ItemStack(ModItems.POSITION_MEMORY.get()));
+        registerExplosionRecipe(TagItemMatcher.create(Items.GOLD_INGOT.toString()), new ItemStack(ModItems.DIRECTION_MEMORY.get()));
+        registerExplosionRecipe(TagItemMatcher.create(Items.IRON_INGOT.toString()), new ItemStack(ModItems.OFFSET_MEMORY.get()));
+        registerExplosionRecipe(TagItemMatcher.create(Items.DIAMOND.toString()), new ItemStack(ModItems.COMPLETELY_SELF.get()));
+        registerExplosionRecipe(TagItemMatcher.create(Items.GOLD_NUGGET.toString()), new ItemStack(ModItems.REVERSE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.BONE.toString()), new ItemStack(ModItems.MANA_BONE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.ROTTEN_FLESH.toString()), new ItemStack(ModItems.MANA_FLESH.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));

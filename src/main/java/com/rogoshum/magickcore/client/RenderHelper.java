@@ -44,6 +44,7 @@ public class RenderHelper {
     public static final Color RED = Color.create(1.0f, 0.2f, 0.2f);
 
     public static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
+
     public static final ResourceLocation DISSOVE = new ResourceLocation(MagickCore.MOD_ID + ":textures/dissove.png");
     public static final int renderLight = 15728880;
     public static final int renderLight2 = 15728640;
