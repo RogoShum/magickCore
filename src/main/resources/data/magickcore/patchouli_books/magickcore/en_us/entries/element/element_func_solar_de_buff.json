@@ -1,12 +1,12 @@
 {
-  "name": "§6Solar §7Debuff",
+  "name": "§6烈焰§7减益",
   "advancement": "magickcore:learn/trigger_element_func_solar_de_buff",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Debuff can inflict a burning effect on the target."
+      "text": "减益状态的烈焰能量可以给予目标燃烧效果。收益魔力能量为存在时间。"
     }
   ]
 }

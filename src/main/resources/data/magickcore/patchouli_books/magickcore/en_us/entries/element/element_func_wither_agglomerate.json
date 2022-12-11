@@ -1,12 +1,12 @@
 {
-  "name": "§2Wither §7Agglomerate",
+  "name": "§2枯萎§7凝聚",
   "advancement": "magickcore:learn/trigger_element_func_wither_agglomerate",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Wither of the Diffusion can ripen crops."
+      "text": "凝聚状态的枯萎元素可以催熟作物。收益魔力能量为强度。"
     }
   ]
 }

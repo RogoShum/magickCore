@@ -1,5 +1,5 @@
 {
-  "name": "Multi Cast Potion",
+  "name": "分裂药水",
   "advancement": "magickcore:learn/mana_multi",
   "icon": "minecraft:potion{Potion:\"magickcore:multi_release\"}",
   "category": "potion",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "minecraft:potion{Potion:\"magickcore:multi_release\"}",
-	  "text": "Brewed from items containing the word \"pufferfish\" and refreshing water.$(br2)Potions can be improved with Glowstone Dust.$(br2)Function: Release multiple spells with one cast."
+	  "text": "由含有“pufferfish(河豚)”字样的物品与清爽水酿造而成。$(br2)可以用萤石粉提升药水品质。$(br2)功能：一次施法释放多个魔法。"
     }
   ]
 }

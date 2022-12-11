@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -156,7 +157,7 @@ public class MagickReleaseHelper {
         context.tick((int) (manaFactor.tick * context.tick));
 
         if(context.caster instanceof ServerPlayerEntity) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + context.element.type() + "_" + context.applyType);
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + element.type() + "_" + context.applyType);
         }
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
         if(context.applyType.continueCast()) {
@@ -226,6 +227,8 @@ public class MagickReleaseHelper {
 
         if(pro instanceof ManaProjectileEntity)
             ((ManaProjectileEntity) pro).reSize();
+        if(pro instanceof ManaEntity)
+            ((ManaEntity) pro).reSize();
 
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
@@ -238,7 +241,7 @@ public class MagickReleaseHelper {
                         context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * (1.25 + pro.getHeight() * 0.5),
                         context.caster.getPosZ() + context.caster.getLookVec().z * (1.25 + pro.getWidth() * 0.5));
             else
-                pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + context.caster.getHeight() * 0.5, context.caster.getPosZ());
+                pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + (context.caster.getHeight() * 0.5) - (pro.getHeight() * 0.5), context.caster.getPosZ());
         }
 
         if(context.containChild(LibContext.OFFSET)) {

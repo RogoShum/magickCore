@@ -1,12 +1,12 @@
 {
-  "name": "§3Stasis §7Agglomerate",
+  "name": "§3冰影§7凝聚",
   "advancement": "magickcore:learn/trigger_element_func_stasis_agglomerate",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Stasis of the Buff can make the target produce a magick phantom that stays in place, and the phantom can interact to a certain extent."
+      "text": "凝聚状态下的冰影能量可以让目标产生一个停滞原地的幻影，幻影可以一定程度的交互。收益魔力能量为存在时间。"
     }
   ]
 }

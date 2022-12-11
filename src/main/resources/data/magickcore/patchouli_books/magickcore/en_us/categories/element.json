@@ -1,6 +1,6 @@
 {
-  "name": "Element",
-  "description": "Style of paracausal powers.",
+  "name": "元素",
+  "description": "超因果之力的分化类型",
   "icon": "magickcore:textures/element/taken/particle.png",
   "sortnum": 5
 }

@@ -7,8 +7,10 @@ import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,6 +26,13 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
     };
     public SpiritCrystalItem() {
         super(BaseItem.properties().setISTER(() -> SpiritCrystalItemRenderer::new), 0.25f, 0.25f);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+        if(entityIn instanceof ServerPlayerEntity)
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) entityIn, LibAdvancements.ELEMENT_CRYSTAL);
     }
 
     @Override

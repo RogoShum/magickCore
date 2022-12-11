@@ -1,5 +1,5 @@
 {
-  "name": "Shield Recovery Potion",
+  "name": "护盾恢复药水",
   "advancement": "magickcore:learn/mana_shulker",
   "icon": "minecraft:potion{Potion:\"magickcore:shield_regen\"}",
   "category": "potion",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "minecraft:potion{Potion:\"magickcore:shield_regen\"}",
-	  "text": "Brewed from items containing the word \"shulker\" and refreshing water.$(br2)Potions can be improved with redstone dust or glowstone dust.$(br2)Function: Improve the recovery speed of your element shield."
+	  "text": "由含有“shulker(潜影)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：提升自己的元素盾回复速度。"
     }
   ]
 }

@@ -1,0 +1,10 @@
+{
+	"type":"smelting",
+	"group":"magickcore",
+	"ingredient":{
+		"item":"magickcore:spirit_ore"
+	},
+	"result":"magickcore:spirit_crystal",
+	"experience":0.7,
+	"cookingtime":200
+}

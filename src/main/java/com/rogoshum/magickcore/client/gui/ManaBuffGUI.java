@@ -81,28 +81,33 @@ public class ManaBuffGUI extends AbstractGui {
     }
 
     protected void renderBuff(HashMap<String, ManaBuff> buffHashMap, int i, int j) {
+        i = 0;
+        j = 0;
         for(String key : buffHashMap.keySet()) {
             if(!buffTexture.containsKey(key)) continue;
             ManaBuff manaBuff = buffHashMap.get(key);
             minecraft.getTextureManager().bindTexture(ContainerScreen.INVENTORY_BACKGROUND);
             int k = this.width;
-            int l = 1;
+            int l = 52;
             if (minecraft.isDemo()) {
                 l += 15;
             }
 
             if (manaBuff.isBeneficial()) {
                 ++i;
-                k = k - 25 * i;
+                k = k - 13 * i;
             } else {
                 ++j;
-                k = k - 25 * j;
-                l += 26;
+                k = k - 13 * j;
+                l += 13;
             }
 
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.8F);
             float f = 1.0F;
-            this.blit(matrixStack, k, l, 141, 166, 24, 24);
+            RenderSystem.pushMatrix();
+            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
+            this.blit(matrixStack, k*2, l*2, 141, 166, 24, 24);
+            RenderSystem.popMatrix();
             if (manaBuff.getTick() <= 200) {
                 int i1 = 10 - manaBuff.getTick() / 20;
                 f = MathHelper.clamp((float)manaBuff.getTick() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float)manaBuff.getTick() * (float)Math.PI / 5.0F) * MathHelper.clamp((float)i1 / 10.0F * 0.25F, 0.0F, 0.25F);
@@ -113,7 +118,8 @@ public class ManaBuffGUI extends AbstractGui {
             float f1 = f;
             minecraft.getTextureManager().bindTexture(buffTexture.get(key));
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
-            blit(matrixStack, j1 + 3, k1 + 3, this.getBlitOffset(), 0, 0, 16, 16, 18, 18);
+            blit(matrixStack, j1 + 2, k1 + 2, this.getBlitOffset(), 0, 0, 8, 8, 9, 9);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 }

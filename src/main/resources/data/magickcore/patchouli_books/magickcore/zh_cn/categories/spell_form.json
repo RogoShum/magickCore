@@ -1,6 +1,0 @@
-{
-  "name": "法术形态",
-  "description": "引导下一阶段法术的魔法形态",
-  "icon": "magickcore:textures/entity/mana_orb.png",
-  "sortnum": 4
-}

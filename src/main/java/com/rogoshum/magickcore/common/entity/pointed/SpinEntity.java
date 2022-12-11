@@ -10,7 +10,9 @@ import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -104,5 +106,11 @@ public class SpinEntity extends ManaPointEntity {
     @Override
     protected boolean fixedPosition() {
         return false;
+    }
+
+    @Override
+    public MagickContext beforeCast(MagickContext context) {
+        context.replenishChild(PositionContext.create(getHitPoint()));
+        return context;
     }
 }

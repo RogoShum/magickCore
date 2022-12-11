@@ -125,8 +125,6 @@ public class SolarAbility{
 
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
-        PositionContext positionContext = PositionContext.create(context.caster.getPositionVec());
-        context.addChild(positionContext);
         SpawnContext spawnContext = new SpawnContext();
         spawnContext.entityType = ModEntities.RADIANCE_WALL.get();
         context.addChild(spawnContext);

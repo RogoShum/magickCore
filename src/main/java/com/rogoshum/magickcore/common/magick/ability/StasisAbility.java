@@ -105,8 +105,6 @@ public class StasisAbility{
 
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
-        PositionContext positionContext = PositionContext.create(context.caster.getPositionVec().add(0, 2, 0));
-        context.addChild(positionContext);
         SpawnContext spawnContext = new SpawnContext();
         spawnContext.entityType = ModEntities.SILENCE_SQUALL.get();
         context.addChild(spawnContext);

@@ -14,7 +14,6 @@ public class ManaMaterials {
         registerMaterial(new OriginMaterial());
         registerMaterial(new EnderDragonMaterial());
         registerMaterial(new NetherStarMaterial());
-        registerMaterial(new ThunderMaterial());
     }
 
     public static void registerMaterial(Material manaLimit) {
@@ -32,6 +31,10 @@ public class ManaMaterials {
             return material.get(s);
 
         return NONE;
+    }
+
+    public static HashMap<String, Material> getMaterials() {
+        return new HashMap<>(material);
     }
 
     public static Material getLastMaterial() {

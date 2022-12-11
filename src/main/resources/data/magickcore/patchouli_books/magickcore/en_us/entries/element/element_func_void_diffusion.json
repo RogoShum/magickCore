@@ -1,12 +1,12 @@
 {
-  "name": "§5Void §7Diffusion",
+  "name": "§5虚空§7漫散",
   "advancement": "magickcore:learn/trigger_element_func_void_diffusion",
   "icon": "magickcore:void",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Diffusion allows the target to teleport."
+      "text": "漫散状态的虚空能量可以让目标瞬移到传递的坐标的位置。如果没有传递坐标，则按施法者的视线和魔力能量的范围来瞬移。"
     }
   ]
 }

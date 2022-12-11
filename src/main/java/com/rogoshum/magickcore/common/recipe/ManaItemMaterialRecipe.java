@@ -1,10 +1,16 @@
 package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.mana.IMaterialLimit;
+import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.ContextCoreItem;
 import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
+import com.rogoshum.magickcore.common.lib.LibMaterial;
+import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.CraftingInventory;
@@ -50,13 +56,12 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
         }
 
         if(tool == null || contextCore == null) return false;
-        ContextCreatorEntity toolMaterial = ModEntities.CONTEXT_CREATOR.get().create(worldIn);
-        if(toolMaterial == null) return false;
-        ((ManaMaterialItem)tool.getItem()).upgradeManaItem(tool, toolMaterial.getInnerManaData());
-        Entity createEntity = NBTTagHelper.createEntityByItem(contextCore, worldIn);
-        if(createEntity == null) return true;
-        ContextCreatorEntity contextMaterial = (ContextCreatorEntity) createEntity;
-        return contextMaterial.getMaterial() != toolMaterial.getMaterial();
+        TempMaterial tempMaterial = new TempMaterial();
+        ((ManaMaterialItem)tool.getItem()).upgradeManaItem(tool, tempMaterial);
+        String preMaterial = LibMaterial.ORIGIN;
+        if(contextCore.hasTag() && contextCore.getTag().contains("mana_material"))
+            preMaterial = contextCore.getTag().getString("mana_material");
+        return !preMaterial.equals(tempMaterial.getMaterial().getName());
     }
 
     @Nonnull
@@ -82,11 +87,29 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
         }
 
         if(tool == null || contextCore == null) return ItemStack.EMPTY;
-        ContextCreatorEntity createEntity = new ContextCreatorEntity(ModEntities.CONTEXT_CREATOR.get(), null);
-        ((ManaMaterialItem)tool.getItem()).upgradeManaItem(tool, createEntity.getInnerManaData());
+        TempMaterial tempMaterial = new TempMaterial();
+        ((ManaMaterialItem)tool.getItem()).upgradeManaItem(tool, tempMaterial);
         ItemStack result = contextCore.copy();
-        NBTTagHelper.storeEntityToItem(createEntity, result);
+        result.getOrCreateTag().putString("mana_material", tempMaterial.material.getName());
         return result;
+    }
+
+    public static class TempMaterial implements ISpellContext, IMaterialLimit {
+        Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
+        @Override
+        public Material getMaterial() {
+            return material;
+        }
+
+        @Override
+        public void setMaterial(Material material) {
+            this.material = material;
+        }
+
+        @Override
+        public SpellContext spellContext() {
+            return SpellContext.create();
+        }
     }
 
     @Override

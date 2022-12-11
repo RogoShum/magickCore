@@ -67,8 +67,6 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.BONE);
                 else if(name.contains(Items.BLAZE_ROD.toString()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.BLAZE_ROD);
-                else if(name.contains(Items.QUARTZ.toString()))
-                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ELEMENT_CRYSTAL);
                 else if(itemStack.getItem() == ModItems.ENDER_DRAGON_MATERIAL.get())
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENDER_DRAGON_MATERIAL);
                 else if(itemStack.getItem() == Items.NETHER_STAR)

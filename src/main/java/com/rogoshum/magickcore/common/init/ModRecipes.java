@@ -324,7 +324,7 @@ public class ModRecipes {
         registerExplosionRecipe(TagItemMatcher.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.MANA_SPIDER_EYE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.MANA_NETHER_WART.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.STICK.toString()), new ItemStack(ModItems.SPIRIT_WOOD_STICK.get()));
-        registerExplosionRecipe(TagItemMatcher.create(Items.QUARTZ.toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ELEMENT_CRYSTAL.get()), LibElements.ORIGIN));
+        registerExplosionRecipe(TagItemMatcher.create(ModItems.SPIRIT_CRYSTAL.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ELEMENT_CRYSTAL.get()), LibElements.ORIGIN));
 
         registerExplosionRecipe(TagItemMatcher.create(ModItems.SOLAR.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.SOLAR));
         registerExplosionRecipe(TagItemMatcher.create(ModItems.ARC.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.ARC));

@@ -1,5 +1,5 @@
 {
-  "name": "Mana Flesh",
+  "name": "魔力肉",
   "advancement": "magickcore:learn/mana_flesh",
   "icon": "magickcore:mana_flesh",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_flesh",
-	  "text": "Converted from rotten flesh at a magick workbench."
+	  "text": "使用腐肉在魔法工作台转换而成。"
     }
   ]
 }

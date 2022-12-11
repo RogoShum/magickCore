@@ -1,12 +1,12 @@
 {
-  "name": "§3Stasis §7Diffusion",
+  "name": "§3冰影§7漫散",
   "advancement": "magickcore:learn/trigger_element_func_stasis_diffusion",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Stasis of the Diffusion can stall \"non-friendly units\" moving towards the caster."
+      "text": "漫散状态的冰影效果可以给予玩家纯洁效果，停滞\"朝施法者移动的非友军投掷物\"。收益魔力能量为强度和存在时间。"
     }
   ]
 }

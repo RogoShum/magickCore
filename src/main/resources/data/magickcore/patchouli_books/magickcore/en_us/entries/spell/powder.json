@@ -1,5 +1,5 @@
 {
-  "name": "Mana Powder",
+  "name": "魔力火药",
   "advancement": "magickcore:learn/mana_powder",
   "icon": "magickcore:mana_gunpowder",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_gunpowder",
-	  "text": "Converted at a magick workbench using gunpowder."
+	  "text": "使用火药在魔法工作台转换而成。"
     }
   ]
 }

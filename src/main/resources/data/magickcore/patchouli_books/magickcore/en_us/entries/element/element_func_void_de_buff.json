@@ -1,12 +1,12 @@
 {
-  "name": "§5Void §7Debuff",
+  "name": "§5虚空§7减益",
   "advancement": "magickcore:learn/trigger_element_func_void_de_buff",
   "icon": "magickcore:void",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Attack can make the target fragile, shorten the interval between injuries."
+      "text": "减益状态的虚空能量可以让目标变得脆弱，两次受伤的间隔变短。收益魔力能量为强度和存在时间。"
     }
   ]
 }

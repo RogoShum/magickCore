@@ -361,6 +361,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         par.setGlow();
         MagickCore.addMagickParticle(par);
 
+        if(ticksExisted % 5 != 0) return;
         LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
                 , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5

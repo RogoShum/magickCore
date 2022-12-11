@@ -10,9 +10,9 @@ import net.minecraft.item.ItemStack;
 
 public class ModGroups {
 	public static final ItemGroup ITEM_GROUP = new MagickCoreGroup();
+	public static final ItemGroup ELEMENT_ITEM_GROUP = new ElementItemGroup();
 	public static final ItemGroup ENTITY_TYPE_GROUP = new EntityTypeGroup();
 	public static final ItemGroup POTION_TYPE_GROUP = new PotionTypeGroup();
-	public static final ItemGroup ELEMENT_ITEM_GROUP = new ElementItemGroup();
 	public static final ItemGroup MAGICK_CONTEXT_GROUP = new MagickContextGroup();
 	
 	static class MagickCoreGroup extends ItemGroup {

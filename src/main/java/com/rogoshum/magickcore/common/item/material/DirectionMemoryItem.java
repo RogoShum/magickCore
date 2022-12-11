@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
@@ -57,6 +58,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position"))
                 tooltip.add(new StringTextComponent(

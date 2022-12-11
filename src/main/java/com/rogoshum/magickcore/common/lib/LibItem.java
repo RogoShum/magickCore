@@ -49,7 +49,7 @@ public class LibItem {
     public static final String RUNE_D = MagickCore.MOD_ID + ".description.rune";
     public static final String RIFT_D = MagickCore.MOD_ID + ".description.rift";
     public static final String EYE_D = MagickCore.MOD_ID + ".description.eye";
-
+    public static final String CONTEXT_MATERIAL = MagickCore.MOD_ID + ".description.spell_context_material";
     public static final String MANA_DRAGON_BREATH = MagickCore.MOD_ID + ".description.mana_dragon_breath";
     public static final String MANA_GLOWSTONE = MagickCore.MOD_ID + ".description.mana_glowstone";
     public static final String MANA_REDSTONE = MagickCore.MOD_ID + ".description.mana_redstone";

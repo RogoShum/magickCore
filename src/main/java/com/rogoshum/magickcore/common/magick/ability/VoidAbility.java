@@ -163,8 +163,6 @@ public class VoidAbility{
 
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
-        PositionContext positionContext = PositionContext.create(context.caster.getPositionVec().add(0, -4, 0));
-        context.addChild(positionContext);
         SpawnContext spawnContext = new SpawnContext();
         spawnContext.entityType = ModEntities.MANA_SHIELD.get();
         context.addChild(spawnContext);

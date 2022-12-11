@@ -1,5 +1,5 @@
 {
-  "name": "Stasis",
+  "name": "冰影元素",
   "advancement": "magickcore:learn/stasis",
   "icon": "magickcore:stasis",
   "category": "element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:stasis",
-      "text": "The stasis element is a mana element that is biased towards dark, can bring something to a standstill."
+      "text": "冰影元素是一种偏向暗影的魔力元素，能够让事物趋近停滞。"
     }
   ]
 }

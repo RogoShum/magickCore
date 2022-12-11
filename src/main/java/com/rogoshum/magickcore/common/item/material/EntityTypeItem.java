@@ -26,6 +26,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -79,6 +80,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         super.addInformation(stack, worldIn, tooltip, flagIn);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         if(data.spellContext().containChild(LibContext.SPAWN)) {
@@ -103,6 +105,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
         if (group == ModGroups.ENTITY_TYPE_GROUP) {
             List<EntityType<? extends LivingEntity>> livings = new ArrayList<>();
             List<EntityType<? extends IManaEntity>> mana = new ArrayList<>();
+            List<EntityType<? extends ProjectileEntity>> projectile = new ArrayList<>();
             ForgeRegistries.ENTITIES.getEntries().forEach(type -> {
                 if(!ERROR_TYPE.contains(type.getValue())) {
                     try {
@@ -111,6 +114,8 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
                             livings.add((EntityType<? extends LivingEntity>) type.getValue());
                         else if(entity instanceof IManaEntity)
                             mana.add((EntityType<? extends IManaEntity>) type.getValue());
+                        else if(entity instanceof ProjectileEntity)
+                            projectile.add((EntityType<? extends ProjectileEntity>) type.getValue());
                     } catch (Exception e) {
                         ERROR_TYPE.add(type.getValue());
                     }
@@ -118,6 +123,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
             });
             mana.forEach(type -> fillEntity(items, sample, type));
             livings.forEach(type -> fillEntity(items, sample, type));
+            projectile.forEach(type -> fillEntity(items, sample, type));
         }
     }
 

@@ -49,7 +49,7 @@ public class ModLoots {
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
            if(context.getQueriedLootTableId().toString().contains("chests")) {
                while (context.getRandom().nextBoolean()) {
-                   int lucky = 1;
+                   int lucky = 3;
                    while (context.getRandom().nextBoolean())
                        lucky++;
 

@@ -1,5 +1,5 @@
 {
-  "name": "Mana Spider Eye",
+  "name": "魔力蜘蛛眼",
   "advancement": "magickcore:learn/mana_spider_eye",
   "icon": "magickcore:mana_spider_eye",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_spider_eye",
-	  "text": "Converted using a spider's eye at a magick workbench."
+	  "text": "使用蜘蛛眼在魔法工作台转换而成。"
     }
   ]
 }

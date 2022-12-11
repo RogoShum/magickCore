@@ -1,5 +1,5 @@
 {
-  "name": "Mana Nether Wart",
+  "name": "魔力地狱疣",
   "advancement": "magickcore:learn/mana_wart",
   "icon": "magickcore:mana_nether_wart",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_nether_wart",
-	  "text": "Converted using nether wart at a magick workbench."
+	  "text": "使用地狱疣在魔法工作台转换而成。"
     }
   ]
 }

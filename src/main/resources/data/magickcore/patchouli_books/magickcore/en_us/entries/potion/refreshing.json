@@ -1,5 +1,5 @@
 {
-  "name": "refreshing water",
+  "name": "清爽水",
   "advancement": "magickcore:learn/orb_bottle",
   "icon": "minecraft:potion{Potion:\"magickcore:refreshing\"}",
   "category": "potion",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "minecraft:potion{Potion:\"magickcore:refreshing\"}",
-	  "text": "Can be brewed with something that says \"Element Crystal\" and a water bottle."
+	  "text": "可以用含有“元素水晶”字样的东西与水瓶酿造而成。"
     }
   ]
 }

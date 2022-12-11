@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick {
+    boolean cast = false;
     public ManaRadiateEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -71,6 +72,9 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             }
         }
 
+        if(released.get())
+            cast = true;
+
         AtomicBoolean entityOnly = new AtomicBoolean(false);
         if(condition != null)
             condition.conditions.forEach(condition1 -> {
@@ -105,16 +109,18 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     @Override
     public void remove() {
-        MagickContext context = MagickContext.create(this.world, spellContext().postContext)
-                .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
-                .caster(getOwner()).projectile(this)
-                .victim(this).noCost();
-        if(spellContext().containChild(LibContext.DIRECTION)) {
-            context.replenishChild(DirectionContext.create(spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction));
+        if(!cast) {
+            MagickContext context = MagickContext.create(this.world, spellContext().postContext)
+                    .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
+                    .caster(getOwner()).projectile(this)
+                    .victim(this).noCost();
+            if(spellContext().containChild(LibContext.DIRECTION)) {
+                context.replenishChild(DirectionContext.create(spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction));
+            }
+            boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
+            if(success && world.isRemote)
+                successFX();
         }
-        boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
-        if(success && world.isRemote)
-            successFX();
         super.remove();
     }
 

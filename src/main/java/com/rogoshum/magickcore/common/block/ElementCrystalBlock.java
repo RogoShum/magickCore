@@ -2,19 +2,25 @@ package com.rogoshum.magickcore.common.block;
 
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ElementCrystalBlock extends CropsBlock{
     public ElementCrystalBlock(Properties properties) {
@@ -45,6 +51,18 @@ public class ElementCrystalBlock extends CropsBlock{
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return 10;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        Vector3d pos = builder.get(LootParameters.field_237457_g_);
+        if(pos == null) return super.getDrops(state, builder);
+        TileEntity tileentity = builder.getWorld().getTileEntity(new BlockPos(pos));
+        if (tileentity instanceof ElementCrystalTileEntity) {
+            ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
+            return tile.getDrops();
+        }
+        return super.getDrops(state, builder);
     }
 
     @Override

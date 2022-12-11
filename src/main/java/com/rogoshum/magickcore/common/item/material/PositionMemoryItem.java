@@ -54,6 +54,7 @@ public class PositionMemoryItem extends BaseItem implements IManaMaterial {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         if(stack.hasTag() && NBTTagHelper.hasVectorDouble(stack.getTag(), "position"))
             tooltip.add(new StringTextComponent(
                     new TranslationTextComponent(MagickCore.MOD_ID + ".description." + LibContext.POSITION).getString()

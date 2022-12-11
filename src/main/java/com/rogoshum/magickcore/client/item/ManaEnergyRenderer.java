@@ -266,7 +266,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             matrixStack.scale(scale, scale, scale);
             matrixStack.rotate(Vector3f.YN.rotationDegrees(45));
             matrixStack.rotate(Vector3f.XN.rotationDegrees(30));
-
+            matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
             RenderHelper.renderStaticParticle(bufferContext, new RenderHelper.RenderContext(alpha, color, RenderHelper.renderLight));
         } else if(!ERROR_TYPE.contains(entity.getType())){
             float scale = 0.4f;

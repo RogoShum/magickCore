@@ -31,7 +31,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.function.Supplier;
 
 public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEntity {
-    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.1f, 1.0f, 1.0f);
+    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.2f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/red_stone.png");
     public RedStoneEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
@@ -80,7 +80,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.DEFAULT;
+        return MANA_FACTOR;
     }
 
     @Override

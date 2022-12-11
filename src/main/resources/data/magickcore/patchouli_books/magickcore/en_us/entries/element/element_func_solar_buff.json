@@ -1,12 +1,12 @@
 {
-  "name": "§6Solar §7Buff",
+  "name": "§6烈焰§7增益",
   "advancement": "magickcore:learn/trigger_element_func_solar_buff",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Buff can give the caster the effect of continuously revocery health."
+      "text": "增益状态的烈焰能量可以给予目标持续恢复血量的效果。收益魔力能量为强度、存在时间。"
     }
   ]
 }

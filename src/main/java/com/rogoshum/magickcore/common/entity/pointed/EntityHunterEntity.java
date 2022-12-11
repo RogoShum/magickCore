@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -81,7 +82,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         }
         float width = getWidth();
         float height = getHeight();
-        Predicate<Entity> entityPredicate = entity -> (entity instanceof LivingEntity && spellContext().force > 7) && entity.getHeight() < height && entity.getWidth() < width;
+        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof ProjectileEntity) && entity.getHeight() < height && entity.getWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)

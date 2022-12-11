@@ -40,12 +40,7 @@ public class ModBuffs {
         } , false);
 
         putBuff(LibBuff.FRAGILE, LibElements.VOID, false, (e, force) -> {
-            if(force > 5) {
-                if(e.hurtResistantTime > 7)
-                    e.hurtResistantTime = 7;
-            }
-            else if(e.hurtResistantTime > 13)
-                e.hurtResistantTime = 13;
+            e.hurtResistantTime -= force;
         } , false);
 
         putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e, force) ->{

@@ -1,12 +1,12 @@
 {
-  "name": "§5Void §7Buff",
+  "name": "§5虚空§7增益",
   "advancement": "magickcore:learn/trigger_element_func_void_buff",
   "icon": "magickcore:void",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Buff can increase the attack damage of the caster."
+      "text": "增益状态的虚空能量可以让提高目标的攻击力。收益魔力能量为强度和存在时间。"
     }
   ]
 }

@@ -143,9 +143,6 @@ public class ArcAbility{
 
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
-        PositionContext positionContext = PositionContext.create(context.caster.getPositionVec());
-        positionContext.pos = positionContext.pos.add(0, 1, 0);
-        context.addChild(positionContext);
         SpawnContext spawnContext = new SpawnContext();
         spawnContext.entityType = ModEntities.CHAOS_REACH.get();
         context.addChild(spawnContext);

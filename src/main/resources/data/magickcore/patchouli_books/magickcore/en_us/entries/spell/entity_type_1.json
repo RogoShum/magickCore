@@ -1,0 +1,40 @@
+{
+  "name": "法术形态 一",
+  "advancement": "magickcore:learn/magick_core",
+  "icon": "magickcore:magick_context",
+  "category": "spell",
+  "pages": [
+    {
+      "type": "spotlight",
+      "title": "魔力箭法术形态",
+      "item": "magickcore:entity_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"none\",TICK:0,RANGE:0.0f}}",
+      "text": "法术形态承载后续法术，释放后续法术，由后续法术所释放。"
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f}}",
+      "text": "通过先前的学习我们可以知道，法术形态作为特殊的施法类型，是可以携带后续法术的，并且会传递目标、位置、方向等信息，如果说用法术形态衔接法术形态，会发生什么？$(br2)比说在灵魂木弓上使用以魔力箭为起式的复合法术。"
+    },
+    {
+      "type": "text",
+      "text": "在回答这个问题之前，我们需要先知道在复合法术中，起式的法术形态是相应使用者的魔力流动所生成的，能够传递使用者的位置、目视方向，那么后续法术的法术形态，自然会相应起式的法术形态，根据起式形态的位置、方向来生成。$(br2)假如后面又衔接了更多的形态，也会是相应前一个法术形态的状态来产生效果。"
+    },
+    {
+      "type": "text",
+      "text": "现在我们可以推断出： 在灵魂木弓上使用一个以魔力箭为起式，攻击类型为后续的复合法术，灵魂木弓本身会生成一根魔力箭，这根魔力箭触碰到目标之后会触发产生复合法术中的魔力箭。$(br2)第二根魔力箭会在第一根魔力箭的位置生成，并继承第一根魔力箭的方向，如果第二根魔力箭又触碰到了目标，才会传递后续法术中的攻击施法类型。"
+    },
+    {
+      "type": "text",
+      "text": "不幸的是复合法术的起式就是魔力箭，第一根魔力箭在触发之后没有任何实质作用，只是生成了另一把魔力箭，在这之后才能传递攻击法术，白白消耗了产生第一根魔力箭所需要的魔力。$(br2)既然如此，我们可以尝试修复一下其中的问题，比如说起式法术是攻击施法类型，之后再接魔力箭形态和第二次攻击施法类型，是不是就可以安装在灵魂木弓上了呢？"
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
+      "text": "答案是否定的，第一根魔力箭在造成攻击效果之后，会立马生成第二根魔力箭，这个时候被攻击的目标依旧处于无敌时间的状态，而第二根魔力箭生成在第一根魔力箭消失的位置，立马触碰到目标，这个时候是无法攻击到目标的。"
+    },
+    {
+      "type": "text",
+      "text": "我们需要再修复一下这个复合法术，比如把第二根魔力箭的后续法术更换成减益类型，或是干脆删掉第二个魔力箭形态，直接使用减益类型去衔接攻击施法类型，这样就可以一根魔力箭实现两种效果。当然，这只是投掷类法术形态的用法，在这个世界中，存在三种不同类型的法术形态。分别为辐射类形态、投掷类形态、点状类形态。"
+    }
+  ]
+}

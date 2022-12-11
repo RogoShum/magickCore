@@ -35,6 +35,14 @@ public class LibAdvancements {
     public static final String MEAT = "mana_meat";
     public static final String BLAZE_ROD = "mana_blaze";
     public static final String BONE = "mana_bone";
+    public static final String COMPLETELY_SELF = "completely_self";
+    public static final String REVERSE = "reverse";
+    public static final String CONDITION_BLOCK = "condition_block";
+    public static final String CONDITION_NON_LIVING = "condition_non_living";
+    public static final String CONDITION_LIVING = "condition_living";
+    public static final String POSITION_MEMORY = "position_memory";
+    public static final String DIRECTION_MEMORY = "direction_memory";
+    public static final String OFFSET_MEMORY = "offset_memory";
     public static final String NETHER_STAR_MATERIAL = "nether_star_material";
     public static final String ENDER_DRAGON_MATERIAL = "ender_dragon_material";
 

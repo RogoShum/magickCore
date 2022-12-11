@@ -1,6 +1,6 @@
 {
-  "name": "Element Product",
-  "description": "Item that can accept element.",
+  "name": "元素制品",
+  "description": "可以承载元素能量的道具",
   "icon": "magickcore:orb_bottle",
   "sortnum": 3
 }

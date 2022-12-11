@@ -1,5 +1,5 @@
 {
-  "name": "Element Meat",
+  "name": "元素肉",
   "advancement": "magickcore:learn/element_meat",
   "icon": "magickcore:element_meat",
   "category": "element_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:element_meat",
-	  "text": "Eating element meat can provide players with element attribute buffs."
+	  "text": "食用元素肉可以给玩家提供元素属性的增益效果。"
     }
   ]
 }

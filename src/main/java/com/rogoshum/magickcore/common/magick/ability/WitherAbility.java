@@ -19,22 +19,28 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IGrowable;
+import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -130,23 +136,90 @@ public class WitherAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
             BlockState blockstate = context.world.getBlockState(pos);
-            if (blockstate.getBlock() instanceof IGrowable) {
-                IGrowable igrowable = (IGrowable)blockstate.getBlock();
-                for (int i = 0; i < context.force; i++) {
-                    igrowable.grow((ServerWorld)context.world, context.world.rand, pos, blockstate);
-                }
+            if(growBlock(context, blockstate.getBlock(), pos, blockstate))
                 return true;
-            }
             blockstate = context.world.getBlockState(pos.up());
-            if (blockstate.getBlock() instanceof IGrowable) {
-                IGrowable igrowable = (IGrowable)blockstate.getBlock();
-                for (int i = 0; i < context.force; i++) {
-                    igrowable.grow((ServerWorld)context.world, context.world.rand, pos.up(), blockstate);
-                }
-                return true;
-            }
+            return growBlock(context, blockstate.getBlock(), pos.up(), blockstate);
         }
         return false;
+    }
+
+    public static boolean growBlock(MagickContext context, Block block, BlockPos pos, BlockState state) {
+        if (state.getBlock() instanceof IGrowable) {
+            IGrowable igrowable = (IGrowable)state.getBlock();
+            for (int i = 0; i < context.force; i++) {
+                igrowable.grow((ServerWorld)context.world, context.world.rand, pos.up(), state);
+            }
+            spawnLoot(context, block, pos, state);
+            return true;
+        } else {
+            boolean hasAge = false;
+            int force = (int) context.force;
+            if(containProperty(state, BlockStateProperties.AGE_0_1, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_2, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_2, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_3, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_5, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_7, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_15, force)) {
+                hasAge = true;
+            } else if(containProperty(state, BlockStateProperties.AGE_0_25, force)) {
+                hasAge = true;
+            }
+            if(hasAge)
+                spawnLoot(context, block, pos, state);
+            return hasAge;
+        }
+    }
+
+    public static boolean containProperty(BlockState state, IntegerProperty integerProperty, int force) {
+        if (state.getProperties().stream().anyMatch(p -> p.equals(integerProperty))) {
+            int age = (force + state.get(integerProperty));
+            Collection<Integer> integers = integerProperty.getAllowedValues();
+            if(integers.size() < 1) return false;
+            if(integers.contains(age)) {
+                state.with(integerProperty, age);
+            } else {
+                age = (int) integers.toArray()[integers.size() - 1];
+                state.with(integerProperty, age);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static void spawnLoot(MagickContext context, Block block, BlockPos pos, BlockState state) {
+        LootContext.Builder lootContext = new LootContext.Builder((ServerWorld) context.world)
+                .withParameter(LootParameters.field_237457_g_, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
+                .withParameter(LootParameters.BLOCK_STATE, state)
+                .withNullableParameter(LootParameters.THIS_ENTITY, context.caster);
+        lootContext.withParameter(LootParameters.TOOL, ItemStack.EMPTY);
+        List<ItemStack> drops = state.getDrops(lootContext);
+
+        BlockState newState = block.getDefaultState();
+
+        if (state.getProperties().stream().anyMatch(p -> p.equals(HorizontalBlock.HORIZONTAL_FACING))) {
+            newState = newState.with(HorizontalBlock.HORIZONTAL_FACING, state.get(HorizontalBlock.HORIZONTAL_FACING));
+        }
+
+        if (state.getProperties().stream().anyMatch(p -> p.equals(CropsBlock.AGE))) {
+            newState = state.with(CropsBlock.AGE, 0);
+        }
+
+        context.world.setBlockState(pos, newState);
+
+        for (ItemStack stack : drops) {
+            ItemEntity entity = new ItemEntity(context.world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            entity.setItem(stack);
+            entity.setPickupDelay(20);
+            context.world.addEntity(entity);
+        }
     }
 
     public static boolean applyBuff(MagickContext context) {
@@ -179,9 +252,6 @@ public class WitherAbility{
 
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
-        PositionContext positionContext = PositionContext.create(context.caster.getPositionVec());
-        positionContext.pos = positionContext.pos.add(0, 1, 0);
-        context.addChild(positionContext);
         SpawnContext spawnContext = new SpawnContext();
         spawnContext.entityType = ModEntities.THORNS_CARESS.get();
         context.addChild(spawnContext);

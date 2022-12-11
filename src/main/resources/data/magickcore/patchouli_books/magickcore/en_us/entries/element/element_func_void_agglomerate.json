@@ -1,12 +1,12 @@
 {
-  "name": "§5Void §7Agglomerate",
+  "name": "§5虚空§7凝聚",
   "advancement": "magickcore:learn/trigger_element_func_void_agglomerate",
   "icon": "magickcore:void",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Agglomerate can make the caster in a state of low presence, and will not be targeted by some creatures unless you want to kiss it."
+      "text": "凝聚状态的虚空能量可以让目标处于低存在感的状态，不会被一部分生物当成目标，除非离得太近。收益魔力能量为存在时间。凝聚状态的虚空能量也可以挖掘方块，收益魔力能量为强度。"
     }
   ]
 }

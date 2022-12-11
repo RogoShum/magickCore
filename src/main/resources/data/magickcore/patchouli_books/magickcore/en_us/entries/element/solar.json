@@ -1,5 +1,5 @@
 {
-  "name": "Solar",
+  "name": "烈焰元素",
   "advancement": "magickcore:learn/solar",
   "icon": "magickcore:solar",
   "category": "element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:solar",
-      "text": "The solar element is a mana element that is biased towards light, providing a certain recovery effect and burning effect."
+      "text": "烈焰元素是一种偏向光能的魔力元素，提供一定的恢复效果和燃烧效果。"
     }
   ]
 }

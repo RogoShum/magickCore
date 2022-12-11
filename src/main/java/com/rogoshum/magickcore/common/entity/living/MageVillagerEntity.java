@@ -120,7 +120,7 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         context = SpellContext.create().applyType(ApplyType.ATTACK)
                 .force(3).tick(40).element(MagickRegistry.getElement(LibElements.VOID));
         SpellContext deBuffContext = SpellContext.create().applyType(ApplyType.DE_BUFF)
-                .force(1).tick(20).element(MagickRegistry.getElement(LibElements.WITHER));
+                .force(5).tick(20).element(MagickRegistry.getElement(LibElements.WITHER));
         context.post(deBuffContext);
         SpellContext orbContext = SpellContext.create().applyType(ApplyType.SPAWN_ENTITY)
                 .addChild(SpawnContext.create(ModEntities.MANA_LASER.get()))

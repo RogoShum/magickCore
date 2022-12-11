@@ -37,6 +37,7 @@ public class ManaFermentedSpiderEyeItem extends BaseItem implements IManaMateria
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         tooltip.add(new TranslationTextComponent(LibItem.MANA_SPIDER_EYE));
     }
 }

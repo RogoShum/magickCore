@@ -1,12 +1,12 @@
 {
-  "name": "§6Solar §7Agglomerate",
+  "name": "§6烈焰§7凝聚",
   "advancement": "magickcore:learn/trigger_element_func_solar_agglomerate",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Agglomerate recovery caster's health."
+      "text": "凝聚状态的烈焰能量可以瞬间恢复施法者血量。收益魔力能量为强度。"
     }
   ]
 }

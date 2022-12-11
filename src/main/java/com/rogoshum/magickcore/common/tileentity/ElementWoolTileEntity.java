@@ -14,11 +14,16 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class ElementWoolTileEntity extends TileEntity implements ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
@@ -46,6 +51,15 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
         entity.setItem(stack);
         entity.setPickupDelay(20);
         world.addEntity(entity);
+    }
+
+    public List<ItemStack> getDrops() {
+        if(this.world.isRemote) return Collections.emptyList();
+        ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
+        CompoundNBT tag = new CompoundNBT();
+        tag.putString("ELEMENT", eType);
+        stack.setTag(tag);
+        return Util.make(new ArrayList<>(), (list) -> list.add(stack));
     }
 
     @Nullable

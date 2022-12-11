@@ -50,7 +50,7 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 				f4 = 0;
 			if(f4 > 1)
 				f4 = 1;
-			matrixStackIn.scale(f4, f4, f4);
+			matrixStackIn.scale(1, f4, 1);
 		}
 		matrixStackIn.push();
 		matrixStackIn.rotate(Vector3f.YP.rotation(f3));

@@ -117,4 +117,9 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     public float getSourceLight() {
         return -15f;
     }
+
+    @Override
+    public float eyeHeight() {
+        return super.eyeHeight();
+    }
 }

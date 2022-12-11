@@ -143,6 +143,8 @@ public class MagickLogicEvent {
 
 	@SubscribeEvent
 	public void onStateCooldown(EntityEvents.StateCooldownEvent event) {
+		if(event.getEntityLiving().getActivePotionMap().containsKey(ModEffects.SHIELD_REGEN.orElse(null)))
+			event.setCooldown(event.getCooldown() - (event.getEntityLiving().getActivePotionEffect(ModEffects.SHIELD_REGEN.orElse(null)).getAmplifier() + 1));
 	}
 
 	@SubscribeEvent
@@ -609,11 +611,18 @@ public class MagickLogicEvent {
 	}
 
 	public void onDamage(DamageSource damageSource, LivingEvent event, EntityStateData state, Entity trueSource) {
-		float reduceAmount = state.getMaxManaValue() * 0.002f;
+		float reduceAmount = state.getMaxManaValue() * 0.001f;
 
 		if(state.getElement() == ModElements.SOLAR) {
 			if(damageSource.isFireDamage() || damageSource.isExplosion()) {
 				reduceDamage(event, reduceAmount);
+				if(event instanceof LivingDamageEvent) {
+					LivingDamageEvent damageEvent = (LivingDamageEvent) event;
+					if(reduceAmount >= damageEvent.getAmount()) {
+						if(event.getEntityLiving().getFireTimer() > 0)
+							event.getEntityLiving().setFire(0);
+					}
+				}
 			}
 		} else if(state.getElement() == ModElements.VOID) {
 			if(damageSource.isUnblockable()) {
@@ -658,8 +667,10 @@ public class MagickLogicEvent {
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			event.setCanceled(true);
 
-		if(state != null && state.getBuffList().containsKey(LibBuff.WEAKEN))
-			event.setAmount(event.getAmount() * 1.3f);
+		if(state != null && state.getBuffList().containsKey(LibBuff.WEAKEN)) {
+			float force = state.getBuffList().get(LibBuff.WEAKEN).getForce();
+			event.setAmount((float) (event.getAmount() * Math.pow(1.1, force)));
+		}
 
 		if(state != null && state.getBuffList().containsKey(LibBuff.RADIANCE_WELL) && (event.getSource().isFireDamage() || event.getSource().isExplosion()))
 			event.setCanceled(true);

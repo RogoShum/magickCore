@@ -20,12 +20,16 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ElementCrystalTileEntity extends TileEntity implements ITickableTileEntity, ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
@@ -53,6 +57,25 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
             if(world.rand.nextInt(2) == 0)
                 dropCrystal();
         }
+    }
+
+    public List<ItemStack> getDrops() {
+        age = world.getBlockState(getPos()).get(CropsBlock.AGE);
+        if(this.world.isRemote || age != 7) return Collections.emptyList();
+        ArrayList<ItemStack> stacks = new ArrayList<>();
+        ItemStack stack = new ItemStack(ModItems.ELEMENT_CRYSTAL.get());
+        CompoundNBT tag = new CompoundNBT();
+        tag.putString("ELEMENT", eType);
+        stack.setTag(tag);
+        stacks.add(stack);
+        if(world.rand.nextInt(4) > 0) {
+            stack = new ItemStack(ModItems.ELEMENT_CRYSTAL_SEEDS.get());
+            tag = new CompoundNBT();
+            tag.putString("ELEMENT", eType);
+            stack.setTag(tag);
+            stacks.add(stack);
+        }
+        return stacks;
     }
 
     private void dropCrystal() {

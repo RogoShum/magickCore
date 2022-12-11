@@ -17,7 +17,9 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -46,11 +48,15 @@ public class ContextCoreItem extends BaseItem{
             else {
                 entity.remove();
                 if(!entity.world.isRemote) {
-                    Entity createEntity = NBTTagHelper.createEntityByItem(stack, entity.world);
                     ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.world);
-                    if(createEntity instanceof ContextCreatorEntity)
-                        contextCreator = (ContextCreatorEntity) createEntity;
                     contextCreator.setPosition(entity.getPosX(), entity.getPosY() - 0.5, entity.getPosZ());
+                    if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+                        String material = stack.getTag().getString("mana_material");
+                        Material manaMaterial = ManaMaterials.getMaterial(material);
+                        if(manaMaterial != ManaMaterials.NONE) {
+                            contextCreator.getInnerManaData().setMaterial(manaMaterial);
+                        }
+                    }
                     entity.world.addEntity(contextCreator);
                     entity.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
                 }
@@ -61,13 +67,24 @@ public class ContextCoreItem extends BaseItem{
     }
 
     @Override
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.isInGroup(group)) {
+            ItemStack sample = new ItemStack(this);
+            ManaMaterials.getMaterials().keySet().forEach((key) -> {
+                ItemStack copy = sample.copy();
+                copy.getOrCreateTag().putString("mana_material", key);
+                items.add(copy);
+            });
+        }
+    }
+
+    @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
-        if(worldIn != null) {
-            Entity entity = NBTTagHelper.createEntityByItem(stack, worldIn);
-            if(entity instanceof ContextCreatorEntity) {
-                ContextCreatorEntity contextCreator = (ContextCreatorEntity) entity;
-                material = contextCreator.getMaterial();
+        if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+            Material manaMaterial = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
+            if(manaMaterial != ManaMaterials.NONE) {
+                material = manaMaterial;
             }
         }
         tooltip.add((new TranslationTextComponent(LibItem.MATERIAL)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName())));

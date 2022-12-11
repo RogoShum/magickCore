@@ -20,8 +20,7 @@ public class TagItemMatcher extends NBTRecipeContainer.ItemMatcher {
         return new TagItemMatcher(item, map);
     }
 
-    public static TagItemMatcher create(String item)
-    {
+    public static TagItemMatcher create(String item) {
         return new TagItemMatcher(item);
     }
 

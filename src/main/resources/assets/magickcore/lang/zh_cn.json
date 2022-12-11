@@ -245,6 +245,7 @@
     "magickcore.description.rift": "§9能够在符文上产生裂痕的生成符",
     "magickcore.description.eye": "§9能够在符文上产生魔眼的生成符",
 
+    "magickcore.description.spell_context_material": "§3法术材料",
     "magickcore.description.mana_dragon_breath": "§9施加效果： 追踪",
     "magickcore.description.mana_glowstone": "§9施加效果： 增加强度",
     "magickcore.description.mana_redstone": "§9施加效果： 延长存在时间",

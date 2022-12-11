@@ -164,7 +164,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 }
             } else
                 return super.hitBlockRemove(blockRayTraceResult);
-        } else if(spellContext().containChild(LibContext.ITEM))
+        } else if(spellContext().containChild(LibContext.ITEM) && spellContext().containChild(LibContext.TRACE))
             return false;
         else if (spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);

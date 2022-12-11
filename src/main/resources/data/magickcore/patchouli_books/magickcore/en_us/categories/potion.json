@@ -1,6 +1,6 @@
 {
-  "name": "Potion",
-  "description": "Drink which can distort mana",
+  "name": "药水",
+  "description": "扭曲魔力效益的饮品",
   "icon": "minecraft:potion{Potion:\"magickcore:mana_force\"}",
   "sortnum": 6
 }
