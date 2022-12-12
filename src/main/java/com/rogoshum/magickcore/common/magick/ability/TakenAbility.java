@@ -35,13 +35,15 @@ import java.util.Optional;
 public class TakenAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
+        if(!context.victim.isNonBoss())
+            return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick / 2, context.force, false);
         return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick, context.force, true);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.TAKEN))
-            context.force *= 1.75;
+            context.force *= 1.25;
 
         boolean flag;
         if(context.caster != null && context.projectile != null)
@@ -109,6 +111,7 @@ public class TakenAbility{
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
+            if(!context.victim.isNonBoss()) return false;
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.victim.getUniqueID());
             int time = (int) (context.tick * context.force);

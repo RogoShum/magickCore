@@ -294,7 +294,7 @@ public class RegisterEvent {
         if(event.getType() == ModVillager.MAGE.get()) {
             for (int i = 1; i < 6; i++) {
                 ArrayList<VillagerTrades.ITrade> list = new ArrayList<>();
-                for (int c = 0; c < i; ++c) {
+                for (int c = 0; c < 6; ++c) {
                     list.add(new ModVillager.EntityTypeTrade());
                 }
                 event.getTrades().put(i, list);

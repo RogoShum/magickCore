@@ -374,6 +374,11 @@ public class RenderHelper {
         return RenderType.makeType(MagickCore.MOD_ID + ":LINES_STRIP_" + width, DefaultVertexFormats.ENTITY, GL_LINE_STRIP, 256, false, false, rendertype$state);
     }
 
+    public static RenderType getLineStripPC(double width) {
+        RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
+        return RenderType.makeType(MagickCore.MOD_ID + ":LINES_STRIP_PC_" + width, DefaultVertexFormats.POSITION_COLOR, 1, 256, false, false, rendertype$state);
+    }
+
     public static RenderType getLinesGlow(double width) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":LINES_" + width, DefaultVertexFormats.ENTITY, GL_LINES, 256, false, false, rendertype$state);

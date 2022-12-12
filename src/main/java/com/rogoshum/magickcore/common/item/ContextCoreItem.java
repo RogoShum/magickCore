@@ -23,11 +23,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class ContextCoreItem extends BaseItem{
     public ContextCoreItem() {
@@ -71,9 +73,11 @@ public class ContextCoreItem extends BaseItem{
         if (this.isInGroup(group)) {
             ItemStack sample = new ItemStack(this);
             ManaMaterials.getMaterials().keySet().forEach((key) -> {
-                ItemStack copy = sample.copy();
-                copy.getOrCreateTag().putString("mana_material", key);
-                items.add(copy);
+                if(!Objects.equals(key, "origin")) {
+                    ItemStack copy = sample.copy();
+                    copy.getOrCreateTag().putString("mana_material", key);
+                    items.add(copy);
+                }
             });
         }
     }
@@ -87,10 +91,10 @@ public class ContextCoreItem extends BaseItem{
                 material = manaMaterial;
             }
         }
-        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName())));
-        tooltip.add((new TranslationTextComponent(LibItem.FORCE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getForce()))));
-        tooltip.add((new TranslationTextComponent(LibItem.RANGE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getRange()))));
-        tooltip.add((new TranslationTextComponent(LibItem.TICK)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick()))));
+        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName()).mergeStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.FORCE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getForce())).mergeStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.RANGE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getRange())).mergeStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.TICK).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick())).mergeStyle(TextFormatting.GRAY)));
     }
 
     @Override

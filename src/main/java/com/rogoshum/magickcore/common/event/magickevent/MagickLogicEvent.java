@@ -256,6 +256,7 @@ public class MagickLogicEvent {
 			PositionContext positionContext = event.getContext().getChild(LibContext.POSITION);
 			event.setMana((float) (event.getMana() + positionContext.pos.distanceTo(event.getEntity().getPositionVec())));
 		}
+		/*
 		if(!event.getContext().containChild(LibContext.MULTI_RELEASE))
 			if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MULTI_RELEASE.orElse(null))) {
 				int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MULTI_RELEASE.orElse(null)).getAmplifier() + 1;
@@ -271,6 +272,8 @@ public class MagickLogicEvent {
 				}
 			}
 
+
+		 */
 		float level = 0;
 		for (ItemStack stack : event.getEntity().getEquipmentAndArmor()) {
 			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
@@ -709,7 +712,7 @@ public class MagickLogicEvent {
 					if(entity1 instanceof LivingEntity) {
 						EntityStateData ownerState = ExtraDataUtil.entityStateData(entity1);
 						if(ownerState != null && ownerState.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
-							event.setAmount(event.getAmount() * 1.1f * state.getBuffList().get(LibBuff.TAKEN_KING).getForce());
+							event.setAmount(event.getAmount() * 1.1f * ownerState.getBuffList().get(LibBuff.TAKEN_KING).getForce());
 						}
 					}
 				}

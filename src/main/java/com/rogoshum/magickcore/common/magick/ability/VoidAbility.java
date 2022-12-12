@@ -46,7 +46,7 @@ public class VoidAbility{
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.WEAKEN))
-            context.force *= 2;
+            context.force *= 1.2;
 
         boolean flag;
         if(context.caster != null && context.projectile != null)

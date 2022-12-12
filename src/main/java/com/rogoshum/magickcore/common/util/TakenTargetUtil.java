@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -11,7 +13,6 @@ import java.util.List;
 
 public class TakenTargetUtil {
     public static LivingEntity getTakenTarget(Entity mob, double range) {
-        if(mob.ticksExisted % 5 != 0) return null;
         List<Entity> list = mob.world.getEntitiesWithinAABBExcludingEntity(mob, mob.getBoundingBox().grow(range));
         if(!mob.world.isRemote) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(mob);
@@ -21,16 +22,15 @@ public class TakenTargetUtil {
                 if(owner != null && owner != mob) {
                     for (Entity entity : list) {
                         TakenEntityData takenEntity = ExtraDataUtil.takenEntityData(entity);
-                        boolean sameOwner = false;
-                        if (takenEntity == null || !takenEntity.getOwnerUUID().equals(state.getOwnerUUID()))
-                            sameOwner = true;
+                        boolean sameOwner = takenEntity == null || !takenEntity.getOwnerUUID().equals(state.getOwnerUUID());
 
                         if (entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(owner, entity) && MagickReleaseHelper.canEntityTraceAnother(mob, entity) && sameOwner) {
                             if (victim == null || mob.getDistance(victim) > mob.getDistance(entity))
                                 victim = (LivingEntity) entity;
                         }
                     }
-                }
+                } else if(owner == mob)
+                    return null;
                 return victim;
             }
         }
@@ -47,6 +47,11 @@ public class TakenTargetUtil {
                 newTarget = null;
 
             return newTarget;
+        } else {
+            EntityStateData state = ExtraDataUtil.entityStateData(taken);
+            if(state != null && state.getBuffList().containsKey(LibBuff.TAKEN)) {
+                return null;
+            }
         }
 
         return target;

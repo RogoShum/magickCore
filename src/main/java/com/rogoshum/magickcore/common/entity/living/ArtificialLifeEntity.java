@@ -42,6 +42,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     private Vector3d originPos;
     private BlockPos originBlockPos;
     private boolean power = false;
+    private int powerCount;
     public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, World worldIn) {
         super(type, worldIn);
     }
@@ -60,14 +61,19 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         }
 
         if(power > 0) {
+            powerCount++;
             if(!this.power) {
                 this.power = true;
+                powerCount = 0;
                 return release(powerDirection);
-            } else if (ticksExisted % power == 0) {
+            } else if (powerCount >= power * 2) {
+                powerCount = 0;
                 return release(powerDirection);
             }
-        } else
+        } else {
+            powerCount = 0;
             this.power = false;
+        }
         return true;
     }
 

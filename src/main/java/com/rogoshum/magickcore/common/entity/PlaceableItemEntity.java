@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
 import com.rogoshum.magickcore.common.recipe.SpawnContext;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.ItemEntity;
@@ -23,6 +24,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -36,9 +38,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpawnData, IManaRefraction {
-    private PlaceableItemEntity origin = this;
-    private BlockPos pos = BlockPos.ZERO;
-    private final HashMap<BlockPos, PlaceableItemEntity> entityMap = new HashMap<>();
     private static final DataParameter<ItemStack> ITEM_STACK = EntityDataManager.createKey(PlaceableItemEntity.class, DataSerializers.ITEMSTACK);
     private static final DataParameter<Direction> DIRECTION = EntityDataManager.createKey(PlaceableItemEntity.class, DataSerializers.DIRECTION);
     private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(PlaceableItemEntity.class, DataSerializers.FLOAT);
@@ -51,11 +50,6 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         this.dataManager.register(DIRECTION, Direction.DOWN);
         this.dataManager.register(HEIGHT, this.getType().getHeight());
         this.dataManager.register(WIDTH, this.getType().getWidth());
-        this.entityMap.put(BlockPos.ZERO, this);
-    }
-
-    public PlaceableItemEntity getOrigin() {
-        return origin;
     }
 
     public Direction getDirection() {
@@ -123,18 +117,19 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                 Vector3d vector3d = player.getLookVec();
                 nextNode(stack, Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z));
             } else if (stack.getItem() == ModItems.WAND.get()) {
-                BlockPos pos = new BlockPos(this.origin.getPositionVec());
-                if(world.getBlockState(pos).getBlock() == ModBlocks.MAGICK_CRAFTING.get()) {
-                    Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(this.origin.entityMap, Optional.empty());
+                BlockPos pos = new BlockPos(this.getPositionVec());
+                TileEntity tile = world.getTileEntity(pos);
+                if(tile instanceof MagickCraftingTileEntity) {
+                    MagickCraftingTileEntity workbench = (MagickCraftingTileEntity) tile;
+                    Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(workbench.getCraftingMatrix().getMatrix(), Optional.empty());
                     if(matrix != null) {
                         Optional<MagickCraftingRecipe> optional = MagickRegistry.matchMagickCraftingRecipe(matrix);
                         if(optional.isPresent()) {
-                            optional.get().craft(SpawnContext.create(player, Vector3d.copyCentered(pos)));
-                            this.origin.entityMap.entrySet().removeIf((pr) -> {
-                                pr.getValue().noDrops = true;
-                                pr.getValue().remove();
-                                return true;
+                            workbench.getCraftingMatrix().getMatrix().values().forEach(entity -> {
+                                entity.noDrops = true;
+                                entity.remove();
                             });
+                            optional.get().craft(SpawnContext.create(player, Vector3d.copyCentered(pos)));
                             this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.5f, 2.0f);
                             world.setEntityState(this, (byte) 14);
                         }
@@ -189,7 +184,6 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     public void remove() {
         super.remove();
         if(!noDrops) {
-            this.origin.entityMap.remove(this.pos);
             ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + getHeight() * 0.5, this.getPosZ(), getItemStack());
             if(!this.world.isRemote)
                 world.addEntity(entity);
@@ -212,14 +206,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
 
         PlaceableItemEntity next = PlaceableEntityItem.placeEntity(world, stack, direction.getOpposite(), pos);
         if(next != null) {
-            BlockPos nextPos = this.pos.subtract(direction.getDirectionVec());
-            next.origin = this.origin;
-            next.pos = nextPos;
             next.world.addEntity(next);
-            if(this.origin.entityMap.containsKey(nextPos)) {
-                this.origin.entityMap.get(nextPos).remove();
-            }
-            this.origin.entityMap.put(nextPos, next);
         }
     }
 
@@ -245,11 +232,6 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
             this.setWidth(compound.getFloat("Width"));
         if(compound.contains("Height"))
             this.setHeight(compound.getFloat("Height"));
-        if(compound.contains("Origin")) {
-            Entity entity = world.getEntityByID(compound.getInt("Origin"));
-            if(entity instanceof PlaceableItemEntity)
-                this.origin = (PlaceableItemEntity) entity;
-        }
     }
 
     @Override
@@ -258,8 +240,6 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         compound.put("Item", getItemStack().write(new CompoundNBT()));
         compound.putFloat("Height", getHeight());
         compound.putFloat("Width", getWidth());
-        if(origin != null)
-            compound.putInt("Origin", origin.getEntityId());
     }
 
     @Override

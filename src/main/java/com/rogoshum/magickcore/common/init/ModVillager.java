@@ -52,6 +52,12 @@ public class ModVillager {
         TradList.add(ModEntities.MANA_ORB);
         TradList.add(ModEntities.BLOOD_BUBBLE);
         TradList.add(ModEntities.GRAVITY_LIFT);
+        TradList.add(ModEntities.REPEATER);
+        TradList.add(ModEntities.JEWELRY_BAG);
+        TradList.add(ModEntities.SPIN);
+        TradList.add(ModEntities.CHAIN);
+        TradList.add(ModEntities.MANA_SPHERE);
+        TradList.add(ModEntities.SHADOW);
     }
 
     public static class EntityTypeTrade implements VillagerTrades.ITrade {
@@ -64,7 +70,7 @@ public class ModVillager {
             });
             ItemStack crystal = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
             crystal.setCount(count);
-            return new MerchantOffer(crystal, entityType, 3, rand.nextInt(15) + 15, 1);
+            return new MerchantOffer(crystal, entityType, 5, rand.nextInt(15), 0.2f);
         }
     }
 }

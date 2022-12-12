@@ -48,8 +48,9 @@ public abstract class MixinMobEntity extends Entity {
         }
         host = entity;
         if(host != null && getAttackTarget() == null && this.rand.nextInt(80) == 1) {
-            if(host.getAttackingEntity() != null)
-                setAttackTarget(host.getAttackingEntity());
+            LivingEntity target = host.getAttackingEntity();
+            if(target != null)
+                setAttackTarget(target);
             else
                 getNavigator().tryMoveToEntityLiving(host, 1);
         }
@@ -60,8 +61,7 @@ public abstract class MixinMobEntity extends Entity {
         if(cir.getReturnValue() != null) {
             attackTarget = TakenTargetUtil.decideChangeTarget(this, host, cir.getReturnValue(), this.range);
             cir.setReturnValue(attackTarget);
-        }
-        else {
+        } else {
             attackTarget = TakenTargetUtil.getTakenTarget(this, range);
             cir.setReturnValue(attackTarget);
         }

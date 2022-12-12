@@ -51,7 +51,7 @@ public class RayEntity extends ManaProjectileEntity {
                     , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                    , (MagickCore.getRandFloat() * this.getWidth()), (MagickCore.getRandFloat() * this.getWidth()), 1.0f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                    , (MagickCore.getRandFloat() * this.getWidth()), (MagickCore.getRandFloat() * this.getWidth()), 1.0f, 20, spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setShakeLimit(15.0f);
             litPar.setLimitScale();

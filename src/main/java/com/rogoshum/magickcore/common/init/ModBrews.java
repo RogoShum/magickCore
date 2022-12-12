@@ -22,7 +22,7 @@ public class ModBrews {
         ItemStack MANA_FORCE = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get());
         ItemStack MANA_TICK = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_TICK_P.get());
         ItemStack MANA_RANGE = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_RANGE_P.get());
-        ItemStack MANA_MULTI_CAST = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P.get());
+        //ItemStack MANA_MULTI_CAST = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P.get());
         ItemStack MANA_CHAOS = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.CHAOS_THEOREM_P.get());
         ItemStack MANA_CONVERT = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P.get());
 
@@ -47,8 +47,8 @@ public class ModBrews {
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_RANGE));
             else if(name.contains("sugar"))
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_TICK));
-            else if(name.contains("pufferfish"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_MULTI_CAST));
+            //else if(name.contains("pufferfish"))
+                //BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_MULTI_CAST));
             else if(name.contains("phantom_membrane"))
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_CHAOS));
             else if(name.contains("blaze_powder"))
@@ -70,7 +70,7 @@ public class ModBrews {
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_FORCE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P_II.get())));
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_RANGE), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_RANGE_P_II.get())));
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_TICK), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_TICK_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_MULTI_CAST), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P_I.get())));
+                //BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_MULTI_CAST), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P_I.get())));
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_CONVERT), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P_I.get())));
             }
         });

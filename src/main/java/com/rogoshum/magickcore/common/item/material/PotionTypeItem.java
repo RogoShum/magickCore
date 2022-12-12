@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;

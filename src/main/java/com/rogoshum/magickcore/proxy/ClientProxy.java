@@ -200,7 +200,7 @@ public class ClientProxy implements IProxy {
 		ManaBuffGUI.addBuffTexture(LibBuff.TAKEN_KING, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/taken_king.png"));
 		ManaBuffGUI.addBuffTexture(LibBuff.WEAKEN, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/weaken.png"));
 		ManaBuffGUI.addBuffTexture(LibBuff.SLOW, new ResourceLocation("textures/mob_effect/slowness.png"));
-		ManaBuffGUI.addBuffTexture(LibBuff.RADIANCE_WELL, new ResourceLocation("textures/mob_effect/regeneration.png"));
+		ManaBuffGUI.addBuffTexture(LibBuff.RADIANCE_WELL, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/radiance_well.png"));
 		ManaBuffGUI.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
 	}
 

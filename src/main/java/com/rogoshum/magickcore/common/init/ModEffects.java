@@ -26,7 +26,7 @@ public class ModEffects {
     public static RegistryObject<Effect> MANA_FORCE = EFFECTS.register(LibEffect.MANA_FORCE, () -> new ModEffect(EffectType.BENEFICIAL, 6203391));
     public static RegistryObject<Effect> MANA_RANGE = EFFECTS.register(LibEffect.MANA_RANGE, () -> new ModEffect(EffectType.BENEFICIAL, 16711680));
     public static RegistryObject<Effect> MANA_TICK = EFFECTS.register(LibEffect.MANA_TICK, () -> new ModEffect(EffectType.BENEFICIAL, 16776960));
-    public static RegistryObject<Effect> MULTI_RELEASE = EFFECTS.register(LibEffect.MULTI_RELEASE, () -> new ModEffect(EffectType.BENEFICIAL, 15567104));
+    //public static RegistryObject<Effect> MULTI_RELEASE = EFFECTS.register(LibEffect.MULTI_RELEASE, () -> new ModEffect(EffectType.BENEFICIAL, 15567104));
     public static RegistryObject<Effect> CHAOS_THEOREM = EFFECTS.register(LibEffect.CHAOS_THEOREM, () -> new ModEffect(EffectType.BENEFICIAL, 28672));
     public static RegistryObject<Effect> MANA_CONVERT = EFFECTS.register(LibEffect.MANA_CONVERT, () -> new ModEffect(EffectType.BENEFICIAL, 6608630));
     public static RegistryObject<Effect> MANA_STASIS = EFFECTS.register(LibEffect.MANA_STASIS, () -> new ModEffect(EffectType.HARMFUL, 	6619040));
@@ -55,8 +55,8 @@ public class ModEffects {
     public static RegistryObject<Potion> MANA_TICK_P_I = POTIONS.register(LibEffect.MANA_TICK_I, () -> new Potion(new EffectInstance(MANA_TICK.get(), 4800, 0)));
     public static RegistryObject<Potion> MANA_TICK_P_II = POTIONS.register(LibEffect.MANA_TICK_II, () -> new Potion(new EffectInstance(MANA_TICK.get(), 1500, 1)));
     public static RegistryObject<Potion> CHAOS_THEOREM_P = POTIONS.register(LibEffect.CHAOS_THEOREM, () -> new Potion(new EffectInstance(CHAOS_THEOREM.get(), 3000, 0)));
-    public static RegistryObject<Potion> MULTI_RELEASE_P = POTIONS.register(LibEffect.MULTI_RELEASE, () -> new Potion(new EffectInstance(MULTI_RELEASE.get(), 1500, 0)));
-    public static RegistryObject<Potion> MULTI_RELEASE_P_I = POTIONS.register(LibEffect.MULTI_RELEASE_I, () -> new Potion(new EffectInstance(MULTI_RELEASE.get(), 1500, 1)));
+    //public static RegistryObject<Potion> MULTI_RELEASE_P = POTIONS.register(LibEffect.MULTI_RELEASE, () -> new Potion(new EffectInstance(MULTI_RELEASE.get(), 1500, 0)));
+    //public static RegistryObject<Potion> MULTI_RELEASE_P_I = POTIONS.register(LibEffect.MULTI_RELEASE_I, () -> new Potion(new EffectInstance(MULTI_RELEASE.get(), 1500, 1)));
     public static RegistryObject<Potion> MANA_CONVERT_P = POTIONS.register(LibEffect.MANA_CONVERT, () -> new Potion(new EffectInstance(MANA_CONVERT.get(), 1500, 0)));
     public static RegistryObject<Potion> MANA_CONVERT_P_I = POTIONS.register(LibEffect.MANA_CONVERT_I, () -> new Potion(new EffectInstance(MANA_CONVERT.get(), 1500, 1)));
 

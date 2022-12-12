@@ -70,7 +70,7 @@ public class SolarAbility{
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null || context.victim instanceof ItemEntity) return false;
         if(context.victim.getFireTimer() > 0)
-            context.force *= 2;
+            context.force *= 1.5;
 
         if(context.caster != null && context.projectile != null)
             return context.victim.attackEntityFrom(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);

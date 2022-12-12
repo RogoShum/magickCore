@@ -31,7 +31,7 @@ public class StasisAbility{
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.SLOW))
-            context.force *= 1.5;
+            context.force *= 1.25;
 
         boolean flag = false;
         if(context.caster != null && context.projectile != null)

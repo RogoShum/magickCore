@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.projectile.BubbleRendere
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.JewelryBagRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -21,6 +22,8 @@ import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
+import com.rogoshum.magickcore.common.util.ProjectileUtil;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
@@ -29,9 +32,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -90,6 +91,25 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
         }
 
         super.tick();
+
+        if(spellContext().containChild(LibContext.TRACE) && !world.isRemote()) {
+            RayTraceResult raytraceresult = ProjectileUtil.canTouchVisibleBlock(this, Objects::nonNull);
+            if (raytraceresult.getType() == RayTraceResult.Type.BLOCK) {
+                BlockRayTraceResult blockRayTraceResult = (BlockRayTraceResult) raytraceresult;
+                Block block = world.getBlockState(blockRayTraceResult.getPos()).getBlock();
+                if(ModBlocks.ITEM_EXTRACTOR.isPresent() && block == ModBlocks.ITEM_EXTRACTOR.get()) {
+                    this.setPosition(blockRayTraceResult.getPos().getX() + 0.5, blockRayTraceResult.getPos().getY(), blockRayTraceResult.getPos().getZ() + 0.5);
+                    this.remove();
+                }
+            } else {
+                BlockPos pos = new BlockPos(getPositionVec());
+                Block block = world.getBlockState(pos).getBlock();
+                if(ModBlocks.ITEM_EXTRACTOR.isPresent() && block == ModBlocks.ITEM_EXTRACTOR.get()) {
+                    this.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                    this.remove();
+                }
+            }
+        }
     }
 
     @Override
@@ -234,7 +254,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosY() + this.getHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosZ())
                 , (MagickCore.getRandFloat() * this.getWidth()) * 0.3f, (MagickCore.getRandFloat() * this.getWidth()) * 0.3f, 1.0f
-                , spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                , 20, spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setShakeLimit(15.0f);
         litPar.setLimitScale();

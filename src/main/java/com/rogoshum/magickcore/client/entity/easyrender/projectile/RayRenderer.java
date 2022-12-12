@@ -36,7 +36,7 @@ public class RayRenderer extends EasyRenderer<RayEntity> {
         super.baseOffset(matrixStackIn);
         Vector3d dir = entity.getMotion().scale(-1).normalize();
         Vector2f rota = getRotationFromVector(dir);
-        float scale = 0.5f * entity.getWidth();
+        float scale = 0.15f * entity.getWidth();
         double length = this.length * scale;
         matrixStackIn.translate(dir.x * length - dir.x * entity.getWidth(), dir.y * length - dir.y * entity.getWidth(), dir.z * length - dir.z * entity.getWidth());
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
@@ -47,7 +47,7 @@ public class RayRenderer extends EasyRenderer<RayEntity> {
     @Override
     public void update() {
         super.update();
-        length = (float) Math.max(entity.getMotion().length() * 30 + 1, 1);
+        length = (float) Math.max(entity.getMotion().length() * 200 + 1, 1);
     }
 
     public void renderTop(RenderParams params) {

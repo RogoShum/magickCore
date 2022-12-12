@@ -73,7 +73,7 @@ public class MagickReleaseHelper {
     }
 
     public static float singleContextMana(SpellContext context) {
-        float baseMana = context.tick * 0.25f + (float)(Math.pow(context.force, 1.2) * 10) + (float)(Math.pow(context.range, 2.5) * 3);
+        float baseMana = context.tick * 0.35f + (float)(Math.pow(context.force, 1.2) * 10) + (float)(Math.pow(context.range, 2.5) * 3);
         if(context.containChild(LibContext.TRACE))
             baseMana *= 1.2f;
         if(context.containChild(LibContext.SPAWN)) {

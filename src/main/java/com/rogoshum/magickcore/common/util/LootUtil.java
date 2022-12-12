@@ -4,6 +4,9 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
@@ -14,6 +17,7 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Effect;
@@ -29,15 +33,19 @@ public class LootUtil {
         int tick = (int) (Math.pow(lucky, 3) * MagickCore.rand.nextFloat() * (MagickCore.rand.nextInt(lucky * 2) + 1));
        if(MagickCore.rand.nextBoolean()) {
            tick *= 100;
+           if(tick > 2400)
+               tick = 2400;
            ItemStack stack = new ItemStack(Items.POTION);
            HashMap<String, EffectInstance> map = new HashMap<>();
            Effect effect = ModEffects.effectList.get(MagickCore.rand.nextInt(ModEffects.effectList.size()));
            effect.getName();
-           map.put(effect.getName(), new EffectInstance(effect, tick,  MagickCore.rand.nextInt(lucky)));
+           map.put(effect.getName(), new EffectInstance(effect, tick, Math.min(MagickCore.rand.nextInt(lucky), 2)));
            PotionUtils.appendEffects(stack, map.values());
            stack.setDisplayName(new TranslationTextComponent(effect.getName()));
            return stack;
        } else {
+           if(tick > 600)
+               tick = 600;
            ManaItem item;
            int chance = MagickCore.rand.nextInt(4);
            switch (chance) {
@@ -64,7 +72,7 @@ public class LootUtil {
                mana += MagickCore.rand.nextInt(Math.max((int) (material.getMana() * 0.25), 1));
            }
 
-           return createRandomManaItem(item, force, tick, mana, trace);
+           return createRandomManaItem(item, force, tick, Math.min(mana, 5000), trace);
        }
     }
 
@@ -102,5 +110,35 @@ public class LootUtil {
         if(trace)
             data.spellContext().addChild(new TraceContext());
         return stack;
+    }
+
+    public static SpellContext addEntityType(SpellContext spellContext, EntityType<?> type, float force, int tick, float range, boolean trace, MagickElement element) {
+        SpellContext spawnContext = SpellContext.create();
+        spawnContext.addChild(SpawnContext.create(type)).force(force).tick(tick).range(range).element(element);
+        if(trace)
+            spawnContext.addChild(new TraceContext());
+        spellContext.post(spawnContext);
+        return spellContext;
+    }
+
+    public static SpellContext attackType(SpellContext spellContext, float force, int tick, float range, MagickElement element) {
+        SpellContext context = SpellContext.create();
+        context.applyType(ApplyType.ATTACK).force(force).tick(tick).range(range).element(element);
+        spellContext.post(context);
+        return spellContext;
+    }
+
+    public static SpellContext deBuffType(SpellContext spellContext, float force, int tick, float range, MagickElement element) {
+        SpellContext context = SpellContext.create();
+        context.applyType(ApplyType.DE_BUFF).force(force).tick(tick).range(range).element(element);
+        spellContext.post(context);
+        return spellContext;
+    }
+
+    public static SpellContext buffType(SpellContext spellContext, float force, int tick, float range, MagickElement element) {
+        SpellContext context = SpellContext.create();
+        context.applyType(ApplyType.BUFF).force(force).tick(tick).range(range).element(element);
+        spellContext.post(context);
+        return spellContext;
     }
 }

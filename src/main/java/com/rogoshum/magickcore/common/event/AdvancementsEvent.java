@@ -49,6 +49,8 @@ public class AdvancementsEvent {
 
             player.inventory.mainInventory.forEach(itemStack -> {
                 String name = itemStack.getItem().getRegistryName() != null ? itemStack.getItem().getRegistryName().toString() : "";
+                if(name.contains(Items.POTION.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.POTION_TYPE);
                 if(name.contains(Items.DRAGON_BREATH.toString()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.DRAGON_BREATH);
                 else if(name.contains(Items.GLOWSTONE_DUST.toString()))
@@ -71,6 +73,22 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.ENDER_DRAGON_MATERIAL);
                 else if(itemStack.getItem() == Items.NETHER_STAR)
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.NETHER_STAR_MATERIAL);
+                else if(name.contains(Items.ENDER_PEARL.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.POSITION_MEMORY);
+                else if(name.contains(Items.IRON_INGOT.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.OFFSET_MEMORY);
+                else if(name.contains(Items.GOLD_INGOT.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.DIRECTION_MEMORY);
+                else if(name.contains(Items.COAL.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.CONDITION_NON_LIVING);
+                else if(name.contains(Items.FEATHER.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.CONDITION_LIVING);
+                else if(name.contains(Items.COBBLESTONE.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.CONDITION_BLOCK);
+                else if(name.contains(Items.DIAMOND.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.COMPLETELY_SELF);
+                else if(name.contains(Items.GOLD_NUGGET.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.REVERSE);
             });
 
             ExtraDataUtil.entityStateData(player, state -> {

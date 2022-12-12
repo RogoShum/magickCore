@@ -114,8 +114,6 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
                             livings.add((EntityType<? extends LivingEntity>) type.getValue());
                         else if(entity instanceof IManaEntity)
                             mana.add((EntityType<? extends IManaEntity>) type.getValue());
-                        else if(entity instanceof ProjectileEntity)
-                            projectile.add((EntityType<? extends ProjectileEntity>) type.getValue());
                     } catch (Exception e) {
                         ERROR_TYPE.add(type.getValue());
                     }

@@ -43,8 +43,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     @Override
     public void remove() {
         dead = true;
-        if(blockPos != null)
-            world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+        onRemoveRedStone(blockPos, world);
         super.remove();
     }
 
@@ -58,14 +57,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     public void tick() {
         super.tick();
         clientMotion = getMotion().add(clientMotion);
-        BlockPos pos = new BlockPos(this.getPositionVec());
-        if(!pos.equals(blockPos)) {
-            BlockPos prePos = blockPos;
-            blockPos = pos;
-            world.notifyNeighborsOfStateChange(pos, world.getBlockState(pos).getBlock());
-            if(prePos != null)
-                world.notifyNeighborsOfStateChange(prePos, world.getBlockState(prePos).getBlock());
-        }
+        blockPos = onTickRedStone(getPositionVec(), blockPos, world);
     }
 
     @Override

@@ -27,6 +27,7 @@ public class LibAdvancements {
     public static final String MULTI = "mana_multi";
 
     public static final String DRAGON_BREATH = "mana_dragon_b";
+    public static final String POTION_TYPE = "potion_type";
     public static final String GLOW_STONE_DUST = "mana_dust";
     public static final String GUN_POWDER = "mana_powder";
     public static final String SPIDER_EYE = "mana_spider_eye";

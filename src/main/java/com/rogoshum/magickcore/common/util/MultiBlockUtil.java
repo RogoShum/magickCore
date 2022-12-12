@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -18,14 +19,14 @@ import java.util.function.Predicate;
 
 public class MultiBlockUtil {
 
-    public static <T> Optional<T>[][][] createBlockPosArrays(HashMap<BlockPos, T> map, Optional<T> empty) {
+    public static <T> Optional<T>[][][] createBlockPosArrays(HashMap<Vector3i, T> map, Optional<T> empty) {
         if(map.isEmpty()) {
             return null;
         }
 
         Optional<T>[][][] arrays;
         int xMin = 0, xMax = 0, yMin = 0, yMax = 0, zMin = 0, zMax = 0;
-        for (BlockPos pos : map.keySet()) {
+        for (Vector3i pos : map.keySet()) {
             xMin = Math.min(xMin, pos.getX());
             yMin = Math.min(yMin, pos.getY());
             zMin = Math.min(zMin, pos.getZ());

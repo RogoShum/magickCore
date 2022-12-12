@@ -19,6 +19,7 @@ import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -32,6 +33,8 @@ import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.entity.merchant.villager.VillagerData;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.entity.merchant.villager.VillagerTrades;
+import net.minecraft.item.MerchantOffers;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -112,6 +115,8 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         context.post(post);
         attackContext.add(context);
         conditionSpellMap().put(Activity.REST, attackContext);
+
+
         attackContext = Queues.newArrayDeque();
         context = SpellContext.create().applyType(ApplyType.ATTACK)
                 .force(4).tick(200).element(MagickRegistry.getElement(LibElements.STASIS))
@@ -128,6 +133,19 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
         orbContext.post(context);
         attackContext.add(orbContext);
         conditionSpellMap().put(Activity.FIGHT, attackContext);
+    }
+
+    @Override
+    protected void populateTradeData() {
+        VillagerData villagerdata = this.getVillagerData();
+        Int2ObjectMap<VillagerTrades.ITrade[]> int2objectmap = VillagerTrades.VILLAGER_DEFAULT_TRADES.get(villagerdata.getProfession());
+        if (int2objectmap != null && !int2objectmap.isEmpty()) {
+            VillagerTrades.ITrade[] avillagertrades$itrade = int2objectmap.get(villagerdata.getLevel());
+            if (avillagertrades$itrade != null) {
+                MerchantOffers merchantoffers = this.getOffers();
+                this.addTrades(merchantoffers, avillagertrades$itrade, 6);
+            }
+        }
     }
 
     @Override

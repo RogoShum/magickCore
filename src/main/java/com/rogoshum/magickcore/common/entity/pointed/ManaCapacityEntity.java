@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
@@ -35,6 +36,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -47,12 +49,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction {
+public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction, IRedStoneEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
     private static final DataParameter<Boolean> TRANS = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> MODE = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private final ManaCapacity manaCapacity = ManaCapacity.create(20000);
     private boolean dead = false;
+    private BlockPos blockPos;
     public ManaCapacityEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
@@ -107,6 +110,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
             if (!this.world.isRemote)
                 world.addEntity(entity);
+            onRemoveRedStone(blockPos, world);
         }
         super.remove();
     }
@@ -143,8 +147,9 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     public void releaseMagick() {
-        //this.manaCapacity().receiveMana(50f);
+        blockPos = onTickRedStone(getPositionVec(), blockPos, world);
         List<Entity> list = this.findEntity((entity) -> entity instanceof ItemEntity);
+        int size = list.size();
         list.removeIf( entity -> {
             boolean remove = !(((ItemEntity) entity).getItem().getItem() instanceof IManaData);
             if(manaCapacity().getMana() < manaCapacity().getMaxMana() && remove) {
@@ -163,6 +168,10 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             }
             return remove;
         });
+        if(list.size() < size)
+            world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+        else if(ticksExisted % 10 == 0)
+                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
         for (Entity entity : list) {
             ItemEntity item = (ItemEntity)entity;
             float manaTrans = this.manaCapacity().extractMana(5);
@@ -206,7 +215,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                         world.addEntity(elementOrb);
                     }
                 }
-
+                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
                 if(world.isRemote && !getMode()){
                     int distance = Math.max((int) (10 * dis), 1);
                     float directionPoint = (float) (player.ticksExisted % distance) / distance;
@@ -311,5 +320,10 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public boolean refraction(SpellContext context) {
         return true;
+    }
+
+    @Override
+    public int getPower() {
+        return dead ? 0 : Math.max(14 - (int) (manaCapacity().getMana() * 15 / manaCapacity().getMaxMana()), 0);
     }
 }

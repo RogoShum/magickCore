@@ -10,27 +10,33 @@ import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.item.material.PotionTypeItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class MagickCraftingTileEntity extends TileEntity implements ITickableTileEntity {
     public int ticksExisted;
     public static final int transNeed = 120;
     public int transTick;
-    private PlaceableItemEntity corePlaceable;
     private final HashSet<PlaceableItemEntity> craftingSides = new HashSet<>();
+    private final CraftingMatrix craftingMatrix = CraftingMatrix.make(this);
 
     public MagickCraftingTileEntity() {
         super(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get());
+    }
+
+    public CraftingMatrix getCraftingMatrix() {
+        return craftingMatrix;
     }
 
     @Override
@@ -107,24 +113,22 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
             transTick--;
 
         if(craftingSides.size() < 4) return;
-        if(corePlaceable != null && !corePlaceable.isAlive()) {
-            corePlaceable = null;
-            return;
-        }
-        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos.up()).grow(1), (entity) -> entity != corePlaceable && !craftingSides.contains(entity));
-        if(placeableItemEntities.size() < 1) return;
-        if(corePlaceable == null)
-            corePlaceable = placeableItemEntities.get(0);
-        else {
-            for (PlaceableItemEntity placeableItem : placeableItemEntities){
-                if(placeableItem.getOrigin() != corePlaceable)
-                    placeableItem.remove();
-            }
-        }
+
+        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos), (entity -> {
+            double x = Math.abs(entity.getPosX() - (this.getPos().getX() + 0.5));
+            double z = Math.abs(entity.getPosZ() - (this.getPos().getZ() + 0.5));
+            double y = Math.abs(entity.getPosY() - this.getPos().getY());
+            return x < 0.5 && z < 0.5 && y >= 0 && y <= 1;
+        }));
+        placeableItemEntities.forEach(entity -> {
+            if(!craftingMatrix.push(entity))
+                entity.remove();
+        });
+        craftingMatrix.update();
     }
 
     private void getSide(BlockPos pos) {
-        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos), (entity) -> entity != corePlaceable);
+        List<PlaceableItemEntity> placeableItemEntities = this.world.getEntitiesWithinAABB(ModEntities.PLACEABLE_ENTITY.get(), new AxisAlignedBB(pos), Entity::isAlive);
         if(placeableItemEntities.size() < 1) return;
         craftingSides.add(placeableItemEntities.get(0));
     }
@@ -140,5 +144,56 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
         par.setColor(Color.BLUE_COLOR);
         par.setShakeLimit(15f);
         MagickCore.addMagickParticle(par);
+    }
+
+    public static class CraftingMatrix {
+        private MagickCraftingTileEntity workbench;
+        private final HashMap<Vector3i, PlaceableItemEntity> entityHashMap = new HashMap<>();
+
+        private static CraftingMatrix make(MagickCraftingTileEntity workbench) {
+            CraftingMatrix matrix = new CraftingMatrix();
+            matrix.workbench = workbench;
+            return matrix;
+        }
+
+        public Vector3d getCenterPos() {
+            return Vector3d.copyCentered(workbench.getPos()).subtract(0, 0.5, 0);
+        }
+
+        private boolean push(PlaceableItemEntity entity) {
+            Vector3d dir = Vector3d.ZERO;
+            if(entity.getDirection().getAxis().isHorizontal()) {
+                dir = Vector3d.copy(entity.getDirection().getDirectionVec()).scale(0.5).subtract(0, entity.getHeight() * 0.5, 0);
+            }
+            Vector3d offset = entity.getPositionVec().subtract(getCenterPos()).scale(3.333).add(dir);
+            Vector3i vec = new Vector3i(Math.round(offset.x), Math.min(Math.round(offset.y), 2), Math.round(offset.z));
+            if(Math.abs(vec.getX()) > 1 || Math.abs(vec.getZ()) > 1 || vec.getY() < 0) return false;
+            if(entityHashMap.containsKey(vec) && !entityHashMap.containsValue(entity))
+                return false;
+            else if(!entityHashMap.containsKey(vec) && !entityHashMap.containsValue(entity)) {
+                entityHashMap.put(vec, entity);
+                entity.setDirection(Direction.UP);
+                return true;
+            }
+            return true;
+        }
+
+        public HashMap<Vector3i, PlaceableItemEntity> getMatrix() {
+            return entityHashMap;
+        }
+
+        private void update() {
+            for (Iterator<Map.Entry<Vector3i, PlaceableItemEntity>> it = entityHashMap.entrySet().iterator(); it.hasNext();){
+                Map.Entry<Vector3i, PlaceableItemEntity> item = it.next();
+                Vector3i key = item.getKey();
+                PlaceableItemEntity val = item.getValue();
+                if(!val.isAlive())
+                    it.remove();
+                else {
+                    Vector3d vec = getCenterPos().add(Vector3d.copy(key).scale(0.333));
+                    val.setPosition(vec.x, vec.y, vec.z);
+                }
+            }
+        }
     }
 }
