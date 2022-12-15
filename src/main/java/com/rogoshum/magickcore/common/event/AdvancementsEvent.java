@@ -89,6 +89,8 @@ public class AdvancementsEvent {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.COMPLETELY_SELF);
                 else if(name.contains(Items.GOLD_NUGGET.toString()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.REVERSE);
+                else if(name.contains(Items.FLINT.toString()))
+                    AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.FORM_SEPARATOR);
             });
 
             ExtraDataUtil.entityStateData(player, state -> {

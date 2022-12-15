@@ -45,7 +45,8 @@ public class PhantomEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
+        return true;
     }
 
     @Override

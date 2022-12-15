@@ -68,6 +68,7 @@ public class ModItems {
     public static final RegistryObject<Item> OFFSET_MEMORY = ITEMS.register("offset_memory", OffsetMemoryItem::new);
     public static final RegistryObject<Item> COMPLETELY_SELF = ITEMS.register("completely_self", CompletelySelfItem::new);
     public static final RegistryObject<Item> REVERSE = ITEMS.register("reverse", ReverseItem::new);
+    public static final RegistryObject<Item> SEPARATOR = ITEMS.register("form_separator", FormSeparatorItem::new);
     public static final RegistryObject<Item> CONDITION_BLOCK = ITEMS.register("condition_block", () -> new ConditionItem(LibConditions.BLOCK_ONLY));
     public static final RegistryObject<Item> CONDITION_NON_LIVING = ITEMS.register("condition_non_living", () -> new ConditionItem(LibConditions.NON_LIVING_ENTITY));
     public static final RegistryObject<Item> CONDITION_LIVING = ITEMS.register("condition_living", () -> new ConditionItem(LibConditions.LIVING_ENTITY));

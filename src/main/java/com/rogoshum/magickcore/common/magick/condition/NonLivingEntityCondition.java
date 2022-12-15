@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Objects;
 
-public class NonLivingEntityCondition extends Condition implements IConditionOnlyEntity {
+public class NonLivingEntityCondition extends EntityCondition {
     @Override
     public String getName() {
         return LibConditions.NON_LIVING_ENTITY;
@@ -33,11 +33,6 @@ public class NonLivingEntityCondition extends Condition implements IConditionOnl
     @Override
     protected void deserialize(CompoundNBT tag) {
 
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
     @Override

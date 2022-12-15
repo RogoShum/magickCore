@@ -41,7 +41,7 @@ public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE, RenderMode.ShaderList.DISTORTION_SHADER), this::renderDistortion);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderDistortion);
         map.put(new RenderMode(TYPE), this::render);
         return map;
     }

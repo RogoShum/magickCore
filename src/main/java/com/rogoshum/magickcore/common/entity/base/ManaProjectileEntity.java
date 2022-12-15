@@ -18,6 +18,7 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -401,13 +402,8 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
                 condition = spellContext().getChild(LibContext.CONDITION);
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(condition != null) {
-                condition.conditions.forEach((condition1 -> {
-                    if(condition1.getType() == TargetType.TARGET) {
-                        if(!condition1.test(p_213868_1_.getEntity()))
-                            pass.set(false);
-                    } else if(!condition1.test(this.getOwner()))
-                        pass.set(false);
-                }));
+                if(!condition.test(this.getOwner(), p_213868_1_.getEntity()))
+                    pass.set(false);
             }
             if(pass.get()) {
                 EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
@@ -416,16 +412,20 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         }
 
         if (victim != null && !this.world.isRemote) {
-            if(hitEntityRemove(p_213868_1_))
+            boolean success = releaseMagick();
+            if(success && hitEntityRemove(p_213868_1_))
                 this.remove();
-            else
-                releaseMagick();
         }
         super.onEntityHit(p_213868_1_);
     }
 
     @Override
     protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
+        if(spellContext().containChild(LibContext.CONDITION)) {
+            ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
+            if(!condition.<Block>test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+                return;
+        }
         BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
         blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);

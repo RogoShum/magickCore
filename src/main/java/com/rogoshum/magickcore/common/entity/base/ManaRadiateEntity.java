@@ -1,10 +1,9 @@
 package com.rogoshum.magickcore.common.entity.base;
 
+import com.rogoshum.magickcore.api.IConditionOnlyBlock;
 import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.api.enums.TargetType;
-import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -22,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,27 +40,33 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
     }
 
     @Override
-    public void releaseMagick() {
-        if(!spellContext().valid()) return;
-
+    public boolean releaseMagick() {
+        if(!spellContext().valid()) return false;
+        AtomicBoolean entityOnly = new AtomicBoolean(false);
+        AtomicBoolean blockOnly = new AtomicBoolean(false);
         AtomicBoolean released = new AtomicBoolean(false);
+
         ConditionContext condition = null;
         if(spellContext().containChild(LibContext.CONDITION))
             condition = spellContext().getChild(LibContext.CONDITION);
-        List<Entity> livings = findEntity();
+        if(condition != null)
+            condition.conditions.forEach(condition1 -> {
+                if(condition1 instanceof IConditionOnlyEntity)
+                    entityOnly.set(true);
+                if(condition1 instanceof IConditionOnlyBlock)
+                    blockOnly.set(true);
+            });
+        List<Entity> livings = new ArrayList<>();
+        if(!blockOnly.get())
+            livings = findEntity();
         for(Entity living : livings) {
             if(!suitableEntity(living)) continue;
-            AtomicReference<Boolean> pass = new AtomicReference<>(true);
+            boolean pass = true;
              if(condition != null) {
-                 condition.conditions.forEach((condition1 -> {
-                     if(condition1.getType() == TargetType.TARGET) {
-                         if(!condition1.test(living))
-                             pass.set(false);
-                     } else if(!condition1.test(this.getOwner()))
-                         pass.set(false);
-                 }));
+                 if(!condition.test(this.getOwner(), living))
+                     pass = false;
              }
-            if(pass.get()) {
+            if(pass) {
                 MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                         .replenishChild(DirectionContext.create(living.getPositionVec().add(0, living.getHeight() * 0.5, 0).subtract(this.getPositionVec())))
                         .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
@@ -75,17 +81,14 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         if(released.get())
             cast = true;
 
-        AtomicBoolean entityOnly = new AtomicBoolean(false);
-        if(condition != null)
-            condition.conditions.forEach(condition1 -> {
-            if(condition1 instanceof IConditionOnlyEntity)
-                entityOnly.set(true);
-        });
+
         if(!entityOnly.get() && !released.get() && this.ticksExisted == 1) {
             Iterable<BlockPos> blocks = findBlocks();
             Predicate<BlockPos> posPredicate = blockPosPredicate();
             for (BlockPos pos : blocks) {
                 if(!posPredicate.test(pos)) continue;
+                if(condition != null && !condition.test(null, world.getBlockState(pos).getBlock()))
+                    continue;
                 MagickContext context = MagickContext.create(this.world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK)
                         .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
                         .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
@@ -105,6 +108,8 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                 successFX();
             this.remove();
         }
+
+        return released.get();
     }
 
     @Override

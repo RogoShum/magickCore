@@ -49,7 +49,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         if(this.ticksExisted % 2 ==0) {
             List<Entity> livings = this.findEntity((entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)));
             for (Entity entity : livings) {
@@ -57,6 +57,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                 MagickReleaseHelper.releaseMagick(context);
             }
         }
+        return true;
     }
 
     @Override

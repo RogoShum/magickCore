@@ -50,13 +50,8 @@ public class WindEntity extends ManaProjectileEntity {
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(spellContext().containChild(LibContext.CONDITION)) {
                 ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                context.conditions.forEach((condition -> {
-                    if(condition.getType() == TargetType.TARGET) {
-                        if(!condition.test(entity))
-                            pass.set(false);
-                    } else if(!condition.test(this.getOwner()))
-                        pass.set(false);
-                }));
+                if(!context.test(this, entity))
+                    pass.set(false);
             }
             if(pass.get()) {
                 Vector3d motion = this.getPositionVec().add(0, getHeight() / 2, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() / 2, 0)).normalize();

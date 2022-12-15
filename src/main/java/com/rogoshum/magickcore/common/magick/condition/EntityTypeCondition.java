@@ -1,15 +1,18 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public class EntityTypeCondition extends Condition{
+public class EntityTypeCondition extends EntityCondition{
     private EntityType<? extends Entity> entityType;
 
     public void setEntityType(EntityType<? extends Entity> entityType) {
@@ -45,9 +48,9 @@ public class EntityTypeCondition extends Condition{
 
     @Override
     public String toString() {
-        return "EntityTypeCondition{" +
-                "entityType=" + entityType +
-                '}';
+        if(entityType == null)
+            return "";
+        return new TranslationTextComponent(entityType.getTranslationKey()).getString();
     }
 
     @Override

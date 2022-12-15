@@ -4,7 +4,6 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.client.entity.easyrender.ElementOrbRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -91,8 +90,8 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     }
 
     @Override
-    public void releaseMagick() {
-
+    public boolean releaseMagick() {
+        return false;
     }
 
     @Override

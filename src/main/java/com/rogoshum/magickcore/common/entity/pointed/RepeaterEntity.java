@@ -43,13 +43,13 @@ public class RepeaterEntity extends ManaPointEntity {
 
 
     @Override
-    public void releaseMagick() {
-        if(!spellContext().valid()) return;
-        if(world.isRemote) return;
+    public boolean releaseMagick() {
+        if(!spellContext().valid()) return false;
+        if(world.isRemote) return false;
         if(cool_down >= 0)
             cool_down -= this.spellContext().force * 3;
 
-        if(spawnEntity != null && spawnEntity.isAlive()) return;
+        if(spawnEntity != null && spawnEntity.isAlive()) return false;
         if(cool_down < 0) {
             MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
@@ -78,6 +78,7 @@ public class RepeaterEntity extends ManaPointEntity {
             MagickReleaseHelper.releaseMagick(beforeCast(context));
             cool_down = 20;
         }
+        return true;
     }
 
     @Override

@@ -2,13 +2,12 @@ package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Objects;
 
-public class AlwaysCondition extends Condition{
-    public static final Condition ALWAYS = new AlwaysCondition();
+public class AlwaysCondition extends Condition<Object>{
+    public static final Condition<Object> ALWAYS = new AlwaysCondition();
 
     @Override
     public String getName() {
@@ -21,7 +20,7 @@ public class AlwaysCondition extends Condition{
     }
 
     @Override
-    public boolean test(Entity entity) {
+    public boolean test(Object entity) {
         return true;
     }
 
@@ -36,8 +35,8 @@ public class AlwaysCondition extends Condition{
     }
 
     @Override
-    public String toString() {
-        return getName();
+    public boolean suitable(Object object) {
+        return true;
     }
 
     @Override

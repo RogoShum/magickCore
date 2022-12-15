@@ -9,9 +9,11 @@ import com.rogoshum.magickcore.client.entity.easyrender.projectile.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
@@ -101,17 +103,22 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
 
     @Override
     protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
+        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
+        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
+        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length() * 0.4).add(getMotion().scale(0.5)));
+        if(pos.y < this.positionVec().y && getMotion().length() > 0.1)
+            this.setMotion(getMotion().scale(1.8 * getWidth()));
+        if(spellContext().containChild(LibContext.CONDITION)) {
+            ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
+            if(!condition.test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+                return;
+        }
         BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
         blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(context);
-        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
-        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
-        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length() * 0.4).add(getMotion().scale(0.5)));
-        if(pos.y < this.positionVec().y && getMotion().length() > 0.1)
-            this.setMotion(getMotion().scale(1.8 * getWidth()));
     }
 
     @Override

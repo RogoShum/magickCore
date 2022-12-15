@@ -58,7 +58,7 @@ public class SpinEntity extends ManaPointEntity {
             vec = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
         }
         Vector2f rotation = ParticleUtil.getRotationForVector(vec);
-        vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(7 - spellContext().range * 0.5f, 1f));
+        vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(14 - spellContext().range * 0.5f, 1f));
         spellContext().addChild(DirectionContext.create(vec));
         hitPoint =  getPositionVec().add(vec.scale(range * 2));
     }

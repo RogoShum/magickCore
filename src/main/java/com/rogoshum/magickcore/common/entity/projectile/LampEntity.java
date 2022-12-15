@@ -51,13 +51,8 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
                     AtomicReference<Boolean> pass = new AtomicReference<>(true);
                     if(spellContext().containChild(LibContext.CONDITION)) {
                         ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                        context.conditions.forEach((condition -> {
-                            if(condition.getType() == TargetType.TARGET) {
-                                if(!condition.test(entity))
-                                    pass.set(false);
-                            } else if(!condition.test(this.getOwner()))
-                                pass.set(false);
-                        }));
+                        if(!context.test(this.getOwner(), entity))
+                            pass.set(false);
                     }
                     if(pass.get()) {
                         traceContext.entity = entity;
@@ -111,16 +106,20 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
 
     @Override
     protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
+        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
+        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
+        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length()));
+        if(spellContext().containChild(LibContext.CONDITION)) {
+            ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
+            if(!condition.test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+                return;
+        }
         BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
         blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(context);
-
-        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
-        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
-        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length()));
     }
 
     @Override

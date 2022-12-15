@@ -94,10 +94,10 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         if(coolDown > 0) {
             coolDown-=1;
-            return;
+            return false;
         }
         List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox().grow(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
@@ -120,6 +120,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 }
             }
         });
+
+        return false;
     }
 
     @Override

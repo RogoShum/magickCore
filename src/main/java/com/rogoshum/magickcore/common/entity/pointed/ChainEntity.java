@@ -15,10 +15,13 @@ import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.LeadItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
@@ -92,23 +95,40 @@ public class ChainEntity extends ManaPointEntity {
         if(victimEntity != null && postEntity != null) {
             if(victimEntity.getDistanceSq(postEntity) >= range * range) {
                 Entity slower = victimEntity;
+                Entity faster = postEntity;
                 Vector3d vicPos = victimEntity.getPositionVec().add(0,  victimEntity.getHeight() * 0.5, 0);
                 Vector3d postPos = postEntity.getPositionVec().add(0,  postEntity.getHeight() * 0.5, 0);
                 Vector3d fasterPos = postPos;
                 Vector3d direction = vicPos.subtract(postPos).normalize();
                 if(spellContext().containChild(LibContext.TRACE)) {
                     slower = postEntity;
+                    faster = victimEntity;
                     fasterPos = vicPos;
                     direction = postPos.subtract(vicPos).normalize();
                 }
                 direction = fasterPos.add(direction.scale(range));
                 slower.setPosition(direction.x, direction.y - slower.getHeight() * 0.5, direction.z);
+                if(slower.getMotion().y <= 0.0D && slower instanceof LivingEntity) {
+                    ((LivingEntity) slower).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 2, 0, false, false, false));
+                }
+                if(ticksExisted > 10 && slower.getMotion().length() > spellContext().force * 0.07) {
+                    if(slower == postEntity)
+                        postEntity = null;
+                    else
+                        victimEntity = null;
+                }
             }
         } else if(victimEntity != null) {
             if(victimEntity.getDistanceSq(this) >= range * range) {
                 Vector3d direction = victimEntity.getPositionVec().add(0,  victimEntity.getHeight() * 0.5, 0).subtract(this.getPositionVec().add(0, getHeight() * 0.5, 0)).normalize();
                 direction = this.getPositionVec().add(direction.scale(range));
                 victimEntity.setPosition(direction.x, direction.y, direction.z);
+                if(victimEntity.getMotion().y <= 0.0D && victimEntity instanceof LivingEntity) {
+                    ((LivingEntity) victimEntity).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 2, 0, false, false, false));
+                }
+                if(ticksExisted > 10 && victimEntity.getMotion().length() > spellContext().force * 0.07) {
+                    victimEntity = null;
+                }
             }
         }
     }
@@ -164,6 +184,8 @@ public class ChainEntity extends ManaPointEntity {
     public void beforeJoinWorld(MagickContext context) {
         super.beforeJoinWorld(context);
         victimEntity = context.victim;
+        if(context.projectile instanceof IManaEntity && ((IManaEntity) context.projectile).spellContext().containChild(LibContext.SEPARATOR))
+            victimEntity = context.projectile;
         MagickContext magickContext = MagickContext.create(world, spellContext().postContext)
                 .caster(getOwner()).projectile(this)
                 .victim(victimEntity).noCost();

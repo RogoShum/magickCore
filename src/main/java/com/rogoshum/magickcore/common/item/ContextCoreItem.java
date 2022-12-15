@@ -94,7 +94,7 @@ public class ContextCoreItem extends BaseItem{
         tooltip.add((new TranslationTextComponent(LibItem.MATERIAL).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName()).mergeStyle(TextFormatting.GRAY)));
         tooltip.add((new TranslationTextComponent(LibItem.FORCE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getForce())).mergeStyle(TextFormatting.GRAY)));
         tooltip.add((new TranslationTextComponent(LibItem.RANGE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getRange())).mergeStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.TICK).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick())).mergeStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.TICK).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick() / 20)).mergeStyle(TextFormatting.GRAY)));
     }
 
     @Override

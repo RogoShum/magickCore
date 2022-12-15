@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
 public interface IItemContainer {
+    String getItemName();
     public Item getItem();
 
     public boolean hasKey();

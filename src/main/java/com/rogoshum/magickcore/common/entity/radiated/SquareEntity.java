@@ -25,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SquareEntity extends ManaRadiateEntity {
+    public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cube.png");
     public SquareEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -62,7 +63,7 @@ public class SquareEntity extends ManaRadiateEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.RADIATE_DEFAULT;
+        return MANA_FACTOR;
     }
 
     protected void applyParticle(int particleAge) {

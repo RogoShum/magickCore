@@ -71,8 +71,8 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    public void releaseMagick() {
-        if(!initial) return;
+    public boolean releaseMagick() {
+        if(!initial) return false;
         List<Entity> livings = findEntity(entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity));
         boolean makeSound = false;
         for (Entity entity : livings) {
@@ -85,6 +85,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
         if(makeSound && this.ticksExisted % 2 == 0)
             this.playSound(ModSounds.chaos_attak.get(), 2.0F, 1.0F - this.rand.nextFloat() / 5);
+        return true;
     }
 
     @Override

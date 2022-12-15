@@ -1,2 +1,2 @@
-# magickCore
-MC百科ID：表入格
+# MagickCore | 魔法核心
+可编程法术向魔法模组

@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IItemContainer;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
@@ -35,11 +34,12 @@ import java.util.HashMap;
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModRecipes {
     //Explosion Recipes(easy recipe)
-    private static final HashMap<IItemContainer, ItemStack> ExplosionRecipesMap = new HashMap<>();
+    private static final HashMap<String, MagickCraftingTransformRecipe> ExplosionRecipesMap = new HashMap<>();
     private static final HashMap<ResourceLocation, IRecipe<?>> RECIPES = new HashMap<>();
-    public static void registerExplosionRecipe(IItemContainer input, ItemStack output) {
-        if(!ExplosionRecipesMap.containsKey(input))
-            ExplosionRecipesMap.put(input, output);
+    public static void registerExplosionRecipe(IItemContainer input, ItemStack output){
+        String name = output.getItem().getRegistryName().toString();
+        if(!ExplosionRecipesMap.containsKey(name))
+            ExplosionRecipesMap.put(name, new MagickCraftingTransformRecipe(name, input, output));
         else try {
             throw new Exception("Containing same input on the map = [" + input.toString() +"]");
         } catch (Exception e) {
@@ -47,10 +47,24 @@ public class ModRecipes {
         }
     }
 
+    public static void registerExplosionRecipe(String name, IItemContainer input, ItemStack output){
+        if(!ExplosionRecipesMap.containsKey(name))
+            ExplosionRecipesMap.put(name, new MagickCraftingTransformRecipe(name, input, output));
+        else try {
+            throw new Exception("Containing same input on the map = [" + input.toString() +"]");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static HashMap<String, MagickCraftingTransformRecipe> getExplosionRecipes() {
+        return ExplosionRecipesMap;
+    }
+
     public static ItemStack findExplosionOutput(ItemStack stack) {
-        for(IItemContainer container : ExplosionRecipesMap.keySet()) {
-            if(container.matches(stack)) {
-                return ExplosionRecipesMap.get(container);
+        for(MagickCraftingTransformRecipe recipe : ExplosionRecipesMap.values()) {
+            if(recipe.getContainer().matches(stack)) {
+                return recipe.getOutput();
             }
         }
 
@@ -82,13 +96,15 @@ public class ModRecipes {
     public static final String TAKEN = MagickCore.MOD_ID + ":taken";
 
     public static final ManaItemContextRecipe MANA_ITEM_CONTEXT_RECIPE = new ManaItemContextRecipe(new ResourceLocation("context_tool_recipe"));
+    public static final BlockConditionRecipe BLOCK_CONDITION_RECIPE = new BlockConditionRecipe(new ResourceLocation("block_condition_recipe"));
     public static final ManaItemMaterialRecipe MANA_ITEM_MATERIAL_RECIPE = new ManaItemMaterialRecipe(new ResourceLocation("mana_item_material_recipe"));
     public static final NBTRecipe ELEMENT_ORB_RECIPE = new NBTRecipe(CopyTagContainer.create(ELEMENT_CRYSTAL_SEEDS, NBTRecipeContainer.ItemMatcher.create(ORB_BOTTLE, "ELEMENT"), NBTRecipeContainer.ItemMatcher.create("seed")).shapeless(), new ResourceLocation("element_orb_recipe"));
-    public static final NBTRecipe ELEMENT_WOOL_RECIPE = new NBTRecipe(CopyTagContainer.create(ELEMENT_WOOL, NBTRecipeContainer.ItemMatcher.create(ORB_BOTTLE, "ELEMENT"), NBTRecipeContainer.ItemMatcher.create("wool")).shapeless(), new ResourceLocation("element_wool_recipe"));
+    public static final NBTRecipe ELEMENT_WOOL_RECIPE = new NBTRecipe(CopyTagContainer.create(MagickCore.MOD_ID + ":element_wool"
+            , NBTRecipeContainer.ItemMatcher.create(MagickCore.MOD_ID + ":orb_bottle", "ELEMENT")
+            , NBTRecipeContainer.ItemMatcher.create("wool")).shapeless(), new ResourceLocation("element_wool_recipe"));
     public static final NBTRecipe ELEMENT_WOOL_RECIPE_2 = new NBTRecipe(CopyTagContainer.create(ELEMENT_WOOL, NBTRecipeContainer.ItemMatcher.create(ELEMENT_CRYSTAL, "ELEMENT"), NBTRecipeContainer.ItemMatcher.create("wool")).shapeless(), new ResourceLocation("element_wool_recipe_2"));
     public static final NBTRecipe ELEMENT_STRING_RECIPE = new NBTRecipe(CopyTagContainer.create(ELEMENT_STRING, 4, NBTRecipeContainer.ItemMatcher.create("element_wool", "ELEMENT")).shapeless(), new ResourceLocation("element_string_recipe"));
     public static final NBTRecipe ELEMENT_STRING_RECIPE_2 = new NBTRecipe(CopyTagContainer.create(ELEMENT_STRING, NBTRecipeContainer.ItemMatcher.create(ORB_BOTTLE, "ELEMENT"), NBTRecipeContainer.ItemMatcher.create(MINECRAFT_STRING)).shapeless(), new ResourceLocation("element_string_recipe_2"));
-
     public static final NBTRecipe ELEMENT_STRING_RECIPE_3 = new NBTRecipe(CopyTagContainer.create(ELEMENT_STRING, NBTRecipeContainer.ItemMatcher.create(ELEMENT_CRYSTAL, "ELEMENT"), NBTRecipeContainer.ItemMatcher.create(MINECRAFT_STRING)).shapeless(), new ResourceLocation("element_string_recipe_3"));
     public static final IItemContainer STRING = NBTRecipeContainer.ItemMatcher.create("element_string", "ELEMENT");
     public static final NBTRecipe ELEMENT_TOOL = new NBTRecipe(ElementOnToolContainer.create(NBTRecipeContainer.ItemMatcher.create(":"), STRING, STRING, STRING).shapeless(), new ResourceLocation("element_any_recipe"));
@@ -315,11 +331,12 @@ public class ModRecipes {
         registerExplosionRecipe(TagItemMatcher.create(Items.BONE.toString()), new ItemStack(ModItems.MANA_BONE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.ROTTEN_FLESH.toString()), new ItemStack(ModItems.MANA_FLESH.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));
-        registerExplosionRecipe(TagItemMatcher.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
-        registerExplosionRecipe(TagItemMatcher.create(Items.BLAZE_ROD.toString()), rangeEnergy_1);
-        registerExplosionRecipe(TagItemMatcher.create(Items.BLAZE_POWDER.toString()), rangeEnergy);
+        registerExplosionRecipe("force_energy", TagItemMatcher.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
+        registerExplosionRecipe("range_energy_1", TagItemMatcher.create(Items.BLAZE_ROD.toString()), rangeEnergy_1);
+        registerExplosionRecipe("range_energy", TagItemMatcher.create(Items.BLAZE_POWDER.toString()), rangeEnergy);
         registerExplosionRecipe(TagItemMatcher.create(Items.GUNPOWDER.toString()), new ItemStack(ModItems.MANA_GUNPOWDER.get()));
-        registerExplosionRecipe(TagItemMatcher.create(Items.REDSTONE.toString()), tickEnergy);
+        registerExplosionRecipe(TagItemMatcher.create(Items.FLINT.toString()), new ItemStack(ModItems.SEPARATOR.get()));
+        registerExplosionRecipe("tick_energy", TagItemMatcher.create(Items.REDSTONE.toString()), tickEnergy);
         registerExplosionRecipe(TagItemMatcher.create(Items.SPIDER_EYE.toString()), new ItemStack(ModItems.MANA_SPIDER_EYE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.FERMENTED_SPIDER_EYE.toString()), new ItemStack(ModItems.MANA_SPIDER_EYE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.MANA_NETHER_WART.get()));
@@ -346,6 +363,7 @@ public class ModRecipes {
     public static void init() {
         LivingLootsEvent.init();
         registerRecipe(MANA_ITEM_CONTEXT_RECIPE);
+        registerRecipe(BLOCK_CONDITION_RECIPE);
         registerRecipe(MANA_ITEM_MATERIAL_RECIPE);
         registerRecipe(ELEMENT_ORB_RECIPE);
         registerRecipe(ELEMENT_WOOL_RECIPE);

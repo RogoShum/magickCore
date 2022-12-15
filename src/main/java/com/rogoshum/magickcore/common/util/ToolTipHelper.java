@@ -4,6 +4,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class ToolTipHelper {
     public final static String GREY = "§7";
+    public final static String DEEP_GREY = "§8";
     public final static String PINK = "§d";
     public final StringBuilder builder = new StringBuilder();
     public int tab = 0;

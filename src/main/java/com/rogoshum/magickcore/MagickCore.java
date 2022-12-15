@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore;
 
+import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
@@ -103,6 +104,8 @@ public class MagickCore {
             ModBrews.registryBrewing();
             EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::canSpawnOn);
             ModRecipes.registerMagickRecipes();
+            ModRecipes.registerExplosionRecipes();
+            RecipeCollector.init();
         });
     }
 
@@ -113,6 +116,6 @@ public class MagickCore {
     }
 
     private void generate(final FMLLoadCompleteEvent event) {
-        event.enqueueWork(ModRecipes::registerExplosionRecipes);
+
     }
 }

@@ -146,7 +146,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         blockPos = onTickRedStone(getPositionVec(), blockPos, world);
         List<Entity> list = this.findEntity((entity) -> entity instanceof ItemEntity);
         int size = list.size();
@@ -189,11 +189,11 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             if(getTrans()) {
                 double dis = player.getDistanceSq(this.getPositionVec().getX(), this.getPositionVec().getY(), this.getPositionVec().getZ());
                 if(state.get() == null)
-                    return;
+                    return false;
 
                 if(dis > 256) {
                     setTrans(false);
-                    return;
+                    return false;
                 }
 
                 int manaTrans = 5;
@@ -245,6 +245,8 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             setTrans(false);
             this.spellContext().element(MagickRegistry.getElement(LibElements.ORIGIN));
         }
+
+        return false;
     }
 
     @Override

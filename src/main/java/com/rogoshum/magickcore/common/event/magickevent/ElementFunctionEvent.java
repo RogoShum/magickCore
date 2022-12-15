@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
+import com.rogoshum.magickcore.api.IConditionOnlyBlock;
 import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -35,6 +36,21 @@ public class ElementFunctionEvent {
                 }
             }
             if(entityOnly.get())
+                event.setCanceled(true);
+        } else {
+            Entity last = event.getMagickContext().projectile;
+            AtomicBoolean blockOnly = new AtomicBoolean(false);
+            if(last instanceof IManaEntity) {
+                SpellContext spellContext = ((IManaEntity) last).spellContext();
+                if(spellContext.containChild(LibContext.CONDITION)) {
+                    ConditionContext condition = spellContext.getChild(LibContext.CONDITION);
+                    condition.conditions.forEach(condition1 -> {
+                        if(condition1 instanceof IConditionOnlyBlock)
+                            blockOnly.set(true);
+                    });
+                }
+            }
+            if(blockOnly.get())
                 event.setCanceled(true);
         }
     }

@@ -79,10 +79,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         if(coolDown > 0) {
             coolDown-=1;
-            return;
+            return false;
         }
         List<Entity> items = this.findEntity((entity -> (entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem)));
 
@@ -100,6 +100,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                 item.getItem().shrink(1);
             }
         });
+
+        return false;
     }
 
     @Override

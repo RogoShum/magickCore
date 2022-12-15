@@ -7,6 +7,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
@@ -26,7 +27,7 @@ public class ModBrews {
         ItemStack MANA_CHAOS = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.CHAOS_THEOREM_P.get());
         ItemStack MANA_CONVERT = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P.get());
 
-        Registry.ITEM.forEach( item -> {
+        ForgeRegistries.ITEMS.forEach(item -> {
             String name = item.getRegistryName().toString();
             Ingredient ingredient = Ingredient.fromItems(item);
             if(name.contains("spirit_crystal"))

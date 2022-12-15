@@ -48,32 +48,30 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
         entity.prevRotationYaw = entity.rotationYaw;
     }
 
-    default void releaseMagick() {
-        if(!spellContext().valid()) return;
+    default boolean releaseMagick() {
+        if(!spellContext().valid()) return false;
         ConditionContext condition = null;
         if(spellContext().containChild(LibContext.CONDITION))
             condition = spellContext().getChild(LibContext.CONDITION);
         List<Entity> livings = findEntity();
+        boolean released = false;
         for(Entity living : livings) {
             if(living != this && !suitableEntity(living)) continue;
-            AtomicReference<Boolean> pass = new AtomicReference<>(true);
+            boolean pass = true;
             if(condition != null) {
-                condition.conditions.forEach((condition1 -> {
-                    if(condition1.getType() == TargetType.TARGET) {
-                        if(!condition1.test(living))
-                            pass.set(false);
-                    } else if(!condition1.test(this.getOwner()))
-                        pass.set(false);
-                }));
+                if(!condition.test((Entity) this, living))
+                    pass = false;
             }
-            if(pass.get()) {
+            if(pass) {
                 MagickContext context = MagickContext.create(((Entity)this).world, spellContext().postContext)
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getOwner()).projectile((Entity) this)
                         .victim(living).noCost();
-                MagickReleaseHelper.releaseMagick(beforeCast(context));
+                if(MagickReleaseHelper.releaseMagick(beforeCast(context)))
+                    released = true;
             }
         }
+        return released;
     }
 
     default boolean suitableEntity(Entity entity) {

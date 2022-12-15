@@ -1,10 +1,11 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 
-public abstract class Condition {
+public abstract class Condition<T> {
     private TargetType targetType = TargetType.TARGET;
     private boolean negate;
     public boolean isNegate() {
@@ -12,7 +13,7 @@ public abstract class Condition {
     }
 
     public void setNegate() {
-        negate = true;
+        negate = !negate;
     }
 
     public void write(CompoundNBT tag) {
@@ -38,9 +39,16 @@ public abstract class Condition {
         this.targetType = type;
     }
 
-    public abstract boolean test(Entity entity);
+    public abstract boolean test(T entity);
 
     protected abstract void serialize(CompoundNBT tag);
 
     protected abstract void deserialize(CompoundNBT tag);
+
+    public abstract boolean suitable(Object object);
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

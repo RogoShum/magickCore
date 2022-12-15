@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundNBT;
 
 import java.util.Objects;
 
-public class InjurableEntityCondition extends Condition{
+public class InjurableEntityCondition extends EntityCondition{
     @Override
     public String getName() {
         return LibConditions.INJURABLE;
@@ -31,11 +31,6 @@ public class InjurableEntityCondition extends Condition{
     @Override
     protected void deserialize(CompoundNBT tag) {
 
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
     @Override

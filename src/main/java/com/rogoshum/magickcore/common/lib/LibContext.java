@@ -13,4 +13,5 @@ public class LibContext {
     public static final String MULTI_RELEASE = "multi_release";
     public static final String SELF = "self";
     public static final String REVERSE = "reverse";
+    public static final String SEPARATOR = "separator";
 }

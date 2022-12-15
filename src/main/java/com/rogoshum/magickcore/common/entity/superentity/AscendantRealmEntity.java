@@ -87,7 +87,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         List<Entity> list = findEntity(entity -> entity instanceof LivingEntity);
 
         for (Entity living : list) {
@@ -101,6 +101,8 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
                 MagickReleaseHelper.releaseMagick(context);
             }
         }
+
+        return true;
     }
 
     @Override

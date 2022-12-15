@@ -149,9 +149,6 @@ public class MagickReleaseHelper {
             manaFactor = ((IManaEntity) context.projectile).getManaFactor();
         }
 
-        if(!context.applyType.isForm()) {
-
-        }
         context.force(manaFactor.force * context.force);
         context.range(manaFactor.range * context.range);
         context.tick((int) (manaFactor.tick * context.tick));
@@ -164,9 +161,6 @@ public class MagickReleaseHelper {
             SpellContext postContext = context.postContext;
             if (postContext != null) {
                 MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();
-                if(!magickContext.applyType.isForm()) {
-
-                }
                 magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
                 boolean flag = MagickReleaseHelper.releaseMagick(magickContext, manaFactor);
                 if(!flag)
@@ -281,6 +275,23 @@ public class MagickReleaseHelper {
         EntityEvents.MagickSpawnEntityEvent event = new EntityEvents.MagickSpawnEntityEvent(context, pro);
         MinecraftForge.EVENT_BUS.post(event);
         if(!event.isCanceled()) {
+            if(pro instanceof IManaEntity && context.containChild(LibContext.SEPARATOR)) {
+                SpellContext preForm = ((IManaEntity) pro).spellContext();
+                SpellContext postForm = preForm.postContext;
+                while (postForm != null) {
+                    if(postForm.applyType.isForm()) {
+                        preForm.postContext = null;
+                        MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(pro);
+                        if(traceContext != null)
+                            magickContext.replenishChild(traceContext);
+                        releaseMagick(magickContext, ((IManaEntity) pro).getManaFactor());
+                        postForm = null;
+                    } else {
+                        preForm = postForm;
+                        postForm = preForm.postContext;
+                    }
+                }
+            }
             context.world.addEntity(pro);
             return true;
         }
@@ -404,16 +415,13 @@ public class MagickReleaseHelper {
                 return true;
         }
 
-        boolean isOwnerPlayer = owner instanceof PlayerEntity;
-        boolean isOtherPlayer = other instanceof PlayerEntity;
-
-        if (other instanceof IOwnerEntity && ownerFunction(isOwnerPlayer, ((IOwnerEntity) other)::getOwner))
+        if (other instanceof IOwnerEntity && ownerFunction(owner, ((IOwnerEntity) other)::getOwner))
             return true;
 
-        if (other instanceof ProjectileEntity && ownerFunction(isOwnerPlayer, ((ProjectileEntity) other)::func_234616_v_))
+        if (other instanceof ProjectileEntity && ownerFunction(owner, ((ProjectileEntity) other)::func_234616_v_))
             return true;
 
-        if (other instanceof TameableEntity && ownerFunction(isOwnerPlayer, ((TameableEntity) other)::getOwner))
+        if (other instanceof TameableEntity && ownerFunction(owner, ((TameableEntity) other)::getOwner))
             return true;
 
         AtomicBoolean flag = new AtomicBoolean(false);
@@ -422,17 +430,14 @@ public class MagickReleaseHelper {
         if (flag.get())
             return true;
 
-        return isOwnerPlayer && isOtherPlayer;
+        return owner.getClass() == other.getClass() || owner.getClass().isAssignableFrom(other.getClass()) || other.getClass().isAssignableFrom(owner.getClass());
     }
 
-    public static boolean ownerFunction(boolean isOwnerPlayer, Supplier<Entity> entitySupplier) {
+    public static boolean ownerFunction(Entity owner, Supplier<Entity> entitySupplier) {
         Entity entity = entitySupplier.get();
         if(entity == null) return false;
 
-        if (isOwnerPlayer && entity instanceof PlayerEntity)
-            return true;
-
-        return !isOwnerPlayer && !(entity instanceof PlayerEntity);
+        return owner.getClass() == entity.getClass() || owner.getClass().isAssignableFrom(entity.getClass()) || entity.getClass().isAssignableFrom(owner.getClass());
     }
 
     public static class DoubleEntity {

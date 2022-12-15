@@ -1,32 +1,26 @@
 package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
-import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
-import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.item.ManaItem;
-import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
+import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -59,12 +53,38 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         SpellContext spellContext = data.spellContext();
+        ItemManaData thisData = ExtraDataUtil.itemManaData(stack);
+        if(!thisData.spellContext().containChild(LibContext.CONDITION)) return false;
+        ConditionContext conditionContext = thisData.spellContext().getChild(LibContext.CONDITION);
         if(spellContext.containChild(LibContext.CONDITION)) {
             ConditionContext context = spellContext.getChild(LibContext.CONDITION);
-            context.addCondition(MagickRegistry.getCondition(this.condition));
+            for(Condition<?> condition : conditionContext.conditions) {
+                CompoundNBT tag = new CompoundNBT();
+                condition.write(tag);
+                try {
+                    Condition<?> condition1 = MagickRegistry.getCondition(condition.getName());
+                    condition1.read(tag);
+                    context.addCondition(condition1);
+                }
+                catch (Exception ignored) {
+
+                }
+            }
             spellContext.addChild(context);
         } else {
-            ConditionContext context = ConditionContext.create(MagickRegistry.getCondition(this.condition));
+            ConditionContext context = ConditionContext.create();
+            for(Condition<?> condition : conditionContext.conditions) {
+                CompoundNBT tag = new CompoundNBT();
+                condition.write(tag);
+                try {
+                    Condition<?> condition1 = MagickRegistry.getCondition(condition.getName());
+                    condition1.read(tag);
+                    context.addCondition(condition1);
+                }
+                catch (Exception ignored) {
+
+                }
+            }
             spellContext.addChild(context);
         }
         return true;
@@ -88,5 +108,20 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         return false;
+    }
+
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if(playerIn.isSneaking()) {
+            ItemStack stack = playerIn.getHeldItem(handIn);
+            ItemManaData thisData = ExtraDataUtil.itemManaData(stack);
+            if(!thisData.spellContext().containChild(LibContext.CONDITION))
+                thisData.spellContext().addChild(ConditionContext.create());
+            ConditionContext conditionContext = thisData.spellContext().getChild(LibContext.CONDITION);
+            conditionContext.conditions.forEach(Condition::setNegate);
+            thisData.spellContext().addChild(conditionContext);
+            return ActionResult.resultSuccess(stack);
+        }
+        return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 }

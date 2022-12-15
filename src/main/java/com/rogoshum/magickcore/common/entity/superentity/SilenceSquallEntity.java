@@ -106,13 +106,13 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         Entity cloest = null;
 
         List<Entity> entities = findEntity();
         for (Entity entity : entities) {
             if(entity == null)
-                return;
+                continue;
             if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
                 if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
                     cloest = entity;
@@ -147,6 +147,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         this.prevPosZ = this.getPosZ();
         this.setPosition(this.getPosX() + this.getMotion().x, this.getPosY() + this.getMotion().y, this.getPosZ() + this.getMotion().z);
         this.setMotion(this.getMotion().scale(0.9));
+        return true;
     }
 
     @Override

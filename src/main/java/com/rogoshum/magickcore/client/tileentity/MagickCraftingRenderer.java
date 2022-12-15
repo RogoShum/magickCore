@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -8,12 +10,10 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -21,8 +21,19 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector3i;
 
+import java.util.OptionalDouble;
+
 public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTileEntity> {
-    protected static final ResourceLocation cylinder_bloom = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
+    private static final RenderType TYPE = RenderType.makeType(MagickCore.MOD_ID + "_lines", DefaultVertexFormats.POSITION_COLOR, 1, 256
+            , RenderType.State.getBuilder().transparency(new RenderState.TransparencyState("magick_translucent_transparency", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.depthMask(false);
+    }, () -> {
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    })).line(new RenderState.LineState(OptionalDouble.of(5))).build(false));
 
     public MagickCraftingRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -71,13 +82,17 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
         for(int x = -1; x < 2; ++x) {
             for(int z = -1; z < 2; ++z) {
                 for(int y = 0; y < i; ++y) {
-                    renderCube(matrixStackIn, bufferIn, new Vector3i(x, y, z), y >= stack ? baseAlpha * 0.3f : baseAlpha);
+                    boolean flag = y >= stack;
+                    float cAlpha = flag ? baseAlpha * 0.25f : baseAlpha * 0.35f;
+                    Color color = flag ? ModElements.VOID_COLOR : Color.BLUE_COLOR;
+                    renderCube(matrixStackIn, bufferIn, new Vector3i(x, y, z), color, cAlpha);
                 }
             }
         }
     }
 
-    public void renderCube(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, Vector3i offset, float alpha) {
-        WorldRenderer.drawBoundingBox(matrixStackIn, bufferIn.getBuffer(RenderType.getLines()), new AxisAlignedBB(BlockPos.ZERO).grow(-0.66666).offset(offset.getX() * 0.333, offset.getY() * 0.333 - 0.333, offset.getZ() * 0.333), 0, 0.2f, 0.9f, alpha);
+    public void renderCube(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, Vector3i offset, Color color, float alpha) {
+        WorldRenderer.drawBoundingBox(matrixStackIn, bufferIn.getBuffer(TYPE), new AxisAlignedBB(BlockPos.ZERO)
+                .grow(-0.66666).offset(offset.getX() * 0.333, offset.getY() * 0.333 - 0.333, offset.getZ() * 0.333), color.r(), color.g(), color.b(), alpha);
     }
 }

@@ -5,6 +5,8 @@
     "itemGroup.magickcore_magick_context_group": "完备法术",
     "itemGroup.magickcore_potion_type_group": "魔力药水",
 
+    "gui.magickcore.category.magick_crafting": "魔法工作台",
+
     //物品
     "item.magickcore.star_staff": "零星法杖",
     "item.magickcore.laser_staff": "激光法杖",
@@ -38,6 +40,7 @@
     "item.magickcore.condition_non_living": "非生命缩影",
     "item.magickcore.condition_living": "生命缩影",
     "item.magickcore.completely_self": "劣质钻石",
+    "item.magickcore.form_separator": "劣质燧石",
     "item.magickcore.reverse": "劣质金粒",
     "item.magickcore.potion_type": "魔力药水",
 
@@ -219,6 +222,8 @@
     "magickcore.description.self": "自我中心",
     "magickcore.description.reverse": "§9施法方向为反向",
     "magickcore.description.completely_self": "§9施法者为施法目标",
+    "magickcore.description.form_separator": "§9分离后续形态",
+    "magickcore.description.separator": "分离后续形态",
     "magickcore.description.position": "位置",
     "magickcore.description.apply_type": "额外类型",
     "magickcore.description.spell_context": "法术",
@@ -257,6 +262,7 @@
     "magickcore.description.mana_flesh": "§9施加效果： 漫散",
     "magickcore.description.potion": "§9施加效果： 药水",
 
+    "magickcore.condition.negate": "反向",
     "magickcore.condition.block_only": "作用于方块",
     "magickcore.condition.non_living_entity": "作用于非生命",
     "magickcore.condition.living_entity": "作用于生命",

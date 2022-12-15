@@ -56,13 +56,8 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(spellContext().containChild(LibContext.CONDITION)) {
                 ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                context.conditions.forEach((condition -> {
-                    if(condition.getType() == TargetType.TARGET) {
-                        if(!condition.test(entity))
-                            pass.set(false);
-                    } else if(!condition.test(this.getOwner()))
-                        pass.set(false);
-                }));
+                if(!context.test(this.getOwner(), entity))
+                    pass.set(false);
             }
             if(pass.get()) {
                 return Util.make(new ArrayList<>(), list -> list.add(entity));
@@ -72,13 +67,13 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     }
 
     @Override
-    public void releaseMagick() {
+    public boolean releaseMagick() {
         if(victim != null) {
             Vector3d motion = this.getPositionVec().add(0, getHeight() * 0.5, 0).subtract(victim.getPositionVec().add(0, victim.getHeight() * 0.5, 0)).normalize();
             victim.setMotion(motion.x, motion.y, motion.z);
             if(!victim.isAlive())
                 victim = null;
-            return;
+            return false;
         }
         float width = getWidth();
         float height = getHeight();
@@ -88,6 +83,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
             if(victim == null)
                 victim = entity;
         }
+        return false;
     }
 
     @Override

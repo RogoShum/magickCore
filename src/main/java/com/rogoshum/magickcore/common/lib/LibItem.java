@@ -61,4 +61,5 @@ public class LibItem {
     public static final String MANA_BONE = MagickCore.MOD_ID + ".description.mana_bone";
     public static final String COMPLETELY_SELF = MagickCore.MOD_ID + ".description.completely_self";
     public static final String REVERSE = MagickCore.MOD_ID + ".description.reverse";
+    public static final String FORM_SEPARATOR = MagickCore.MOD_ID + ".description.form_separator";
 }

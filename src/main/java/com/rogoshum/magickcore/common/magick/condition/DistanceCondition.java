@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.nbt.CompoundNBT;
 
-public class DistanceCondition extends Condition{
+public class DistanceCondition extends EntityCondition{
     private double distance;
 
     @Override

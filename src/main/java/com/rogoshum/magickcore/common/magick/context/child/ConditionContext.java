@@ -6,16 +6,20 @@ import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 public class ConditionContext extends ChildContext{
-    public HashSet<Condition> conditions = new HashSet<>();
+    public HashSet<Condition<?>> conditions = new HashSet<>();
 
-    public static ConditionContext create(Condition... condition) {
+    public static ConditionContext create(Condition<?> condition) {
         ConditionContext context = new ConditionContext();
         context.conditions = new HashSet<>(Arrays.asList(condition));
         return context;
@@ -37,15 +41,18 @@ public class ConditionContext extends ChildContext{
         tag.put("Conditions", compoundNBT);
     }
 
-    public void addCondition(Condition... conditions) {
+    public void addCondition(Condition<?>... conditions) {
         this.conditions.addAll(Arrays.asList(conditions));
     }
 
-    public boolean test(Entity self, Entity target) {
-        for (Condition condition : conditions) {
-            Entity entity = self;
+    public <T> boolean test(T self, T target) {
+        for (Condition<T> condition : Util.make(new HashSet<Condition<T>>(), set -> {
+            conditions.forEach(condition -> set.add((Condition<T>) condition));
+        })) {
+            T entity = self;
             if(condition.getType().equals(TargetType.TARGET))
                 entity = target;
+            if(!condition.suitable(entity)) continue;
             if(!(!condition.isNegate() && condition.test(entity)) && !(condition.isNegate() && !condition.test(entity)))
                 return false;
         }
@@ -57,7 +64,7 @@ public class ConditionContext extends ChildContext{
         if(!tag.contains("Conditions")) return;
         CompoundNBT compoundNBT = tag.getCompound("Conditions");
         compoundNBT.keySet().forEach((key) -> {
-            Condition condition = MagickRegistry.getCondition(key);
+            Condition<?> condition = MagickRegistry.getCondition(key);
             if(condition != null) {
                 condition.read(compoundNBT.getCompound(key));
                 conditions.add(condition);
@@ -84,7 +91,28 @@ public class ConditionContext extends ChildContext{
         toolTip.nextLine("{");
         conditions.forEach((condition) -> {
             toolTip.push();
-            toolTip.nextTrans(MagickCore.MOD_ID + ".condition." + condition.getName(), ToolTipHelper.GREY);
+            toolTip.nextLine();
+            toolTip.prefix();
+            if(condition.isNegate())
+                toolTip.builder.append(ToolTipHelper.DEEP_GREY)
+                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition.negate").getString())
+                        .append(" ")
+                        .append(ToolTipHelper.GREY)
+                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
+            else
+                toolTip.builder.append(ToolTipHelper.GREY)
+                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
+            String post = condition.toString();
+            if(!post.isEmpty()) {
+                String[] postSplit = post.split("\n");
+                toolTip.builder.append(":");
+                for (String postString : postSplit) {
+                    if(postString.isEmpty()) continue;
+                    toolTip.nextLine();
+                    toolTip.prefix();
+                    toolTip.builder.append(postString);
+                }
+            }
             toolTip.pop();
         });
         toolTip.nextLine("}");

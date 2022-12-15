@@ -38,6 +38,8 @@ public class LibAdvancements {
     public static final String BONE = "mana_bone";
     public static final String COMPLETELY_SELF = "completely_self";
     public static final String REVERSE = "reverse";
+    public static final String FORM_SEPARATOR = "form_separator";
+
     public static final String CONDITION_BLOCK = "condition_block";
     public static final String CONDITION_NON_LIVING = "condition_non_living";
     public static final String CONDITION_LIVING = "condition_living";

@@ -1,0 +1,24 @@
+{
+	"type":"minecraft:crafting_shaped",
+	"group":"magickcore",
+	"pattern":[
+		"   ",
+		"4 6",
+		" 8 "
+	],
+	"key":{
+		"4":{
+			"item":"magickcore:element_crystal"
+		},
+		"6":{
+			"item":"magickcore:element_crystal"
+		},
+		"8":{
+			"item":"magickcore:element_crystal"
+		}
+	},
+	"result":{
+		"item":"magickcore:orb_bottle",
+		"count":1
+	}
+}

@@ -102,8 +102,9 @@ public class ModRegistry {
         childContexts.register(LibContext.REVERSE, ReverseContext::new);
         childContexts.register(LibContext.OFFSET, OffsetContext::new);
         childContexts.register(LibContext.POTION, PotionContext::new);
+        childContexts.register(LibContext.SEPARATOR, SeparatorContext::new);
 
-        ObjectRegistry<Callable<Condition>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
+        ObjectRegistry<Callable<Condition<?>>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);
         conditions.register(LibConditions.ENTITY_TYPE, EntityTypeCondition::new);
         conditions.register(LibConditions.INJURABLE, InjurableEntityCondition::new);

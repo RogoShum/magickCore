@@ -24,7 +24,7 @@ mixin {
     add sourceSets.main, "magickcore.refmap.json"
 }
 
-version = '1.16.5-0.8.4'
+version = '1.16.5-0.8.4.2'
 group = 'com.rogoshum.magickcore' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'MagickCore'
 
@@ -136,6 +136,11 @@ repositories {
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
     maven { url 'https://maven.blamejared.com' }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
 }
 
 dependencies {
@@ -144,6 +149,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     //implementation fg.deobf("software.bernie.geckolib:geckolib-forge-1.16.5:3.0.41")
+    compileOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.153:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.153")
     if (System.getProperty("idea.sync.active") != "true") {
         annotationProcessor 'org.spongepowered:mixin:0.8.3:processor'
     }
@@ -177,9 +184,9 @@ jar {
         attributes ([
                 "Specification-Title": "MagickCore",
                 "Specification-Vendor": "RogoShum",
-                "Specification-Version": "0.8.4",
+                "Specification-Version": "0.8.4.2",
                 "Implementation-Title": "MagickCore",
-                "Implementation-Version": "0.8.4",
+                "Implementation-Version": "0.8.4.2",
                 "Implementation-Vendor" :"RogoShum",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConnector": "com.rogoshum.magickcore.mixin.MixinConnector"

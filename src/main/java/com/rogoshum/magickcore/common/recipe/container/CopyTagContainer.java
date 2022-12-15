@@ -10,6 +10,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CopyTagContainer extends NBTRecipeContainer {
 
     @Override
     public ItemStack getResultStack(CraftingInventory inv) {
-        ItemStack stack = new ItemStack(Registry.ITEM.getOrDefault(new ResourceLocation(item)));
+        ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(item)));
 
         CompoundNBT tag = new CompoundNBT();
         List<IItemContainer> containers =  this.getContainers();

@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SectorEntity extends ManaRadiateEntity {
+    public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sector.png");
     public final Predicate<Entity> inSector = (entity -> {
         Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
@@ -73,7 +74,7 @@ public class SectorEntity extends ManaRadiateEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.RADIATE_DEFAULT;
+        return MANA_FACTOR;
     }
 
     protected void applyParticle(int particleAge) {

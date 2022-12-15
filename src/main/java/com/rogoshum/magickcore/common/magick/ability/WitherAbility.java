@@ -38,6 +38,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +81,7 @@ public class WitherAbility{
             }
             if(item == itemEntity.getItem().getItem()) return false;
             CompoundNBT nbt = itemEntity.getItem().write(new CompoundNBT());
-            ResourceLocation resourcelocation = Registry.ITEM.getKey(item);
+            ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(item);
             nbt.putString("id", resourcelocation.toString());
             ItemStack dustItem = ItemStack.read(nbt);
             if(dustItem.isEmpty()) return false;

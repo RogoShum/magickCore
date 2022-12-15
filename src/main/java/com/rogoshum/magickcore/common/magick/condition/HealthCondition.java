@@ -9,7 +9,7 @@ import net.minecraft.util.math.vector.Vector2f;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class HealthCondition extends Condition{
+public class HealthCondition extends EntityCondition{
     private float value;
     private Compare compare = Compare.LESS;
     private boolean percentage;

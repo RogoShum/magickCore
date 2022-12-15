@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,8 +32,7 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
 
     public abstract ItemStack getResultStack(CraftingInventory inv);
 
-    public boolean matches(CraftingInventory inv)
-    {
+    public boolean matches(CraftingInventory inv) {
         List<IItemContainer> copy = new ArrayList<>(containers);
 
         int invSize = 0;
@@ -104,8 +104,13 @@ public abstract class NBTRecipeContainer implements INBTRecipe {
             this.keys = tagKey;
         }
 
+        @Override
+        public String getItemName() {
+            return item;
+        }
+
         public Item getItem() {
-            return Registry.ITEM.getOrDefault(new ResourceLocation(this.item));
+            return ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.item));
         }
 
         public boolean hasKey()
