@@ -55,6 +55,8 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
             for (Entity entity : livings) {
                 MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
                 MagickReleaseHelper.releaseMagick(context);
+                context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
+                MagickReleaseHelper.releaseMagick(context);
             }
         }
         return true;
@@ -77,13 +79,11 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1)
-        {
+        if(this.ticksExisted == 1) {
             this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.rand.nextFloat() / 3);
         }
-        if(this.ticksExisted % 13 == 0)
-        {
-            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() / 5);
+        if(this.ticksExisted % 13 == 0) {
+            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() * 0.5f);
         }
     }
 

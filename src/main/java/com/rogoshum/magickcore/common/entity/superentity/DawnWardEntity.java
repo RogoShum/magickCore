@@ -145,7 +145,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     public void applyEntityCollision(Entity entityIn) {
         if(MagickReleaseHelper.sameLikeOwner(this.getOwner(), entityIn)) {
             if(entityIn instanceof LivingEntity) {
-                MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(1).applyType(ApplyType.BUFF);
+                MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
                 MagickReleaseHelper.releaseMagick(context);
                 ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
             }

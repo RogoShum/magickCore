@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
@@ -29,6 +30,13 @@ public class ShadowEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.magical_focus_energy.get(), 1.5F, 1.0F + this.rand.nextFloat());
+        }
     }
 
     @Override

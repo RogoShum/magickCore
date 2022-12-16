@@ -49,9 +49,13 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
             this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.rand.nextFloat() / 3);
         }
 
-        if(this.rand.nextBoolean())
+        if(this.ticksExisted % 8 == 0)
         {
-            this.playSound(SoundEvents.UI_TOAST_OUT, 1.0F, 1.0F + this.rand.nextFloat());
+            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F - this.rand.nextFloat());
+        }
+        if(this.ticksExisted % 100 == 0)
+        {
+            this.playSound(ModSounds.wind_fx.get(), 0.5F, 1.0F - this.rand.nextFloat());
         }
         if(this.ticksExisted % 12 == 0)
         {

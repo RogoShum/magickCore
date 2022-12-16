@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.api.IConditionOnlyBlock;
 import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -127,6 +128,13 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                 successFX();
         }
         super.remove();
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.soft_sweep.get(), 0.15F, 1.0F + this.rand.nextFloat());
+        }
     }
 
     public Iterable<BlockPos> findBlocks() {

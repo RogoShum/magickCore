@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
@@ -49,6 +51,7 @@ public class PlaceableEntityItem extends EntityItem {
         itemEntity.setHeight(((PlaceableEntityItem) entityStack.getItem()).HEIGHT);
         itemEntity.setWidth(((PlaceableEntityItem) entityStack.getItem()).WIDTH);
         itemEntity.recalculateSize();
+        itemEntity.playSound(ModSounds.place.get(), 0.25f, 1+MagickCore.rand.nextFloat());
         return itemEntity;
     }
 }

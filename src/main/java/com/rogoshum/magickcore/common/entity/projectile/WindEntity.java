@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.projectile.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.TargetType;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -74,6 +76,15 @@ public class WindEntity extends ManaProjectileEntity {
     @Override
     public float getSourceLight() {
         return 3;
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.wind_fx.get(), 0.5f, 1.0F + this.rand.nextFloat());
+        }
+        if(this.ticksExisted % 20 == 0)
+            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F + this.rand.nextFloat());
     }
 
     @Override

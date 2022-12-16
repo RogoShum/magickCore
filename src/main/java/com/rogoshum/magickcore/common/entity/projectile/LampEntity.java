@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -20,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -33,6 +35,15 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.5f, 1.0f, 1.0f);
     public LampEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.flame.get(), 0.25F, 1.0F + this.rand.nextFloat());
+        }
+        if(this.ticksExisted % 20 == 0)
+            this.playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 0.5F, 1.0F + this.rand.nextFloat());
     }
 
     @Override

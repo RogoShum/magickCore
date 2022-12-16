@@ -3,19 +3,18 @@ package com.rogoshum.magickcore.common.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.init.ModEntities;
-import com.rogoshum.magickcore.common.init.ModRecipes;
-import com.rogoshum.magickcore.common.init.ModTileEntities;
+import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.item.material.PotionTypeItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -104,6 +103,7 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
                     stack.setCount(item.getItem().getCount());
                     item.setItem(stack);
                     transTick=0;
+                    this.world.playSound((PlayerEntity)null, this.pos.getX(), this.pos.getY(), this.pos.getZ(), ModSounds.soft_buildup.get(), SoundCategory.BLOCKS, 0.5F, 2.0F);
                 }
                 break;
             }

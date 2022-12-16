@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileRenderer;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.*;
@@ -33,6 +34,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -304,8 +306,13 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     protected void makeSound() {
         if (this.ticksExisted == 1) {
-            this.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, 1.5F, 1.0F + this.rand.nextFloat());
+            this.playSound(ModSounds.glitter_another.get(), 0.25F, 1.0F + MagickCore.rand.nextFloat());
         }
+    }
+
+    @Override
+    public SoundCategory getSoundCategory() {
+        return SoundCategory.NEUTRAL;
     }
 
     @Override
@@ -446,6 +453,8 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
             victim = this;
         releaseMagick();
         removeEffect();
+        if(!world.isRemote)
+            world.setEntityState(this, (byte) 3);
         super.remove();
     }
 
@@ -460,7 +469,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     public void removeEffect() {
         if (!this.world.isRemote) {
-            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.5F, 1.0F + this.rand.nextFloat());
+            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 0.5F, 1.0F + this.rand.nextFloat());
         }
         if (this.world.isRemote()) {
             for (int c = 0; c < 10; ++c) {

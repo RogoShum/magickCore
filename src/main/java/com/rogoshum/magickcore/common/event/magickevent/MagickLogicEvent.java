@@ -19,15 +19,12 @@ import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
-import com.rogoshum.magickcore.common.init.ModBuffs;
-import com.rogoshum.magickcore.common.init.ModEffects;
-import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
-import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -811,7 +808,7 @@ public class MagickLogicEvent {
 			float amount = damage - state.getElementShieldMana();
 			state.hitElementShield();
 			state.setElementShieldMana(0.0f);
-			event.getEntityLiving().playSound(SoundEvents.BLOCK_GLASS_BREAK, 0.7f, 0.0f);
+			event.getEntityLiving().playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0f, 0.0f);
 			event.getEntityLiving().attackEntityFrom(event.getSource(), amount);
 			event.getEntityLiving().hurtResistantTime = 20;
 			event.setCanceled(true);
@@ -859,7 +856,7 @@ public class MagickLogicEvent {
 			SpellContext state = ((ISpellContext) event.getEntity()).spellContext();
 			if(state != null) {
 				if(!event.getEntity().world.isRemote && event.getEntity().ticksExisted == state.tick - 5) {
-					event.getEntity().playSound(SoundEvents.UI_TOAST_OUT, 3.0F, (1.0F + MagickCore.rand.nextFloat()));
+					event.getEntity().playSound(ModSounds.ring_pointer.get(), 0.5F, (1.0F + MagickCore.rand.nextFloat()));
 				}
 
 				int ticksExisted = event.getEntity().ticksExisted;

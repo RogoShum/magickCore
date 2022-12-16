@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -15,6 +16,7 @@ import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -40,6 +42,12 @@ public class RepeaterEntity extends ManaPointEntity {
             spawnEntity = entity;
     }
 
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        }
+    }
 
 
     @Override
@@ -51,6 +59,7 @@ public class RepeaterEntity extends ManaPointEntity {
 
         if(spawnEntity != null && spawnEntity.isAlive()) return false;
         if(cool_down < 0) {
+            this.playSound(ModSounds.thunder.get(), 0.15F, 1.0F - this.rand.nextFloat());
             MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
                     .caster(getOwner()).projectile(this).noCost();

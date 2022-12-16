@@ -58,6 +58,9 @@ public class GravityLiftEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        }
         this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 0.3F, 2.0f);
         this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 1.2F, 0.0f);
     }

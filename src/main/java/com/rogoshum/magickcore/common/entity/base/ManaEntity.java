@@ -251,6 +251,12 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     @Override
     public void tick() {
         super.tick();
+        Vector3d vector3d = this.getMotion();
+        double d2 = this.getPosX() + vector3d.x;
+        double d0 = this.getPosY() + vector3d.y;
+        double d1 = this.getPosZ() + vector3d.z;
+        this.setMotion(vector3d.scale(0.9));
+        this.setPosition(d2, d0, d1);
         collideWithNearbyEntities();
         if(!this.world.isRemote)
             makeSound();

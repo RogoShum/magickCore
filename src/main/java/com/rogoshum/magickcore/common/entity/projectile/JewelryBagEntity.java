@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefraction {
@@ -53,6 +55,12 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
         super(type, worldIn);
     }
 
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.glitter.get(), 2F, 1.0F + this.rand.nextFloat());
+        }
+    }
     @Override
     public void tick() {
         if(!spellContext().containChild(LibContext.ITEM) && !world.isRemote) {
@@ -208,6 +216,31 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
     }
 
     @Override
+    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
+        if(suitableEntity(p_213868_1_.getEntity())) {
+            ConditionContext condition = null;
+            if(spellContext().containChild(LibContext.CONDITION))
+                condition = spellContext().getChild(LibContext.CONDITION);
+            AtomicReference<Boolean> pass = new AtomicReference<>(true);
+            if(condition != null) {
+                if(!condition.test(this.getOwner(), p_213868_1_.getEntity()))
+                    pass.set(false);
+            }
+            if(pass.get()) {
+                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+                MinecraftForge.EVENT_BUS.post(event);
+            }
+        }
+
+        if (victim != null && !this.world.isRemote) {
+            releaseMagick();
+            if(hitEntityRemove(p_213868_1_))
+                this.remove();
+        }
+        super.onEntityHit(p_213868_1_);
+    }
+
+    @Override
     public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
         if(spellContext().containChild(LibContext.ITEM) && entityRayTraceResult.getEntity() == getOwner())
             return true;
@@ -224,7 +257,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
             return false;
         } else if(entityRayTraceResult.getEntity() instanceof JewelryBagEntity) {
             return false;
-        } else if (suitableEntity(entityRayTraceResult.getEntity())) {
+        } else if (suitableEntity(entityRayTraceResult.getEntity()) && (getOwner() == null || (getOwner() != null && getOwner() != entityRayTraceResult.getEntity()))) {
             return false;
         }
         return super.hitEntityRemove(entityRayTraceResult);

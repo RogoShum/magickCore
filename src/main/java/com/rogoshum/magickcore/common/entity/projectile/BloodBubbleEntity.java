@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.BloodBubbleRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -24,6 +26,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+
+import java.util.function.Supplier;
 
 public class BloodBubbleEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/blood_bubble.png");
@@ -141,6 +145,11 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
         par.setColor(Color.RED_COLOR);
         par.setLimitScale();
         MagickCore.addMagickParticle(par);
+    }
+
+    @Override
+    public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
+        return () -> new BloodBubbleRenderer(this);
     }
 
     @Override

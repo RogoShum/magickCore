@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -17,6 +18,7 @@ import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -35,6 +37,16 @@ public class SpinEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/spin.png");
     public SpinEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        }
+        if (this.ticksExisted % 2 == 0) {
+            this.playSound(SoundEvents.BLOCK_CHAIN_HIT, 0.5F, 1.0F + this.rand.nextFloat());
+        }
     }
 
     @Nonnull

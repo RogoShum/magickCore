@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.projectile.RayRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.RedStoneRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ThrowableEntity;
@@ -27,6 +28,13 @@ public class RayEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.glitter_another.get(), 0.25F, 1.0F - this.rand.nextFloat());
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

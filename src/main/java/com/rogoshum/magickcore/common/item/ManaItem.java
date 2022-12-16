@@ -1,8 +1,10 @@
 package com.rogoshum.magickcore.common.item;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
@@ -18,6 +20,7 @@ import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -40,8 +43,9 @@ public abstract class ManaItem extends BaseItem implements IManaData {
         boolean success = false;
         if(state != null) {
             success = releaseMagick(playerIn, state, itemstack);
-            if(success)
+            if(success) {
                 spawnParticle(playerIn, state);
+            }
         }
         return ActionResult.resultConsume(itemstack);
     }

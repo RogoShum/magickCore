@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaOrbRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaStarRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import net.minecraft.entity.EntityType;
@@ -29,6 +30,12 @@ public class ManaOrbEntity extends ManaProjectileEntity {
         super.tick();
     }
 
+    @Override
+    protected void makeSound() {
+        if (this.ticksExisted == 1) {
+            this.playSound(ModSounds.gatorix_spawn.get(), 0.25F, 2.0F);
+        }
+    }
 
     @OnlyIn(Dist.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {

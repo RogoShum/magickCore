@@ -37,7 +37,7 @@ public class ElementFunctionEvent {
             }
             if(entityOnly.get())
                 event.setCanceled(true);
-        } else {
+        } else if(!event.getMagickContext().applyType.isForm()) {
             Entity last = event.getMagickContext().projectile;
             AtomicBoolean blockOnly = new AtomicBoolean(false);
             if(last instanceof IManaEntity) {
