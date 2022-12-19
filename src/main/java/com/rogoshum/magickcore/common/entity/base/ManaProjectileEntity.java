@@ -68,6 +68,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.FLOAT);
     public Entity victim;
     public double maxMotion;
+    private boolean released = false;
 
     public ManaProjectileEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
@@ -420,8 +421,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
         if (victim != null && !this.world.isRemote) {
             boolean success = releaseMagick();
-            if(success && hitEntityRemove(p_213868_1_))
+            if(success && hitEntityRemove(p_213868_1_)) {
+                released = true;
                 this.remove();
+            }
         }
         super.onEntityHit(p_213868_1_);
     }
@@ -451,7 +454,8 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     public void remove() {
         if(victim == null)
             victim = this;
-        releaseMagick();
+        if(!released)
+            releaseMagick();
         removeEffect();
         if(!world.isRemote)
             world.setEntityState(this, (byte) 3);

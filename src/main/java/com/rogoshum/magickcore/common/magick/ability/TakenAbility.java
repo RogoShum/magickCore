@@ -23,6 +23,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -46,7 +47,7 @@ public class TakenAbility{
             context.force *= 1.25;
 
         boolean flag;
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             flag = context.victim.attackEntityFrom(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.attackEntityFrom(ModDamages.applyEntityTakenDamage(context.caster), context.force);

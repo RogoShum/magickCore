@@ -74,6 +74,7 @@ public class RenderThread extends Thread {
                             if(!RenderHelper.shouldRender(renderer.boundingBox())) continue;
                         }
                         renderer.update();
+                        if(!renderer.hasRenderer()) continue;
                         HashMap<RenderMode, Consumer<RenderParams>> render = renderer.getRenderFunction();
                         if(render != null) {
                             for (RenderMode bufferMode : render.keySet()) {

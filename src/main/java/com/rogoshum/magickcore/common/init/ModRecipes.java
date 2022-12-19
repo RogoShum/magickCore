@@ -346,14 +346,6 @@ public class ModRecipes {
         registerExplosionRecipe(TagItemMatcher.create(Items.NETHER_WART.toString()), new ItemStack(ModItems.MANA_NETHER_WART.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.STICK.toString()), new ItemStack(ModItems.SPIRIT_WOOD_STICK.get()));
         registerExplosionRecipe(TagItemMatcher.create(ModItems.SPIRIT_CRYSTAL.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ELEMENT_CRYSTAL.get()), LibElements.ORIGIN));
-
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.SOLAR.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.SOLAR));
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.ARC.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.ARC));
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.VOID.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.VOID));
-
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.STASIS.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.STASIS));
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.WITHER.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.WITHER));
-        registerExplosionRecipe(TagItemMatcher.create(ModItems.TAKEN.get().toString()), NBTTagHelper.setElement(new ItemStack(ModItems.ORB_BOTTLE.get()), LibElements.TAKEN));
         registerExplosionRecipe(TagItemMatcher.create(Items.NETHER_STAR.toString()), new ItemStack(ModItems.NETHER_STAR_MATERIAL.get()));
 
         Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));

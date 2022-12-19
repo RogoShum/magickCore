@@ -149,7 +149,7 @@ public class RenderHelper {
 
     public static RenderType getTexedParticle(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder()
-                .texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED)
+                .texture(new RenderState.TextureState(locationIn, false, false))
                 .transparency(TRANSLUCENT_TRANSPARENCY).lightmap(LIGHTMAP_ENABLED).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Particle", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL_QUADS, 256, false, false, rendertype$state);
     }

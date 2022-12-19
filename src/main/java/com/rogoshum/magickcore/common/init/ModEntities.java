@@ -63,6 +63,8 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<ArtificialLifeEntity>> ARTIFICIAL_LIFE = Entities.register(LibEntities.ARTIFICIAL_LIFE, () -> EntityType.Builder.create(ArtificialLifeEntity::new, EntityClassification.CREATURE).size(1.0F, 1.0F).trackingRange(10).build(LibEntities.ARTIFICIAL_LIFE));
 	public static final RegistryObject<EntityType<SpinEntity>> SPIN = Entities.register(LibEntities.SPIN, () -> EntityType.Builder.create(SpinEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.SPIN));
 	public static final RegistryObject<EntityType<ChainEntity>> CHAIN = Entities.register(LibEntities.CHAIN, () -> EntityType.Builder.create(ChainEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.CHAIN));
+	public static final RegistryObject<EntityType<MultiReleaseEntity>> MULTI_RELEASE = Entities.register(LibEntities.MULTI_RELEASE, () -> EntityType.Builder.create(MultiReleaseEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.MULTI_RELEASE));
+	public static final RegistryObject<EntityType<ChargeEntity>> CHARGE = Entities.register(LibEntities.CHARGE, () -> EntityType.Builder.create(ChargeEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.CHARGE));
 
 	public static Item registerEntitySpawnEgg(EntityType<?> type, int color1, int color2, String name) {
 		SpawnEggItem item = new SpawnEggItem(type, color1, color2, new Item.Properties().group(ModGroups.ITEM_GROUP));

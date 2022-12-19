@@ -22,6 +22,7 @@ import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
@@ -117,7 +118,7 @@ public class WitherAbility{
             context.force *= 1.25;
 
         boolean flag = false;
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             flag = context.victim.attackEntityFrom(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.attackEntityFrom(ModDamages.applyEntityWitherDamage(context.caster), context.force);

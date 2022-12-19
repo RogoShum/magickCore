@@ -44,4 +44,6 @@ public class LibEntities {
     public static final String ARTIFICIAL_LIFE = "artificial_life";
     public static final String SPIN = "spin";
     public static final String CHAIN = "chain";
+    public static final String MULTI_RELEASE = "multi_release";
+    public static final String CHARGE = "charge";
 }

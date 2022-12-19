@@ -366,6 +366,7 @@
 
     "death.attack.magickcore-void": "%1$s 体验了一下 §5虚空魔法",
     "death.attack.magickcore-void.player": "%2$s 让 %1$s 品尝了一番 §5虚空魔法",
+    "death.attack.magickcore-void.item": "%2$s 让 %1$s 品尝了一番 §5虚空魔法",
     "death.attack.magickcore-solar": "%1$s 体验了一下 §5烈焰魔法",
     "death.attack.magickcore-solar.player": "%2$s 让 %1$s 品尝了一番 §5烈焰魔法",
     "death.attack.magickcore-wither": "%1$s 体验了一下 §5枯萎魔法",

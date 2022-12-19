@@ -103,6 +103,8 @@ public class ModRegistry {
         childContexts.register(LibContext.OFFSET, OffsetContext::new);
         childContexts.register(LibContext.POTION, PotionContext::new);
         childContexts.register(LibContext.SEPARATOR, SeparatorContext::new);
+        childContexts.register(LibContext.MANA_FACTOR, ExtraManaFactorContext::new);
+        childContexts.register(LibContext.REMOVE_HURT_TIME, RemoveHurtTimeContext::new);
 
         ObjectRegistry<Callable<Condition<?>>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);

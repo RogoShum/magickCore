@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
@@ -16,6 +17,7 @@ import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
+import com.rogoshum.magickcore.common.entity.pointed.MultiReleaseEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
@@ -26,15 +28,13 @@ import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
+import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.common.magick.context.child.*;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickPoint;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.context.child.MultiReleaseContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
@@ -236,6 +236,19 @@ public class MagickLogicEvent {
 			Entity spawnEntity = spawnContext.entityType.create(event.getContext().world);
 			if(spawnEntity instanceof ISuperEntity) {
 				event.getContext().tick((int) (event.getContext().tick * 0.25));
+			}
+		}
+
+		if(event.getContext().projectile instanceof IManaEntity) {
+			SpellContext spellContext = ((IManaEntity) event.getContext().projectile).spellContext();
+			if(spellContext.containChild(LibContext.REMOVE_HURT_TIME) && event.getContext().victim != null) {
+				event.getContext().victim.hurtResistantTime = 0;
+			}
+			if(spellContext.containChild(LibContext.MANA_FACTOR)) {
+				ManaFactor manaFactor = spellContext.<ExtraManaFactorContext>getChild(LibContext.MANA_FACTOR).manaFactor;
+				event.getContext().force(manaFactor.force * event.getContext().force);
+				event.getContext().range(manaFactor.range * event.getContext().range);
+				event.getContext().tick((int) (manaFactor.tick * event.getContext().tick));
 			}
 		}
 	}

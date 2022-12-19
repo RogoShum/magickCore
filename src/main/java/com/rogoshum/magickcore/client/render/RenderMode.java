@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class RenderMode {
@@ -88,6 +89,19 @@ public class RenderMode {
 
         public boolean isEmpty() {
             return shaders.length < 1;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ShaderList)) return false;
+            ShaderList that = (ShaderList) o;
+            return Arrays.equals(shaders, that.shaders);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(shaders);
         }
     }
 }

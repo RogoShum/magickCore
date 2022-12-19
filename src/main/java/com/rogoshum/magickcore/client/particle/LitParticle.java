@@ -67,7 +67,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     private boolean noScale;
     private Entity traceTarget;
-    private RenderMode.ShaderList shader = RenderMode.ShaderList.create();
+    private final RenderMode.ShaderList shader = RenderMode.ShaderList.create();
 
     private RenderType type;
     private RenderHelper.RenderContext renderContext;
@@ -83,6 +83,12 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         this.particleGravity = renderer.getParticleGravity();
         this.canCollide = renderer.getParticleCanCollide();
         this.renderer = renderer;
+        update();
+    }
+
+    @Override
+    public boolean hasRenderer() {
+        return false;
     }
 
     public ResourceLocation getTexture() {
@@ -320,6 +326,11 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return map;
     }
 
+    public RenderMode getRenderMode() {
+        type = isGlow ? RenderHelper.getTexedParticleGlow(texture) : RenderHelper.getTexedParticle(texture);
+        return new RenderMode(type, shader);
+    }
+
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getDebugFunction() {
         return null;
@@ -333,7 +344,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
         if(shakeLimit <= 0.0f) {
             RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
-        } else if(quad != null && color != null){
+        } else if(quad != null && color != null) {
             Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
             BufferBuilder buffer = renderParams.buffer;
             BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
@@ -366,7 +377,6 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         Vector3d V1 = QuadVector[1];
         Vector3d V2 = QuadVector[2];
         Vector3d V3 = QuadVector[3];
-
         if (shakeLimit > 0.0f) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(this.toString());
             group.putVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ(), shakeLimit);
@@ -383,7 +393,6 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         Vector3d[] Quad = new Vector3d[4];
         Quad[0] = V0; Quad[1] = V1; Quad[2] = V2; Quad[3] = V3;
         quad = Quad;
-        type = isGlow ? RenderHelper.getTexedParticleGlow(texture) : RenderHelper.getTexedParticle(texture);
         renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
 
         float partialTicks = Minecraft.getInstance().getRenderPartialTicks();

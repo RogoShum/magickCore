@@ -14,4 +14,6 @@ public class LibContext {
     public static final String SELF = "self";
     public static final String REVERSE = "reverse";
     public static final String SEPARATOR = "separator";
+    public static final String MANA_FACTOR = "mana_factor";
+    public static final String REMOVE_HURT_TIME = "remove_hurt_time";
 }

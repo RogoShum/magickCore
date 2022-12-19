@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -15,6 +16,7 @@ import net.minecraft.item.crafting.SpecialRecipe;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -83,9 +85,11 @@ public class ManaItemContextRecipe extends SpecialRecipe {
             if(magickContext != null)
                 return ItemStack.EMPTY;
             else {
+                ItemStack newTool = tool.copy();
                 ItemStack newContext = new ItemStack(ModItems.MAGICK_CORE.get());
                 ItemManaData manaData = ExtraDataUtil.itemManaData(newContext);
                 manaData.spellContext().copy(ExtraDataUtil.itemManaData(tool).spellContext());
+                NBTTagHelper.coreItemFromContext(newTool, newContext);
                 return newContext;
             }
         } else {
@@ -96,6 +100,7 @@ public class ManaItemContextRecipe extends SpecialRecipe {
                 ItemManaData manaData = ExtraDataUtil.itemManaData(newTool);
                 manaData.spellContext().copy(ExtraDataUtil.itemManaData(magickContext).spellContext());
                 manaData.contextCore().setHave(true);
+                NBTTagHelper.contextItemWithCore(newTool, magickContext);
                 return newTool;
             }
         }
@@ -112,6 +117,17 @@ public class ManaItemContextRecipe extends SpecialRecipe {
                 if(manaData.contextCore().haveMagickContext()) {
                     manaData.contextCore().setHave(false);
                     manaData.spellContext().clear();
+                    if(item.hasTag()) {
+                        if(item.hasDisplayName())
+                            item.setDisplayName(null);
+                        if(item.getTag().contains("manaItemName")) {
+                            ITextComponent itextcomponent = ITextComponent.Serializer.getComponentFromJson(item.getTag().getString("manaItemName"));
+                            if (itextcomponent != null) {
+                                item.setDisplayName(itextcomponent);
+                                item.getTag().remove("manaItemName");
+                            }
+                        }
+                    }
                     nonnulllist.set(i, item);
                     inv.setInventorySlotContents(i, ItemStack.EMPTY);
                 }

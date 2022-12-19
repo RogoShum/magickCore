@@ -1,22 +1,36 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.block.MagickCraftingBlock;
 import com.rogoshum.magickcore.client.item.SpiritCrystalItemRenderer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModBlocks;
+import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
+import com.rogoshum.magickcore.common.item.material.ManaEnergyItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class SpiritCrystalItem extends PlaceableEntityItem {
     public static String[][] CRAFTING_RECIPE = {
@@ -26,6 +40,40 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
     };
     public SpiritCrystalItem() {
         super(BaseItem.properties().setISTER(() -> SpiritCrystalItemRenderer::new), 0.25f, 0.25f);
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        if(entity.getThrowerId() == null) return false;
+        PlayerEntity player = entity.world.getPlayerByUuid(entity.getThrowerId());
+        if(player == null) return false;
+        NBTTagHelper.PlayerData playerData = NBTTagHelper.PlayerData.playerData(player);
+        List<ItemEntity> entities = entity.world.getEntitiesWithinAABB(EntityType.ITEM, entity.getBoundingBox().grow(1), Entity::isAlive);
+        for(ItemEntity item : entities) {
+            if(playerData.getLimit() < 6 && item.getItem().getItem() == Items.DIAMOND) {
+                item.getItem().shrink(1);
+                entity.getItem().shrink(1);
+                playerData.setLimit(Math.min(playerData.getLimit() + 1, 6));
+                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+            } else if(playerData.getLimit() < 9 && item.getItem().getItem() == Items.MAGMA_CREAM) {
+                item.getItem().shrink(1);
+                entity.getItem().shrink(1);
+                playerData.setLimit(Math.min(playerData.getLimit() + 1, 9));
+                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+            } else if(playerData.getLimit() < 12 && item.getItem().getItem() == Items.CHORUS_FRUIT) {
+                item.getItem().shrink(1);
+                entity.getItem().shrink(1);
+                playerData.setLimit(Math.min(playerData.getLimit() + 1, 12));
+                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+            }
+        }
+        return false;
     }
 
     @Override

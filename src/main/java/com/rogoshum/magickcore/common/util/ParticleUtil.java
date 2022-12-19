@@ -3,7 +3,9 @@ package com.rogoshum.magickcore.common.util;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.ParticlePack;
@@ -80,8 +82,8 @@ public class ParticleUtil {
                 return new Vector3d[]{center.add(direction)};
             }
         }
-        if(frequency < 3)
-            frequency = 3;
+        if(frequency < 2)
+            frequency = 2;
         double length = direction.length();
         Vector3d forward = center.add(direction);
         Vector3d[] vector = new Vector3d[frequency];
@@ -259,5 +261,27 @@ public class ParticleUtil {
         }
     }
 
-
+    public static void spawnRaiseParticle(World world, Vector3d center, float force, MagickElement element, ParticleType type) {
+        float count = (10 * force);
+        float scale = 1f;
+        if(!world.isRemote) {
+            ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 2, element.type(), Vector3d.ZERO);
+            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                    center.x, center.y, center.z, 48, world.getDimensionKey()
+            )), pack);
+        } else {
+            ResourceLocation res = ParticleType.getResourceLocation(type, element);
+            for (int i = 0; i < count * 10; ++i) {
+                LitParticle par = new LitParticle(world, res
+                        , new Vector3d(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + center.x
+                        , center.y + 0.2
+                        , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + center.z)
+                        , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (40 * MagickCore.rand.nextFloat()), 20), element.getRenderer());
+                par.setGlow();
+                par.setParticleGravity(-0.1f);
+                par.setColor(Color.BLUE_COLOR);
+                MagickCore.addMagickParticle(par);
+            }
+        }
+    }
 }

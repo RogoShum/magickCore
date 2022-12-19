@@ -74,6 +74,18 @@ public class Networking {
                 .decoder(ParticleSamplePack::new)
                 .consumer(ParticleSamplePack::handler)
                 .add();
+
+        INSTANCE.messageBuilder(SSpellSwapPack.class, nextID())
+                .encoder(SSpellSwapPack::toBytes)
+                .decoder(SSpellSwapPack::new)
+                .consumer(SSpellSwapPack::handler)
+                .add();
+
+        INSTANCE.messageBuilder(CSpellSwapPack.class, nextID())
+                .encoder(CSpellSwapPack::toBytes)
+                .decoder(CSpellSwapPack::new)
+                .consumer(CSpellSwapPack::handler)
+                .add();
     }
 
 

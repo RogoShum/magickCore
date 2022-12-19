@@ -19,6 +19,7 @@ import com.rogoshum.magickcore.common.util.EnergyUtil;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.TileEntity;
@@ -40,7 +41,7 @@ public class ArcAbility{
             context.force *= 1.25f;
 
         boolean flag;
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             flag = context.victim.attackEntityFrom(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.attackEntityFrom(ModDamages.applyEntityArcDamage(context.caster), context.force);

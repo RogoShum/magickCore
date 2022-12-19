@@ -112,10 +112,6 @@ public class ManaSphereEntity extends ManaPointEntity {
                     d1 = d1 * (double)0.05F;
                     d0 = d0 * (double)(1.0F - 1.5);
                     d1 = d1 * (double)(1.0F - 1.5);
-                    if (!this.isBeingRidden()) {
-                        this.addVelocity(-d0, 0.0D, -d1);
-                    }
-
                     if (!entityIn.isBeingRidden()) {
                         entityIn.addVelocity(d0, 0.0D, d1);
                     }

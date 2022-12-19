@@ -22,6 +22,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -49,7 +50,7 @@ public class VoidAbility{
             context.force *= 1.2;
 
         boolean flag;
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             flag = context.victim.attackEntityFrom(ModDamages.applyProjectileVoidDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.attackEntityFrom(ModDamages.applyEntityVoidDamage(context.caster), context.force);
@@ -181,7 +182,7 @@ public class VoidAbility{
             pos = context.projectile.getPositionVec();
 
         } else {
-            pos = context.caster.getLookVec().scale(context.range).add(context.victim.getPositionVec());
+            pos = context.caster.getLookVec().scale(context.range * 2).add(context.victim.getPositionVec());
         }
         context.victim.setPositionAndUpdate(pos.x, pos.y, pos.z);
         context.victim.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.0f);

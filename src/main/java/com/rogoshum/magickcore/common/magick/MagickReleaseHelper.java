@@ -108,6 +108,7 @@ public class MagickReleaseHelper {
     public static boolean releaseMagick(MagickContext context, ManaFactor manaFactor) {
         if(context == null)
             return false;
+
         EntityEvents.MagickPreReleaseEvent preEvent = preReleaseMagickEvent(context);
         if(preEvent.isCanceled()) {
             failed(context, preEvent.getEntity());
@@ -146,7 +147,10 @@ public class MagickReleaseHelper {
         }
 
         if(context.projectile instanceof IManaEntity) {
-            manaFactor = ((IManaEntity) context.projectile).getManaFactor();
+            ManaFactor projectileFactor = ((IManaEntity) context.projectile).getManaFactor();
+            manaFactor = ManaFactor.create(Math.max(projectileFactor.force * manaFactor.force, projectileFactor.force),
+                    Math.max(projectileFactor.range * manaFactor.range, projectileFactor.range),
+                    Math.max(projectileFactor.tick * manaFactor.tick, projectileFactor.tick));
         }
 
         context.force(manaFactor.force * context.force);

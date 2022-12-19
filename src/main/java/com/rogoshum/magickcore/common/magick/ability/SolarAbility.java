@@ -23,6 +23,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
@@ -72,7 +73,7 @@ public class SolarAbility{
         if(context.victim.getFireTimer() > 0)
             context.force *= 1.5;
 
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             return context.victim.attackEntityFrom(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             return context.victim.attackEntityFrom(ModDamages.applyEntitySolarDamage(context.caster), context.force);
@@ -143,7 +144,7 @@ public class SolarAbility{
 
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
-        ((LivingEntity) context.victim).heal(context.force * 0.5f);
+        ((LivingEntity) context.victim).heal(context.force);
         IParticleData iparticledata = ParticleTypes.HEART;
 
         for(int i = 0; i < 7; ++i) {

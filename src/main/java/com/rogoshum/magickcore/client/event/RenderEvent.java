@@ -50,14 +50,15 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
-    private static final HashMap<ResourceLocation, Queue<LitParticle>> particles = new HashMap<>();
+    private static final HashMap<RenderMode, Queue<LitParticle>> particles = new HashMap<>();
 
     public static void addMagickParticle(LitParticle par) {
         if(par.getTexture() == null) return;
-        if(!particles.containsKey(par.getTexture())) {
-            particles.put(par.getTexture(), Queues.newConcurrentLinkedQueue());
+        RenderMode mode = par.getRenderMode();
+        if(!particles.containsKey(mode)) {
+            particles.put(mode, Queues.newConcurrentLinkedQueue());
         }
-        particles.get(par.getTexture()).add(par);
+        particles.get(mode).add(par);
         MagickCore.proxy.addRenderer(() -> par);
 
         //EntityLightSourceHandler.addLightSource(par);
@@ -127,6 +128,27 @@ public class RenderEvent {
             matrixStackIn.pop();
         }
 
+        for (RenderMode bufferMode : particles.keySet()) {
+            Queue<LitParticle> particleQueue = particles.get(bufferMode);
+            BufferContext context = BufferContext.create(matrixStackIn, builder, bufferMode.renderType);
+            if (bufferMode.useShader != null && !bufferMode.useShader.isEmpty())
+                context.useShader(bufferMode.useShader);
+
+            RenderHelper.setup(context);
+            RenderHelper.begin(context);
+            RenderHelper.queueMode = true;
+
+            Iterator<LitParticle> particleIterator = particleQueue.iterator();
+            while (particleIterator.hasNext()) {
+                LitParticle particle = particleIterator.next();
+                particle.render(renderParams);
+            }
+
+            RenderHelper.queueMode = false;
+            RenderHelper.finish(context);
+            RenderHelper.end(context);
+        }
+
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         double d0 = vec.getX();
         double d1 = vec.getY();
@@ -167,7 +189,7 @@ public class RenderEvent {
 
     public static void tickParticle() {
         Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        for (ResourceLocation res : particles.keySet()) {
+        for (RenderMode res : particles.keySet()) {
             Queue<LitParticle> litParticles = particles.get(res);
             double scale = Math.max((litParticles.size() * 0.003d), 1d);
             for(LitParticle par : litParticles) {

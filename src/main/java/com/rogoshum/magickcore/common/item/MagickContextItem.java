@@ -24,7 +24,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class MagickContextItem extends ManaItem{
+public class MagickContextItem extends ManaItem {
     public MagickContextItem() {
         super(properties().maxStackSize(16).setISTER(() -> ManaEnergyRenderer::new));
     }

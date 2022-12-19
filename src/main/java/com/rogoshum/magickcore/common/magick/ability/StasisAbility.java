@@ -17,6 +17,7 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -34,7 +35,7 @@ public class StasisAbility{
             context.force *= 1.25;
 
         boolean flag = false;
-        if(context.caster != null && context.projectile != null)
+        if(context.caster != null && context.projectile instanceof ProjectileEntity)
             flag = context.victim.attackEntityFrom(ModDamages.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.attackEntityFrom(ModDamages.applyEntityStasisDamage(context.caster), context.force);

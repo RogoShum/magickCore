@@ -69,8 +69,10 @@ public class ParticleSamplePack extends EntityPack{
         if(Minecraft.getInstance().world != null) {
             if(type == 0)
                 ParticleUtil.spawnBlastParticle(Minecraft.getInstance().world, position, force, element1, particle);
-            else
+            else if(type == 1)
                 ParticleUtil.spawnImpactParticle(Minecraft.getInstance().world, position, force, motion, element1, particle);
+            else if(type == 2)
+                ParticleUtil.spawnRaiseParticle(Minecraft.getInstance().world, position, force, element1, particle);
         }
     }
 }

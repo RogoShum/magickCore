@@ -26,6 +26,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.Supplier;
 
@@ -148,6 +150,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new BloodBubbleRenderer(this);
     }

@@ -16,4 +16,5 @@ public interface IEasyRender extends IPositionEntity {
     default boolean forceRender() {
         return false;
     }
+    default boolean hasRenderer() {return true; }
 }

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.PotionItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
@@ -17,7 +18,7 @@ public class OriginAbility {
         if(attribute.victim == null) return false;
         if(!attribute.victim.isOnGround())
             attribute.force *= 2;
-        if(attribute.caster != null && attribute.projectile != null)
+        if(attribute.caster != null && attribute.projectile instanceof ProjectileEntity)
             return attribute.victim.attackEntityFrom(new IndirectEntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.projectile, attribute.caster), attribute.force);
         else if(attribute.caster != null)
             return attribute.victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.caster), attribute.force);
