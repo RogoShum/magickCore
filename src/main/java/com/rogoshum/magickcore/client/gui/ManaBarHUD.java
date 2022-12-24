@@ -13,7 +13,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
-public class ManaBarGUI extends AbstractGui {
+public class ManaBarHUD extends AbstractGui {
     private final int width;
     private final int height;
     private final Minecraft minecraft;
@@ -25,7 +25,7 @@ public class ManaBarGUI extends AbstractGui {
     private MatrixStack matrixStack;
     private EntityStateData state;
 
-    public ManaBarGUI(MatrixStack matrixStack, EntityStateData state) {
+    public ManaBarHUD(MatrixStack matrixStack, EntityStateData state) {
         this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
         this.height = Minecraft.getInstance().getMainWindow().getScaledHeight();
         this.minecraft = Minecraft.getInstance();

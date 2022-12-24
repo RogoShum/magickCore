@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class LitParticle implements ILightSourceEntity, IEasyRender {
+    public boolean render = true;
     protected double posX;
     protected double posY;
     protected double posZ;
@@ -89,6 +90,11 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     @Override
     public boolean hasRenderer() {
         return false;
+    }
+
+    @Override
+    public void setShouldRender(boolean shouldRender) {
+        render = shouldRender;
     }
 
     public ResourceLocation getTexture() {

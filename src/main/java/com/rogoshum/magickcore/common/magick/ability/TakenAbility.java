@@ -56,7 +56,7 @@ public class TakenAbility{
         else
             flag = context.victim.attackEntityFrom(ModDamages.getTakenDamage(), context.force);
 
-        if(flag && context.force >= ManaLimit.FORCE.getValue() * 1.75 && context.caster != null && context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(flag && context.force >= 9 && context.caster != null && context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUniqueID());
             state.setTime(context.tick);
@@ -70,38 +70,6 @@ public class TakenAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION) && context.containChild(LibContext.APPLY_TYPE)) {
-            ExtraApplyTypeContext applyTypeContext = context.getChild(LibContext.APPLY_TYPE);
-            if (applyTypeContext.applyType != ApplyType.DIFFUSION) return false;
-            PositionContext positionContext = context.getChild(LibContext.POSITION);
-            BlockPos pos = new BlockPos(positionContext.pos);
-            if (context.world.getTileEntity(pos) != null) {
-                TileEntity tile = context.world.getTileEntity(pos);
-                if (tile instanceof MobSpawnerTileEntity) {
-                    CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
-                    if(nbt.contains("SpawnData")) {
-                        CompoundNBT entityTag = nbt.getCompound("SpawnData");
-                        boolean success = false;
-                        for(int i = 0; i < context.force; i++) {
-                            Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
-                            if(optional.isPresent()) {
-                                Entity entity = optional.get();
-                                double randX = MagickCore.getNegativeToOne();
-                                double randY = MagickCore.getNegativeToOne();
-                                double randZ = MagickCore.getNegativeToOne();
-                                randX *= 1 + context.range;
-                                randY *= 1 + context.range;
-                                randZ *= 1 + context.range;
-                                entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
-                                entity.world.addEntity(entity);
-                                success = true;
-                            }
-                        }
-                        return success;
-                    }
-                }
-            }
-        }
         return false;
     }
 
@@ -114,9 +82,10 @@ public class TakenAbility{
         if(context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             if(!context.victim.isNonBoss()) return false;
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
-            state.setOwner(context.victim.getUniqueID());
+            state.setOwner(context.caster.getUniqueID());
             int time = (int) (context.tick * context.force);
             state.setTime(time);
+            context.victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
                     PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
                     new TakenStatePack(context.victim.getEntityId(), time, context.victim.getUniqueID()));
@@ -140,6 +109,39 @@ public class TakenAbility{
             ((TameableEntity) context.victim).setTamedBy((PlayerEntity) context.caster);
             context.world.setEntityState(context.victim, (byte)7);
             return true;
+        }
+        return false;
+    }
+
+    public static boolean diffusion(MagickContext context) {
+        if(!context.doBlock || !context.containChild(LibContext.POSITION)) return false;
+        PositionContext positionContext = context.getChild(LibContext.POSITION);
+        BlockPos pos = new BlockPos(positionContext.pos);
+        if (context.world.getTileEntity(pos) != null) {
+            TileEntity tile = context.world.getTileEntity(pos);
+            if (tile instanceof MobSpawnerTileEntity) {
+                CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
+                if(nbt.contains("SpawnData")) {
+                    CompoundNBT entityTag = nbt.getCompound("SpawnData");
+                    boolean success = false;
+                    for(int i = 0; i < context.force; i++) {
+                        Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
+                        if(optional.isPresent()) {
+                            Entity entity = optional.get();
+                            double randX = MagickCore.getNegativeToOne();
+                            double randY = MagickCore.getNegativeToOne();
+                            double randZ = MagickCore.getNegativeToOne();
+                            randX *= 1 + context.range;
+                            randY *= 1 + context.range;
+                            randZ *= 1 + context.range;
+                            entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
+                            entity.world.addEntity(entity);
+                            success = true;
+                        }
+                    }
+                    return success;
+                }
+            }
         }
         return false;
     }

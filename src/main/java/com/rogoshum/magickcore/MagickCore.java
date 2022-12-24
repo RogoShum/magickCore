@@ -9,14 +9,12 @@ import com.rogoshum.magickcore.common.event.magickevent.ElementFunctionEvent;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.common.init.*;
-import com.rogoshum.magickcore.common.item.material.EntityTypeItem;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,11 +25,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
@@ -47,6 +48,8 @@ public class MagickCore {
 	public static Random rand = new Random();
     public static IProxy proxy;
     public static int tick;
+    public HashMap<String, String> modCompatibility = new HashMap<>();
+    public static HashMap<String, AdditionLoader> modLoader = new HashMap<>();
 
     public MagickCore() {
         LOGGER.debug("register RegisterEvent");
@@ -55,6 +58,7 @@ public class MagickCore {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::inter);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::generate);
         DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
@@ -88,7 +92,24 @@ public class MagickCore {
         ManaMaterials.init();
         ModRegistry.init();
         Networking.registerMessage();
+        modCompatibility.put("curios", "com.rogoshum.magickcore.common.integration.curios.CuriosLoader");
+        FMLLoader.getLoadingModList().getMods().forEach( modInfo -> {
+            modCompatibility.forEach( (key, value) -> {
+                if(modInfo.getModId().equals(key)) {
+                    try {
+                        modLoader.put(key, Class.forName(value).asSubclass(AdditionLoader.class).newInstance());
+                    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
+        modLoader.values().forEach(additionLoader -> additionLoader.onLoad(eventBus));
         //GeckoLib.initialize();
+    }
+
+    public static boolean isModLoaded(String modid) {
+        return modLoader.containsKey(modid);
     }
 
     public static float getNegativeToOne() {
@@ -107,17 +128,25 @@ public class MagickCore {
             ModRecipes.registerMagickRecipes();
             ModRecipes.registerExplosionRecipes();
             RecipeCollector.init();
+            modLoader.values().forEach(additionLoader -> additionLoader.setup(event));
+        });
+    }
+
+    private void inter(final InterModEnqueueEvent event) {
+        event.enqueueWork(() -> {
+            modLoader.values().forEach(additionLoader -> additionLoader.inter(event));
         });
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             proxy.initBlockRenderer();
-            ClientRegistry.registerKeyBinding(ModKeyInput.MESSAGE_KEY);
+            ClientRegistry.registerKeyBinding(ModKeyBind.SWAP_KEY);
+            modLoader.values().forEach(additionLoader -> additionLoader.doClientStuff(event));
         });
     }
 
     private void generate(final FMLLoadCompleteEvent event) {
-
+        modLoader.values().forEach(additionLoader -> additionLoader.generate(event));
     }
 }

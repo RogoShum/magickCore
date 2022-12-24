@@ -52,10 +52,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -185,14 +182,16 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     @Override
     public Entity func_234616_v_() {
         Entity entity = super.func_234616_v_();
-
+        UUID uuid = getOwnerUUID();
+        if(uuid == MagickCore.emptyUUID) return entity;
         if (entity == null && this.world.isRemote) {
-            ArrayList<Entity> list = new ArrayList<>();
-            ((ClientWorld) this.world).getAllEntities().forEach((list::add));
-
-            for (Entity e : list) {
-                if (e.getUniqueID().equals(getOwnerUUID()))
-                    return e;
+            Iterator<Entity> it = ((ClientWorld) this.world).getAllEntities().iterator();
+            while (it.hasNext()) {
+                Entity entity1 = it.next();
+                if(entity1 != null && entity1.getUniqueID().equals(uuid)) {
+                    setOwner(entity1);
+                    return entity1;
+                }
             }
         }
         return entity;
@@ -441,8 +440,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
-        if (spellContext().postContext != null)
-            context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
+        MagickReleaseHelper.releaseMagick(beforeCast(context));
+
+        context = MagickContext.create(world, spellContext().postContext).doBlock().noCost().caster(this.func_234616_v_()).projectile(this);
+        context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
         if (hitBlockRemove(p_230299_1_) && !this.world.isRemote) {

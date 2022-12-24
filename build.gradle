@@ -141,6 +141,9 @@ repositories {
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
     }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
@@ -155,6 +158,8 @@ dependencies {
         annotationProcessor 'org.spongepowered:mixin:0.8.3:processor'
     }
 
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.5-4.0.6.8:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.5-4.0.6.8")
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-54-SNAPSHOT:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-54-SNAPSHOT")
     //implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${property('mc_version')}:${property('geckolib_version')}")

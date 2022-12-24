@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.magick.context.child;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -23,6 +24,11 @@ import java.util.Map;
 public class PotionContext extends ChildContext{
     private static final IFormattableTextComponent field_242400_a = (new TranslationTextComponent("effect.none")).mergeStyle(TextFormatting.GRAY);
     public List<EffectInstance> effectInstances = new ArrayList<>();
+
+    @Override
+    public ApplyType getLinkType() {
+        return ApplyType.POTION;
+    }
 
     public static PotionContext create(ItemStack stack) {
         PotionContext context = new PotionContext();

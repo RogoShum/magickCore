@@ -97,7 +97,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
                 MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.ATTACK);
+                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(7.5f).applyType(ApplyType.ATTACK);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }

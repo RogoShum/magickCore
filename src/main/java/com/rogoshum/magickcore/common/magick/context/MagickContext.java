@@ -4,10 +4,12 @@ import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
-public class MagickContext extends SpellContext{
+public class MagickContext extends SpellContext {
     public final World world;
     public Entity caster, projectile, victim;
     public boolean noCost = false;
+    public float reduceCost = 0;
+    public boolean doBlock = false;
 
     public MagickContext(World world) {
         this.world = world;
@@ -30,6 +32,11 @@ public class MagickContext extends SpellContext{
         return this;
     }
 
+    public MagickContext doBlock() {
+        this.doBlock = true;
+        return this;
+    }
+
     public MagickContext projectile(Entity projectile) {
         this.projectile = projectile;
         return this;
@@ -37,6 +44,11 @@ public class MagickContext extends SpellContext{
 
     public MagickContext victim(Entity victim) {
         this.victim = victim;
+        return this;
+    }
+
+    public MagickContext addReduceCost(float cost) {
+        reduceCost+=cost;
         return this;
     }
 

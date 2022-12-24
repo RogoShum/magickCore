@@ -65,67 +65,6 @@ public class VoidAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(context.force < 1) return false;
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION) && context.containChild(LibContext.APPLY_TYPE)) {
-            ExtraApplyTypeContext applyTypeContext = context.getChild(LibContext.APPLY_TYPE);
-            if (applyTypeContext.applyType != ApplyType.AGGLOMERATE) return false;
-            PositionContext positionContext = context.getChild(LibContext.POSITION);
-            BlockPos pos = new BlockPos(positionContext.pos);
-            World world = context.world;
-
-            if (!world.isAreaLoaded(pos, 1)) return false;
-            if(context.caster instanceof PlayerEntity) {
-                if(!world.isBlockModifiable((PlayerEntity) context.caster, pos)) return false;
-            } else if(!world.getGameRules().get(GameRules.MOB_GRIEFING).get()) return false;
-
-            BlockState state = world.getBlockState(pos);
-            int har = state.getHarvestLevel();
-            if(state.getHarvestLevel() > context.force) return false;
-            Block block = state.getBlock();
-            if (!block.isAir(state, world, pos) && !(block instanceof IFluidBlock) && state.getBlockHardness(world, pos) != -1) {
-                int exp = state.getExpDrop((IWorldReader) world, pos, (int) context.force, 1);
-                if(context.caster instanceof PlayerEntity) {
-                    /*
-                    if (!state.canHarvestBlock(world, pos, (PlayerEntity) context.caster)) {
-                        return false;
-                    }
-
-                     */
-                    BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (PlayerEntity) context.caster);
-                    event.setExpToDrop(exp);
-                    MinecraftForge.EVENT_BUS.post(event);
-                    if(event.isCanceled()) return false;
-                    exp = event.getExpToDrop();
-                }
-
-                ItemStack result = ItemStack.EMPTY;
-                TileEntity te = null;
-                if (state.hasTileEntity())
-                    te = world.getTileEntity(pos);
-
-                try {
-                    result = state.getPickBlock(null, world, pos, null);
-                } catch (Exception ignored) {
-
-                }
-
-                if (result.isEmpty())
-                    return false;
-                if(te != null) {
-                    storeTEInStack(result, te);
-                } //else
-                    //result.setCount((int) context.range);
-
-                if (world instanceof ServerWorld) {
-                    block.dropXpOnBlockBreak((ServerWorld) world, pos, exp);
-                }
-                world.setBlockState(pos, Blocks.AIR.getDefaultState());
-                world.playEvent(2001, pos, Block.getStateId(state));
-                ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
-                world.addEntity(entity);
-                return true;
-            }
-        }
         return false;
     }
 
@@ -191,6 +130,64 @@ public class VoidAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
+        if(context.doBlock && context.containChild(LibContext.POSITION)) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            BlockPos pos = new BlockPos(positionContext.pos);
+            World world = context.world;
+
+            if (!world.isAreaLoaded(pos, 1)) return false;
+            if(context.caster instanceof PlayerEntity) {
+                if(!world.isBlockModifiable((PlayerEntity) context.caster, pos)) return false;
+            } else if(!world.getGameRules().get(GameRules.MOB_GRIEFING).get()) return false;
+
+            BlockState state = world.getBlockState(pos);
+            if(state.getHarvestLevel() > context.force) return false;
+            Block block = state.getBlock();
+            if (!block.isAir(state, world, pos) && !(block instanceof IFluidBlock) && state.getBlockHardness(world, pos) != -1) {
+                int exp = state.getExpDrop((IWorldReader) world, pos, (int) context.force, 1);
+                if(context.caster instanceof PlayerEntity) {
+                    /*
+                    if (!state.canHarvestBlock(world, pos, (PlayerEntity) context.caster)) {
+                        return false;
+                    }
+
+                     */
+                    BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (PlayerEntity) context.caster);
+                    event.setExpToDrop(exp);
+                    MinecraftForge.EVENT_BUS.post(event);
+                    if(event.isCanceled()) return false;
+                    exp = event.getExpToDrop();
+                }
+
+                ItemStack result = ItemStack.EMPTY;
+                TileEntity te = null;
+                if (state.hasTileEntity())
+                    te = world.getTileEntity(pos);
+
+                try {
+                    result = state.getPickBlock(null, world, pos, null);
+                } catch (Exception ignored) {
+
+                }
+
+                if (result.isEmpty())
+                    return false;
+                if(te != null) {
+                    storeTEInStack(result, te);
+                } //else
+                //result.setCount((int) context.range);
+
+                if (world instanceof ServerWorld) {
+                    block.dropXpOnBlockBreak((ServerWorld) world, pos, exp);
+                }
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                world.playEvent(2001, pos, Block.getStateId(state));
+                ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
+                world.addEntity(entity);
+                return true;
+            }
+            return false;
+        }
         if(!(context.victim instanceof LivingEntity)) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, context.tick * 10));
     }

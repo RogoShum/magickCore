@@ -31,11 +31,15 @@ import java.util.List;
 
 public class ArcAbility{
     public static boolean hitEntity(MagickContext context) {
+        if(context.doBlock)
+            return charge(context);
         if(context.victim == null) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
     }
 
     public static boolean damageEntity(MagickContext context) {
+        if(context.doBlock)
+            return charge(context);
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.PARALYSIS))
             context.force *= 1.25f;
@@ -113,7 +117,7 @@ public class ArcAbility{
                     if(applyTypeContext.applyType == ApplyType.DIFFUSION)
                         extract = true;
                 }
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 25;
                 if(!extract)
                     EnergyUtil.receiveEnergy(tile, mana);
                 else {
@@ -127,7 +131,23 @@ public class ArcAbility{
         return false;
     }
 
+    public static boolean charge(MagickContext context) {
+        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            BlockPos pos = new BlockPos(positionContext.pos);
+            if(context.world.getTileEntity(pos) != null) {
+                TileEntity tile = context.world.getTileEntity(pos);
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
+                EnergyUtil.receiveEnergy(tile, mana);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean applyBuff(MagickContext context) {
+        if(context.doBlock)
+            return charge(context);
         if(context.force >= 1 && context.victim instanceof LivingEntity) {
             boolean flag = ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick * 2, (int) (context.force - 1)));
             if(((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.HASTE, context.tick * 2, (int) (context.force - 1))))
@@ -138,6 +158,8 @@ public class ArcAbility{
     }
 
     public static boolean applyDebuff(MagickContext context) {
+        if(context.doBlock)
+            return charge(context);
         if(context.victim == null) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
     }
@@ -152,6 +174,21 @@ public class ArcAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
+        if(context.doBlock) {
+            if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+                PositionContext positionContext = context.getChild(LibContext.POSITION);
+                BlockPos pos = new BlockPos(positionContext.pos);
+                if(context.world.getTileEntity(pos) != null) {
+                    TileEntity tile = context.world.getTileEntity(pos);
+                    int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
+                    int get = (int) (EnergyUtil.extractEnergy(tile, mana) * 0.03);
+                    if(get > 0 && context.caster != null)
+                        ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + get));
+                    return true;
+                }
+            }
+        }
+
         if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof LivingEntity)) return false;
         float health = context.force * 0.5f;
         if(context.victim.attackEntityFrom(ModDamages.getArcDamage(), health)) {
@@ -163,6 +200,8 @@ public class ArcAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
+        if(context.doBlock)
+            return charge(context);
         if(context.victim == null) return false;
         Vector3d motion = Vector3d.ZERO;
         if(context.containChild(LibContext.DIRECTION)) {

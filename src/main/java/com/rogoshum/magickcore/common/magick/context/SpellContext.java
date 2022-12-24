@@ -184,15 +184,15 @@ public class SpellContext {
         if(applyType != ApplyType.NONE)
             toolTip.nextTrans(LibItem.MANA_TYPE, new TranslationTextComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(force > 0)
-            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.BLUE, ToolTipHelper.GREY);
         if(range > 0)
-            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.BLUE, ToolTipHelper.GREY);
         if(tick > 0)
-            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
 
         childContexts.values().forEach((context) -> {
             toolTip.push();
-            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
             toolTip.pop();
         });
 
@@ -201,6 +201,32 @@ public class SpellContext {
                 toolTip.builder.append(postContext.getString(1));
             else
                 toolTip.builder.append(postContext.getString(0));
+        }
+
+        return toolTip.getString();
+    }
+
+    public String toStringSample() {
+        ToolTipHelper toolTip = new ToolTipHelper();
+        toolTip.builder.append(ToolTipHelper.DEEP_GREY).append(new TranslationTextComponent(MagickCore.MOD_ID + ".description.press_sneak").getString());
+        if(element != ModElements.ORIGIN)
+            toolTip.nextTrans(LibItem.ELEMENT, new TranslationTextComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+        if(applyType != ApplyType.NONE)
+            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslationTextComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+
+        childContexts.values().forEach((context) -> {
+            if(context.getLinkType() == applyType) {
+                toolTip.push();
+                toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
+                toolTip.pop();
+            }
+        });
+
+        if(postContext != null) {
+            if(applyType.isForm())
+                toolTip.builder.append(postContext.getStringSample(1));
+            else
+                toolTip.builder.append(postContext.getStringSample(0));
         }
 
         return toolTip.getString();
@@ -215,15 +241,15 @@ public class SpellContext {
         if(applyType != ApplyType.NONE)
             toolTip.nextTrans(LibItem.MANA_TYPE, new TranslationTextComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(force > 0)
-            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.BLUE, ToolTipHelper.GREY);
         if(range > 0)
-            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.BLUE, ToolTipHelper.GREY);
         if(tick > 0)
-            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
 
         childContexts.values().forEach((context) -> {
             toolTip.push();
-            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
             toolTip.pop();
         });
 
@@ -232,6 +258,34 @@ public class SpellContext {
                 toolTip.builder.append(postContext.getString(tab + 1));
             else
                 toolTip.builder.append(postContext.getString(tab));
+        }
+
+        toolTip.nextLine("}");
+        return toolTip.getString();
+    }
+
+    public String getStringSample(int tab) {
+        ToolTipHelper toolTip = new ToolTipHelper();
+        toolTip.tab = tab;
+        toolTip.nextLine("{");
+        if(element != ModElements.ORIGIN)
+            toolTip.nextTrans(LibItem.ELEMENT, new TranslationTextComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+        if(applyType != ApplyType.NONE)
+            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslationTextComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+
+        childContexts.values().forEach((context) -> {
+            if(context.getLinkType() == applyType) {
+                toolTip.push();
+                toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
+                toolTip.pop();
+            }
+        });
+
+        if(postContext != null) {
+            if(applyType.isForm())
+                toolTip.builder.append(postContext.getStringSample(tab + 1));
+            else
+                toolTip.builder.append(postContext.getStringSample(tab));
         }
 
         toolTip.nextLine("}");

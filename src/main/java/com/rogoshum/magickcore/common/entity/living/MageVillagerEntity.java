@@ -118,9 +118,13 @@ public class MageVillagerEntity extends VillagerEntity implements IManaTaskMob {
 
 
         attackContext = Queues.newArrayDeque();
-        context = SpellContext.create().applyType(ApplyType.ATTACK)
-                .force(4).tick(200).element(MagickRegistry.getElement(LibElements.STASIS))
-                .addChild(ConditionContext.create(new DistanceCondition().distance(4.0d)));
+        context = SpellContext.create().applyType(ApplyType.SPAWN_ENTITY)
+                .range(5).tick(40).element(MagickRegistry.getElement(LibElements.STASIS))
+                .addChild(SpawnContext.create(ModEntities.SPHERE.get()))
+                .addChild(ConditionContext.create(new DistanceCondition().distance(4.0d)))
+                .post(SpellContext.create().applyType(ApplyType.ATTACK)
+                        .force(20).tick(400).element(MagickRegistry.getElement(LibElements.STASIS)));
+
         attackContext.add(context);
         context = SpellContext.create().applyType(ApplyType.ATTACK)
                 .force(3).tick(40).element(MagickRegistry.getElement(LibElements.VOID));

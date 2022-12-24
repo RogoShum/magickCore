@@ -49,9 +49,6 @@ public class ItemStackButton extends Button {
         int j = getFGColor();
         drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + 21, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
         minecraft.getItemRenderer().renderItemIntoGUI(stack, this.x+2, this.y+2);
-        if (this.isHovered()) {
-            this.renderToolTip(matrixStack, mouseX, mouseY);
-        }
     }
 
     @Override

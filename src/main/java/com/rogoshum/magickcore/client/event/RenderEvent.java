@@ -5,8 +5,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
-import com.rogoshum.magickcore.client.gui.ElementShieldGUI;
-import com.rogoshum.magickcore.client.gui.ManaBuffGUI;
+import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
+import com.rogoshum.magickcore.client.gui.ManaBarHUD;
+import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaItemDurationBarRenderer;
@@ -14,12 +15,10 @@ import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.client.gui.ManaBarGUI;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -71,13 +70,13 @@ public class RenderEvent {
         }
         EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
-            ManaBarGUI manaBarGUI = new ManaBarGUI(event.getMatrixStack(), state);
+            ManaBarHUD manaBarGUI = new ManaBarHUD(event.getMatrixStack(), state);
             manaBarGUI.render();
         } else if(event.getType() == RenderGameOverlayEvent.ElementType.POTION_ICONS) {
-            ManaBuffGUI manaBuffGUI = new ManaBuffGUI(event.getMatrixStack(), state);
-            manaBuffGUI.render();
+            ManaBuffHUD manaBuffHUD = new ManaBuffHUD(event.getMatrixStack(), state);
+            manaBuffHUD.render();
         } else if(event.getType() == RenderGameOverlayEvent.ElementType.HELMET) {
-            ElementShieldGUI elementShieldGUI = new ElementShieldGUI(state);
+            ElementShieldHUD elementShieldGUI = new ElementShieldHUD(state);
             elementShieldGUI.render();
         }
     }
@@ -141,7 +140,8 @@ public class RenderEvent {
             Iterator<LitParticle> particleIterator = particleQueue.iterator();
             while (particleIterator.hasNext()) {
                 LitParticle particle = particleIterator.next();
-                particle.render(renderParams);
+                if(particle.render)
+                    particle.render(renderParams);
             }
 
             RenderHelper.queueMode = false;

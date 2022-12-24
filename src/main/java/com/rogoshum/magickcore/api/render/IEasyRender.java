@@ -17,4 +17,6 @@ public interface IEasyRender extends IPositionEntity {
         return false;
     }
     default boolean hasRenderer() {return true; }
+
+    default void setShouldRender(boolean should) {}
 }

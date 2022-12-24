@@ -6,6 +6,8 @@
     "itemGroup.magickcore_potion_type_group": "魔力药水",
 
     "gui.magickcore.category.magick_crafting": "魔法工作台",
+    "key.category.magickcore": "魔法核心按键配置",
+    "magickcore.key.spell": "切换完备法术",
 
     //物品
     "item.magickcore.star_staff": "零星法杖",
@@ -207,6 +209,7 @@
     "block.magickcore.item_extractor": "物品抽取器",
 
     //描述
+    "magickcore.description.press_sneak": "按下潜行查看详细信息",
     "magickcore.description.element": "元素",
     "magickcore.description.material": "核心",
     "magickcore.description.force": "强度",
@@ -354,6 +357,8 @@
     "entity.magickcore.artificial_life": "人造生命",
     "entity.magickcore.spin": "自旋点",
     "entity.magickcore.chain": "魔力锁链",
+    "entity.magickcore.charge": "充能",
+    "entity.magickcore.multi_release": "多重施法",
 
     "entity.magickcore.mage": "流浪法师",
     "entity.minecraft.villager.magickcore.mage": "法师",
@@ -366,15 +371,20 @@
 
     "death.attack.magickcore-void": "%1$s 体验了一下 §5虚空魔法",
     "death.attack.magickcore-void.player": "%2$s 让 %1$s 品尝了一番 §5虚空魔法",
-    "death.attack.magickcore-void.item": "%2$s 让 %1$s 品尝了一番 §5虚空魔法",
-    "death.attack.magickcore-solar": "%1$s 体验了一下 §5烈焰魔法",
-    "death.attack.magickcore-solar.player": "%2$s 让 %1$s 品尝了一番 §5烈焰魔法",
-    "death.attack.magickcore-wither": "%1$s 体验了一下 §5枯萎魔法",
-    "death.attack.magickcore-wither.player": "%2$s 让 %1$s 品尝了一番 §5枯萎魔法",
-    "death.attack.magickcore-taken": "%1$s 体验了一下 §5夺魂魔法",
-    "death.attack.magickcore-taken.player": "%2$s 让 %1$s 品尝了一番 §5夺魂魔法",
-    "death.attack.magickcore-arc": "%1$s 体验了一下 §5电弧魔法",
-    "death.attack.magickcore-arc.player": "%2$s 让 %1$s 品尝了一番 §5电弧魔法",
-    "death.attack.magickcore-stasis": "%1$s 体验了一下 §5冰影魔法",
-    "death.attack.magickcore-stasis.player": "%2$s 让 %1$s 品尝了一番 §5冰影魔法"
+    "death.attack.magickcore-void.item": "%2$s 用 %3$s 中蕴含的 §5虚空元素 吞噬了 %1$s",
+    "death.attack.magickcore-solar": "%1$s 体验了一下 §6烈焰魔法",
+    "death.attack.magickcore-solar.player": "%2$s 让 %1$s 品尝了一番 §6烈焰魔法",
+    "death.attack.magickcore-solar.item": "%2$s 用 %3$s 中蕴含的 §6烈焰元素 将 %1$s 化为了灰烬",
+    "death.attack.magickcore-wither": "%1$s 体验了一下 §2枯萎魔法",
+    "death.attack.magickcore-wither.player": "%2$s 让 %1$s 品尝了一番 §2枯萎魔法",
+    "death.attack.magickcore-wither.item": "%2$s 用 %3$s 中蕴含的 §2枯萎元素 粉碎了 %1$s",
+    "death.attack.magickcore-taken": "%1$s 体验了一下 §8夺魂魔法",
+    "death.attack.magickcore-taken.player": "%2$s 让 %1$s 品尝了一番 §8夺魂魔法",
+    "death.attack.magickcore-taken.item": "%2$s 用 %3$s 中蕴含的 §8夺魂元素 夺走了 %1$s 的灵魂",
+    "death.attack.magickcore-arc": "%1$s 体验了一下 §b电弧魔法",
+    "death.attack.magickcore-arc.player": "%2$s 让 %1$s 品尝了一番 §b电弧魔法",
+    "death.attack.magickcore-arc.item": "%2$s 用 %3$s 中蕴含的 §b电弧元素 击碎了 %1$s",
+    "death.attack.magickcore-stasis": "%1$s 体验了一下 §3冰影魔法",
+    "death.attack.magickcore-stasis.player": "%2$s 让 %1$s 品尝了一番 §3冰影魔法",
+    "death.attack.magickcore-stasis.item": "%2$s 用 %3$s 中蕴含的 §3冰影元素 停滞了 %1$s 的生命能量"
 }

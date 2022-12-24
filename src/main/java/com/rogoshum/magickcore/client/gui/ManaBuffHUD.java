@@ -2,37 +2,29 @@ package com.rogoshum.magickcore.client.gui;
 
 import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.magick.Color;
-import net.minecraft.block.PumpkinBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Collection;
 import java.util.HashMap;
 
-public class ManaBuffGUI extends AbstractGui {
+public class ManaBuffHUD extends AbstractGui {
     private final int width;
     private static final HashMap<String, ResourceLocation> buffTexture = new HashMap<>();
     private final Minecraft minecraft;
     private MatrixStack matrixStack;
     private final EntityStateData state;
 
-    public ManaBuffGUI(MatrixStack matrixStack, EntityStateData state) {
+    public ManaBuffHUD(MatrixStack matrixStack, EntityStateData state) {
         this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
         this.minecraft = Minecraft.getInstance();
         this.matrixStack = matrixStack;

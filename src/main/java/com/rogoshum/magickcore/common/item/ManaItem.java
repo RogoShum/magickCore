@@ -11,7 +11,10 @@ import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,6 +28,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -77,9 +82,16 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         ExtraDataUtil.itemManaData(stack, data -> {
-            String information = data.spellContext().toString();
+            String information = "";
+            KeyBinding key = Minecraft.getInstance().gameSettings.keyBindSneak;
+            boolean isKeyDown = InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), key.getKey().getKeyCode());
+            if(isKeyDown)
+                information = data.spellContext().toString();
+            else
+                information = data.spellContext().toStringSample();
             if(!information.isEmpty()) {
                 String[] tips = information.split("\n");
                 for (String tip : tips) {

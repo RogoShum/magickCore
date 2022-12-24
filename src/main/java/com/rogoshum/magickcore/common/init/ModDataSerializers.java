@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.IDataSerializer;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
@@ -63,6 +64,26 @@ public class ModDataSerializers {
         }
     };
 
+    public static final IDataSerializer<Vector3d> VECTOR3D = new IDataSerializer<Vector3d>() {
+        @Override
+        public void write(PacketBuffer buf, Vector3d value) {
+            buf.writeDouble(value.x);
+            buf.writeDouble(value.y);
+            buf.writeDouble(value.z);
+        }
+
+        @Override
+        public Vector3d read(PacketBuffer buf) {
+            return new Vector3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        }
+
+        @Override
+        public Vector3d copyValue(Vector3d value) {
+            return new Vector3d(value.x, value.y, value.z);
+        }
+    };
+
     private static final RegistryObject<DataSerializerEntry> MANA_CAPACITY_REGISTRY = DATA_SERIALIZERS.register("mana_capacity", () -> new DataSerializerEntry(MANA_CAPACITY));
     private static final RegistryObject<DataSerializerEntry> SPELL_CONTEXT_REGISTRY = DATA_SERIALIZERS.register("spell_context", () -> new DataSerializerEntry(SPELL_CONTEXT));
+    private static final RegistryObject<DataSerializerEntry> VECTOR3D_REGISTRY = DATA_SERIALIZERS.register("vector3d", () -> new DataSerializerEntry(VECTOR3D));
 }

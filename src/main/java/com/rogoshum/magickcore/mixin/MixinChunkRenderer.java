@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(WorldRenderer.class)
 
 public abstract class MixinChunkRenderer {
+    /*
     @ModifyVariable(method = "renderBlockLayer",
             at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender.getPosition ()Lnet/minecraft/util/math/BlockPos;")
             )
@@ -18,4 +19,6 @@ public abstract class MixinChunkRenderer {
         MinecraftForge.EVENT_BUS.post(new PreRenderChunkEvent(chunkrenderdispatcher$chunkrender.getPosition()));
         return chunkrenderdispatcher$chunkrender;
     }
+
+     */
 }

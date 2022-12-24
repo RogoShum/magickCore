@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.google.common.collect.Lists;
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class MultiReleaseEntity extends ManaEntity {
+    private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/multi_release.png");
     private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(MultiReleaseEntity.class, DataSerializers.VARINT);
     protected Entity target;
     protected ManaFactor former;
@@ -97,6 +100,7 @@ public class MultiReleaseEntity extends ManaEntity {
             MagickReleaseHelper.releaseMagick(beforeCast(context));
         }
         remove();
+        ParticleUtil.spawnImpactParticle(world, this.getPositionVec(), 1, direction.normalize().scale(0.2), spellContext().element, ParticleType.PARTICLE);
         return true;
     }
 
@@ -106,7 +110,7 @@ public class MultiReleaseEntity extends ManaEntity {
 
     @Override
     public ResourceLocation getEntityIcon() {
-        return null;
+        return ICON;
     }
 
     @Override

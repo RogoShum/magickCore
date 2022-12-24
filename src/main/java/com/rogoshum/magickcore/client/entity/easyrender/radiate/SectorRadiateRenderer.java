@@ -56,9 +56,8 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
         super.update();
         if(this.vector3dList.isEmpty()) {
             scale = entity.getRange();
-            scale = Math.max(3, scale);
             List<Vector3d> vector3dList = new ArrayList<>();
-            Vector3d[] vectors = ParticleUtil.drawCone(Vector3d.ZERO, new Vector3d(Direction.UP.toVector3f()).scale(scale), 90.0, (int) scale * 2);
+            Vector3d[] vectors = ParticleUtil.drawCone(Vector3d.ZERO, new Vector3d(Direction.UP.toVector3f()).scale(scale), 90.0, (int) Math.max(3, scale) * 2);
             for (Vector3d vec : vectors) {
                 vector3dList.add(vec);
                 vector3dList.add(Vector3d.ZERO);

@@ -416,10 +416,26 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void HitEntity(EntityEvents.HitEntityEvent event) {
 		if(event.getEntity() instanceof ISpellContext) {
+			float force = 0;
+			float range = 0;
+			int tick = 0;
 			SpellContext mana = ((ISpellContext) event.getEntity()).spellContext();
-			MagickContext attribute = new MagickContext(event.getEntity().world).noCost().caster(event.getEntity()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(ApplyType.HIT_ENTITY);
+			force = mana.force;
+			range = mana.range;
+			tick = mana.tick;
+			if(mana.postContext != null)
+				mana = mana.postContext;
+			force = Math.max(force, mana.force);
+			range = Math.max(range, mana.range);
+			tick = Math.max(tick, mana.tick);
+
+			MagickContext attribute = new MagickContext(event.getEntity().world).noCost()
+					.caster(event.getEntity()).projectile(event.getEntity()).victim(event.getVictim())
+					.tick(tick).range(range).force(force).applyType(ApplyType.HIT_ENTITY);
 			if(event.getEntity() instanceof IOwnerEntity)
-				attribute = new MagickContext(event.getEntity().world).noCost().caster(((IOwnerEntity) event.getEntity()).getOwner()).projectile(event.getEntity()).victim(event.getVictim()).tick(mana.tick).force(mana.force).applyType(ApplyType.HIT_ENTITY);
+				attribute = new MagickContext(event.getEntity().world).noCost()
+						.caster(((IOwnerEntity) event.getEntity()).getOwner()).projectile(event.getEntity()).victim(event.getVictim())
+						.tick(tick).range(range).force(force).applyType(ApplyType.HIT_ENTITY);
 			MagickReleaseHelper.releaseMagick(attribute);
 		}
 	}
@@ -614,7 +630,7 @@ public class MagickLogicEvent {
 			if(damageEvent.getAmount() <= 0)
 				event.setCanceled(true);
 			else
-				damageEvent.setAmount(damageEvent.getAmount() * 0.75f);
+				damageEvent.setAmount(damageEvent.getAmount() * (10 - Math.min(2.5f, reduceAmount)) * 0.1f);
 		} else if (event instanceof LivingAttackEvent) {
 			LivingAttackEvent damageEvent = (LivingAttackEvent) event;
 			float amount = damageEvent.getAmount() - reduceAmount;
@@ -624,7 +640,7 @@ public class MagickLogicEvent {
 	}
 
 	public void onDamage(DamageSource damageSource, LivingEvent event, EntityStateData state, Entity trueSource) {
-		float reduceAmount = state.getMaxManaValue() * 0.001f;
+		float reduceAmount = state.getMaxManaValue() * 0.0005f;
 
 		if(state.getElement() == ModElements.SOLAR) {
 			if(damageSource.isFireDamage() || damageSource.isExplosion()) {

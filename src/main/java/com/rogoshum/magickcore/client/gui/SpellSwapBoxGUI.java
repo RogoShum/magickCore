@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.SliderPercentageOption;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -34,23 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SpellSwapBoxGUI extends Screen {
-    /*
-    player 持续Tag记录法术Stack
-    初始栈长度3，钻石+灵魂水晶合成可以逐步增加到6
-    岩浆膏+灵魂水晶逐步到9
-    紫颂果+灵魂水晶逐步到12
-
-    手持法术长按R键推送法术入栈
-    空手长按R出栈 潜行长按一次出栈3个
-
-    手持法杖按R交换ItemStack （GUI）
-
-    法杖改名：合成时法杖NBT记录原名，核心名字赋予法杖，复原时法杖名字跟随核心，NBT变回原名
-     */
-    //private final ResourceLocation TEXTURE = new ResourceLocation(MagickCore.MOD_ID, "textures/gui/element_shield.png");
-    List<Button> buttons;
-    TranslationTextComponent content = new TranslationTextComponent("gui." + MagickCore.MOD_ID + ".first");
     ItemStack heldItem = ItemStack.EMPTY;
+    ItemStack hoverItem = ItemStack.EMPTY;
 
     public SpellSwapBoxGUI(ITextComponent titleIn) {
         super(titleIn);
@@ -113,7 +99,6 @@ public class SpellSwapBoxGUI extends Screen {
             y+=30;
             i++;
         }
-
         super.init();
     }
 
@@ -122,10 +107,37 @@ public class SpellSwapBoxGUI extends Screen {
         this.renderBackground(matrixStack);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.pushMatrix();
-        RenderSystem.scaled(5, 5, 5);
+        RenderSystem.scaled(5, 5, 0);
         minecraft.getItemRenderer().renderItemIntoGUI(heldItem, width / 12, height / 16);
         RenderSystem.popMatrix();
         drawCenteredString(matrixStack, this.font, heldItem.getDisplayName(), this.width / 2, (int) (this.height * 0.7), 0xFFFFFF);
+        boolean hover = false;
+        for (Widget button : buttons) {
+            if(button instanceof ItemStackButton) {
+                ItemStackButton itemStackButton = (ItemStackButton) button;
+                if(isSlotSelected(itemStackButton, mouseX, mouseY)) {
+                    hoverItem = itemStackButton.stack;
+                    hover = true;
+                }
+            }
+        }
+        if(hover) {
+            renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        }
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    protected void renderHoveredTooltip(MatrixStack matrixStack, int x, int y) {
+        if (this.minecraft.player.inventory.getItemStack().isEmpty() && this.hoverItem != null && !this.hoverItem.isEmpty()) {
+            this.renderTooltip(matrixStack, hoverItem, x, y);
+        }
+    }
+
+    private boolean isSlotSelected(ItemStackButton button, double mouseX, double mouseY) {
+        return this.isPointInRegion(button.x, button.y, button.getWidth(), button.getWidth(), mouseX, mouseY);
+    }
+
+    protected boolean isPointInRegion(int x, int y, int width, int height, double mouseX, double mouseY) {
+        return mouseX >= (double)(x - 1) && mouseX < (double)(x + width + 1) && mouseY >= (double)(y - 1) && mouseY < (double)(y + height + 1);
     }
 }

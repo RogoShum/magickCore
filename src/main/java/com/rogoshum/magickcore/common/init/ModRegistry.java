@@ -76,6 +76,7 @@ public class ModRegistry {
                     functions.add(ApplyType.HIT_BLOCK, TakenAbility::hitBlock);
                     functions.add(ApplyType.SUPER, TakenAbility::superEntity);
                     functions.add(ApplyType.AGGLOMERATE, TakenAbility::agglomerate);
+                    functions.add(ApplyType.DIFFUSION, TakenAbility::diffusion);
                     break;
                 case LibElements.WITHER:
                     functions.add(ApplyType.ATTACK, WitherAbility::damageEntity);
@@ -86,6 +87,7 @@ public class ModRegistry {
                     functions.add(ApplyType.ELEMENT_TOOL, WitherAbility::applyToolElement);
                     functions.add(ApplyType.SUPER, WitherAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, WitherAbility::diffusion);
+                    functions.add(ApplyType.AGGLOMERATE, WitherAbility::agglomerate);
             }
         });
 

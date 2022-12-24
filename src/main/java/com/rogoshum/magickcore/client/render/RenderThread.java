@@ -64,17 +64,30 @@ public class RenderThread extends Thread {
                     while (it.hasNext()) {
                         IEasyRender renderer = it.next();
                         if(!renderer.alive()) {
+                            renderer.setShouldRender(false);
                             it.remove();
                             continue;
                         }
                         if(!renderer.forceRender()) {
-                            if(!clippinghelper.isBoundingBoxInFrustum(renderer.boundingBox())) continue;
+                            if(!clippinghelper.isBoundingBoxInFrustum(renderer.boundingBox())) {
+                                renderer.setShouldRender(false);
+                                continue;
+                            }
                             Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-                            if(!RenderHelper.isInRangeToRender3d(renderer, vec.x, vec.y, vec.z, scale)) continue;
-                            if(!RenderHelper.shouldRender(renderer.boundingBox())) continue;
+                            if(!RenderHelper.isInRangeToRender3d(renderer, vec.x, vec.y, vec.z, scale)) {
+                                renderer.setShouldRender(false);
+                                continue;
+                            }
+                            if(!RenderHelper.shouldRender(renderer.boundingBox())) {
+                                renderer.setShouldRender(false);
+                                continue;
+                            }
                         }
+                        renderer.setShouldRender(true);
                         renderer.update();
-                        if(!renderer.hasRenderer()) continue;
+                        if(!renderer.hasRenderer()) {
+                            continue;
+                        }
                         HashMap<RenderMode, Consumer<RenderParams>> render = renderer.getRenderFunction();
                         if(render != null) {
                             for (RenderMode bufferMode : render.keySet()) {

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.gui.ManaBuffGUI;
+import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -78,7 +78,7 @@ public abstract class MixinDisplayEffectsScreen<T extends Container> extends Con
     protected void onRenderEffectSprites(MatrixStack matrixStack, int p_238812_2_, int p_238812_3_, Iterable<EffectInstance> effects, CallbackInfo ci, PotionSpriteUploader potionspriteuploader, int i) {
         if(!manaBuffHashMap.isEmpty()) {
             for(String buff : manaBuffHashMap.keySet()) {
-                this.minecraft.getTextureManager().bindTexture(ManaBuffGUI.getBuffTexture(buff));
+                this.minecraft.getTextureManager().bindTexture(ManaBuffHUD.getBuffTexture(buff));
                 blit(matrixStack, p_238812_2_ + 6, i + 7, this.getBlitOffset(), 0, 0, 16, 16, 18, 18);
                 i += p_238812_3_;
             }
@@ -116,7 +116,7 @@ public abstract class MixinDisplayEffectsScreen<T extends Container> extends Con
         HashMap<String, ManaBuff> buffs = new HashMap<>();
         if(state != null && !state.getBuffList().isEmpty())
             buffs.putAll(state.getBuffList());
-        buffs.keySet().removeIf((key) -> ManaBuffGUI.getBuffTexture(key) == RenderHelper.EMPTY_TEXTURE);
+        buffs.keySet().removeIf((key) -> ManaBuffHUD.getBuffTexture(key) == RenderHelper.EMPTY_TEXTURE);
         manaBuffHashMap = buffs;
         if (collection.isEmpty() && !buffs.isEmpty()) {
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -157,7 +157,7 @@ public abstract class MixinDisplayEffectsScreen<T extends Container> extends Con
         int i = this.guiTop;
 
         for(String buff : buffs) {
-            this.minecraft.getTextureManager().bindTexture(ManaBuffGUI.getBuffTexture(buff));
+            this.minecraft.getTextureManager().bindTexture(ManaBuffHUD.getBuffTexture(buff));
             blit(matrixStack, p_238812_2_ + 6, i + 7, this.getBlitOffset(), 0, 0, 16, 16, 18, 18);
             i += p_238812_3_;
         }

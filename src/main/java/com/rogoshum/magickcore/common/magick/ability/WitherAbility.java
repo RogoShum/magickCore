@@ -29,6 +29,7 @@ import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
@@ -131,18 +132,6 @@ public class WitherAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(!context.containChild(LibContext.APPLY_TYPE)) return false;
-        ExtraApplyTypeContext typeContext = context.getChild(LibContext.APPLY_TYPE);
-        if(typeContext.applyType != ApplyType.AGGLOMERATE) return false;
-        if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
-            PositionContext positionContext = context.getChild(LibContext.POSITION);
-            BlockPos pos = new BlockPos(positionContext.pos);
-            BlockState blockstate = context.world.getBlockState(pos);
-            if(growBlock(context, blockstate.getBlock(), pos, blockstate))
-                return true;
-            blockstate = context.world.getBlockState(pos.up());
-            return growBlock(context, blockstate.getBlock(), pos.up(), blockstate);
-        }
         return false;
     }
 
@@ -150,53 +139,66 @@ public class WitherAbility{
         if (state.getBlock() instanceof IGrowable) {
             IGrowable igrowable = (IGrowable)state.getBlock();
             for (int i = 0; i < context.force; i++) {
-                igrowable.grow((ServerWorld)context.world, context.world.rand, pos.up(), state);
+                if(igrowable.canGrow((ServerWorld)context.world, pos, state, false))
+                    igrowable.grow((ServerWorld)context.world, context.world.rand, pos, context.world.getBlockState(pos));
+                spawnLoot(context, block,  pos, context.world.getBlockState(pos), CropsBlock.AGE);
             }
-            spawnLoot(context, block, pos, state);
             return true;
         } else {
             boolean hasAge = false;
+            IntegerProperty integerProperty = null;
             int force = (int) context.force;
-            if(containProperty(state, BlockStateProperties.AGE_0_1, force)) {
+            if(containProperty(context.world, pos, BlockStateProperties.AGE_0_1, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_2, force)) {
+                integerProperty = BlockStateProperties.AGE_0_1;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_2, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_2, force)) {
+                integerProperty = BlockStateProperties.AGE_0_2;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_3, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_3, force)) {
+                integerProperty = BlockStateProperties.AGE_0_3;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_5, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_5, force)) {
+                integerProperty = BlockStateProperties.AGE_0_5;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_7, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_7, force)) {
+                integerProperty = BlockStateProperties.AGE_0_7;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_15, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_15, force)) {
+                integerProperty = BlockStateProperties.AGE_0_15;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_25, force)) {
                 hasAge = true;
-            } else if(containProperty(state, BlockStateProperties.AGE_0_25, force)) {
-                hasAge = true;
+                integerProperty = BlockStateProperties.AGE_0_25;
             }
             if(hasAge)
-                spawnLoot(context, block, pos, state);
+                spawnLoot(context, block, pos, state, integerProperty);
             return hasAge;
         }
     }
 
-    public static boolean containProperty(BlockState state, IntegerProperty integerProperty, int force) {
+    public static boolean containProperty(World world, BlockPos pos, IntegerProperty integerProperty, int force) {
+        BlockState state = world.getBlockState(pos);
         if (state.getProperties().stream().anyMatch(p -> p.equals(integerProperty))) {
             int age = (force + state.get(integerProperty));
             Collection<Integer> integers = integerProperty.getAllowedValues();
             if(integers.size() < 1) return false;
-            if(integers.contains(age)) {
-                state.with(integerProperty, age);
-            } else {
+            if (!integers.contains(age)) {
                 age = (int) integers.toArray()[integers.size() - 1];
-                state.with(integerProperty, age);
             }
+            world.setBlockState(pos, state.with(integerProperty, age));
             return true;
         }
         return false;
     }
 
-    public static void spawnLoot(MagickContext context, Block block, BlockPos pos, BlockState state) {
+    public static void spawnLoot(MagickContext context, Block block, BlockPos pos, BlockState state, IntegerProperty property) {
+        if (state.getProperties().stream().anyMatch(p -> p.equals(property))) {
+            Collection<Integer> integers = property.getAllowedValues();
+            if(state.get(property) != (int) integers.toArray()[integers.size() - 1])
+                return;
+        }
+         else
+             return;
         LootContext.Builder lootContext = new LootContext.Builder((ServerWorld) context.world)
                 .withParameter(LootParameters.field_237457_g_, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
                 .withParameter(LootParameters.BLOCK_STATE, state)
@@ -204,17 +206,7 @@ public class WitherAbility{
         lootContext.withParameter(LootParameters.TOOL, ItemStack.EMPTY);
         List<ItemStack> drops = state.getDrops(lootContext);
 
-        BlockState newState = block.getDefaultState();
-
-        if (state.getProperties().stream().anyMatch(p -> p.equals(HorizontalBlock.HORIZONTAL_FACING))) {
-            newState = newState.with(HorizontalBlock.HORIZONTAL_FACING, state.get(HorizontalBlock.HORIZONTAL_FACING));
-        }
-
-        if (state.getProperties().stream().anyMatch(p -> p.equals(CropsBlock.AGE))) {
-            newState = state.with(CropsBlock.AGE, 0);
-        }
-
-        context.world.setBlockState(pos, newState);
+        context.world.setBlockState(pos, state.with(property, 0));
 
         for (ItemStack stack : drops) {
             ItemEntity entity = new ItemEntity(context.world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
@@ -269,5 +261,20 @@ public class WitherAbility{
         ((LivingEntity)context.victim).setAbsorptionAmount(((LivingEntity) context.victim).getAbsorptionAmount() + health);
 
         return true;
+    }
+
+    public static boolean agglomerate(MagickContext context) {
+        if(context.doBlock) {
+            if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
+                PositionContext positionContext = context.getChild(LibContext.POSITION);
+                BlockPos pos = new BlockPos(positionContext.pos);
+                BlockState blockstate = context.world.getBlockState(pos);
+                if(growBlock(context, blockstate.getBlock(), pos, blockstate))
+                    return true;
+                blockstate = context.world.getBlockState(pos.up());
+                return growBlock(context, blockstate.getBlock(), pos.up(), blockstate);
+            }
+        }
+        return false;
     }
 }

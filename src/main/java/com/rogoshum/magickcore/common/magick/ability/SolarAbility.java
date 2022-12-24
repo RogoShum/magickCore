@@ -98,13 +98,7 @@ public class SolarAbility{
                 context.world.setBlockState(pos.add(0, 1, 0), Blocks.FIRE.getDefaultState());
                 success = true;
             }
-            if(!context.containChild(LibContext.APPLY_TYPE)) return success;
-            ExtraApplyTypeContext typeContext = context.getChild(LibContext.APPLY_TYPE);
-            if(typeContext.applyType != ApplyType.DIFFUSION) return success;
-            Explosion explosion = context.world.createExplosion(context.caster, pos.getX(), pos.getY(), pos.getZ(), context.force, Explosion.Mode.NONE);
-            success = !explosion.getAffectedBlockPositions().isEmpty();
-            if(success)
-                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, context.force, ModElements.SOLAR, ParticleType.MIST);
+
             return success;
         }
         return false;
@@ -134,6 +128,19 @@ public class SolarAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
+        if(context.doBlock) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            if(positionContext == null)
+                return false;
+            BlockPos pos = new BlockPos(positionContext.pos);
+            Explosion explosion = context.world.createExplosion(context.caster, pos.getX(), pos.getY(), pos.getZ(), context.force, Explosion.Mode.NONE);
+            boolean success = !explosion.getAffectedBlockPositions().isEmpty();
+            if(success) {
+                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, context.force, ModElements.SOLAR, ParticleType.MIST);
+                return true;
+            } else
+                return false;
+        }
         if(context.victim == null) return false;
         Explosion explosion = context.world.createExplosion(context.caster, context.victim.getPosX(), context.victim.getPosY(), context.victim.getPosZ(), context.force, Explosion.Mode.NONE);
         boolean success = !explosion.getAffectedBlockPositions().isEmpty();

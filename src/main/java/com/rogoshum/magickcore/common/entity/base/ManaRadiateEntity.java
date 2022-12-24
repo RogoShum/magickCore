@@ -42,10 +42,10 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     @Override
     public boolean releaseMagick() {
-        if(!spellContext().valid()) return false;
+        if(!spellContext().valid() || world.isRemote) return false;
         AtomicBoolean entityOnly = new AtomicBoolean(false);
         AtomicBoolean blockOnly = new AtomicBoolean(false);
-        AtomicBoolean released = new AtomicBoolean(false);
+        boolean released = false;
 
         ConditionContext condition = null;
         if(spellContext().containChild(LibContext.CONDITION))
@@ -75,22 +75,22 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                         .victim(living).noCost();
                 boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
                 if(success)
-                    released.set(true);
+                    released = true;
             }
         }
 
-        if(released.get())
+        if(released)
             cast = true;
 
 
-        if(!entityOnly.get() && !released.get() && this.ticksExisted == 1) {
+        if(!entityOnly.get() && !released && this.ticksExisted == 1) {
             Iterable<BlockPos> blocks = findBlocks();
             Predicate<BlockPos> posPredicate = blockPosPredicate();
             for (BlockPos pos : blocks) {
                 if(!posPredicate.test(pos)) continue;
                 if(condition != null && !condition.test(null, world.getBlockState(pos).getBlock()))
                     continue;
-                MagickContext context = MagickContext.create(this.world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK)
+                MagickContext context = MagickContext.create(this.world, spellContext().postContext).doBlock()
                         .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
                         .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
                         .caster(getOwner()).projectile(this).noCost();
@@ -98,11 +98,11 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                     context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
                 boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
                 if(success)
-                    released.set(true);
+                    released = true;
             }
         }
 
-        if(released.get()) {
+        if(released) {
             if(!world.isRemote)
                 world.setEntityState(this, (byte)14);
             else
@@ -110,7 +110,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             this.remove();
         }
 
-        return released.get();
+        return released;
     }
 
     @Override

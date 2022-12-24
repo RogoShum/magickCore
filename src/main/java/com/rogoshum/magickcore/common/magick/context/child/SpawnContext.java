@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.context.child;
 
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,6 +10,11 @@ import java.util.Optional;
 
 public class SpawnContext extends ChildContext {
     public EntityType<?> entityType = null;
+
+    @Override
+    public ApplyType getLinkType() {
+        return ApplyType.SPAWN_ENTITY;
+    }
 
     public static SpawnContext create(EntityType<?> entityType) {
         SpawnContext context = new SpawnContext();

@@ -80,13 +80,12 @@ public class MagickReleaseHelper {
             EntityType<?> type = context.<SpawnContext>getChild(LibContext.SPAWN).entityType;
             baseMana += (type.getHeight() + type.getWidth()) * 30;
         }
-        if(context.containChild(LibContext.MULTI_RELEASE))
-            baseMana *= 0.5f;
         return baseMana;
     }
 
     public static EntityEvents.MagickPreReleaseEvent preReleaseMagickEvent(MagickContext context) {
-        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.noCost ? 0 : manaNeed(context));
+        float manaNeed = Math.max(0, manaNeed(context) - context.reduceCost);
+        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(context, context.noCost ? 0 : manaNeed);
         MinecraftForge.EVENT_BUS.post(event);
         return event;
     }
@@ -179,7 +178,7 @@ public class MagickReleaseHelper {
     }
 
     public static boolean spawnEntity(MagickContext context) {
-        if (context.world == null || context.world.isRemote)
+        if (context.doBlock || context.world == null || context.world.isRemote)
             return false;
         if(!context.containChild(LibContext.SPAWN))
             return false;
