@@ -68,6 +68,8 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
         if(p_77663_3_ instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.WAND);
+            if(MagickCore.isModLoaded("curios"))
+                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.RING);
         }
     }
 }

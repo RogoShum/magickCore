@@ -30,17 +30,29 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import java.util.function.Supplier;
 
 public class CCastSpellPack extends EntityPack {
+    private final byte operate;
 
     public CCastSpellPack(PacketBuffer buffer) {
         super(buffer);
+        operate = buffer.readByte();
     }
 
-    public CCastSpellPack(int id) {
+    private CCastSpellPack(int id, byte operate) {
         super(id);
+        this.operate = operate;
+    }
+
+    public static CCastSpellPack cast(int id) {
+        return new CCastSpellPack(id, (byte) 0);
+    }
+
+    public static CCastSpellPack take(int id) {
+        return new CCastSpellPack(id, (byte) 1);
     }
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
+        buf.writeByte(operate);
     }
 
     @Override
@@ -52,16 +64,23 @@ public class CCastSpellPack extends EntityPack {
 
         ItemStack ring = CuriosHelper.getSpiritRing(player);
         if(ring == null || ring.isEmpty()) return;
-        ItemManaData data = ExtraDataUtil.itemManaData(ring);
-        EntityStateData state = ExtraDataUtil.entityStateData(player);
-        MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
-        MagickElement element = data.spellContext().element;
-        MagickContext context = magickContext.caster(player).victim(player).element(element);
-        if(context.containChild(LibContext.TRACE)) {
-            TraceContext traceContext = context.getChild(LibContext.TRACE);
-            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(player);
+        if(operate == 0) {
+            ItemManaData data = ExtraDataUtil.itemManaData(ring);
+            EntityStateData state = ExtraDataUtil.entityStateData(player);
+            MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
+            MagickElement element = data.spellContext().element;
+            MagickContext context = magickContext.caster(player).victim(player).element(element);
+            if(context.containChild(LibContext.TRACE)) {
+                TraceContext traceContext = context.getChild(LibContext.TRACE);
+                traceContext.entity = MagickReleaseHelper.getEntityLookedAt(player);
+            }
+            if(MagickReleaseHelper.releaseMagick(context))
+                ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
+        } else {
+            ItemStack copy = ring.copy();
+            ring.shrink(1);
+            if(!player.addItemStackToInventory(copy))
+                player.dropItem(copy, false, true);
         }
-        if(MagickReleaseHelper.releaseMagick(context))
-            ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
     }
 }

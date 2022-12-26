@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 
@@ -114,6 +115,17 @@ public class StasisAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
+        if(!(context.victim instanceof LivingEntity) && !context.world.isRemote) {
+            Vector3d pos = Vector3d.ZERO;
+            if(context.victim != null)
+                pos = context.victim.getPositionVec();
+            if(context.containChild(LibContext.POSITION))
+                pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
+
+            if(pos.y > 192) {
+                ((ServerWorld)context.world).func_241113_a_(0, 6000, true, false);
+            }
+        }
         if(!(context.victim instanceof LivingEntity) || context.world.isRemote) return false;
         PhantomEntity phantom = new PhantomEntity(ModEntities.PHANTOM.get(), context.world);
         phantom.setEntity((LivingEntity) context.victim);

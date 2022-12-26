@@ -7,15 +7,18 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.network.EntityStatePack;
 import com.rogoshum.magickcore.common.network.Networking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -75,10 +78,34 @@ public class ModBuffs {
         putBuff(LibBuff.TAKEN, LibElements.TAKEN, false, (e, force) ->{}, true);
         putBuff(LibBuff.CRIPPLE, LibElements.WITHER, false, (e, force) ->{}, false);
         putBuff(LibBuff.FREEZE, LibElements.STASIS, false, (e, force) ->{}, false);
-        putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e, force) ->{}, true);
+        putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e, force) ->{
+            force *=2;
+            List<Entity> entityList = e.world.getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(force, force, force));
+
+            for(int i = 0; i< entityList.size(); ++i) {
+                Entity entity = entityList.get(i);
+                if(!MagickReleaseHelper.sameLikeOwner(e, entity)) {
+                    ModBuffs.applyBuff(entity, LibBuff.SLOW, 20, force, true);
+                }
+            }
+        }, true);
         putBuff(LibBuff.LIGHT, LibElements.VOID, true, (e, force) ->{}, true);
         putBuff(LibBuff.INVISIBILITY, LibElements.VOID, true, (e, force) ->{}, true);
-        putBuff(LibBuff.PURE, LibElements.STASIS, true, (e, force) ->{}, true);
+        putBuff(LibBuff.PURE, LibElements.STASIS, true, (e, force) ->{
+            force *=2;
+            List<Entity> entityList = e.world.getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(force, force, force));
+
+            for(int i = 0; i< entityList.size(); ++i) {
+                Entity entity = entityList.get(i);
+                if(!MagickReleaseHelper.sameLikeOwner(e, entity) && !(entity instanceof LivingEntity)) {
+                    double factor = entity.getMotion().normalize().dotProduct(e.getPositionVec().add(0, e.getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
+                    if(factor > 0.8) {
+                        Vector3d motion = entity.getMotion();
+                        entity.addVelocity(-motion.x, -motion.y, -motion.z);
+                    }
+                }
+            }
+        }, true);
     }
 
     protected static void putBuff(String s, String element, boolean beneficial, BiConsumer<? super Entity, Float> func, boolean canRefreshBuff) {

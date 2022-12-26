@@ -35,5 +35,6 @@
 	"beam": { "sounds": ["magickcore:beam"]},
 	"cruise_ship": { "sounds": ["magickcore:cruise_ship"]},
 	"wind": { "sounds": ["magickcore:wind"]},
-	"horror_effect": { "sounds": ["magickcore:horror_effect"]}
+	"horror_effect": { "sounds": ["magickcore:horror_effect"]},
+	"explosion": { "sounds": ["magickcore:explosion"]}
 }

@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -114,35 +115,47 @@ public class TakenAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
-        if(!context.doBlock || !context.containChild(LibContext.POSITION)) return false;
-        PositionContext positionContext = context.getChild(LibContext.POSITION);
-        BlockPos pos = new BlockPos(positionContext.pos);
-        if (context.world.getTileEntity(pos) != null) {
-            TileEntity tile = context.world.getTileEntity(pos);
-            if (tile instanceof MobSpawnerTileEntity) {
-                CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
-                if(nbt.contains("SpawnData")) {
-                    CompoundNBT entityTag = nbt.getCompound("SpawnData");
-                    boolean success = false;
-                    for(int i = 0; i < context.force; i++) {
-                        Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
-                        if(optional.isPresent()) {
-                            Entity entity = optional.get();
-                            double randX = MagickCore.getNegativeToOne();
-                            double randY = MagickCore.getNegativeToOne();
-                            double randZ = MagickCore.getNegativeToOne();
-                            randX *= 1 + context.range;
-                            randY *= 1 + context.range;
-                            randZ *= 1 + context.range;
-                            entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
-                            entity.world.addEntity(entity);
-                            success = true;
+        if(context.doBlock && context.containChild(LibContext.POSITION)) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            BlockPos pos = new BlockPos(positionContext.pos);
+            if (context.world.getTileEntity(pos) != null) {
+                TileEntity tile = context.world.getTileEntity(pos);
+                if (tile instanceof MobSpawnerTileEntity) {
+                    CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
+                    if(nbt.contains("SpawnData")) {
+                        CompoundNBT entityTag = nbt.getCompound("SpawnData");
+                        boolean success = false;
+                        for(int i = 0; i < context.force; i++) {
+                            Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
+                            if(optional.isPresent()) {
+                                Entity entity = optional.get();
+                                double randX = MagickCore.getNegativeToOne();
+                                double randY = MagickCore.getNegativeToOne();
+                                double randZ = MagickCore.getNegativeToOne();
+                                randX *= 1 + context.range;
+                                randY *= 1 + context.range;
+                                randZ *= 1 + context.range;
+                                entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
+                                entity.world.addEntity(entity);
+                                success = true;
+                            }
                         }
+                        return success;
                     }
-                    return success;
                 }
             }
         }
+
+        if(context.victim instanceof AnimalEntity) {
+            AnimalEntity animal = (AnimalEntity) context.victim;
+            if(context.caster instanceof PlayerEntity)
+                animal.setInLove((PlayerEntity) context.caster);
+            else
+                animal.setInLove(null);
+            animal.setInLove(context.tick);
+            return true;
+        }
+
         return false;
     }
 }

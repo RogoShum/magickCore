@@ -22,7 +22,7 @@ public class ElementFunctionEvent {
         if(event.getMagickContext().victim instanceof ItemEntity && event.getMagickContext().applyType == ApplyType.ATTACK)
             event.setCanceled(true);
 
-        if(event.getMagickContext().applyType == ApplyType.HIT_BLOCK) {
+        if(event.getMagickContext().doBlock) {
             Entity last = event.getMagickContext().projectile;
             AtomicBoolean entityOnly = new AtomicBoolean(false);
             if(last instanceof IManaEntity) {

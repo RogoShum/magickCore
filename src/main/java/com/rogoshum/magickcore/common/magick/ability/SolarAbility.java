@@ -150,7 +150,20 @@ public class SolarAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
-        if(!(context.victim instanceof LivingEntity)) return false;
+        if(!(context.victim instanceof LivingEntity)) {
+            if(!context.world.isRemote) {
+                Vector3d pos = Vector3d.ZERO;
+                if(context.victim != null)
+                    pos = context.victim.getPositionVec();
+                if(context.containChild(LibContext.POSITION))
+                    pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
+
+                if(pos.y > 192) {
+                    ((ServerWorld)context.world).func_241113_a_(6000, 0, false, false);
+                }
+            }
+            return false;
+        }
         ((LivingEntity) context.victim).heal(context.force);
         IParticleData iparticledata = ParticleTypes.HEART;
 

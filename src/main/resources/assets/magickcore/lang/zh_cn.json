@@ -8,6 +8,9 @@
     "gui.magickcore.category.magick_crafting": "魔法工作台",
     "key.category.magickcore": "魔法核心按键配置",
     "magickcore.key.spell": "切换完备法术",
+    "magickcore.key.cast": "灵魂水晶戒施法",
+    "magickcore.key.take_off": "摘下灵魂水晶戒",
+    "curios.identifier.spirit_crystal_ring": "灵魂水晶戒指",
 
     //物品
     "item.magickcore.star_staff": "零星法杖",
@@ -21,6 +24,7 @@
     "item.magickcore.element_crystal_seeds": "元素水晶种子",
     "item.magickcore.element_wool": "元素羊毛毛",
     "item.magickcore.element_string": "元素线",
+    "item.magickcore.spirit_crystal_ring": "灵魂水晶戒指",
 
     "item.magickcore.arc": "§b电弧核心",
     "item.magickcore.solar": "§6烈焰核心",
@@ -31,7 +35,7 @@
 
     "item.magickcore.mana_spider_eye": "魔力蜘蛛眼",
     "item.magickcore.mana_gunpowder": "魔力火药",
-    "item.magickcore.mana_dragon_breath": "魔力龙息",
+    "item.magickcore.mana_dragon_breath": "探查能量",
     "item.magickcore.mana_nether_wart": "魔力地狱疣",
     "item.magickcore.mana_bone": "魔力骨头",
     "item.magickcore.mana_flesh": "魔力肉",

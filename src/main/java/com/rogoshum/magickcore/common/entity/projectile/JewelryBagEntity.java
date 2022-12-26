@@ -265,7 +265,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
 
     @Override
     public MagickContext beforeCast(MagickContext context) {
-        if(spellContext().containChild(LibContext.ITEM) && context.applyType == ApplyType.HIT_BLOCK)
+        if(spellContext().containChild(LibContext.ITEM) && (context.doBlock || context.applyType == ApplyType.HIT_BLOCK))
             return context.applyType(ApplyType.NONE);
         return super.beforeCast(context);
     }

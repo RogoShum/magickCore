@@ -54,4 +54,5 @@ public class LibAdvancements {
     public static final String MAGICK_CORE = "magick_core";
     public static final String CONTEXT_POINTER = "context_pointer";
     public static final String WAND = "wand";
+    public static final String RING = "ring";
 }

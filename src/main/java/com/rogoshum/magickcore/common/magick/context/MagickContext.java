@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.context;
 
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -34,6 +35,12 @@ public class MagickContext extends SpellContext {
 
     public MagickContext doBlock() {
         this.doBlock = true;
+        SpellContext context = this;
+        while (context != null) {
+            if(context.applyType.isForm())
+                context.applyType = ApplyType.NONE;
+            context = context.postContext;
+        }
         return this;
     }
 

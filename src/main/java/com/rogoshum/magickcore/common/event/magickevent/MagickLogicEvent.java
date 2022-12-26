@@ -15,6 +15,7 @@ import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
+import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.MultiReleaseEntity;
@@ -28,10 +29,10 @@ import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
+import com.rogoshum.magickcore.common.lib.*;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.*;
 import com.rogoshum.magickcore.common.network.*;
-import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickPoint;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
@@ -46,9 +47,6 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import com.rogoshum.magickcore.common.lib.LibAdvancements;
-import com.rogoshum.magickcore.common.lib.LibBuff;
-import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -58,6 +56,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.brain.schedule.Activity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -74,6 +73,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -91,6 +91,18 @@ public class MagickLogicEvent {
 			//EntityLightSourceManager.tick(event.side);
 			//MagickCore.proxy.tick(LogicalSide.SERVER);
 		}
+	}
+
+	@SubscribeEvent
+	public void entityJoinWorld(EntityJoinWorldEvent evt) {
+		/*
+Entity entity = evt.getEntity();
+
+		if (entity instanceof ManaRadiateEntity) {
+			evt.setCanceled(true);
+		}
+		 */
+
 	}
 
 	@SubscribeEvent
@@ -506,34 +518,6 @@ public class MagickLogicEvent {
 
 		if(state.getBuffList().isEmpty()) return;
 
-		if(state.getBuffList().containsKey(LibBuff.STASIS)) {
-			float force = state.getBuffList().get(LibBuff.STASIS).getForce();
-			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
-
-			for(int i = 0; i< entityList.size(); ++i) {
-				Entity entity = entityList.get(i);
-				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity)) {
-					ModBuffs.applyBuff(entity, LibBuff.SLOW, 20, force * 2, true);
-				}
-			}
-		}
-
-		if(state.getBuffList().containsKey(LibBuff.PURE)) {
-			float force = state.getBuffList().get(LibBuff.PURE).getForce() * 0.5f;
-			List<Entity> entityList = event.getEntityLiving().world.getEntitiesWithinAABBExcludingEntity(event.getEntityLiving(), event.getEntityLiving().getBoundingBox().grow(force, force, force));
-
-			for(int i = 0; i< entityList.size(); ++i) {
-				Entity entity = entityList.get(i);
-				if(!MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), entity) && !(entity instanceof LivingEntity)) {
-					double factor = entity.getMotion().normalize().dotProduct(event.getEntity().getPositionVec().add(0, event.getEntity().getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
-					if(factor > 0.8) {
-						Vector3d motion = entity.getMotion();
-						entity.addVelocity(-motion.x, -motion.y, -motion.z);
-					}
-				}
-			}
-		}
-
 		if(state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			return;
 
@@ -895,6 +879,21 @@ public class MagickLogicEvent {
 				}
 				if(ticksExisted > state.tick && state.tick >= 0)
 					event.getEntity().remove();
+			}
+		}
+
+		if(event.getEntity() instanceof ItemEntity && event.getEntity().isInWater()) {
+			ItemEntity item = (ItemEntity) event.getEntity();
+			ItemStack stack = item.getItem();
+			if(!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT)) {
+				CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
+				for(String element : tag.keySet()) {
+					int count = tag.getInt(element);
+					if(count > 1)
+						tag.putInt(element, count - 1);
+					else
+						tag.remove(element);
+				}
 			}
 		}
 	}

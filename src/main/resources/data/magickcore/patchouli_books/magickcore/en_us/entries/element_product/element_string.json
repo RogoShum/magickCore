@@ -8,7 +8,7 @@
       "title": "元素线",
       "type": "spotlight",
       "item": "magickcore:element_string{ELEMENT:\"arc\"}",
-      "text": "吸收了元素魔力的线材，可以缠绕在工具和装备上，附加特殊效果。"
+      "text": "吸收了元素魔力的线材，可以缠绕在工具和装备上，附加特殊效果。可以通过把物品丢在水中来洗掉物品上的元素线。"
     },
     {
       "type": "magickcore:element_recipe",

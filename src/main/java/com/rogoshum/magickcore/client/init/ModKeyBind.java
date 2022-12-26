@@ -1,8 +1,9 @@
-package com.rogoshum.magickcore.common.init;
+package com.rogoshum.magickcore.client.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
@@ -27,11 +28,6 @@ public class ModKeyBind {
             KeyConflictContext.IN_GAME,
             InputMappings.Type.KEYSYM,
             GLFW.GLFW_KEY_R,
-            "key.category." + MagickCore.MOD_ID);
-    public static final KeyBinding CAST_KEY = new KeyBinding(MagickCore.MOD_ID+".key.cast",
-            KeyConflictContext.IN_GAME,
-            InputMappings.Type.KEYSYM,
-            GLFW.GLFW_KEY_K,
             "key.category." + MagickCore.MOD_ID);
 
     @SubscribeEvent

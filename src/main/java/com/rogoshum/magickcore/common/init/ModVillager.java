@@ -58,19 +58,21 @@ public class ModVillager {
         TradList.add(ModEntities.CHAIN);
         TradList.add(ModEntities.MANA_SPHERE);
         TradList.add(ModEntities.SHADOW);
+        TradList.add(ModEntities.MULTI_RELEASE);
+        TradList.add(ModEntities.CHARGE);
     }
 
     public static class EntityTypeTrade implements VillagerTrades.ITrade {
         @Override
         public MerchantOffer getOffer(Entity trader, Random rand) {
-            int count = rand.nextInt(15) + 15;
+            int count = rand.nextInt(3) + 3;
             ItemStack entityType = new ItemStack(ModItems.ENTITY_TYPE.get());
             ExtraDataUtil.itemManaData(entityType, itemManaData -> {
                 itemManaData.spellContext().addChild(SpawnContext.create((EntityType<?>) TradList.get(rand.nextInt(TradList.size())).get()));
             });
             ItemStack crystal = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
             crystal.setCount(count);
-            return new MerchantOffer(crystal, entityType, 5, rand.nextInt(15), 0.2f);
+            return new MerchantOffer(crystal, entityType, 127, rand.nextInt(15), 0.2f);
         }
     }
 }

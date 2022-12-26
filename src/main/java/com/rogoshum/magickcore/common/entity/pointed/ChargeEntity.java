@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.init.ModDataSerializers;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -23,6 +24,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -66,6 +68,20 @@ public class ChargeEntity extends ManaEntity {
 
     public void setFormer(Vector3d vec) {
         dataManager.set(FORMER, vec);
+    }
+
+    @Override
+    protected void makeSound() {
+        if(spellContext().element == ModElements.SOLAR) {
+            if(this.ticksExisted == 1)
+                this.world.playMovingSound(null, this, ModSounds.explosion.get(), this.getSoundCategory(), 0.05f, 1.0f);
+        } else if(ticksExisted % 20 == 0) {
+            float pitch = (float)ticksExisted / (float)spellContext().tick;
+            if(Float.isNaN(pitch))
+                pitch = 0.0f;
+            pitch *=2;
+            this.playSound(ModSounds.ring_pointer.get(), 0.05f, pitch);
+        }
     }
 
     @Override

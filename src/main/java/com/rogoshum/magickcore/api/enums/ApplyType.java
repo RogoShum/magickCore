@@ -12,7 +12,7 @@ public class ApplyType {
     public static final ApplyType DE_BUFF = new ApplyType("de_buff", Beneficial.HARMFUL, false, true);
     public static final ApplyType HIT_ENTITY = new ApplyType("hit_entity", Beneficial.HARMFUL, false, false);
     public static final ApplyType HIT_BLOCK = new ApplyType("hit_block", Beneficial.HARMLESS, false, false);
-    public static final ApplyType SPAWN_ENTITY = new ApplyType("spawn_entity", Beneficial.HARMLESS, true, false);
+    public static final ApplyType SPAWN_ENTITY = new ApplyType("spawn_entity", Beneficial.HARMFUL, true, false);
     public static final ApplyType ELEMENT_TOOL = new ApplyType("element_tool", Beneficial.BENEFICIAL, false, false);
     public static final ApplyType DIFFUSION = new ApplyType("diffusion", Beneficial.HARMLESS, false, true);
     public static final ApplyType AGGLOMERATE = new ApplyType("agglomerate", Beneficial.HARMLESS, false, true);

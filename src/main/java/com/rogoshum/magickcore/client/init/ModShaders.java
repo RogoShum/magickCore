@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.common.init;
+package com.rogoshum.magickcore.client.init;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.event.ShaderEvent;

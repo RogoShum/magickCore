@@ -41,6 +41,11 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+    }
+
+    @Override
     public boolean releaseMagick() {
         if(!spellContext().valid() || world.isRemote) return false;
         AtomicBoolean entityOnly = new AtomicBoolean(false);

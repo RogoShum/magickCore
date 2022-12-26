@@ -118,7 +118,11 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
         context.addChild(positionContext);
-        MagickReleaseHelper.releaseMagick(context);
+        MagickReleaseHelper.releaseMagick(beforeCast(context));
+
+        context = MagickContext.create(world, spellContext().postContext).doBlock().noCost().caster(this.func_234616_v_()).projectile(this);
+        context.addChild(positionContext);
+        MagickReleaseHelper.releaseMagick(beforeCast(context));
     }
 
     @Override

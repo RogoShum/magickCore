@@ -20,6 +20,7 @@ import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.block.*;
+import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -28,12 +29,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.Property;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITagCollection;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -254,6 +258,20 @@ public class WitherAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
+        if(context.doBlock) {
+            if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
+                PositionContext positionContext = context.getChild(LibContext.POSITION);
+                BlockPos pos = new BlockPos(positionContext.pos);
+                TileEntity tile = context.world.getTileEntity(pos);
+                if(tile instanceof ITickableTileEntity) {
+                    ITickableTileEntity tickable = (ITickableTileEntity) tile;
+                    float force = context.force*20;
+                    for (int i = 0; i < force; ++i) {
+                        tickable.tick();
+                    }
+                }
+            }
+        }
         if(!(context.victim instanceof LivingEntity)) return false;
         float health = Math.min(((LivingEntity) context.victim).getHealth() - 0.1f, context.force * 0.5f);
 
@@ -264,15 +282,45 @@ public class WitherAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
-        if(context.doBlock) {
-            if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
-                PositionContext positionContext = context.getChild(LibContext.POSITION);
-                BlockPos pos = new BlockPos(positionContext.pos);
+        BlockPos pos = null;
+
+        if(context.containChild(LibContext.POSITION)) {
+            PositionContext positionContext = context.getChild(LibContext.POSITION);
+            pos = new BlockPos(positionContext.pos);
+        }
+
+        if(pos != null && context.doBlock) {
+            if(context.world instanceof ServerWorld) {
                 BlockState blockstate = context.world.getBlockState(pos);
-                if(growBlock(context, blockstate.getBlock(), pos, blockstate))
+                if(growBlock(context, blockstate.getBlock(), pos, blockstate)) {
+                    context.world.playEvent(2005, pos, 0);
                     return true;
+                }
                 blockstate = context.world.getBlockState(pos.up());
-                return growBlock(context, blockstate.getBlock(), pos.up(), blockstate);
+                if(growBlock(context, blockstate.getBlock(), pos.up(), blockstate)) {
+                    context.world.playEvent(2005, pos, 0);
+                    return true;
+                }
+            }
+        } else if (!context.world.isRemote && context.victim instanceof AgeableEntity) {
+            AgeableEntity ageable = (AgeableEntity) context.victim;
+            int i = ageable.getGrowingAge();
+            if (i < 0) {
+                i += context.force * 400;
+                ageable.setGrowingAge(i);
+            }
+            return true;
+        }
+        if(context.world.isRemote && context.victim instanceof AgeableEntity) {
+            Vector3d vector3d = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0);
+            for(int i = 0; i < 15; ++i) {
+                double d2 = MagickCore.rand.nextGaussian() * 0.5D;
+                double d3 = MagickCore.rand.nextGaussian() * 0.5D;
+                double d4 = MagickCore.rand.nextGaussian() * 0.5D;
+                double d6 = (double)vector3d.getX() + d2 * context.victim.getWidth();
+                double d7 = (double)vector3d.getY() + d3 * context.victim.getHeight();
+                double d8 = (double)vector3d.getZ() + d4 * context.victim.getWidth();
+                context.world.addParticle(ParticleTypes.HAPPY_VILLAGER, d6, d7, d8, d2, d3, d4);
             }
         }
         return false;

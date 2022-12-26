@@ -54,8 +54,9 @@ public class RepeaterEntity extends ManaPointEntity {
     public boolean releaseMagick() {
         if(!spellContext().valid()) return false;
         if(world.isRemote) return false;
+
         if(cool_down >= 0)
-            cool_down -= this.spellContext().force * 3;
+            cool_down -= Math.max(this.spellContext().force * 3, 1);
 
         if(spawnEntity != null && spawnEntity.isAlive()) return false;
         if(cool_down < 0) {

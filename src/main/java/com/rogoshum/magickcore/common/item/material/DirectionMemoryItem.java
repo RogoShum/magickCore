@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.item.material;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -76,6 +78,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
         addPosition(context.getItem(), Vector3d.copyCentered(context.getPos()));
+        context.getWorld().playSound(null, context.getPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
         return ActionResultType.SUCCESS;
     }
 
@@ -111,6 +114,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
             addPosition(itemstack, dir);
         } else
             NBTTagHelper.putVectorDouble(itemstack.getOrCreateTag(), "direction", dir);
+        worldIn.playSound(null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
         return ActionResult.resultSuccess(itemstack);
     }
 }

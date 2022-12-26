@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore;
 
+import com.rogoshum.magickcore.client.init.ModKeyBind;
 import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
@@ -20,8 +21,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -105,6 +108,7 @@ public class MagickCore {
             });
         });
         modLoader.values().forEach(additionLoader -> additionLoader.onLoad(eventBus));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.rogoshum.magickcore.common.init.ModConfig.COMMON_CONFIG);
         //GeckoLib.initialize();
     }
 

@@ -11,4 +11,5 @@ public class LibMagickCraftingRecipes {
     public static final String SWORD = "sword";
     public static final String BOW = "bow";
     public static final String SUPER = "super";
+    public static final String RING = "ring";
 }

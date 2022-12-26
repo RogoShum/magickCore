@@ -333,6 +333,8 @@ public class ModRecipes {
         registerExplosionRecipe(TagItemMatcher.create(Items.GOLD_NUGGET.toString()), new ItemStack(ModItems.REVERSE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.BONE.toString()), new ItemStack(ModItems.MANA_BONE.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.ROTTEN_FLESH.toString()), new ItemStack(ModItems.MANA_FLESH.get()));
+        registerExplosionRecipe("dragon_breath_1", TagItemMatcher.create(Items.GHAST_TEAR.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));
+        registerExplosionRecipe("dragon_breath_2", TagItemMatcher.create(Items.EMERALD.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));
         registerExplosionRecipe(TagItemMatcher.create(Items.DRAGON_BREATH.toString()), new ItemStack(ModItems.MANA_DRAGON_BREATH.get()));
         registerExplosionRecipe("force_energy", TagItemMatcher.create(Items.GLOWSTONE_DUST.toString()), forceEnergy);
         registerExplosionRecipe("force_energy_1", TagItemMatcher.create(Items.LAPIS_LAZULI.toString()), forceEnergy_1);

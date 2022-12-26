@@ -191,9 +191,9 @@ public class SpellContext {
             toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
 
         childContexts.values().forEach((context) -> {
-            toolTip.push();
+            //toolTip.push();
             toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-            toolTip.pop();
+            //toolTip.pop();
         });
 
         if(postContext != null) {
@@ -216,9 +216,9 @@ public class SpellContext {
 
         childContexts.values().forEach((context) -> {
             if(context.getLinkType() == applyType) {
-                toolTip.push();
+                //toolTip.push();
                 toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-                toolTip.pop();
+                //toolTip.pop();
             }
         });
 
@@ -248,9 +248,9 @@ public class SpellContext {
             toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
 
         childContexts.values().forEach((context) -> {
-            toolTip.push();
+            //toolTip.push();
             toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-            toolTip.pop();
+            //toolTip.pop();
         });
 
         if(postContext != null) {
@@ -275,9 +275,9 @@ public class SpellContext {
 
         childContexts.values().forEach((context) -> {
             if(context.getLinkType() == applyType) {
-                toolTip.push();
+                //toolTip.push();
                 toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-                toolTip.pop();
+                //toolTip.pop();
             }
         });
 

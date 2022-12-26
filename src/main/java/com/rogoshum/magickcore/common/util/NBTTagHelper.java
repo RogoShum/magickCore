@@ -278,7 +278,13 @@ public class NBTTagHelper {
         }
 
         public void pushSpell(ItemStack stack) {
-            spells.put(String.valueOf(stack.hashCode()), stack);
+            for (int i = 0; i < limit; i++) {
+                String key = String.valueOf(i);
+                if(!spells.containsKey(key)) {
+                    spells.put(key, stack);
+                    return;
+                }
+            }
         }
 
         public ItemStack popSpell() {

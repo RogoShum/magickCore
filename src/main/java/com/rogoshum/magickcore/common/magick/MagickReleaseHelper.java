@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
@@ -166,8 +167,8 @@ public class MagickReleaseHelper {
                 MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();
                 magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
                 boolean flag = MagickReleaseHelper.releaseMagick(magickContext, manaFactor);
-                if(!flag)
-                    success = false;
+                if(flag)
+                    success = true;
             }
         }
         return success;
@@ -183,6 +184,11 @@ public class MagickReleaseHelper {
         if(!context.containChild(LibContext.SPAWN))
             return false;
 
+        if(context.victim instanceof IManaEntity && context.projectile instanceof IManaEntity) {
+            if(context.projectile != context.victim)
+                return false;
+        }
+
         SpawnContext spawnContext = context.getChild(LibContext.SPAWN);
         if(spawnContext.entityType == null)
             return false;
@@ -192,7 +198,8 @@ public class MagickReleaseHelper {
         Entity pro = spawnContext.entityType.create(context.world);
         if(pro == null)
             return false;
-
+        if(context.projectile instanceof ManaRadiateEntity && pro instanceof ManaRadiateEntity)
+            return false;
         TraceContext traceContext = null;
         if(context.containChild(LibContext.TRACE))
             traceContext = context.getChild(LibContext.TRACE);

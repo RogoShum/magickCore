@@ -26,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 
@@ -202,7 +203,20 @@ public class ArcAbility{
     public static boolean agglomerate(MagickContext context) {
         if(context.doBlock)
             return charge(context);
-        if(context.victim == null) return false;
+        if(!context.world.isRemote) {
+            Vector3d pos = Vector3d.ZERO;
+            if(context.victim != null)
+                pos = context.victim.getPositionVec();
+            if(context.containChild(LibContext.POSITION))
+                pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
+
+            if(pos.y > 192) {
+                ((ServerWorld)context.world).func_241113_a_(0, 6000, true, true);
+            }
+        }
+        if(context.victim == null) {
+            return false;
+        }
         Vector3d motion = Vector3d.ZERO;
         if(context.containChild(LibContext.DIRECTION)) {
             motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();

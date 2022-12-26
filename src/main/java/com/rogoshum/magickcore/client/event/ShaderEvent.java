@@ -7,7 +7,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
-import com.rogoshum.magickcore.common.init.ModShaders;
+import com.rogoshum.magickcore.client.init.ModShaders;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
