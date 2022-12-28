@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.event.ElementEvent;
+import com.rogoshum.magickcore.common.init.ModConfig;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
@@ -19,6 +20,13 @@ public class ElementFunctionEvent {
 
     @SubscribeEvent
     public void applyFunction(ElementEvent.ElementFunctionApply event) {
+        String elementFunction = event.getMagickContext().element.type() +"_"+event.getMagickContext().applyType.getLabel();
+        if(event.getMagickContext().doBlock)
+            elementFunction = "block_"+elementFunction;
+        if(ModConfig.ELEMENT_BAN.get().contains(elementFunction)) {
+            event.setCanceled(true);
+            return;
+        }
         if(event.getMagickContext().victim instanceof ItemEntity && event.getMagickContext().applyType == ApplyType.ATTACK)
             event.setCanceled(true);
 

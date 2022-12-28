@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.init.ModConfig;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -36,10 +37,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -50,6 +48,8 @@ public class MagickReleaseHelper {
     private final static float LASER_VELOCITY = 1.0f;
 
     private final static HashMap<String, Function<DoubleEntity, Boolean>> ownerTest = new HashMap<>();
+    public final static HashSet<String> FORM_BAN_SET = new HashSet<>();
+    public final static HashSet<String> ELEMENT_BAN_SET = new HashSet<>();
 
     public static void registerOwnerTest(String id, Function<DoubleEntity, Boolean> function) {
         ownerTest.put(id, function);
@@ -160,6 +160,7 @@ public class MagickReleaseHelper {
         if(context.caster instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "element_func_" + element.type() + "_" + context.applyType);
         }
+        context.element(element);
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
         if(context.applyType.continueCast()) {
             SpellContext postContext = context.postContext;
@@ -192,6 +193,11 @@ public class MagickReleaseHelper {
         SpawnContext spawnContext = context.getChild(LibContext.SPAWN);
         if(spawnContext.entityType == null)
             return false;
+
+        if(ModConfig.FORM_BAN.get().contains(spawnContext.entityType.getRegistryName().toString())) {
+            return false;
+        }
+
         if(context.caster instanceof ServerPlayerEntity && spawnContext.entityType.getRegistryName() != null) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.caster, "entity_type_" + spawnContext.entityType.getRegistryName().getPath());
         }
@@ -291,9 +297,14 @@ public class MagickReleaseHelper {
                 while (postForm != null) {
                     if(postForm.applyType.isForm()) {
                         preForm.postContext = null;
-                        MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(pro);
+                        MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(context.projectile).victim(context.victim).separator(pro);
                         if(traceContext != null)
                             magickContext.replenishChild(traceContext);
+                        magickContext.replenishChild(PositionContext.create(pro.getPositionVec()));
+                        if(((IManaEntity) pro).spellContext().containChild(LibContext.DIRECTION))
+                            magickContext.replenishChild(
+                                    DirectionContext.create(
+                                            ((IManaEntity) pro).spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction));
                         releaseMagick(magickContext, ((IManaEntity) pro).getManaFactor());
                         postForm = null;
                     } else {

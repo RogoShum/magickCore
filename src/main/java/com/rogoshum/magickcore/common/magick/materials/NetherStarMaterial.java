@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.materials;
 
+import com.rogoshum.magickcore.common.init.ModConfig;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import net.minecraft.item.Item;
@@ -11,19 +12,20 @@ public class NetherStarMaterial extends Material {
         return LibMaterial.NETHER_STAR;
     }
 
-    @Override
     public float getForce() {
-        return 5f;
+        double force = ModConfig.NETHER_FORCE.get();
+        return (float) force;
     }
 
-    @Override
+
     public int getTick() {
-        return 300;
+        return ModConfig.NETHER_TICK.get();
     }
 
-    @Override
+
     public float getRange() {
-        return 7f;
+        double range = ModConfig.NETHER_RANGE.get();
+        return (float) range;
     }
 
     @Override

@@ -237,8 +237,8 @@ public class ChainEntity extends ManaPointEntity {
     public void beforeJoinWorld(MagickContext context) {
         super.beforeJoinWorld(context);
         victimEntity = context.victim;
-        if(context.projectile instanceof IManaEntity && ((IManaEntity) context.projectile).spellContext().containChild(LibContext.SEPARATOR))
-            victimEntity = context.projectile;
+        if(context.separator instanceof IManaEntity)
+            victimEntity = context.separator;
         MagickContext magickContext = MagickContext.create(world, spellContext().postContext)
                 .caster(getOwner()).projectile(this)
                 .victim(victimEntity).noCost();

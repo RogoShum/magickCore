@@ -121,6 +121,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
     @Override
     public void remove() {
         if(!cast) {
+            /*
             MagickContext context = MagickContext.create(this.world, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
                     .caster(getOwner()).projectile(this)
@@ -131,6 +132,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
             if(success && world.isRemote)
                 successFX();
+             */
         }
         super.remove();
     }

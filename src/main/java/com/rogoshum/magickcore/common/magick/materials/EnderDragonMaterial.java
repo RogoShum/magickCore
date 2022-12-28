@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.materials;
 
+import com.rogoshum.magickcore.common.init.ModConfig;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import net.minecraft.item.Item;
@@ -11,19 +12,20 @@ public class EnderDragonMaterial extends Material {
         return LibMaterial.ENDER_DRAGON;
     }
 
-    @Override
     public float getForce() {
-        return 7f;
+        double force = ModConfig.ENDER_FORCE.get();
+        return (float) force;
     }
 
-    @Override
+
     public int getTick() {
-        return 140;
+        return ModConfig.ENDER_TICK.get();
     }
 
-    @Override
+
     public float getRange() {
-        return 5f;
+        double range = ModConfig.ENDER_RANGE.get();
+        return (float) range;
     }
 
     @Override

@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 public class MagickContext extends SpellContext {
     public final World world;
-    public Entity caster, projectile, victim;
+    public Entity caster, projectile, victim, separator;
     public boolean noCost = false;
     public float reduceCost = 0;
     public boolean doBlock = false;
@@ -25,6 +25,11 @@ public class MagickContext extends SpellContext {
 
     public MagickContext caster(Entity caster) {
         this.caster = caster;
+        return this;
+    }
+
+    public MagickContext separator(Entity separator) {
+        this.separator = separator;
         return this;
     }
 

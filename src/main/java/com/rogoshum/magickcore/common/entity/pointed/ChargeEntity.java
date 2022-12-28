@@ -74,7 +74,7 @@ public class ChargeEntity extends ManaEntity {
     protected void makeSound() {
         if(spellContext().element == ModElements.SOLAR) {
             if(this.ticksExisted == 1)
-                this.world.playMovingSound(null, this, ModSounds.explosion.get(), this.getSoundCategory(), 0.05f, 1.0f);
+                this.world.playMovingSound(null, this, ModSounds.explosion.get(), this.getSoundCategory(), 0.2f, 1.0f);
         } else if(ticksExisted % 20 == 0) {
             float pitch = (float)ticksExisted / (float)spellContext().tick;
             if(Float.isNaN(pitch))
@@ -150,6 +150,13 @@ public class ChargeEntity extends ManaEntity {
         if(target == null || !target.isAlive())
             return Lists.newArrayList(this);
         return Lists.newArrayList(target);
+    }
+
+    @Override
+    public Vector3d getPostDirection(Entity entity) {
+        if(entity == this && spellContext().containChild(LibContext.DIRECTION))
+            return spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
+        return super.getPostDirection(entity);
     }
 
     @Override
