@@ -213,7 +213,7 @@
     "block.magickcore.item_extractor": "物品抽取器",
 
     //描述
-    "magickcore.description.press_sneak": "按下潜行查看详细信息",
+    "magickcore.description.press_sneak": "按住潜行查看详情",
     "magickcore.description.element": "元素",
     "magickcore.description.material": "核心",
     "magickcore.description.force": "强度",
@@ -316,7 +316,6 @@
     "magickcore.buff.slow": "受冻",
     "magickcore.buff.decay": "衰变",
     "magickcore.buff.radiance_wall": "光焰之井",
-    "magickcore.buff.stasis": "冻结",
     "magickcore.buff.pure": "纯洁",
 
     //实体
