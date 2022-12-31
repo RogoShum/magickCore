@@ -2,18 +2,12 @@
 	"type":"minecraft:crafting_shaped",
 	"group":"magickcore",
 	"pattern":[
-		"123",
-		"456",
-		"789"
+		"111",
+		"454",
+		"111"
 	],
 	"key":{
 		"1":{
-			"item":"magickcore:mana_flesh"
-		},
-		"2":{
-			"item":"magickcore:mana_flesh"
-		},
-		"3":{
 			"item":"magickcore:mana_flesh"
 		},
 		"4":{
@@ -21,18 +15,6 @@
 		},
 		"5":{
 			"item":"minecraft:ender_pearl"
-		},
-		"6":{
-			"item":"magickcore:spirit_crystal"
-		},
-		"7":{
-			"item":"magickcore:mana_flesh"
-		},
-		"8":{
-			"item":"magickcore:mana_flesh"
-		},
-		"9":{
-			"item":"magickcore:mana_flesh"
 		}
 	},
 	"result":{

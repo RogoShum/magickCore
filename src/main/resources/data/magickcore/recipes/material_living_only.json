@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:feather"
+  },
+  "result":{
+    "item":"magickcore:condition_living",
+    "nbt": "{item_extra_data:{CHILD_CONTEXT:{condition:{Conditions:{living_entity:{negate:0b,target_type:\"TARGET\"}}}}}}",
+    "count":1
+  }
+}

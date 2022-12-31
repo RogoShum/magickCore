@@ -1,3 +1,19 @@
 {
-  "type": "magickcore:void_element_recipe"
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SS",
+    "SS"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_crystal",
+      "nbt": "{ELEMENT:\"void\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:void",
+    "count":1
+  }
 }

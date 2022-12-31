@@ -7,7 +7,7 @@
   "key":{
     "S":{
       "type": "magickcore:nbt",
-      "name":"wool"
+      "name":"seed"
     },"O":{
       "type": "magickcore:nbt",
       "item":"magickcore:orb_bottle",
@@ -15,7 +15,7 @@
     }
   },
   "result":{
-    "item":"magickcore:element_wool",
+    "item":"magickcore:element_crystal_seeds",
     "nbt": "{ELEMENT:\"\"}",
     "count":1
   }

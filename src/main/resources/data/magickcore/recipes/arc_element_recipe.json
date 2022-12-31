@@ -1,3 +1,19 @@
 {
-  "type": "magickcore:arc_element_recipe"
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SS",
+    "SS"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_crystal",
+      "nbt": "{ELEMENT:\"arc\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:arc",
+    "count":1
+  }
 }

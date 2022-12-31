@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:gunpowder"
+  },
+  "result":{
+    "item":"magickcore:mana_gunpowder",
+    "count":1
+  }
+}

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -122,6 +123,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
             thisData.spellContext().addChild(conditionContext);
             return ActionResult.resultSuccess(stack);
         }
+        MagickCore.LOGGER.info(playerIn.getHeldItemMainhand().getTag());
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 }

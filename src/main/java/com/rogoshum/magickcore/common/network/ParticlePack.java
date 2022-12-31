@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.client.Minecraft;
@@ -34,6 +35,8 @@ public class ParticlePack extends EntityPack{
     private final int trace;
     private final float gravity;
     private final boolean canCollide;
+    private final Color color;
+    private final float shake;
     public ParticlePack(PacketBuffer buffer) {
         super(buffer);
         element = buffer.readString();
@@ -49,10 +52,12 @@ public class ParticlePack extends EntityPack{
         limitSize = buffer.readBoolean();
         motion = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         canCollide = buffer.readBoolean();
+        color = Color.create(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
+        shake = buffer.readFloat();
     }
 
     public ParticlePack(int id, ParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element,
-                        boolean glow, int trace, float gravity, boolean limitSize, Vector3d motion, boolean canCollide) {
+                        boolean glow, int trace, float gravity, boolean limitSize, Vector3d motion, boolean canCollide, Color color, float shake) {
         super(id);
         this.element = element;
         this.texture = texture;
@@ -67,6 +72,8 @@ public class ParticlePack extends EntityPack{
         this.limitSize = limitSize;
         this.motion = motion;
         this.canCollide = canCollide;
+        this.color = color;
+        this.shake = shake;
     }
 
     public void toBytes(PacketBuffer buf) {
@@ -88,6 +95,10 @@ public class ParticlePack extends EntityPack{
         buf.writeDouble(motion.y);
         buf.writeDouble(motion.z);
         buf.writeBoolean(canCollide);
+        buf.writeFloat(color.r());
+        buf.writeFloat(color.g());
+        buf.writeFloat(color.b());
+        buf.writeFloat(shake);
     }
 
     @Override
@@ -110,6 +121,9 @@ public class ParticlePack extends EntityPack{
             par.setTraceTarget(entity);
         par.setParticleGravity(gravity);
         par.setCanCollide(canCollide);
+        par.setColor(color);
+        if(shake > 0)
+            par.setShakeLimit(shake);
         MagickCore.addMagickParticle(par);
     }
 }

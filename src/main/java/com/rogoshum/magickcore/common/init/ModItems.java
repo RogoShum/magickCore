@@ -11,6 +11,7 @@ import com.rogoshum.magickcore.common.lib.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Food;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -18,6 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MagickCore.MOD_ID);
+    public static final RegistryObject<Item> MAGE_EGG = ITEMS.register("mage_spawn_egg", () -> new SpawnEggItem(ModEntities.MAGE_ENTITY_TYPE, 0x32a852, 0x30407a, new Item.Properties().group(ModGroups.ITEM_GROUP)));
     //block items
     public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new BlockItem(ModBlocks.MATERIAL_JAR.get()
             , BaseItem.properties().setISTER(() -> MaterialJarItemRenderer::new)));

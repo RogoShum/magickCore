@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:flint"
+  },
+  "result":{
+    "item":"magickcore:form_separator",
+    "count":1
+  }
+}

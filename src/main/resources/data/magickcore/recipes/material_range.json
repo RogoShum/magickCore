@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:blaze_rod"
+  },
+  "result":{
+    "item":"magickcore:mana_energy",
+    "nbt": "{item_extra_data:{RANGE:1.0f}}",
+    "count":1
+  }
+}

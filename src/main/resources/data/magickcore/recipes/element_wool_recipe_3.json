@@ -2,21 +2,18 @@
   "type": "magickcore:nbt",
   "group":"magickcore",
   "pattern":[
-    "SO"
+    "W"
   ],
   "key":{
-    "S":{
+    "W":{
       "type": "magickcore:nbt",
-      "name":"wool"
-    },"O":{
-      "type": "magickcore:nbt",
-      "item":"magickcore:orb_bottle",
+      "item":"magickcore:element_wool",
       "nbt": "{ELEMENT:\"\"}"
     }
   },
   "result":{
-    "item":"magickcore:element_wool",
+    "item":"magickcore:element_string",
     "nbt": "{ELEMENT:\"\"}",
-    "count":1
+    "count":4
   }
 }

@@ -56,7 +56,8 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<WindEntity>> WIND = Entities.register(LibEntities.WIND, () -> EntityType.Builder.create(WindEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.WIND));
 	public static final RegistryObject<EntityType<GravityLiftEntity>> GRAVITY_LIFT = Entities.register(LibEntities.GRAVITY_LIFT, () -> EntityType.Builder.create(GravityLiftEntity::new, EntityClassification.MISC).size(1.0f, 1.0f).build(LibEntities.GRAVITY_LIFT));
 	public static final RegistryObject<EntityType<PlaceableItemEntity>> PLACEABLE_ENTITY = Entities.register(LibEntities.PLACEABLE_ENTITY, () -> EntityType.Builder.create(PlaceableItemEntity::new, EntityClassification.MISC).size(0.5f, 0.5f).build(LibEntities.PLACEABLE_ENTITY));
-	public static final RegistryObject<EntityType<MageVillagerEntity>> MAGE = Entities.register(LibEntities.MAGE, () -> EntityType.Builder.create(MageVillagerEntity::new, EntityClassification.CREATURE).size(0.6F, 1.95F).trackingRange(10).build(LibEntities.MAGE));
+	public static final EntityType<MageVillagerEntity> MAGE_ENTITY_TYPE = EntityType.Builder.create(MageVillagerEntity::new, EntityClassification.CREATURE).size(0.6F, 1.95F).trackingRange(10).build(LibEntities.MAGE);
+	public static final RegistryObject<EntityType<MageVillagerEntity>> MAGE = Entities.register(LibEntities.MAGE, () -> MAGE_ENTITY_TYPE);
 	public static final RegistryObject<EntityType<PhantomEntity>> PHANTOM = Entities.register(LibEntities.PHANTOM, () -> EntityType.Builder.create(PhantomEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build(LibEntities.PHANTOM));
 	public static final RegistryObject<EntityType<RepeaterEntity>> REPEATER = Entities.register(LibEntities.REPEATER, () -> EntityType.Builder.create(RepeaterEntity::new, EntityClassification.MISC).size(0.0F, 0.0F).build(LibEntities.REPEATER));
 	public static final RegistryObject<EntityType<JewelryBagEntity>> JEWELRY_BAG = Entities.register(LibEntities.JEWELRY_BAG, () -> EntityType.Builder.create(JewelryBagEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.JEWELRY_BAG));
@@ -65,19 +66,4 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<ChainEntity>> CHAIN = Entities.register(LibEntities.CHAIN, () -> EntityType.Builder.create(ChainEntity::new, EntityClassification.MISC).size(0.5F, 0.5F).build(LibEntities.CHAIN));
 	public static final RegistryObject<EntityType<MultiReleaseEntity>> MULTI_RELEASE = Entities.register(LibEntities.MULTI_RELEASE, () -> EntityType.Builder.create(MultiReleaseEntity::new, EntityClassification.MISC).size(0.25F, 0.25F).build(LibEntities.MULTI_RELEASE));
 	public static final RegistryObject<EntityType<ChargeEntity>> CHARGE = Entities.register(LibEntities.CHARGE, () -> EntityType.Builder.create(ChargeEntity::new, EntityClassification.MISC).size(0.15F, 0.15F).build(LibEntities.CHARGE));
-
-	public static Item registerEntitySpawnEgg(EntityType<?> type, int color1, int color2, String name) {
-		SpawnEggItem item = new SpawnEggItem(type, color1, color2, new Item.Properties().group(ModGroups.ITEM_GROUP));
-		
-		item.setRegistryName(MagickCore.MOD_ID + "_" + name);
-		
-		return item;
-	}
-
-	@SubscribeEvent
-	public void registerEntitySpawnEggs(final RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(
-				registerEntitySpawnEgg(MAGE.get(), 0x32a852, 0x30407a, "mage_egg")
-		);
-	}
 }

@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:spider_eye"
+  },
+  "result":{
+    "item":"magickcore:mana_spider_eye",
+    "count":1
+  }
+}

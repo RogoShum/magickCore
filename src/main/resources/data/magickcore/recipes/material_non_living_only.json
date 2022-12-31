@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:coal"
+  },
+  "result":{
+    "item":"magickcore:condition_non_living",
+    "nbt": "{item_extra_data:{CHILD_CONTEXT:{condition:{Conditions:{non_living_entity:{negate:0b,target_type:\"TARGET\"}}}}}}",
+    "count":1
+  }
+}

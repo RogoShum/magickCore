@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:gold_ingot"
+  },
+  "result":{
+    "item":"magickcore:direction_memory",
+    "count":1
+  }
+}

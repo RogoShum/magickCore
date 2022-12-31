@@ -1,16 +1,23 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.item.material.PotionTypeItem;
 import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
+import com.rogoshum.magickcore.common.util.ParticleBuilder;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipe;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -89,7 +96,11 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
         }
         List<ItemEntity> list = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(0.5), null);
         for (ItemEntity item : list) {
-            ItemStack stack = ModRecipes.findExplosionOutput(item.getItem()).copy();
+            IInventory inventory = new Inventory(item.getItem());
+            Optional<MagickWorkbenchRecipe> optional = world.getRecipeManager().getRecipe(MagickWorkbenchRecipe.MAGICK_WORKBENCH, inventory, world);
+            ItemStack stack = ItemStack.EMPTY;
+            if(optional.isPresent())
+                stack = optional.get().getCraftingResult(inventory);
             if(stack.isEmpty() || stack.equals(item.getItem(), false)) {
                 if(PotionTypeItem.canTransform(item.getItem())) {
                     stack = PotionTypeItem.transformToType(item.getItem());
@@ -97,8 +108,20 @@ public class MagickCraftingTileEntity extends TileEntity implements ITickableTil
             }
             if(!stack.isEmpty() && !stack.equals(item.getItem(), false)) {
                 transTick+=2;
-                if(world.isRemote)
-                    addParticle(0.3f, item.getPositionVec().add(0, item.getHeight(), 0));
+                if(!world.isRemote) {
+                    float scale = 0.3f;
+                    Vector3d vec = item.getPositionVec().add(0, item.getHeight(), 0);
+                    ParticleBuilder builder = ParticleBuilder.create(world, ParticleType.PARTICLE, new Vector3d(MagickCore.getNegativeToOne() * scale * 0.5 + vec.x
+                                    , MagickCore.getNegativeToOne() * scale * 0.5 + vec.y
+                                    , MagickCore.getNegativeToOne() * scale * 0.5 + vec.z)
+                            , scale, scale, 0.5f, 15, "origin");
+                    builder.color(Color.BLUE_COLOR);
+                    builder.glow();
+                    builder.grav(0);
+                    builder.shake(15f);
+                    builder.send();
+                }
+
                 if(transTick >= transNeed) {
                     stack.setCount(item.getItem().getCount());
                     item.setItem(stack);

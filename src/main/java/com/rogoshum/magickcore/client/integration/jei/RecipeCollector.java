@@ -35,9 +35,9 @@ public class RecipeCollector {
         ItemStack minecraftWool = new ItemStack(Items.WHITE_WOOL);
 
         List<ItemStack> seedsList = getItemByContainName("seeds");
-        INPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
-                , seedsList));
-        OUTPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(seeds));
+        //INPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
+                //, seedsList));
+        //OUTPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(seeds));
 
         ImmutableList.Builder<ItemStack> element = ImmutableList.builder();
         ImmutableList.Builder<ItemStack> other = ImmutableList.builder();
@@ -55,6 +55,8 @@ public class RecipeCollector {
                 output.add(itemStack1);
             }
         }
+
+        /*
         RECIPES.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(output.build(), element.build(), other.build()));
 
         INPUTS.put(ModRecipes.ELEMENT_WOOL_RECIPE.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
@@ -69,6 +71,7 @@ public class RecipeCollector {
 
         INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(ImmutableList.of(wool)));
         OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(string));
+         */
 
         element = ImmutableList.builder();
         output = ImmutableList.builder();
@@ -81,6 +84,8 @@ public class RecipeCollector {
             itemStack1.setCount(4);
             output.add(itemStack1);
         }
+
+        /*
         RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(output.build(), element.build()));
 
         INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_2.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
@@ -97,6 +102,7 @@ public class RecipeCollector {
                 , ImmutableList.of(minecraftString)));
         OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), ImmutableList.of(string));
         RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), elementRecipe(crystal, minecraftString, string));
+         */
 
         ModRecipes.getExplosionRecipes().forEach((resourceLocation, magickCraftingTransformRecipe) -> {
             List<List<ItemStack>> lists = new ArrayList<>();

@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:nether_star"
+  },
+  "result":{
+    "item":"magickcore:nether_star_material",
+    "count":1
+  }
+}

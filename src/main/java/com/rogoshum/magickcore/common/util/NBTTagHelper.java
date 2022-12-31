@@ -9,6 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -44,6 +46,35 @@ public class NBTTagHelper {
             return entity;
         } else
             return null;
+    }
+
+    public static HashSet<String> getNBTKeySet(CompoundNBT tag) {
+        HashSet<String> keys = new HashSet<>();
+        for (String key : tag.keySet()) {
+            keys.add(key);
+            INBT inbt = tag.get(key);
+            if(inbt instanceof CompoundNBT)
+                keys.addAll(getNBTKeySet((CompoundNBT) inbt));
+        }
+        return keys;
+    }
+
+    public static HashMap<String, INBT> getNBTKeyMap(CompoundNBT tag) {
+        HashMap<String, INBT> keys = new HashMap<>();
+        for (String key : tag.keySet()) {
+            INBT inbt = tag.get(key);
+            if(inbt instanceof CompoundNBT)
+                keys.putAll(getNBTKeyMap((CompoundNBT) inbt));
+            else {
+                if(inbt instanceof StringNBT) {
+                    StringNBT string = (StringNBT) inbt;
+                    if(!string.getString().isEmpty())
+                        keys.put(key, tag.get(key));
+                } else
+                    keys.put(key, tag.get(key));
+            }
+        }
+        return keys;
     }
 
     public static ItemStack createItemWithEntity(Entity entity, Item item, int count) {

@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:rotten_flesh"
+  },
+  "result":{
+    "item":"magickcore:mana_flesh",
+    "count":1
+  }
+}

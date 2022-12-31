@@ -46,15 +46,6 @@ public class MagickPlugin implements IModPlugin {
         registration.addRecipes(builder.build(), MagickItemRecipe.UID);
     }
 
-    public static List<NBTRecipe> getRecipes() {
-        List<NBTRecipe> list = new ArrayList<>();
-        for(IRecipe iRecipe : ModRecipes.getRecipes().values()) {
-            if(iRecipe instanceof NBTRecipe)
-                list.add((NBTRecipe) iRecipe);
-        }
-        return list;
-    }
-
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.useNbtForSubtypes(ModItems.ELEMENT_CRYSTAL.get());
