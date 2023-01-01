@@ -14,7 +14,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "mana_capacity",
+      "magick_recipe": "magickcore:mana_capacity",
       "text": "在魔力工作台处合成。"
     }
   ]

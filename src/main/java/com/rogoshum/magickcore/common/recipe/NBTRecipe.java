@@ -38,12 +38,10 @@ public class NBTRecipe extends SpecialRecipe {
     private final NonNullList<Ingredient> recipeItems;
     private final ItemStack recipeOutput;
     private final HashSet<String> keySet;
-    private final ResourceLocation id;
     private final String group;
 
     public NBTRecipe(ResourceLocation idIn, String groupIn, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn, ItemStack recipeOutputIn) {
-        super(Serializer.NAME);
-        this.id = idIn;
+        super(idIn);
         this.group = groupIn;
         this.recipeWidth = recipeWidthIn;
         this.recipeHeight = recipeHeightIn;
@@ -164,7 +162,7 @@ public class NBTRecipe extends SpecialRecipe {
         return this.recipeHeight;
     }
 
-    private static NonNullList<Ingredient> deserializeIngredients(String[] pattern, Map<String, Ingredient> keys, int patternWidth, int patternHeight) {
+    public static NonNullList<Ingredient> deserializeIngredients(String[] pattern, Map<String, Ingredient> keys, int patternWidth, int patternHeight) {
         NonNullList<Ingredient> nonnulllist = NonNullList.withSize(patternWidth * patternHeight, Ingredient.EMPTY);
         Set<String> set = Sets.newHashSet(keys.keySet());
         set.remove(" ");
@@ -241,7 +239,7 @@ public class NBTRecipe extends SpecialRecipe {
         return i;
     }
 
-    private static String[] patternFromJson(JsonArray jsonArr) {
+    public static String[] patternFromJson(JsonArray jsonArr) {
         String[] astring = new String[jsonArr.size()];
         if (astring.length > MAX_HEIGHT) {
             throw new JsonSyntaxException("Invalid pattern: too many rows, " + MAX_HEIGHT + " is maximum");
@@ -268,7 +266,7 @@ public class NBTRecipe extends SpecialRecipe {
     /**
      * Returns a key json object as a Java HashMap.
      */
-    private static Map<String, Ingredient> deserializeKey(JsonObject json) {
+    public static Map<String, Ingredient> deserializeKey(JsonObject json) {
         Map<String, Ingredient> map = Maps.newHashMap();
 
         for(Map.Entry<String, JsonElement> entry : json.entrySet()) {

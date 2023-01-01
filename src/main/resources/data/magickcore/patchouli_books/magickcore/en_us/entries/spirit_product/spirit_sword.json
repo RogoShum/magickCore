@@ -10,7 +10,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "sword",
+      "magick_recipe": "magickcore:spirit_sword",
       "text": "在魔力工作台处合成。"
     }
   ]

@@ -10,7 +10,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "wood_staff",
+      "magick_recipe": "magickcore:spirit_wood_staff",
       "text": "在魔力工作台处合成。"
     }
   ]

@@ -3,21 +3,19 @@ package com.rogoshum.magickcore.client.integration.jei;
 import com.google.common.collect.ImmutableList;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.init.ModRecipes;
-import com.rogoshum.magickcore.common.recipe.MagickCraftingTransformRecipe;
+import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
 import com.rogoshum.magickcore.common.recipe.NBTRecipe;
+import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 @JeiPlugin
 public class MagickPlugin implements IModPlugin {
@@ -36,14 +34,22 @@ public class MagickPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new MagickItemRecipe(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new MagickItemRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new SpiritCraftingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        ImmutableList.Builder<MagickCraftingTransformRecipe> builder = ImmutableList.builder();
-        ModRecipes.getExplosionRecipes().values().forEach(builder::add);
-        registration.addRecipes(builder.build(), MagickItemRecipe.UID);
+        ImmutableList.Builder<MagickWorkbenchRecipe> magickWorkbenchRecipeBuilder = ImmutableList.builder();
+        Minecraft.getInstance().world.getRecipeManager().getRecipesForType(MagickWorkbenchRecipe.MAGICK_WORKBENCH).forEach(
+                magickWorkbenchRecipeBuilder::add
+        );
+        registration.addRecipes(magickWorkbenchRecipeBuilder.build(), MagickItemRecipeCategory.UID);
+        ImmutableList.Builder<SpiritCraftingRecipe> spiritCraftingRecipeBuilder = ImmutableList.builder();
+        Minecraft.getInstance().world.getRecipeManager().getRecipesForType(SpiritCraftingRecipe.SPIRIT_CRAFTING).forEach(
+                spiritCraftingRecipeBuilder::add
+        );
+        registration.addRecipes(spiritCraftingRecipeBuilder.build(), SpiritCraftingRecipeCategory.UID);
     }
 
     @Override

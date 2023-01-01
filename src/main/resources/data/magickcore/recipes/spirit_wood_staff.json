@@ -1,0 +1,17 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ "W"],
+    [ "W"],
+    [ "W"]
+  ],
+  "key":{
+    "W":{
+      "item":"magickcore:spirit_wood_stick"
+    }
+  },
+  "result":{
+    "item":"magickcore:staff",
+    "count":1
+  }
+}

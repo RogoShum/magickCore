@@ -46,10 +46,7 @@ public class MagickReleaseHelper {
     private final static float ORB_VELOCITY = 0.5f;
     private final static float STAR_VELOCITY = 0.7f;
     private final static float LASER_VELOCITY = 1.0f;
-
     private final static HashMap<String, Function<DoubleEntity, Boolean>> ownerTest = new HashMap<>();
-    public final static HashSet<String> FORM_BAN_SET = new HashSet<>();
-    public final static HashSet<String> ELEMENT_BAN_SET = new HashSet<>();
 
     public static void registerOwnerTest(String id, Function<DoubleEntity, Boolean> function) {
         ownerTest.put(id, function);

@@ -10,6 +10,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 
@@ -85,6 +87,23 @@ public class MultiBlockUtil {
                             return false;
                     }
                 }
+            }
+        }
+
+        return true;
+    }
+
+    public static <T> boolean correctStructure(NonNullList<Ingredient> ingredients, Optional<PlaceableItemEntity>[][] structure) {
+        int xLength = structure.length;
+        int zLength = structure[0].length;
+        for(int x=0;x<xLength;x++){
+            for(int z=0;z<zLength;z++){
+                Optional<PlaceableItemEntity> entity = structure[x][z];
+                int slot = z + x * zLength;
+                if(entity.isPresent() && !ingredients.get(slot).test(entity.get().getItemStack()))
+                    return false;
+                if(!entity.isPresent() && !ingredients.get(slot).test(ItemStack.EMPTY))
+                    return false;
             }
         }
 
@@ -321,7 +340,7 @@ public class MultiBlockUtil {
         }
     }
 
-    public static class PlaceableEntityPattern extends StructurePattern<PlaceableItemEntity>{
+    public static class PlaceableEntityPattern extends StructurePattern<PlaceableItemEntity> {
         public final Item item;
         public final String pattern;
 

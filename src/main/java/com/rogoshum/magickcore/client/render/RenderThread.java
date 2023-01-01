@@ -4,8 +4,10 @@ import com.google.common.collect.Queues;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.HashMap;
@@ -78,7 +80,12 @@ public class RenderThread extends Thread {
                                 renderer.setShouldRender(false);
                                 continue;
                             }
-                            if(!RenderHelper.shouldRender(renderer.boundingBox())) {
+                            if(renderer instanceof LitParticle) {
+                                if(!RenderHelper.shouldRender((LitParticle) renderer)) {
+                                    renderer.setShouldRender(false);
+                                    continue;
+                                }
+                            } else if(!RenderHelper.shouldRender(renderer.boundingBox())) {
                                 renderer.setShouldRender(false);
                                 continue;
                             }

@@ -152,7 +152,13 @@ public class NBTIngredient extends Ingredient {
 
         @Override
         public NBTIngredient parse(PacketBuffer buffer) {
-            Stream<? extends Ingredient.IItemList> itemLists = Stream.generate(() -> new Ingredient.SingleItemList(buffer.readItemStack())).limit(buffer.readVarInt());
+            int limit = buffer.readVarInt();
+            Ingredient.IItemList[] ingredientList = new Ingredient.IItemList[limit];
+            for (int i = 0; i < limit; ++i) {
+                ingredientList[i] = new Ingredient.SingleItemList(buffer.readItemStack());
+            }
+
+            Stream<? extends Ingredient.IItemList> itemLists = Stream.of(ingredientList);
             CompoundNBT tag = buffer.readCompoundTag();
             int count = buffer.readVarInt();
             int type = buffer.readVarInt();

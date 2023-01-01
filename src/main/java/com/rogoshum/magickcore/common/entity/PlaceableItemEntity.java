@@ -5,13 +5,11 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
-import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
-import com.rogoshum.magickcore.common.recipe.SpawnContext;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
+import com.rogoshum.magickcore.common.recipe.MatrixInventory;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.entity.*;
@@ -34,7 +32,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpawnData, IManaRefraction {
@@ -123,13 +120,17 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                     MagickCraftingTileEntity workbench = (MagickCraftingTileEntity) tile;
                     Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(workbench.getCraftingMatrix().getMatrix(), Optional.empty());
                     if(matrix != null) {
-                        Optional<MagickCraftingRecipe> optional = MagickRegistry.matchMagickCraftingRecipe(matrix);
+                        MatrixInventory matrixInventory = new MatrixInventory(matrix);
+                        Optional<SpiritCraftingRecipe> optional = world.getRecipeManager().getRecipe(SpiritCraftingRecipe.SPIRIT_CRAFTING, matrixInventory, world);
                         if(optional.isPresent()) {
                             workbench.getCraftingMatrix().getMatrix().values().forEach(entity -> {
                                 entity.noDrops = true;
                                 entity.remove();
                             });
-                            optional.get().craft(SpawnContext.create(player, Vector3d.copyCentered(pos)));
+                            Vector3d vec = Vector3d.copyCentered(pos);
+                            ItemStack stack1 = optional.get().getCraftingResult(matrixInventory);
+                            ItemEntity itemEntity = new ItemEntity(player.world, vec.x, vec.y, vec.z, stack1);
+                            player.world.addEntity(itemEntity);
                             this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.5f, 2.0f);
                             world.setEntityState(this, (byte) 14);
                         }

@@ -5,9 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.util.MultiBlockUtil;
+import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,17 +13,21 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.IVariable;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public class MagickRecipeComponent implements ICustomComponent {
     @SerializedName("magick_recipe")
     public String magickRecipe;
     public int stack = 0;
-    private transient MagickCraftingRecipe recipe;
+    private transient SpiritCraftingRecipe recipe;
     private transient int x, y;
     @Override
     public void build(int componentX, int componentY, int pageNum) {
@@ -36,45 +38,34 @@ public class MagickRecipeComponent implements ICustomComponent {
     @Override
     public void render(MatrixStack ms, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
         if(this.recipe == null) return;
-        String[][][] recipe = this.recipe.getRecipe();
-        MultiBlockUtil.PlaceableEntityPattern[] patterns = this.recipe.getPattern();
+        NonNullList<Ingredient>[] recipe = this.recipe.getIngredientList();
         RenderSystem.pushMatrix();
         RenderSystem.multMatrix(ms.getLast().getMatrix());
         RenderSystem.translatef(this.x+50, this.y+50, 150);
         RenderSystem.rotatef((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f, 0, 1, 0);
         RenderSystem.rotatef(-20f, 1, 0, 0);
         if(stack <= 0) {
-            float scale1 = 128f / Math.max(recipe.length, Math.max(recipe[0][0].length, recipe[0].length));
+            float scale1 = 128f / Math.max(this.recipe.getRecipeY(), Math.max(this.recipe.getRecipeX(), this.recipe.getRecipeZ()));
             RenderSystem.translatef(0, recipe.length*scale1 * 0.15f, 0);
-            int width = Math.max(recipe[0][0].length, recipe[0].length);
-            for (int y = 0; y < recipe.length; ++y){
-                for (int x = 0; x < recipe[y].length; ++x){
-                    for (int z = 0; z < recipe[y][x].length; ++z){
-                        String s = recipe[y][x][z];
-                        for (MultiBlockUtil.PlaceableEntityPattern pattern : patterns) {
-                            if(pattern.getPattern().equals(s)) {
-                                if(pattern.item != null) {
-                                    renderItem(pattern.item, scale1, x, y, z, width);
-                                }
-                            }
-                        }
+            int width = Math.max(this.recipe.getRecipeZ(), this.recipe.getRecipeX());
+            for (int y = 0; y < this.recipe.getRecipeY(); ++y){
+                for (int x = 0; x < this.recipe.getRecipeX(); ++x){
+                    for (int z = 0; z < this.recipe.getRecipeZ(); ++z){
+                        Ingredient ingredient = recipe[y].get(z + x * this.recipe.getRecipeZ());
+                        if(!ingredient.hasNoMatchingItems())
+                            renderItem(ingredient.getMatchingStacks()[0].getItem(), scale1, x, y, z, width);
                     }
                 }
             }
         } else if(recipe.length >= stack){
             RenderSystem.translatef(0, 8, 0);
-            float scale1 = 128f / Math.max(recipe.length, Math.max(recipe[0][0].length, recipe[0].length));
-            int width = Math.max(recipe[0][0].length, recipe[0].length);
-            for (int x = 0; x < recipe[stack-1].length; ++x){
-                for (int z = 0; z < recipe[stack-1][x].length; ++z){
-                    String s = recipe[stack-1][x][z];
-                    for (MultiBlockUtil.PlaceableEntityPattern pattern : patterns) {
-                        if(pattern.getPattern().equals(s)) {
-                            if(pattern.item != null) {
-                                renderItem(pattern.item, scale1, x, 0, z, width);
-                            }
-                        }
-                    }
+            float scale1 = 128f / Math.max(this.recipe.getRecipeY(), Math.max(this.recipe.getRecipeX(), this.recipe.getRecipeZ()));
+            int width = Math.max(this.recipe.getRecipeZ(), this.recipe.getRecipeX());
+            for (int x = 0; x < this.recipe.getRecipeX(); ++x){
+                for (int z = 0; z < this.recipe.getRecipeZ(); ++z){
+                    Ingredient ingredient = recipe[stack-1].get(z + x * this.recipe.getRecipeZ());
+                    if(!ingredient.hasNoMatchingItems())
+                        renderItem(ingredient.getMatchingStacks()[0].getItem(), scale1, x, y, z, width);
                 }
             }
         }
@@ -97,7 +88,9 @@ public class MagickRecipeComponent implements ICustomComponent {
     @Override
     public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
         this.magickRecipe = lookup.apply(IVariable.wrap(this.magickRecipe)).asString();
-        //this.stack = lookup.apply(IVariable.wrap(this.stack)).asNumber().intValue();
-        this.recipe = MagickRegistry.getMagickCraftingRecipe(this.magickRecipe);
+        List<SpiritCraftingRecipe> recipes = Minecraft.getInstance().world.getRecipeManager().getRecipesForType(SpiritCraftingRecipe.SPIRIT_CRAFTING);
+        recipes.forEach(magickCraftingRecipe -> magickCraftingRecipe.getId().toString().equals(this.magickRecipe));
+        Optional<SpiritCraftingRecipe> optional = recipes.stream().filter(recipe -> recipe.getId().toString().equals(this.magickRecipe)).findAny();
+        optional.ifPresent(magickCraftingRecipe -> this.recipe = magickCraftingRecipe);
     }
 }

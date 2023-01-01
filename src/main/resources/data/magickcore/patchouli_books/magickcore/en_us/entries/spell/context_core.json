@@ -19,7 +19,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "spell_context",
+      "magick_recipe": "magickcore:context_core",
       "text": "在魔力工作台处合成。"
     },
     {

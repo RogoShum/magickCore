@@ -10,7 +10,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "material_jar",
+      "magick_recipe": "magickcore:material_jar",
       "text": "在魔力工作台处合成。"
     }
   ]

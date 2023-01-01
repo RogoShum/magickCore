@@ -10,7 +10,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "super",
+      "magick_recipe": "magickcore:super_spawner",
       "text": "在魔力工作台处合成。"
     }
   ]

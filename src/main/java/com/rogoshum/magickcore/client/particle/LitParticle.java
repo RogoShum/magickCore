@@ -430,6 +430,10 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return new Vector3d(getPosX(), getPosY(), getPosZ());
     }
 
+    public Vector3d centerVec() {
+        return new Vector3d(getPosX(), getPosY() + scaleHeight * 0.5, getPosZ());
+    }
+
     @Override
     public AxisAlignedBB boundingBox() {
         return getBoundingBox();
@@ -442,7 +446,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     @Override
     public float eyeHeight() {
-        return getScale(scaleHeight) / 2;
+        return getScale(scaleHeight) * 0.5f;
     }
 
     @Override

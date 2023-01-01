@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IPositionEntity;
+import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
@@ -1220,6 +1221,13 @@ public class RenderHelper {
         return false;
     }
 
+    public static boolean shouldRender(LitParticle particle) {
+        if(Minecraft.getInstance().world == null || Minecraft.getInstance().player == null) return false;
+        World world = Minecraft.getInstance().world;
+        PlayerEntity player = Minecraft.getInstance().player;
+        Vector3d start = player.getEyePosition(Minecraft.getInstance().getRenderPartialTicks());
+        return world.rayTraceBlocks(new RayTraceContext(start, particle.centerVec(), RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, player)).getType() == RayTraceResult.Type.MISS;
+    }
     public static Queue<Vector3d> getAABBPoints(AxisAlignedBB aabbIn) {
         Queue<Vector3d> queue = Queues.newArrayDeque();
         queue.add(new Vector3d(aabbIn.minX, aabbIn.minY, aabbIn.minZ));

@@ -19,7 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MagickCore.MOD_ID);
-    public static final RegistryObject<Item> MAGE_EGG = ITEMS.register("mage_spawn_egg", () -> new SpawnEggItem(ModEntities.MAGE_ENTITY_TYPE, 0x32a852, 0x30407a, new Item.Properties().group(ModGroups.ITEM_GROUP)));
+    public static final RegistryObject<Item> MAGE_EGG = ITEMS.register("mage_spawn_egg", () -> new SpawnEggItem(ModEntities.MAGE_ENTITY_TYPE, 0xff0000, 0xffe700, new Item.Properties().group(ModGroups.ITEM_GROUP)));
     //block items
     public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new BlockItem(ModBlocks.MATERIAL_JAR.get()
             , BaseItem.properties().setISTER(() -> MaterialJarItemRenderer::new)));

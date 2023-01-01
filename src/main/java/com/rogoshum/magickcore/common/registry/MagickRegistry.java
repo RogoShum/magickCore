@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.registry;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.IRegistry;
-import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
 import com.rogoshum.magickcore.common.registry.elementmap.ElementFunctions;
@@ -12,12 +11,9 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.magick.context.child.ChildContext;
-import com.rogoshum.magickcore.common.recipe.MagickCraftingRecipe;
 import com.rogoshum.magickcore.common.magick.MagickElement;
-import net.minecraft.util.Util;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 public class MagickRegistry {
@@ -102,18 +98,6 @@ public class MagickRegistry {
             e.printStackTrace();
         }
 
-        return null;
-    }
-
-    public static Optional<MagickCraftingRecipe> matchMagickCraftingRecipe(Optional<PlaceableItemEntity>[][][] structure) {
-        ObjectRegistry<MagickCraftingRecipe> recipes = (ObjectRegistry<MagickCraftingRecipe>) registries.get(LibRegistry.MAGICK_CRAFTING);
-        return recipes.registry().values().stream().flatMap((recipe) -> Util.streamOptional(recipe.match(structure) ? Optional.of(recipe) : Optional.empty())).findFirst();
-    }
-
-    public static MagickCraftingRecipe getMagickCraftingRecipe(String id) {
-        Object value = registries.get(LibRegistry.MAGICK_CRAFTING).get(id);
-        if (value instanceof MagickCraftingRecipe)
-            return (MagickCraftingRecipe) value;
         return null;
     }
 

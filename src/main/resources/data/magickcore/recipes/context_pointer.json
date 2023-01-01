@@ -1,0 +1,23 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ "SS",
+      "SS"],
+    [ "WW",
+      "WW"],
+    [ "SS",
+      "SS"]
+  ],
+  "key":{
+    "W":{
+      "item":"magickcore:spirit_wood_stick"
+    },
+    "S":{
+      "item":"magickcore:spirit_crystal"
+    }
+  },
+  "result":{
+    "item":"magickcore:context_pointer",
+    "count":1
+  }
+}

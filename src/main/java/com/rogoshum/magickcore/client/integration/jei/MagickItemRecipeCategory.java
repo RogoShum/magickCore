@@ -2,11 +2,10 @@ package com.rogoshum.magickcore.client.integration.jei;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.recipe.MagickCraftingTransformRecipe;
+import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -16,15 +15,16 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class MagickItemRecipe implements IRecipeCategory<MagickCraftingTransformRecipe> {
+public class MagickItemRecipeCategory implements IRecipeCategory<MagickWorkbenchRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(MagickCore.MOD_ID, "mana");
     private final IDrawableStatic background;
     private final IDrawable icon;
     private final String localizedName;
 
-    public MagickItemRecipe(IGuiHelper guiHelper) {
+    public MagickItemRecipeCategory(IGuiHelper guiHelper) {
         ResourceLocation location = new ResourceLocation(MagickCore.MOD_ID, "textures/gui/crafting.png");
         this.background = guiHelper.createDrawable(location, 0, 0, 116, 54);
         this.icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.SPIRIT_CRYSTAL.get()));
@@ -37,8 +37,8 @@ public class MagickItemRecipe implements IRecipeCategory<MagickCraftingTransform
     }
 
     @Override
-    public Class<? extends MagickCraftingTransformRecipe> getRecipeClass() {
-        return MagickCraftingTransformRecipe.class;
+    public Class<? extends MagickWorkbenchRecipe> getRecipeClass() {
+        return MagickWorkbenchRecipe.class;
     }
 
     @Override
@@ -57,24 +57,18 @@ public class MagickItemRecipe implements IRecipeCategory<MagickCraftingTransform
     }
 
     @Override
-    public void setIngredients(MagickCraftingTransformRecipe inbtRecipe, IIngredients iIngredients) {
-        iIngredients.setInputLists(VanillaTypes.ITEM, RecipeCollector.INPUTS.get(inbtRecipe.getId()));
-        iIngredients.setOutputs(VanillaTypes.ITEM, RecipeCollector.OUTPUTS.get(inbtRecipe.getId()));
+    public void setIngredients(MagickWorkbenchRecipe inbtRecipe, IIngredients iIngredients) {
+        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getMatchingStacks()));
+        iIngredients.setInputs(VanillaTypes.ITEM, stacks);
+        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getRecipeOutput());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout iRecipeLayout, MagickCraftingTransformRecipe inbtRecipe, IIngredients iIngredients) {
-        if(!RecipeCollector.RECIPES.containsKey(inbtRecipe.getId())) return;
-        List<List<ItemStack>> recipes = RecipeCollector.RECIPES.get(inbtRecipe.getId());
+    public void setRecipe(IRecipeLayout iRecipeLayout, MagickWorkbenchRecipe inbtRecipe, IIngredients iIngredients) {
         iRecipeLayout.getItemStacks().init(0, false, 80, 18);
         iRecipeLayout.getItemStacks().init(1, true, 18, 18);
-        List<ItemStack> list = new ArrayList<>();
-        ItemStack output = inbtRecipe.getOutput();
-        for (ItemStack itemStack : recipes.get(1)) {
-            if(itemStack.getItem() != output.getItem())
-                list.add(itemStack);
-        }
-        iRecipeLayout.getItemStacks().set(0, output);
-        iRecipeLayout.getItemStacks().set(1, list);
+        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getRecipeOutput());
+        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getMatchingStacks()));
+        iRecipeLayout.getItemStacks().set(1, stacks);
     }
 }

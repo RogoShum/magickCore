@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "context_pointer",
+      "magick_recipe": "magickcore:context_pointer",
       "text": "指引魔力走向的单行道。在魔力工作台处合成。"
     },
     {

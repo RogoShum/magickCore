@@ -39,7 +39,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "wood_staff",
+      "magick_recipe": "magickcore:spirit_wood_staff",
       "text": "魔力工作台的合成都需要用魔棒来完成合成。"
     }
   ]

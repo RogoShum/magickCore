@@ -65,6 +65,11 @@ public class MagickWorkbenchRecipe implements IRecipe<IInventory> {
         return NonNullList.from(ingredient);
     }
 
+    @Nonnull
+    public Ingredient getIngredient() {
+        return ingredient;
+    }
+
     public String getGroup() {
         return this.group;
     }
@@ -115,14 +120,6 @@ public class MagickWorkbenchRecipe implements IRecipe<IInventory> {
             return copy;
         }
         return this.getRecipeOutput().copy();
-    }
-
-    public int getWidth() {
-        return 1;
-    }
-
-    public int getHeight() {
-        return 1;
     }
 
     public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<MagickWorkbenchRecipe> {

@@ -10,7 +10,7 @@
     },
     {
       "type": "magickcore:magick_recipe",
-      "magick_recipe": "ring",
+      "magick_recipe": "magickcore:spirit_crystal_ring",
       "text": "在魔力工作台处合成。"
     }
   ]

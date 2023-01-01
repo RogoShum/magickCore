@@ -55,7 +55,5 @@ public class ModConfig {
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();
-        MagickReleaseHelper.FORM_BAN_SET.addAll(FORM_BAN.get());
-        MagickReleaseHelper.ELEMENT_BAN_SET.addAll(ELEMENT_BAN.get());
     }
 }

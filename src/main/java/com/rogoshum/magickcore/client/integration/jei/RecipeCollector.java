@@ -34,10 +34,11 @@ public class RecipeCollector {
         ItemStack minecraftString = new ItemStack(Items.STRING);
         ItemStack minecraftWool = new ItemStack(Items.WHITE_WOOL);
 
-        List<ItemStack> seedsList = getItemByContainName("seeds");
-        //INPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
-                //, seedsList));
-        //OUTPUTS.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(seeds));
+        List<ItemStack> seedsList = getItemByContainName("seed");
+        ResourceLocation res = new ResourceLocation(MagickCore.MOD_ID, "element_seeds_recipe");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(orbBottle)
+                , seedsList));
+        OUTPUTS.put(res, ImmutableList.of(seeds));
 
         ImmutableList.Builder<ItemStack> element = ImmutableList.builder();
         ImmutableList.Builder<ItemStack> other = ImmutableList.builder();
@@ -55,23 +56,23 @@ public class RecipeCollector {
                 output.add(itemStack1);
             }
         }
+        RECIPES.put(res, ImmutableList.of(output.build(), element.build(), other.build()));
 
-        /*
-        RECIPES.put(ModRecipes.ELEMENT_ORB_RECIPE.getId(), ImmutableList.of(output.build(), element.build(), other.build()));
-
-        INPUTS.put(ModRecipes.ELEMENT_WOOL_RECIPE.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_wool_recipe");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(orbBottle)
                 , ImmutableList.of(minecraftWool)));
-        OUTPUTS.put(ModRecipes.ELEMENT_WOOL_RECIPE.getId(), ImmutableList.of(wool));
-        RECIPES.put(ModRecipes.ELEMENT_WOOL_RECIPE.getId(), elementRecipe(orbBottle, minecraftWool, wool));
+        OUTPUTS.put(res, ImmutableList.of(wool));
+        RECIPES.put(res, elementRecipe(orbBottle, minecraftWool, wool));
 
-        INPUTS.put(ModRecipes.ELEMENT_WOOL_RECIPE_2.getId(), ImmutableList.of(ImmutableList.of(crystal)
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_wool_recipe_2");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(crystal)
                 , ImmutableList.of(minecraftWool)));
-        OUTPUTS.put(ModRecipes.ELEMENT_WOOL_RECIPE_2.getId(), ImmutableList.of(wool));
-        RECIPES.put(ModRecipes.ELEMENT_WOOL_RECIPE_2.getId(), elementRecipe(crystal, minecraftWool, wool));
+        OUTPUTS.put(res, ImmutableList.of(wool));
+        RECIPES.put(res, elementRecipe(crystal, minecraftWool, wool));
 
-        INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(ImmutableList.of(wool)));
-        OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(string));
-         */
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_wool_recipe_3");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(wool)));
+        OUTPUTS.put(res, ImmutableList.of(string));
 
         element = ImmutableList.builder();
         output = ImmutableList.builder();
@@ -84,26 +85,41 @@ public class RecipeCollector {
             itemStack1.setCount(4);
             output.add(itemStack1);
         }
+        RECIPES.put(res, ImmutableList.of(output.build(), element.build()));
+
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_string_recipe");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(string)
+                , ImmutableList.of(string), ImmutableList.of(string)
+                , ImmutableList.of(string)));
+        OUTPUTS.put(res, ImmutableList.of(wool));
+        element = ImmutableList.builder();
+        output = ImmutableList.builder();
+        for (String elementKey : MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().keySet()) {
+            ItemStack itemStack = string.copy();
+            NBTTagHelper.setElement(itemStack, elementKey);
+            element.add(itemStack);
+            ItemStack itemStack1 = wool.copy();
+            NBTTagHelper.setElement(itemStack1, elementKey);
+            output.add(itemStack1);
+        }
+        ImmutableList<ItemStack> stringList = element.build();
+        RECIPES.put(res, ImmutableList.of(output.build(),
+                stringList, stringList,
+                stringList, stringList));
+
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_string_recipe_2");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(orbBottle)
+                , ImmutableList.of(minecraftString)));
+        OUTPUTS.put(res, ImmutableList.of(string));
+        RECIPES.put(res, elementRecipe(orbBottle, minecraftString, string));
+
+        res = new ResourceLocation(MagickCore.MOD_ID, "element_string_recipe_3");
+        INPUTS.put(res, ImmutableList.of(ImmutableList.of(crystal)
+                , ImmutableList.of(minecraftString)));
+        OUTPUTS.put(res, ImmutableList.of(string));
+        RECIPES.put(res, elementRecipe(crystal, minecraftString, string));
 
         /*
-        RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE.getId(), ImmutableList.of(output.build(), element.build()));
-
-        INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_2.getId(), ImmutableList.of(ImmutableList.of(orbBottle)
-                , ImmutableList.of(minecraftString)));
-        OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_2.getId(), ImmutableList.of(string));
-        RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE_2.getId(), elementRecipe(orbBottle, minecraftString, string));
-
-        INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), ImmutableList.of(ImmutableList.of(crystal)
-                , ImmutableList.of(minecraftString)));
-        OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), ImmutableList.of(string));
-        RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), elementRecipe(crystal, minecraftString, string));
-
-        INPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), ImmutableList.of(ImmutableList.of(crystal)
-                , ImmutableList.of(minecraftString)));
-        OUTPUTS.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), ImmutableList.of(string));
-        RECIPES.put(ModRecipes.ELEMENT_STRING_RECIPE_3.getId(), elementRecipe(crystal, minecraftString, string));
-         */
-
         ModRecipes.getExplosionRecipes().forEach((resourceLocation, magickCraftingTransformRecipe) -> {
             List<List<ItemStack>> lists = new ArrayList<>();
             lists.add(RecipeCollector.getItemByContainName(magickCraftingTransformRecipe.getContainer().getItemName()));
@@ -112,6 +128,8 @@ public class RecipeCollector {
 
             RECIPES.put(magickCraftingTransformRecipe.getId(), ImmutableList.of(ImmutableList.of(magickCraftingTransformRecipe.getOutput()), lists.get(0)));
         });
+
+         */
 
         addElementCoreRecipe(LibElements.ARC, new ItemStack(ModItems.ARC.get()));
         addElementCoreRecipe(LibElements.SOLAR, new ItemStack(ModItems.SOLAR.get()));

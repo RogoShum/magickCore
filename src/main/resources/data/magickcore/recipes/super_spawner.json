@@ -1,0 +1,17 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ " S ",
+      "SSS",
+      " S "]
+  ],
+  "key":{
+    "S":{
+      "item":"magickcore:spirit_crystal"
+    }
+  },
+  "result":{
+    "item":"magickcore:super_spawner",
+    "count":1
+  }
+}
