@@ -1,12 +1,12 @@
 {
-  "name": "§bArc §7Debuff",
+  "name": "§bArc §7De-buff",
   "advancement": "magickcore:learn/trigger_element_func_arc_de_buff",
   "icon": "magickcore:arc",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Arc of the Debuff can paralyze the target."
+      "text": "Arc of the De-buff can paralyze the target. The attribute of having mana gain is force and duration."
     }
   ]
 }

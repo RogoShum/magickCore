@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:wither",
-      "text": "The wither element is a mana element that is biased towards dark, is an element with a suppressing and weakening effect."
+      "text": "The wither element is a mana element that is biased towards dark, is an element with a suppressing and weakening effect. $(br2)Withering element life will get withering protection, reducing damage from wither, hunger, suffocation, and drowning."
     }
   ]
 }

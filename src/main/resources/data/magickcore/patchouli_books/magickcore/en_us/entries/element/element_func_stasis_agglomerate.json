@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Stasis of the Buff can make the target produce a magick phantom that stays in place, and the phantom can interact to a certain extent."
+      "text": "Stasis of the Buff can make the target produce a magick phantom that stays in place, and the phantom can interact to a certain extent. The attribute of having mana gain is duration. When the height of the spell is greater than 192 blocks, it will change the current weather to rainy."
     }
   ]
 }

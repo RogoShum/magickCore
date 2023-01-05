@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:solar",
-      "text": "The solar element is a mana element that is biased towards light, providing a certain recovery effect and burning effect."
+      "text": "The solar element is a mana element that is biased towards light, providing a certain recovery effect and burning effect. $(br2)Solar element life will receive flame protection, reducing damage from fire and explosions."
     }
   ]
 }

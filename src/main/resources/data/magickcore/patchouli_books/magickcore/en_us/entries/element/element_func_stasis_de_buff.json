@@ -1,12 +1,12 @@
 {
-  "name": "§3Stasis §7Debuff",
+  "name": "§3Stasis §7De-buff",
   "advancement": "magickcore:learn/trigger_element_func_stasis_de_buff",
   "icon": "magickcore:stasis",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Stasis of the Debuff can freeze or chilly the target."
+      "text": "Stasis of the De-buff can freeze or chilly the target. The attribute of having mana gain is force and duration."
     }
   ]
 }

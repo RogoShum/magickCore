@@ -1,12 +1,12 @@
 {
-  "name": "§8Taken §7Debuff",
+  "name": "§8Taken §7De-buff",
   "advancement": "magickcore:learn/trigger_element_func_taken_de_buff",
   "icon": "magickcore:taken",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Taken of the Debuff can make the bewitched target become a puppet of the caster."
+      "text": "Taken of the De-buff can make the bewitched target become a puppet of the caster. No effect to Boss. The attribute of having mana gain is force and duration."
     }
   ]
 }

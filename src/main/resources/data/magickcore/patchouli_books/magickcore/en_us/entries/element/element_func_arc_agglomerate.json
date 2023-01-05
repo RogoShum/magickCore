@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Arc of the Agglomerate gently push entities."
+      "text": "Arc of the Agglomerate gently push entities. If the target is a block, it will supplement the block's arc energy. The yield of mana is equal to the force of the spell. When the height position of the spell is greater than 192 blocks, it will change the current weather to a thunderstorm."
     }
   ]
 }

@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:arc",
-      "text": "The arc element is a mana element that is biased towards light, which can affect speed and energy."
+      "text": "The arc element is a mana element that is biased towards light, which can affect speed and energy. $(br2)The life of an Arc element receives Arc protection, reducing damage from fire, magic, and lightning."
     }
   ]
 }

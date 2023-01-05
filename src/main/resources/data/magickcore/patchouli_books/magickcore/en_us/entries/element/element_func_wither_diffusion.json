@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Wither of the Diffusion can switch the target's health value to absorption."
+      "text": "Wither of the Diffusion can switch the target's health value to absorption. Can also accelerate the operation of blocks. The attribute of having mana gain is force."
     }
   ]
 }

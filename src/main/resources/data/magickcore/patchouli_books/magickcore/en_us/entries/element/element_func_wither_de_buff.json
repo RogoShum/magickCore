@@ -1,12 +1,12 @@
 {
-  "name": "§2Wither §7Debuff",
+  "name": "§2Wither §7De-buff",
   "advancement": "magickcore:learn/trigger_element_func_wither_de_buff",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "Wither of the Debuff can limit the target's maximum health cap."
+      "text": "Wither of the De-buff can limit the target's maximum health cap. The attribute of having mana gain is force and duration."
     }
   ]
 }

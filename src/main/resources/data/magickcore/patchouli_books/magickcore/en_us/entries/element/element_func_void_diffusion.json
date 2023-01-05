@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Diffusion allows the target to teleport."
+      "text": "Void of the Diffusion allows the target to teleport. If no position is transferred, then teleport according to the caster's line of sight and the range of spell."
     }
   ]
 }
