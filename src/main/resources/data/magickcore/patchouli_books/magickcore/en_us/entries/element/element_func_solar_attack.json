@@ -1,12 +1,12 @@
 {
-  "name": "§6烈焰§7攻击",
+  "name": "§6Solar §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_solar_attack",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "攻击状态的烈焰能量可以对目标造成烈焰魔法伤害，目标在着火时伤害更高。收益魔力能量为强度。"
+      "text": "Solar of the Attack can cause solar magic damage to the target, and the damage is higher when the target is on fire."
     }
   ]
 }

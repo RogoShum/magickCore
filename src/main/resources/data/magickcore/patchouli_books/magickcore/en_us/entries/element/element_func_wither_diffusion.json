@@ -1,12 +1,12 @@
 {
-  "name": "§2枯萎§7漫散",
+  "name": "§2Wither §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_wither_diffusion",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "漫散状态的枯萎效果可以转换目标的生命值为伤害吸收。也可以加速方块的运作。收益魔力能量为强度。"
+      "text": "Wither of the Diffusion can switch the target's health value to absorption."
     }
   ]
 }

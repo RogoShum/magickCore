@@ -1,20 +1,20 @@
 {
-  "name": "元素容器",
+  "name": "Element Bottle",
   "advancement": "magickcore:learn/orb_bottle",
   "icon": "magickcore:orb_bottle{ELEMENT:\"arc\"}",
   "category": "element_product",
   "pages": [
-	{
-	  "title": "空的元素容器",
+	  {
+      "title": "Empty Element Bottle",
       "type": "spotlight",
-	  "item": "magickcore:orb_bottle",
-	  "text": "元素容器是用来存储元素能量的容器，击杀携带元素能量的怪物后，站在元素能量面前右键，即可吸收元素能量。$(br2)吸收元素能量之后的元素容器，可以被用来制作其他有用的东西。怪物携带的元素通常跟维度、群系和自身特性有关，比如洞穴蜘蛛携带枯萎元素，苦力怕携带电弧元素，被雷批中也会转化为电弧元素的怪物。"
+      "item": "magickcore:orb_bottle",
+      "text": "Element Bottle are containers used to store Element Energy, right-click the element energy to store it.$(br2)Then we can make something else."
     },
     {
-      "title": "内含元素的元素容器",
+      "title": "Element Bottle with Element Energy",
       "type": "spotlight",
       "item": "magickcore:orb_bottle{ELEMENT:\"arc\"}",
-      "text": "含有元素的容器可以将自身的元素能量传递到绵羊身上，右键绵羊即可将元素能量传入到绵羊体内。$(br2)击杀绵羊后我们可以收获到元素羊毛。"
+      "text": "The container containing elements can transfer its own element energy to the sheep, just right click on the sheep. $(br2)Waiting for sheep to die, we can harvest element wool."
     },
     {
       "type": "magickcore:element_recipe",
@@ -28,7 +28,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:element_string{ELEMENT:\"arc\"},magickcore:element_wool{ELEMENT:\"arc\"}",
-      "text": "元素容器也可以直接跟线还有羊毛合成。"
+      "text": "Element Bottle can also be crafted directly with string and wool."
     },
     {
       "type": "magickcore:element_recipe",
@@ -42,7 +42,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
-      "text": "元素容器也可以和种子合成，通过种植来收获更多。"
+      "text": "Element Bottle can also be crafted with seeds, which can be planted to harvest more."
     }
   ]
 }

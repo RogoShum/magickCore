@@ -1,17 +1,17 @@
 {
-  "name": "灵魂水晶戒指",
+  "name": "Spirit Crystal Ring",
   "advancement": "magickcore:learn/ring",
   "icon": "magickcore:spirit_crystal_ring",
   "category": "spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂水晶戒指本身不携带任何术式，需要右键装备并按下K来激活，Ctrl+K可以取下身上的戒指，可以装备完备法术。用完备法术和灵魂水晶戒指在工作台合成即可。"
+      "text": "The spirit crystal ring itself does not carry any magick context, it needs to be equipped by right clicking and pressing K to activate it. Ctrl+K can take off the ring on the body, and it can be equipped with a magick context. Using the magick context and spirit crystal ring on a workbench will create a spirit crystal ring with a magick context."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_crystal_ring",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

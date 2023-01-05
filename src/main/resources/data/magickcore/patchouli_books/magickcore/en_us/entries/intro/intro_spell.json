@@ -1,29 +1,29 @@
 {
-  "name": "法术",
+  "name": "Spell",
   "advancement": "magickcore:learn/root",
   "icon": "magickcore:magick_context",
   "category": "intro",
   "pages": [
     {
       "type": "text",
-      "text": "法术的本质是利用道具引导出自身体内的魔力，不同元素的魔力也会表现出不同的特性。引导出自身魔力的关键就是灵魂水晶。"
+      "text": "The essence of the spell is to use the item to lead the mana in the body, different elements will also show different function. The key to lead one's mana is the Spirit Crystal."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_crystal",
-      "text": "灵魂水晶由灵魂矿挖掘掉落。"
+      "text": "Spirit Crystal are dropped from Spirit Ore."
     },
-	{
+    {
       "type": "spotlight",
-	  "item": "magickcore:spirit_ore"
+      "item": "magickcore:spirit_ore"
     },
-	{
+    {
       "type": "text",
-      "text": "灵魂水晶可以通过特殊的摆放方式，引导出小型法阵，我们可以称之为魔法工作台，魔法工作台就是我们后续操作的开始。"
+      "text": "Spirit crystals can be placed in a special way, to spawn a Magick Workbench, Magick Workbench is the start for us to learn magick."
     },
     {
       "type": "image",
-      "title": "工作台摆放方式",
+      "title": "How to place",
       "images": ["magickcore:textures/book_image/magick_crafting.png"],
       "border": "true"
     }

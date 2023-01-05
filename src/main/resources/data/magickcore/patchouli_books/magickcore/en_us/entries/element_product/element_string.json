@@ -1,14 +1,14 @@
 {
-  "name": "元素线",
+  "name": "Element String",
   "advancement": "magickcore:learn/element_string",
   "icon": "magickcore:element_string",
   "category": "element_product",
   "pages": [
     {
-      "title": "元素线",
+      "title": "Element String",
       "type": "spotlight",
       "item": "magickcore:element_string{ELEMENT:\"arc\"}",
-      "text": "吸收了元素魔力的线材，可以缠绕在工具和装备上，附加特殊效果。可以通过把物品丢在水中来洗掉物品上的元素线。"
+      "text": "The string that has absorbed the mana can be wrapped around tools and equipment to add special effects."
     },
     {
       "type": "magickcore:element_recipe",
@@ -22,7 +22,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "minecraft:stone_sword{tool_element:{wither:300}},minecraft:iron_helmet{tool_element:{void:300}}",
-      "text": "携带电弧能量的石剑和携带虚空能量的头盔。"
+      "text": "A stone sword with arc element and a helmet with void element."
     }
   ]
 }

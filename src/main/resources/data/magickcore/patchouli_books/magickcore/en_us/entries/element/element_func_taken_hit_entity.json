@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7触碰实体",
+  "name": "§8Taken §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_taken_hit_entity",
   "icon": "magickcore:taken",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的夺魂元素可以给予目标蛊惑效果，使目标处于中立状态。收益魔力能量为存在时间，对Boss效果减半。"
+      "text": "Taken of the Hit can inflict a taken effect on the target, make target neutral. Mana Existence time makes it more useful. Do less effect on Boss."
     }
   ]
 }

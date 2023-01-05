@@ -1,5 +1,5 @@
 {
-  "name": "劣质钻石",
+  "name": "Inferior Diamond",
   "advancement": "magickcore:learn/self",
   "icon": "magickcore:completely_self",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:completely_self",
-	  "text": "使用钻石在魔法工作台转换而成。劣质钻石不能用来制作任何跟钻石相关的东西，但是它可以将施法的目标转化成施法者自身，注意，只是转化施法目标，并不会改变施法的其他属性。"
+	  "text": "Converted at a magick workbench using Diamond. Inferior diamond cannot be used to make anything related to Diamond. However, it can convert the target of the spell to the caster themselves. Note that this only converts the target of the spell and does not change any other attributes of the spell."
     }
   ]
 }

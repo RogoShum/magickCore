@@ -1,17 +1,17 @@
 {
-  "name": "灵魂木剑",
+  "name": "Spirit Sword",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:spirit_sword",
   "category": "spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂木剑本身不携带任何术式，需要近距离接触目标才能传递魔力到目标，可以装备完备法术。用完备法术和灵魂木剑在工作台合成即可，携带完备法术的灵魂木剑单独作为合成材料可以取出完备法术。$(br2)手持灵魂木剑会增加自身元素盾盾容，并且在攻击目标时会先触发一次触碰实体的施法类型，然后再赋予完备法术的法术效果。"
+      "text": "The spirit sword itself does not carry any spells, need to be in close contact with the target to transfer the magic to the target, and a Magick Context can be equipped."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_sword",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

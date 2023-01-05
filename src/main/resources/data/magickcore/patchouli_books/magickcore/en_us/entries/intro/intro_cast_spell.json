@@ -1,24 +1,24 @@
 {
-  "name": "释放法术",
+  "name": "Cast Spell",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:magick_context",
   "category": "intro",
   "pages": [
     {
       "type": "text",
-      "text": "通常来讲，法术的元素属性可以在制作时决定，如果没有指定法术的属性（即原生属性）那么法术的元素属性会被灵魂制品或施法者转化为与自身相符的元素。$(br2)释放法术时也会优先使用灵魂制品内存储的魔力，当灵魂制品内的魔力不足时，会使用施法者自身的魔力。完备法术也可以通过铁砧来命名，灵魂制品在装备法术时会显示完备法术的名称。"
+      "text": "In the usual case, you can define the spell's element when crafting it. If the element of the spell is not specified(Origin Element), then the element of the spell will be transformed into an element that matches itself by the spirit product or the caster. $(br2)When casting spells, the mana stored in the spirit product will be used first, and when the mana in the spirit product is insufficient, the caster's own mana will be used. Magick context can also be named through the anvil, and the name of the magick context will be displayed when the spirit product is equipped with the spell."
     },
     {
       "type": "text",
-      "text": "生物的魔力值会自然恢复，可以通过吸收其他生物掉落的元素能量来提升魔力值上限，直到上限5000，所有生命的魔力上限都为5000。$(br2)需要注意的是，玩家在死后会丢失少许的魔力值，请尽量避免自身的死亡。$(br2)F3开启Debug界面可以看到右下角的魔力值具体数值，魔力值上方的是元素护盾数值。"
+      "text": "The mana value of a creature will naturally recover, and the mana value limit can be increased by absorbing the elemental energy dropped by other creatures until the limit reaches 5000. All life has a mana value limit of 5000. $(br2)It is worth noting that players will lose a small amount of mana upon death, so try to avoid death as much as possible. $(br2)The specific value of the mana value can be seen in the lower right corner of the Debug interface when F3 is turned on, and the value above the mana value is the elemental shield value."
     },
     {
       "type": "text",
-      "text": "完备法术可以被“记忆”下来。手持完备法术长按R键可以“记忆”，空手长按R键可以取出最后一个完备法术，潜行空手可以一次取出三个。$(br2)被记忆下来的完备法术可以直接手持“能够安装完备法术的灵魂制品”来切换灵魂制品上的完备法术。手持灵魂制品按下R键可以看到已经被记忆的完备法术，点击就可以切换。"
+      "text": "Magick context can be 'memorized.' Holding a magick context and hold the R button will 'memorize' it, and hold the R button with empty hands will take out the last magick context. Sneaking with empty hands will take out three at a time. $(br2)A memorized magick context can be directly held with a 'spirit product that can install magick context' to switch the magick context on the spirit product. Holding a spirit product and pressing the R button will show the memorized magick context, and clicking it will switch it."
     },
     {
       "type": "text",
-      "text": "默认情况下玩家可以记住三个完备法术，可以通过把灵魂水晶和钻石丢在一起来扩展到最多记住6个，把灵魂水晶和岩浆膏丢在一起扩展到最多记住9个，灵魂水晶和紫颂果丢在一起扩展到最多记住12个。"
+      "text": "By default, players can memorize three magick contexts. The number of magick contexts that can be memorized can be expanded to a maximum of six by dropping spirit crystals and diamonds together, to a maximum of nine by dropping spirit crystals and magma cream together, and to a maximum of twelve by dropping spirit crystals and chorus fruit together."
     }
   ]
 }

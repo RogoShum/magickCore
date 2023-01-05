@@ -1,5 +1,5 @@
 {
-  "name": "魔力强度",
+  "name": "Mana Force",
   "advancement": "magickcore:learn/mana_dust",
   "icon": "magickcore:mana_energy{item_extra_data:{FORCE:10.0f}}",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_energy{item_extra_data:{FORCE:10.0f}}",
-	  "text": "使用萤石粉在魔法工作台转换而成。"
+	  "text": "Converted at a Magick Workbench using Glowstone Dust."
     }
   ]
 }

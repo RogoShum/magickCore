@@ -36,8 +36,8 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
     private final String localizedName;
 
     public SpiritCraftingRecipeCategory(IGuiHelper guiHelper) {
-        ResourceLocation location = new ResourceLocation(MagickCore.MOD_ID, "textures/element/base/cycle.png");
-        background = guiHelper.createDrawable(location, 0, 0, 100, 100);
+        ResourceLocation location = new ResourceLocation(MagickCore.MOD_ID, "textures/gui/spirit_crafting.png");
+        background = guiHelper.createDrawable(location, 0, 0, 100, 120);
         icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.SPIRIT_CRYSTAL.get()));
         localizedName = new TranslationTextComponent("gui.magickcore.category.magick_crafting").getString();
     }
@@ -120,5 +120,7 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
 
     @Override
     public void setRecipe(IRecipeLayout iRecipeLayout, SpiritCraftingRecipe inbtRecipe, IIngredients iIngredients) {
+        iRecipeLayout.getItemStacks().init(0, false, 41, 98);
+        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getRecipeOutput());
     }
 }

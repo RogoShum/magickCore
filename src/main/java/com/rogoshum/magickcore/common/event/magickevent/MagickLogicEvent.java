@@ -508,7 +508,7 @@ Entity entity = evt.getEntity();
 
 		state.tick(event.getEntity());
 
-		if(!event.getEntity().world.isRemote && !event.getEntity().removed && event.getEntity().ticksExisted % 40 == 0) {
+		if(!event.getEntity().world.isRemote && !event.getEntity().removed && !state.getState().equals(state.getPreState())) {
 			CompoundNBT tag = new CompoundNBT();
 			state.write(tag);
 			Networking.INSTANCE.send(

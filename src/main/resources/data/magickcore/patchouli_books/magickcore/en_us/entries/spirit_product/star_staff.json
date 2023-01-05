@@ -1,5 +1,5 @@
 {
-  "name": "零星法杖",
+  "name": "Star Staff",
   "advancement": "magickcore:learn/star_staff",
   "icon": "magickcore:star_staff",
   "category": "spirit_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:star_staff",
-	  "text": "零星法杖是一种魔法道具，无法合成，无法替换完备法术。可以在战利品箱内获取到。"
+	  "text": "The star staff is a kind of magic prop, which cannot be crafted and cannot replace Magick Context."
     }
   ]
 }

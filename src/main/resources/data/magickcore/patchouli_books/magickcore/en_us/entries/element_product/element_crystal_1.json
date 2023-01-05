@@ -1,5 +1,5 @@
 {
-  "name": "携带元素的水晶",
+  "name": "Element Crystal with Element",
   "advancement": "magickcore:learn/element_crystal_1",
   "icon": "magickcore:element_crystal{ELEMENT:\"arc\"}",
   "category": "element_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:element_crystal{ELEMENT:\"arc\"}",
-	  "text": "携带元素的元素水晶也可以与羊毛和线合成，或是合成元素核心来改变自身的魔法元素。"
+	  "text": "The element crystal carrying the elements can also be crafted with wool and string, or used to crafted Magick Core to change your own element."
     },
     {
       "type": "magickcore:element_recipe",
@@ -34,7 +34,7 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:arc,magickcore:void,magickcore:wither",
-      "text": "四个同种元素水晶即可合成一个元素核心，元素核心使用之后就可以改变自身的元素属性。"
+      "text": "Four of the same element crystals can be combined into one Magick Core, and the Magick Core can change your own element attributes after use."
     }
   ]
 }

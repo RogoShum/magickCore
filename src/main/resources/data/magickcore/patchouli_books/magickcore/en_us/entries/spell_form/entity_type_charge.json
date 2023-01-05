@@ -1,12 +1,12 @@
 {
-  "name": "充能",
+  "name": "Charge",
   "advancement": "magickcore:learn/trigger_entity_type_charge",
   "icon": "magickcore:entity_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:charge\"}},APPLY_TYPE:\"none\",TICK:0,RANGE:0.0f}}",
   "category": "spell_form",
   "pages": [
     {
       "type": "text",
-      "text": "充能是一种点状类魔法形态，自身没有碰撞，施法目标为上一级形态获取到的目标。$(br2)充能在默认状态下会继承上一级法术形态的魔法效益，并且随着持续时间和法术强度的提高，来提高自身的魔法效益。 $(br2)当法术的强度和持续时间足够高时，可以将魔法效益提升到3-4倍或者更高。"
+      "text": "Charge is a type of point-type spell form, with no collision of its own, and the target of the spell is the target acquired by the previous form. $(br2)In its default state, Charging inherits the mana benefits of the previous spell form, and as the duration and force of the spell increases, it increases its own mana benefits. $(br2)When the force and duration of the spell are high enough, it can increase the mana benefits to 3-4 times or more."
     }
   ]
 }

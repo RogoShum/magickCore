@@ -1,17 +1,17 @@
 {
-  "name": "灵魂木弓",
+  "name": "Spirit Bow",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:spirit_bow",
   "category": "spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂木弓的魔法以魔力箭形态为起式，魔力箭触发后应用后续术式，可以装备完备法术。用完备法术和灵魂木弓在工作台合成即可，携带完备法术的灵魂木弓单独作为合成材料可以取出完备法术。"
+      "text": "The magic of the Spirit Bow starts in the form of a magic arrow. After the magic arrow is triggered, the follow-up spell is applied, and a Magick Context can be equipped."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_bow",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

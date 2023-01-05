@@ -1,5 +1,5 @@
 {
-  "name": "非生命缩影",
+  "name": "Miniature Non Living",
   "advancement": "magickcore:learn/condition_non_living",
   "icon": "magickcore:condition_non_living",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:condition_non_living",
-	  "text": "使用煤炭在魔法工作台转换而成。非生命缩影可以使法术形态只作用于无生命实体。"
+	  "text": "Converted at a magick workbench using a coal. Miniature non living makes spells only apply to non living entity."
     }
   ]
 }

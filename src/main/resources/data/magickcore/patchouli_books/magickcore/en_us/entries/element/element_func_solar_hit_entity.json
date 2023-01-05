@@ -1,12 +1,12 @@
 {
-  "name": "§6烈焰§7触碰实体",
+  "name": "§6Solar §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_solar_hit_entity",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的烈焰能量可以使目标燃烧，收益魔力能量为存在时间。也可以烧炼掉落物，收益魔力能量为强度。"
+      "text": "Solar of the Hit can ignite target, mana Existence time makes it more useful. Hit can also smelting items, Mana Force makes it more useful."
     }
   ]
 }

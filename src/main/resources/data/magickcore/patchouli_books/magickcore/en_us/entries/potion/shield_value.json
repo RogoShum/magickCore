@@ -1,5 +1,5 @@
 {
-  "name": "盾容药水",
+  "name": "Shield Capacity Potion",
   "advancement": "magickcore:learn/mana_scute",
   "icon": "minecraft:potion{Potion:\"magickcore:shield_value\"}",
   "category": "potion",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "minecraft:potion{Potion:\"magickcore:shield_value\"}",
-	  "text": "由含有“scute(鳞甲)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：提升自己的元素盾盾容。"
+	  "text": "Brewed from items containing the word \"scute\" and refreshing water.$(br2)Potions can be improved with redstone dust or glowstone dust.$(br2)Function: Improve element shield capacity."
     }
   ]
 }

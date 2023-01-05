@@ -1,12 +1,12 @@
 {
-  "name": "§6烈焰§7漫散",
+  "name": "§6Solar §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_solar_diffusion",
   "icon": "magickcore:solar",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "漫散状态的烈焰能量会产生一次不破坏地形的热爆。收益魔力能量为强度。"
+      "text": "Solar of the Buff creates a non-damaging thermal explosion that pushes the target away."
     }
   ]
 }

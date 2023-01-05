@@ -1,5 +1,5 @@
 {
-  "name": "魔影之核核心",
+  "name": "§9Ender Core",
   "advancement": "magickcore:learn/ender_dragon_material",
   "icon": "magickcore:ender_dragon_material",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:ender_dragon_material",
-	  "text": "由末影龙掉落，与法术核心合成后可以提升法术核心的最高能量上限。"
+	  "text": "Dropped by the Ender Dragon, it can be combined with the context core to increase the maximum energy limit of the context core."
     },
     {
       "type": "magickcore:element_recipe",
@@ -20,7 +20,7 @@
       "item6": "minecraft:air",
       "item7": "minecraft:air",
       "item8": "minecraft:air",
-      "output": "magickcore:context_core{mana_material:\"ender_dragon\"}"
+      "output": "magickcore:context_core{Magick_Store_Entity:{Motion:[0.0d,0.0d,0.0d],entity_extra_data:{},ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:3.4028235E38f},Invulnerable:0b,APPLY_TYPE:\"none\",Air:300s,OnGround:0b,STACKS:{},PortalCooldown:0,Rotation:[0.0f,0.0f],FallDistance:0.0f,ELEMENT:\"origin\",CanUpdate:1b,FORCE:0.0f,Pos:[0.0d,0.0d,0.0d],Fire:-1s,TICK:0,id:\"magickcore:context_creator\",MATERIAL:\"ender_dragon\",RANGE:0.0f}}"
     }
   ]
 }

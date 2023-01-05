@@ -1,12 +1,12 @@
 {
-  "name": "§b电弧§7触碰实体",
+  "name": "§bArc §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_arc_hit_entity",
   "icon": "magickcore:arc",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的电弧元素可以对目标施加麻痹减益效果，收益魔力能量为强度和存在时间。"
+      "text": "Arc of the Hit can paralyze target, mana Force and Existence time makes it more useful."
     }
   ]
 }

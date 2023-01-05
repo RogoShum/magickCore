@@ -1,12 +1,12 @@
 {
-  "name": "§2枯萎§7触碰实体",
+  "name": "§2Wither §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_wither_hit_entity",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的枯萎效果可以给予目标枯萎效果，使目标持续流血并无法恢复血量。收益魔力能量为强度和持续时间。也可以磨制掉落物，收益魔力能量为强度。"
+      "text": "Wither of the Hit make target wither，wither causes the target to bleed continuously and cannot healing. Mana Force and Existence time makes it more useful. It can also grind items, Mana Force makes it more useful."
     }
   ]
 }

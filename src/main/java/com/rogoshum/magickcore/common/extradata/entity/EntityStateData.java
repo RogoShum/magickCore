@@ -46,6 +46,14 @@ public class EntityStateData extends EntityExtraData {
     private int updateRate = 1;
     private int updateTick = 0;
 
+    private CompoundNBT preState = new CompoundNBT();
+
+    public CompoundNBT getState() {
+        return state;
+    }
+
+    private CompoundNBT state = new CompoundNBT();
+
     public void setElemented() {
         allowElement = true;
     }
@@ -204,6 +212,10 @@ public class EntityStateData extends EntityExtraData {
                     entity.setSilent(false);
             }
         }
+        CompoundNBT state = new CompoundNBT();
+        write(state);
+        this.preState = this.state;
+        this.state = state;
     }
 
     public boolean isEntitySuitable(Entity entity) {
@@ -256,5 +268,9 @@ public class EntityStateData extends EntityExtraData {
         nbt.put(EFFECT_FORCE, effectForce);
         nbt.putInt(UPDATE_TICK, updateTick);
         nbt.putInt(UPDATE_RATE, updateRate);
+    }
+
+    public CompoundNBT getPreState() {
+        return preState;
     }
 }

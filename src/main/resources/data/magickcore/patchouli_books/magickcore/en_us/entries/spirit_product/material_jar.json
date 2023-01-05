@@ -1,17 +1,17 @@
 {
-  "name": "材料罐",
+  "name": "Material Jar",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:material_jar",
   "category": "spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "材料灌是用来存储魔力材料的容器，一个材料罐只能存储一种材料，数量无上限，右键存取，潜行可以存取一组。"
+      "text": "The Material Jar is a container used to store mana materials. A material jar can only store one kind of material. There is no limit on the count, you can access a group by right-clicking and sneaking."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:material_jar",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magic Workbench."
     }
   ]
 }

@@ -1,21 +1,21 @@
 {
-  "name": "魔力容器",
+  "name": "Mana Capacity",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:magick_container",
   "category": "spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "魔力容器可以放置到地面上，与容器交互可以连接或断开容器，普通模式下与其交互可以存入魔力，用魔棒右键容器可以改变其模式，让容器为连接者提供魔力流，以此补充魔力。"
+      "text": "The mana capacity can be placed on the ground, and the capacity can be connected or disconnected by interacting with it. In the normal mode, the interaction with it can store the mana. Right-click the container with the wand to change its mode, and let the container provide the mana flow for the connecter to replenish the mana."
     },
     {
       "type": "text",
-      "text": "魔力容器还可以为沉浸在自身的灵魂制品掉落物补充魔力，容器的模式改变不会影响对道具的魔力补充。如果掉落物是食物，魔力容器会吸收食物储存为魔力。$(br2)魔力容器会根据魔力大小来释放红石信号，魔力越多红石信号越弱，越少红石信号越强。"
+      "text": "The mana capacity can also replenish the mana of the spirit product drops immersed in itself, and the change of the mode of the capacity will not affect the mana replenishment of the spirit products."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:mana_capacity",
-      "text": "在魔力工作台处合成。"
+      "text": "Crafted at the Magick Workbench。"
     }
   ]
 }

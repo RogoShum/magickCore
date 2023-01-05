@@ -1,5 +1,5 @@
 {
-  "name": "探查能量",
+  "name": "Mana Dragon Breath",
   "advancement": "magickcore:learn/mana_dragon_b",
   "icon": "magickcore:mana_dragon_breath",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_dragon_breath",
-	  "text": "使用绿宝石、恶魂眼泪、龙息在魔法工作台转换而成。"
+	  "text": "Converted at the Magick Workbench using Dragon's Breath."
     }
   ]
 }

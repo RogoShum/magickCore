@@ -1,12 +1,12 @@
 {
-  "name": "原生§7攻击",
+  "name": "Origin §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_origin_attack",
   "icon": "magickcore:textures/items/origin_material.png",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "平平无奇的魔法攻击。对滞空实体造成更多伤害。收益魔力能量为强度。"
+      "text": "A mediocre magic attack. Deals more damage to airborne entities."
     }
   ]
 }

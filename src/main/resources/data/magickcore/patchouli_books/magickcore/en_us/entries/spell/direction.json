@@ -1,5 +1,5 @@
 {
-  "name": "方向记忆",
+  "name": "Direction Memory",
   "advancement": "magickcore:learn/direction_memory",
   "icon": "magickcore:direction_memory",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:direction_memory",
-	  "text": "使用金锭在魔法工作台转换而成。方向记忆可以记录方向，直接对准方向右键即可。也可以选择两个方块，记录的会是两个方块之间的方向。潜行右键可以删除记忆。"
+	  "text": "Converted at the Magick Workbench using Gold Ingot. Direction Memory can record direction by right-click. Also can select two blocks to record the direction between them. Sneak right-click to delete the record."
     }
   ]
 }

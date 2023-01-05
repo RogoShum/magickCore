@@ -8,33 +8,33 @@
       "type": "spotlight",
       "title": "魔力箭法术形态",
       "item": "magickcore:entity_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"none\",TICK:0,RANGE:0.0f}}",
-      "text": "法术形态承载后续法术，释放后续法术，由后续法术所释放。"
+      "text": "Spell form carries post spells, also release by post spells."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f}}",
-      "text": "通过先前的学习我们可以知道，法术形态作为特殊的施法类型，是可以携带后续法术的，并且会传递目标、位置、方向等信息，如果说用法术形态衔接法术形态，会发生什么？$(br2)比说在灵魂木弓上使用以魔力箭为起式的复合法术。"
+      "text": "From previous study we can know, Spell Form as the special Apply Type, can carries post spells, and transfer target, direction, position etc. What would be happend if we use spell form to connect spell form? $(br2)For example, using a compound spell starting with a mana arrow on a spirit bow."
     },
     {
       "type": "text",
-      "text": "在回答这个问题之前，我们需要先知道在复合法术中，起式的法术形态是响应使用者的魔力流动所生成的，能够传递使用者的位置、目视方向，那么后续法术的法术形态，自然会相应起式的法术形态，根据起式形态的位置、方向来生成。$(br2)假如后面又衔接了更多的形态，也会是相应前一个法术形态的状态来产生效果，方向指向上一个形态给予的方向，位置处于上一个形态的位置。"
+      "text": "Before answering this question, we need to know that in compound spells, the starting spell form is generated in response to the flow of mana of the caster, can transfer the caster's position and sight direction, then the spell form of the post spells will naturally correspond to the spell form of the starting form, and will be generated according to the position and direction of the starting form. $(br2)If more forms are connected post, it will also produce the effect corresponding to the state of the previous spell form, the direction points to the direction given by the previous form, and the position is at the position of the previous form."
     },
     {
       "type": "text",
-      "text": "现在我们可以推断出： 在灵魂木弓上使用一个以魔力箭为起式，攻击类型为后续的复合法术，灵魂木弓本身会生成一根魔力箭，这根魔力箭触碰到目标之后会触发产生复合法术中的魔力箭。$(br2)第二根魔力箭会在第一根魔力箭的位置生成，并继承第一根魔力箭的方向，如果第二根魔力箭又触碰到了目标，才会传递后续法术中的攻击施法类型。"
+      "text": "Now we can infer that: when using a compound spell with initial form of mana arrow on a spirit bow, the spirit bow itself will generate a mana arrow, and this mana arrow will trigger the production of mana arrows in the compound spell when it touches the target.$(br2)The second mana arrow will be generated at the location of the first mana arrow and inherit the direction of the first mana arrow. If the second mana arrow also touches the target, it will then pass on the attack apply type of the post spell."
     },
     {
       "type": "text",
-      "text": "不幸的是复合法术的起式就是魔力箭，第一根魔力箭在触发之后没有任何实质作用，只是用来生成了另一把魔力箭，在这之后才能传递攻击法术，白白消耗了产生第一根魔力箭所需要的魔力。$(br2)既然如此，我们可以尝试修复一下其中的问题，比如说起式法术是攻击施法类型，之后再接魔力箭形态和第二次攻击施法类型，是不是就可以在灵魂木弓上使用了呢？"
+      "text": "Unfortunately, since the initial attack type of the compound spell is a mana arrow, the first mana arrow has no actual effect after triggering and is only used to generate another mana arrow. It is only after this that the attack spell can be passed on, wasting the mana needed to generate the first mana arrow. $(br2)In this case, we could try to fix the problem by reversing the order of the attack type and the mana arrow form in the initial spell, so that the attack type is followed by the mana arrow form and the second attack type. This way, it should be possible to use the spirit bow."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
-      "text": "答案是否定的，第一根魔力箭在造成攻击效果之后，会立马生成第二根魔力箭，这个时候被攻击的目标依旧处于无敌时间的状态，而第二根魔力箭生成在第一根魔力箭消失的位置，立马触碰到目标，这个时候是无法攻击到目标的。"
+      "text": "I'm sorry, but that would not work. After the first mana arrow causes the attack effect, it will immediately generate the second mana arrow. At this point, the target is still in a state of invincibility, and the second mana arrow is generated at the location where the first mana arrow disappears, immediately touching the target. At this point, it would not be possible to attack the target."
     },
     {
       "type": "text",
-      "text": "我们需要再修复一下这个复合法术，比如把第二根魔力箭的后续法术更换成减益类型，或是干脆删掉第二个魔力箭形态，直接使用减益类型去衔接攻击施法类型，这样就可以一根魔力箭实现两种效果。$(br2)当然，这只是投掷类法术形态的用法，在这个世界中，存在三种不同类型的法术形态。分别为辐射类形态、投掷类形态、点状类形态。"
+      "text": "To fix this compound spell, you could try changing the post spell of the second mana arrow to a de-buff type, or simply remove the second mana arrow form and use a de-buff type to directly connect to the attack type. This way, one mana arrow could achieve two effects.$(br2)Of course, this is just one way of using projectile spells. In this world, there are three different types of spell forms: radiation, projectile, and point-type."
     }
   ]
 }

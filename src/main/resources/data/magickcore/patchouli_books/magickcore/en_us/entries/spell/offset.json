@@ -1,5 +1,5 @@
 {
-  "name": "偏移记忆",
+  "name": "Offset Memory",
   "advancement": "magickcore:learn/offset_memory",
   "icon": "magickcore:offset_memory",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:offset_memory",
-	  "text": "使用铁锭在魔法工作台转换而成。偏移记忆可以记录方向和距离的偏移，需要选择两个方块，记录的会是两个方块之间的方向和距离，施法的位置会加上偏移的记忆。潜行右键可以删除记忆。"
+	  "text": "Converted at the Magick Workbench using Iron Ingot. Offset Memory can record direction and distance by right-click. Also can select two blocks to record the direction between them. Sneak right-click to delete the record. Spell's position will add this offset."
     }
   ]
 }

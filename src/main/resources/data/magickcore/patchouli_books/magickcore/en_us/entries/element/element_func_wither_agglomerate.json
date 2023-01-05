@@ -1,12 +1,12 @@
 {
-  "name": "§2枯萎§7凝聚",
+  "name": "§2Wither §7Agglomerate",
   "advancement": "magickcore:learn/trigger_element_func_wither_agglomerate",
   "icon": "magickcore:wither",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "凝聚状态的枯萎元素可以催熟作物，如果施法目标是生物，可以增加生物的年龄。收益魔力能量为强度。"
+      "text": "Wither of the Diffusion can ripen crops."
     }
   ]
 }

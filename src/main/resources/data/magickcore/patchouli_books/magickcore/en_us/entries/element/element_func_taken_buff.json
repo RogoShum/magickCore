@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7增益",
+  "name": "§8Taken §7Buff",
   "advancement": "magickcore:learn/trigger_element_func_taken_buff",
   "icon": "magickcore:taken",
   "category": "element",
   "pages": [
     {
       "type": "text",
-      "text": "增益状态的夺魂元素可以给予目标夺魂之王增益效果，使目标的傀儡的攻击力提高。收益魔力能量为强度和存在时间。"
+      "text": "Taken of the Buff can increase the attack damage of the caster's puppets."
     }
   ]
 }

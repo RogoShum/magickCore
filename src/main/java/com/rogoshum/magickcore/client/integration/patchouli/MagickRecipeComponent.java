@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.client.patchouli;
+package com.rogoshum.magickcore.client.integration.patchouli;
 
 import com.google.gson.annotations.SerializedName;
 import com.mojang.blaze3d.matrix.MatrixStack;
