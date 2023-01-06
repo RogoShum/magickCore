@@ -8,7 +8,7 @@
       "title": "Element String",
       "type": "spotlight",
       "item": "magickcore:element_string{ELEMENT:\"arc\"}",
-      "text": "The string that has absorbed the mana can be wrapped around tools and equipment to add special effects."
+      "text": "The string that has absorbed the mana can be wrapped around tools and equipment to add special effects. You can wash off elemental strings on items by throwing them in water."
     },
     {
       "type": "magickcore:element_recipe",

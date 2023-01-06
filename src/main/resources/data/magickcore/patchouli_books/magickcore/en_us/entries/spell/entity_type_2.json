@@ -1,12 +1,12 @@
 {
-  "name": "法术指针III 形态分类",
+  "name": "Context Pointer III Form Class",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:context_pointer",
   "category": "spell",
   "pages": [
     {
       "type": "text",
-      "title": "投掷类法术形态",
+      "title": "Projectile spell forms",
       "text": "Projectile spell forms are highly efficient at transferring mana because only projectile spells can freely move around the world. This means that projectile spell forms can carry post spells to other locations and release them when they touch blocks or entities, which are treated as targets for the post spell. The range attribute of a spell slightly increases the size of the projectile spell."
     },
     {
@@ -15,12 +15,12 @@
     },
     {
       "type": "text",
-      "title": "辐射类法术形态",
+      "title": "Radiation spell forms",
       "text": "Radiation spell forms are a stationary area of effect form that rely heavily on the range attribute. They can apply spells to a wide range of blocks and entities, but they disappear immediately after triggering and only affect blocks for a brief moment when they are generated. Afterwards, they only check for entities within range. Most importantly, the force of mana benefits from radiation forms is only half that of regular forms or less, which makes it difficult for radiation forms to effectively transmit spells with high mana intensity."
     },
     {
       "type": "text",
-      "title": "点状类法术形态",
+      "title": "Point-type spell forms",
       "text": "Point-type spell forms are stationary, but generally persist for a longer time than other forms. They have special trigger effects and operating methods, and cannot affect blocks. Some point-type forms do not collide, but rather serve as catalysts for previous and post spell forms. $(br2)Generally, the force, duration, and range benefits of point-type forms are only one-fifth of those of regular forms, so point-type forms are best used on targets with low movement frequency and slow movement speed, where the inability to move and lower mana benefits can be offset by a long duration of spell release."
     },
     {

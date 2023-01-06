@@ -65,7 +65,7 @@ public class ModVillager {
     public static class EntityTypeTrade implements VillagerTrades.ITrade {
         @Override
         public MerchantOffer getOffer(Entity trader, Random rand) {
-            int count = rand.nextInt(3) + 3;
+            int count = rand.nextInt(3) + 1;
             ItemStack entityType = new ItemStack(ModItems.ENTITY_TYPE.get());
             ExtraDataUtil.itemManaData(entityType, itemManaData -> {
                 itemManaData.spellContext().addChild(SpawnContext.create((EntityType<?>) TradList.get(rand.nextInt(TradList.size())).get()));

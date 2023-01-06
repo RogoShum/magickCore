@@ -82,12 +82,10 @@ public class ChargerRenderer extends EasyRenderer<ChargeEntity> {
             }
         } else {
             int i = 1;
-            int count = 1;
             for(double dis = 1.; dis < scale+3; dis+=1) {
-                float rotateScale = (1f/ count);
-                params.matrixStack.rotate(Vector3f.XP.rotationDegrees(entity.ticksExisted % 360 * rotateScale));
-                params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(entity.ticksExisted % 720 * 0.5f * rotateScale));
-                params.matrixStack.rotate(Vector3f.YP.rotationDegrees(entity.ticksExisted % 10 * -36 * rotateScale));
+                params.matrixStack.rotate(Vector3f.XP.rotationDegrees(entity.ticksExisted % 1080));
+                params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(entity.ticksExisted % 2160));
+                params.matrixStack.rotate(Vector3f.YP.rotationDegrees(entity.ticksExisted % 2160));
                 params.matrixStack.scale(0.8f, 0.8f, 0.8f);
                 params.matrixStack.push();
                 params.matrixStack.translate(0, -dis*i, 0);
@@ -96,7 +94,6 @@ public class ChargerRenderer extends EasyRenderer<ChargeEntity> {
                 RenderHelper.renderStaticParticle(bufferContext, renderContext);
                 params.matrixStack.pop();
                 i = i - 2*i;
-                count++;
             }
         }
     }

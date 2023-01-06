@@ -1,5 +1,5 @@
 {
-  "name": "Mana Dragon Breath",
+  "name": "Tracking Energy",
   "advancement": "magickcore:learn/mana_dragon_b",
   "icon": "magickcore:mana_dragon_breath",
   "category": "spell",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_dragon_breath",
-	  "text": "Converted at the Magick Workbench using Dragon's Breath."
+	  "text": "Converted at the Magick Workbench using Emerald, Ghast Tear, Dragon's Breath."
     }
   ]
 }

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The magic of the Spirit Bow starts in the form of a magic arrow. After the magic arrow is triggered, the follow-up spell is applied, and a Magick Context can be equipped."
+      "text": "The magic of the Spirit Bow starts in the form of a magic arrow. After the magic arrow is triggered, the follow-up spell is applied, and a Magick Context can be equipped. You can craft a spirit bow by combining a magick context and a spirit bow at a workbench. A spirit bow with a magick context can be used as a crafting ingredient to extract the magick context."
     },
     {
       "type": "magickcore:magick_recipe",

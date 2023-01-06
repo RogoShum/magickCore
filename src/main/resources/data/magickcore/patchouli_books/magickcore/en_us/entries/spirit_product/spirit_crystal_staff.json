@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The spirit crystal staff itself does not carry any spells, and the spells will be released automatically after it's fully charged, and a Magick Context can be equipped."
+      "text": "The spirit crystal staff itself does not carry any spells, and the spells will be released automatically after it's fully charged, and a Magick Context can be equipped. You can craft a spirit crystal staff by combining a magick context and a spirit crystal staff at a workbench. A spirit crystal staff with a magick context can be used as a crafting ingredient to extract the magick context."
     },
     {
       "type": "magickcore:magick_recipe",

@@ -31,7 +31,8 @@ public class LootUtil {
 
     public static ItemStack createRandomItemByLucky(int lucky) {
         int tick = (int) (Math.pow(lucky, 3) * MagickCore.rand.nextFloat() * (MagickCore.rand.nextInt(lucky * 2) + 1));
-       if(MagickCore.rand.nextBoolean()) {
+        int type = MagickCore.rand.nextInt(3);
+       if(type == 0) {
            tick *= 100;
            if(tick > 2400)
                tick = 2400;
@@ -43,7 +44,7 @@ public class LootUtil {
            PotionUtils.appendEffects(stack, map.values());
            stack.setDisplayName(new TranslationTextComponent(effect.getName()));
            return stack;
-       } else {
+       } else if(type == 1){
            if(tick > 600)
                tick = 600;
            ManaItem item;
@@ -73,6 +74,10 @@ public class LootUtil {
            }
 
            return createRandomManaItem(item, force, tick, Math.min(mana, 5000), trace);
+       } else {
+           ItemStack stack = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
+           stack.setCount(21 + MagickCore.rand.nextInt(44));
+           return stack;
        }
     }
 

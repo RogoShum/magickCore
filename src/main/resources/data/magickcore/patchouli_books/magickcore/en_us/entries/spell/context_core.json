@@ -8,7 +8,7 @@
       "type": "spotlight",
       "title": "Context Core",
       "item": "magickcore:context_core",
-      "text": "The context core is the key to making spells. After throwing a context core on the ground, the core will rise a few blocks in height and then expanded. After that, we need to throw some mana material into it. The attribute of the spell depend on the type and quantity of the material."
+      "text": "The context core is the key to making spells. After throwing a context core on the ground, the core will rise a few blocks in height and then expanded. After that, we need to throw some mana material into it. The attribute of the spell depend on the type and quantity of the material. But the base attributes of the spell will not exceed the numerical value of the context core's attributes."
     },
     {
       "type": "image",
@@ -18,19 +18,44 @@
       "border": "true"
     },
     {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:context_core",
+      "text": "Crafted at the Magic Workbench."
+    },
+    {
       "type": "text",
-      "text": "After the materials in the core reach our satisfaction, we can right-click the core with the wand to complete the core compilation this time, and the core will be compressed back to its original size and become a magick context."
+      "text": "Some creatures drops or natural materials have the ability to enhance spells, but they need to be converted to mana materials first. Materials like rotten flesh, bones, spider eyes, gunpowder, glowstone dust, redstone dust, blaze rods, and warts can be used."
+    },
+    {
+      "type": "text",
+      "text": "Before constructing a spell, we need to understand the attributes of mana materials and how they affect spells. This knowledge can help us better create and refine a spell.$(br2)When mana is released from a living body, it passes through various equipment attached to the body. When it passes through mana materials, it can change its attributes, resulting in various forms."
+    },
+    {
+      "type": "text",
+      "text": "Some materials can change the function of mana, some materials can change the basic attributes of mana, and some materials can provide additional attached attributes.$(br2)Glowstone dust can be converted to force energy, amplifying the basic force of spell; redstone dust can be converted to duration energy, increasing the duration of spell; blaze powder and blaze rods can be converted to the range energy, increasing the range of spell. These are all basic attributes of spell."
+    },
+    {
+      "type": "text",
+      "text": "Next, we also need to change the function of mana. The function of mana consists of two parts: element and apply type.$(br2)Element determine the bias of mana's function. Each element has its own areas of expertise, such as solar being good at burning and recovery, and arcs being good at adjusting energy and speed. The apply type determines the type of effect the mana has. Mana spider eyes provide de-buffs, and Mana warts provide attack effects."
+    },
+    {
+      "type": "text",
+      "text": "One particularly special apply type is the spell form. Spell form does not provide any effects but rather changes the way the spell operates, causing the spell to be generated in the world in the form of thrown objects, point objects, etc. Spell form is also a type of apply, and a single spell cannot simultaneously achieve a combination of form and apply types such as attack, buff, de-buff, etc."
+    },
+    {
+      "type": "text",
+      "text": "Overall, before constructing a spell, we need to think about what attributes the spell needs, then gather the corresponding materials and throw them into the expanded context core. This completes the construction of the spell.$(br2)Once the materials in the core are to our satisfaction, we can use a wand to right-click the core and complete this core compilation. The core will be compressed back to its original size and become a magick context."
+    },
+    {
+      "type": "image",
+      "images": ["magickcore:textures/book_image/context_core_full.png"],
+      "border": "true"
     },
     {
       "type": "spotlight",
       "title": "Magick Context",
-      "item": "magickcore:magick_context",
-      "text": "The attribute of spell depends on the value of this thing, and compressing the context core into a magick context is an irreversible operation."
-    },
-    {
-      "type": "magickcore:magick_recipe",
-      "magick_recipe": "spell_context",
-      "text": "Crafted at the Magic Workbench."
+      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,POST:{},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"buff\",TICK:120,RANGE:0.0f}}",
+      "text": "For example, the effect of this spell is to apply a 6-second buff, but the intensity value is 0, so although the spell will take effect, it is actually useless. Compressing the context core into a magick context is an irreversible operation, and to achieve a buff effect, we need to consume materials again to create a magick context.$(br2)A magick context is a crystal that carries various materials, and mana will be guided through the magick context to eventually take shape."
     }
   ]
 }
