@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The mana arrow is a throwing magic form, and the force of the magic changes with the speed of the form."
+      "text": "The mana arrow is a projectile spell form, and the force of the spell changes with the speed of the form. The range attribute affects the maximum speed value of the mana arrow."
     }
   ]
 }

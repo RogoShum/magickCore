@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Silence Squall is a throwing magic form. Can track surrounding non-friendly unit entities and give debuffs and attack effects."
+      "text": "Silence Squall is a projectile spell form. Can track surrounding non-friendly unit entities and give de-buffs and attack effects."
     }
   ]
 }

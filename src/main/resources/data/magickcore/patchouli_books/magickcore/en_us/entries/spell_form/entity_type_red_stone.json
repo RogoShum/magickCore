@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Redstone is a thrown magic form."
+      "text": "Redstone is a projectile spell form. It can emit a redstone signal, and it will not disappear when touching blocks and entities, but the force of the subsequent spell is only one fifth of the original."
     }
   ]
 }

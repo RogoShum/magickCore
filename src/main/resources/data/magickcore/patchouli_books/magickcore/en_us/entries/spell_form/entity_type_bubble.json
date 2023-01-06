@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Mana Bubble is a kind of throwing magic form, the movement speed and magic force in the air become lower, and the movement speed and magic force in the water become higher."
+      "text": "Mana Bubble is a kind of projectile spell form, the movement speed and spell force in the air become lower, and the movement speed and spell force in the water become higher."
     }
   ]
 }

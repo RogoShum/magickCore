@@ -52,7 +52,6 @@ public class RenderHelper {
     public static final int halfLight = 7864440;
     public static boolean queueMode = false;
     private static Class optifineShader = null;
-    private static int optifineLoaded = 0;
     private static boolean optifineShaderLoaded = false;
     protected static final RenderState.TransparencyState NO_TRANSPARENCY = new RenderState.TransparencyState("no_transparency", RenderSystem::disableBlend, () -> {
     });
@@ -1576,7 +1575,7 @@ public class RenderHelper {
 
     public static boolean renderingShader() {
         initOptifineClazz();
-        if(optifineShader != null) {
+        if(hasOptifine()) {
             try {
                 Field field = optifineShader.getDeclaredField("shaderPackLoaded");
                 field.setAccessible(true);
@@ -1595,15 +1594,30 @@ public class RenderHelper {
         return false;
     }
 
+    public static boolean hasOptifine() {
+        return optifineShader != null;
+    }
+
+    public static int getOptifineActiveProgram() {
+        int i = 0;
+        try {
+            Field field = optifineShader.getDeclaredField("activeProgramID");
+            field.setAccessible(true);
+            i = (int) field.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return i;
+    }
+
     public static void initOptifineClazz() {
-        if(optifineLoaded <= 10 && optifineShader == null) {
+        if(!hasOptifine()) {
             try {
                 Class clazz = Class.forName("net.optifine.shaders.Shaders");
                 if(clazz != null) {
                     optifineShader = clazz;
                 }
             } catch (ClassNotFoundException e) {
-                optifineLoaded++;
             }
         }
     }

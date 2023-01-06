@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The eruption point is a point-like magic-like form. Persists and acts on entities within the eruption range."
+      "text": "The eruption point is a point-type spell form. Persists and acts on entities within the eruption range. The force and duration of subsequent spell will be reduced to one fifth of its original value."
     }
   ]
 }

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Chaos Reach is a point spell form. It can cause attack and debuff effects on non-friendly units within the range, and cannot penetrate walls."
+      "text": "Chaos Reach is a point-type super spell form. It can cause attack and de-buff effects on non-friendly units within the range, and cannot penetrate walls."
     }
   ]
 }

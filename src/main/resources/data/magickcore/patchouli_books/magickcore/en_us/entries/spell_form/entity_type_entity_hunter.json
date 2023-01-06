@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Entity Hunter is a point-like magic form. Can capture non-friendly unit entities within the range, and use the wand on the entity hunter to obtain a spell form."
+      "text": "Entity Hunter is a point-type spell form. Can capture non-friendly unit entities within the range, and use the wand on the entity hunter to obtain a spell form."
     }
   ]
 }

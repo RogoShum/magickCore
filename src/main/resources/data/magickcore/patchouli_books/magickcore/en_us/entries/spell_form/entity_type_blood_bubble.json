@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Blood Bubble is a throwing magic form, which will absorb a certain amount of health when touching non-friendly units, and then return to the caster."
+      "text": "Blood Bubble is a projectile spell form, which will absorb a certain amount of health when touching non-friendly units, and then return to the caster."
     }
   ]
 }

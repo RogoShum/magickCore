@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Mana laser is a kind of throwing magic form. It will not disappear after hitting an entity, but its magic force is low."
+      "text": "Mana laser is a projectile spell form. It will not disappear after hitting an entity. However, the force and duration of subsequent spell are less than one third of their original value."
     }
   ]
 }

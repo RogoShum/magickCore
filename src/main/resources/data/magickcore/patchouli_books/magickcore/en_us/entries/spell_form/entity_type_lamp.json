@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Lamp is a throwing magic form, which will track surrounding non-friendly units within a certain range, and the duration is three times that of the normal form."
+      "text": "Lamp is a projectile spell form, which will track surrounding non-friendly units within a certain range, and the duration is three times that of the normal form. The force of subsequent spell will be reduced to half of its original value."
     }
   ]
 }

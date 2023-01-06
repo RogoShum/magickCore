@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Mana Vortex is a point-like magic form. Continue to attract entities within range and release spells."
+      "text": "Mana Vortex is a point-type spell form. Continue to attract entities within range and release spells. The force and duration of subsequent spell will be reduced to one fifth of its original value."
     }
   ]
 }

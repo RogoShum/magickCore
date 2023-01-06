@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Ray is a thrown magic form. No fall, speed increases with magic force, and decreases with magic range."
+      "text": "Ray is a projectile spell form. No fall, speed increases with spell force, and decreases with spell range. The force and duration of subsequent spell will be reduced to one third of its original value."
     }
   ]
 }

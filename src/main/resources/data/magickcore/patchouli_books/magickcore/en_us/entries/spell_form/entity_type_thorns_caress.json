@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Thorns Caress is a point-like magic form. Can pass through walls and inflict debuffs on non-friendly units."
+      "text": "Thorns Caress is a point-type super spell form. Can pass through walls and inflict de-buffs on non-friendly units."
     }
   ]
 }

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Shadow is a throwing magic form."
+      "text": "Shadow is a projectile spell form. When carrying the trace attribute, it will teleport to the location of the tracked target."
     }
   ]
 }
