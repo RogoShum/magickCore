@@ -71,14 +71,16 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
         int packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entity, partialTicks);
         matrixStackIn.scale(scale, scale, scale);
 
-        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(0.5f, color, packedLightIn);
+        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(RenderHelper.isRenderingShader() ? 0.1f : 0.5f, color, packedLightIn);
         RenderHelper.renderSphere(
                 BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE)
                 , renderContext, 24);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderSphere(
-                BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE)
-                , renderContext, 24);
+        if(!RenderHelper.isRenderingShader()) {
+            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+            RenderHelper.renderSphere(
+                    BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE)
+                    , renderContext, 24);
+        }
     }
 
     @Override

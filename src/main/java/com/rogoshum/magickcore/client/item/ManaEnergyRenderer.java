@@ -54,6 +54,11 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.15f, ModElements.ORIGIN_COLOR, RenderHelper.halfLight);
     private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.15f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
     private static final RenderHelper.RenderContext RENDER_CONTEXT_2 = new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
+    static {
+        RENDER_CONTEXT_0.alpha = 0.15f;
+        RENDER_CONTEXT_1.alpha = 0.15f;
+        RENDER_CONTEXT_2.alpha = 0.15f;
+    }
     private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_1 = RenderHelper.drawSphere(6, RENDER_CONTEXT_1 , RenderHelper.EmptyVertexContext);
     private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_2 = RenderHelper.drawSphere(6, RENDER_CONTEXT_2 , RenderHelper.EmptyVertexContext);
     private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_0 = RenderHelper.drawSphere(6, RENDER_CONTEXT_0 , RenderHelper.EmptyVertexContext);

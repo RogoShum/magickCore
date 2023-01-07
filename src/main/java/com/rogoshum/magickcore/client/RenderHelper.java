@@ -53,6 +53,10 @@ public class RenderHelper {
     public static boolean queueMode = false;
     private static Class optifineShader = null;
     private static boolean optifineShaderLoaded = false;
+    private static boolean checkOptifine = false;
+    private static boolean renderingWorld = false;
+    private static MatrixStack worldMatrixStack = new MatrixStack();
+    private static Matrix4f worldMatrix4f = new Matrix4f();
     protected static final RenderState.TransparencyState NO_TRANSPARENCY = new RenderState.TransparencyState("no_transparency", RenderSystem::disableBlend, () -> {
     });
     protected static final RenderState.TransparencyState LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("magick_lightning_transparency", () -> {
@@ -519,8 +523,8 @@ public class RenderHelper {
             this.midFactor = midFactor;
             this.height = height;
             this.stacks = stacks;
-            this.alpha = alpha;
-            this.midAlpha = midAlpha;
+            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;;
+            this.midAlpha = isRenderingWorld() && isRenderingShader() ? midAlpha * 0.1f : midAlpha;;
             this.alphaFactor = alphaFactor;
             this.color = color;
         }
@@ -555,17 +559,17 @@ public class RenderHelper {
     }
 
     public static class RenderContext {
-        final float alpha;
-        final Color color;
-        int packedLightIn = 0;
+        public float alpha;
+        public final Color color;
+        int packedLightIn = halfLight;
         public RenderContext(float alpha, Color color, int packedLightIn) {
-            this.alpha = alpha;
+            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;
             this.color = color;
             this.packedLightIn = packedLightIn;
         }
 
         public RenderContext(float alpha, Color color) {
-            this.alpha = alpha;
+            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;
             this.color = color;
         }
 
@@ -1565,15 +1569,39 @@ public class RenderHelper {
         return distance < d0 * d0;
     }
 
+    public static void setWorldMatrix(MatrixStack matrixStack) {
+        worldMatrixStack = matrixStack;
+    }
+
+    public static MatrixStack getWorldMatrix() {
+        return worldMatrixStack;
+    }
+
+    public static void setWorldMatrix4f(Matrix4f matrix4f) {
+        worldMatrix4f = matrix4f;
+    }
+
+    public static Matrix4f getWorldMatrix4f() {
+        return worldMatrix4f;
+    }
+
+    public static void setRenderingWorld(boolean renderingWorld) {
+        RenderHelper.renderingWorld = renderingWorld;
+    }
+
+    public static boolean isRenderingWorld() {
+        return renderingWorld;
+    }
+
     public static boolean showDebug() {
         return Minecraft.getInstance().gameSettings.showDebugInfo;
     }
 
     public static boolean stopShader() {
-        return renderingShader();
+        return isRenderingShader();
     }
 
-    public static boolean renderingShader() {
+    private static boolean checkShader() {
         initOptifineClazz();
         if(hasOptifine()) {
             try {
@@ -1581,17 +1609,24 @@ public class RenderHelper {
                 field.setAccessible(true);
                 boolean loaded = (Boolean) field.get(null);
                 if(loaded) {
-                    optifineShaderLoaded = true;
                     return true;
                 } else if (optifineShaderLoaded) {
-                    optifineShaderLoaded = false;
                     GL_LIST_INDEX.clear();
+                    return false;
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
         return false;
+    }
+
+    public static void checkRenderingShader() {
+        optifineShaderLoaded = checkShader();
+    }
+
+    public static boolean isRenderingShader() {
+        return optifineShaderLoaded;
     }
 
     public static boolean hasOptifine() {
@@ -1611,7 +1646,8 @@ public class RenderHelper {
     }
 
     public static void initOptifineClazz() {
-        if(!hasOptifine()) {
+        if(!checkOptifine) {
+            checkOptifine = true;
             try {
                 Class clazz = Class.forName("net.optifine.shaders.Shaders");
                 if(clazz != null) {

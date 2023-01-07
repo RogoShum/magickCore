@@ -377,7 +377,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     public void update() {
         if (this.texture == null) return;
 
-        renderAlpha = getAlpha(this.alpha);
+        renderAlpha = RenderHelper.isRenderingShader() ? getAlpha(this.alpha) * 0.1f : getAlpha(this.alpha);
         Vector3d[] QuadVector = RenderHelper.QuadVector;
         Vector3d V0 = QuadVector[0];
         Vector3d V1 = QuadVector[1];

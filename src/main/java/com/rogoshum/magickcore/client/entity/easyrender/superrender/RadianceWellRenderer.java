@@ -106,16 +106,20 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entity, Minecraft.getInstance().getRenderPartialTicks());
         alphaS = Math.min(1f, (float)entity.ticksExisted / 5f);
         alphaC = Math.min(1f, (float) entity.ticksExisted / 20f);
-        RENDER_5 = new RenderHelper.RenderContext(0.5f * alphaS, entity.spellContext().element.color(), packedLightIn);
-        RENDER_6 = new RenderHelper.RenderContext(0.6f * alphaS, Color.ORIGIN_COLOR, packedLightIn);
+        RENDER_5 = new RenderHelper.RenderContext(
+                RenderHelper.isRenderingShader() ? 0.15f * alphaS : 0.5f * alphaS
+                , entity.spellContext().element.color(), packedLightIn);
+        RENDER_6 = new RenderHelper.RenderContext(
+                RenderHelper.isRenderingShader() ? 0.2f * alphaS : 0.6f * alphaS
+                , Color.ORIGIN_COLOR, packedLightIn);
 
         if(entity.initial) {
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, alphaC * 0.8f, 1.5f, ModElements.ORIGIN.getRenderer().getColor());
+                    , 0, RenderHelper.isRenderingShader() ? 0.1f * alphaC : 0.8f * alphaC, RenderHelper.isRenderingShader() ? 0.2f: 1.5f, ModElements.ORIGIN.getRenderer().getColor());
             CYLINDER_INNER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
 
             context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, alphaC, 1f, entity.spellContext().element.getRenderer().getColor());
+                    , 0, RenderHelper.isRenderingShader() ? 0.25f * alphaC : alphaC, RenderHelper.isRenderingShader() ? 0.1f: 1f, entity.spellContext().element.getRenderer().getColor());
             CYLINDER_OUTER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
         }
     }

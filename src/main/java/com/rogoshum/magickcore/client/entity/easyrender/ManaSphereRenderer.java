@@ -28,7 +28,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(scale, scale, scale);
         params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
-        if(SPHERE_DISTORTION != null)
+        if(!RenderHelper.isRenderingShader() && SPHERE_DISTORTION != null)
             RenderHelper.renderSphere(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.DISTORTION_MID_SHADER)
                 , SPHERE);

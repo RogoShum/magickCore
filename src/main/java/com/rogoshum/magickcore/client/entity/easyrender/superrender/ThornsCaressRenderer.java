@@ -77,7 +77,9 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(BLANK, RenderMode.ShaderList.SLIME_SHADER), this::renderSphereSlime);
         map.put(new RenderMode(SPHERE, RenderMode.ShaderList.OPACITY_SHADER), this::renderSphereOpacity);
-        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderSphereDistortion);
+        if(!RenderHelper.isRenderingShader()) {
+            map.put(new RenderMode(SPHERE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderSphereDistortion);
+        }
         return map;
     }
 }

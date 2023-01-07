@@ -57,6 +57,8 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
                 alpha = value / Math.max(1, state.getMaxElementShieldMana());
                 if(alpha > 1.0)
                     alpha = 1.0f;
+                if(RenderHelper.isRenderingShader())
+                    alpha *= 0.1f;
                 color = state.getElement().getRenderer().getColor();
             } else
                 render = false;

@@ -132,6 +132,9 @@ public class LightShaderManager {
 
     @SubscribeEvent
     public void renderLast(RenderWorldLastEvent e) {
+        RenderHelper.setWorldMatrix(e.getMatrixStack());
+        RenderHelper.setWorldMatrix4f(e.getProjectionMatrix());
+        RenderHelper.checkRenderingShader();
         if(true) return;
         if(RenderHelper.stopShader()) return;
         postedLights = false;
