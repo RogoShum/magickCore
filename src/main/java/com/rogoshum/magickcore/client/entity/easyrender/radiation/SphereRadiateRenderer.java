@@ -1,18 +1,15 @@
-package com.rogoshum.magickcore.client.entity.easyrender.radiate;
+package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.common.entity.pointed.ManaSphereEntity;
-import com.rogoshum.magickcore.common.entity.radiated.SphereEntity;
+import com.rogoshum.magickcore.common.entity.radiation.SphereEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 public class SphereRadiateRenderer extends EasyRenderer<SphereEntity> {

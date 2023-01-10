@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class ManaBarHUD extends AbstractGui {
     private final int width;

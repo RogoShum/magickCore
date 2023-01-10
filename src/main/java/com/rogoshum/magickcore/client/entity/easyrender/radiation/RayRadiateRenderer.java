@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.client.entity.easyrender.radiate;
+package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
@@ -7,11 +7,9 @@ import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.common.entity.radiated.RayTraceEntity;
-import com.rogoshum.magickcore.common.entity.radiated.SphereEntity;
+import com.rogoshum.magickcore.common.entity.radiation.RayTraceEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;

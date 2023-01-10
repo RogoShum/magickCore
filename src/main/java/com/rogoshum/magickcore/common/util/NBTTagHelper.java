@@ -223,6 +223,37 @@ public class NBTTagHelper {
         return tag.getCompound(LibElementTool.TOOL_ELEMENT);
     }
 
+    public static void saveVectorSet(CompoundNBT tag, Set<Vector3d> set) {
+        for(Vector3d vec : set) {
+            CompoundNBT vectorTag = new CompoundNBT();
+            putVectorDouble(vectorTag, "", vec);
+            tag.put(vec.x+"_"+ vec.y+"_"+ vec.z, vectorTag);
+        }
+    }
+
+    public static void addOrDeleteVector(CompoundNBT tag, Vector3d vec) {
+        String key = vec.x+"_"+ vec.y+"_"+ vec.z;
+        if(tag.contains(key))
+            tag.remove(key);
+        else {
+            CompoundNBT vectorTag = new CompoundNBT();
+            putVectorDouble(vectorTag, "", vec);
+            tag.put(key, vectorTag);
+        }
+    }
+
+    public static HashSet<Vector3d> getVectorSet(CompoundNBT tag) {
+        HashSet<Vector3d> set = new HashSet<>();
+        for(String key : tag.keySet()) {
+            CompoundNBT vectorTag = tag.getCompound(key);
+            if(hasVectorDouble(vectorTag, "")) {
+                Vector3d vec = getVectorFromNBT(vectorTag, "");
+                set.add(vec);
+            }
+        }
+        return set;
+    }
+
     public static void setEntityTag(Entity entity, CompoundNBT tag)
     {
         entity.read(tag);

@@ -27,6 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -167,7 +168,7 @@ public class RenderHelper {
 
     public static RenderType getTexedOrb(ResourceLocation locationIn) {
         RenderType.State rendertype$state = RenderType.State.getBuilder()
-                .texture(new RenderState.TextureState(locationIn, false, false)).cull(CULL_DISABLED)
+                .texture(new RenderState.TextureState(locationIn, false, false))
                 .transparency(TRANSLUCENT_TRANSPARENCY).overlay(OVERLAY_ENABLED).cull(CULL_DISABLED)
                 .diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":Textured_Orb", DefaultVertexFormats.ENTITY, GL_QUADS, 256, false, false, rendertype$state);
@@ -382,7 +383,6 @@ public class RenderHelper {
         RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":LINES_STRIP_PC_" + width, DefaultVertexFormats.POSITION_COLOR, 1, 256, false, false, rendertype$state);
     }
-
     public static RenderType getLinesGlow(double width) {
         RenderType.State rendertype$state = RenderType.State.getBuilder().transparency(ADDITIVE_TRANSPARENCY).writeMask(COLOR_DEPTH_WRITE).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).lightmap(LIGHTMAP_ENABLED).line(new RenderState.LineState(OptionalDouble.of(width))).build(false);
         return RenderType.makeType(MagickCore.MOD_ID + ":LINES_" + width, DefaultVertexFormats.ENTITY, GL_LINES, 256, false, false, rendertype$state);
@@ -1427,6 +1427,14 @@ public class RenderHelper {
         vertexAttribute.setColor(Color.create(redScale, greenScale, blueScale));
         vertexAttribute.setLightmap(context.packedLightIn);
         return vertexAttribute;
+    }
+
+    public static void drawShape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
+        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+        shapeIn.forEachEdge((p_230013_12_, p_230013_14_, p_230013_16_, p_230013_18_, p_230013_20_, p_230013_22_) -> {
+            bufferIn.pos(matrix4f, (float)(p_230013_12_ + xIn), (float)(p_230013_14_ + yIn), (float)(p_230013_16_ + zIn)).color(red, green, blue, alpha).endVertex();
+            bufferIn.pos(matrix4f, (float)(p_230013_18_ + xIn), (float)(p_230013_20_ + yIn), (float)(p_230013_22_ + zIn)).color(red, green, blue, alpha).endVertex();
+        });
     }
 
     public static class VertexAttribute {

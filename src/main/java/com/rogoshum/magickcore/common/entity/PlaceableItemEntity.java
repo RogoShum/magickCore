@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -11,10 +12,12 @@ import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import com.rogoshum.magickcore.common.recipe.MatrixInventory;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
+import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -110,6 +113,9 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         if (ret.isSuccessOrConsume()) return ret;
         if (!player.world.isRemote && hand == Hand.MAIN_HAND) {
             ItemStack stack = player.getHeldItemMainhand();
+            if(stack.getItem() instanceof BlockItem || stack.getItem() instanceof EntityItem) {
+                return EntityInteractHelper.placeBlock(player, hand, stack, this);
+            }
             if(stack.getItem() instanceof PlaceableEntityItem) {
                 Vector3d vector3d = player.getLookVec();
                 nextNode(stack, Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z));

@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
+import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -23,6 +24,7 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.network.ManaCapacityPack;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.entity.Entity;
@@ -30,6 +32,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -236,6 +239,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;
         if (hand == Hand.MAIN_HAND) {
+            ItemStack heldItem = player.getHeldItem(hand);
+            if(heldItem.getItem() instanceof BlockItem || heldItem.getItem() instanceof EntityItem) {
+                return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
+            }
             if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
                 boolean notClear = false;
                 if(!this.world.isRemote) {

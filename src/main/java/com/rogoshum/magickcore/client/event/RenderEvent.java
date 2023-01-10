@@ -5,6 +5,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
 import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
 import com.rogoshum.magickcore.client.gui.ManaBarHUD;
 import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
@@ -17,6 +19,7 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibShaders;
@@ -165,8 +168,10 @@ public class RenderEvent {
     public void addRenderer(EntityEvents.EntityAddedToWorldEvent event) {
         if(event.getEntity() instanceof LivingEntity)
             MagickCore.proxy.addRenderer(() -> new ElementShieldRenderer((LivingEntity) event.getEntity()));
-        if(event.getEntity() instanceof ItemEntity)
+        if(event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem() instanceof IManaData)
             MagickCore.proxy.addRenderer(() -> new ManaItemDurationBarRenderer((ItemEntity) event.getEntity()));
+        if(event.getEntity() == Minecraft.getInstance().player)
+            MagickCore.proxy.addRenderer(() -> new WandSelectionRenderer(Minecraft.getInstance().player));
     }
 
     @SubscribeEvent
@@ -218,9 +223,9 @@ public class RenderEvent {
         if(state == null) return;
         for (ManaBuff buff : state.getBuffList().values()) {
             if(buff.isBeneficial())
-                applybuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+                applyBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
             else
-                applydeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
+                applyDeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().world);
         }
         if(!(entity instanceof PlayerEntity) && !Objects.equals(state.getElement().type(), LibElements.ORIGIN)) {
             applyAnimalParticle(entity, state.getElement().getRenderer(), Minecraft.getInstance().world);
@@ -247,7 +252,7 @@ public class RenderEvent {
         }
     }
 
-    public static void applybuffParticle(Entity entity, ElementRenderer render, World world) {
+    public static void applyBuffParticle(Entity entity, ElementRenderer render, World world) {
         LitParticle litPar = new LitParticle(world, render.getParticleTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 2 + entity.getPosX()
                 , MagickCore.getNegativeToOne() * entity.getHeight() * 2 + entity.getPosY() + entity.getHeight() * 0.5
@@ -274,7 +279,7 @@ public class RenderEvent {
         }
     }
 
-    public static void applydeBuffParticle(Entity entity, ElementRenderer render, World world) {
+    public static void applyDeBuffParticle(Entity entity, ElementRenderer render, World world) {
         LitParticle par = new LitParticle(world, render.getMistTexture()
                 , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() * 0.5f + entity.getPosX()
                 , MagickCore.getNegativeToOne() * entity.getHeight() * 0.5f + entity.getPosY() + entity.getHeight() * 0.5f

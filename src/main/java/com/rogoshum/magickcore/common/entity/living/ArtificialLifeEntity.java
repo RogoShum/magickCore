@@ -5,50 +5,96 @@ import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
+import com.rogoshum.magickcore.client.entity.easyrender.ArtificialLifeEntityRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
+import com.rogoshum.magickcore.common.item.placeable.EntityItem;
+import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.common.util.EntityInteractHelper;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class ArtificialLifeEntity extends LivingEntity implements ISpellContext, IManaRefraction, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
     public static final NonNullList<ItemStack> ARMOR_ITEMS = NonNullList.withSize(1, ItemStack.EMPTY);
+    private static final DataParameter<Direction> DIRECTION = EntityDataManager.createKey(ArtificialLifeEntity.class, DataSerializers.DIRECTION);
+    private static final DataParameter<Boolean> FOCUS = EntityDataManager.createKey(ArtificialLifeEntity.class, DataSerializers.BOOLEAN);
     private Vector3d originPos;
     private BlockPos originBlockPos;
     private boolean power = false;
     private int powerCount;
+    private final HashSet<Vector3d> vectorSet = new HashSet<>();
     public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, World worldIn) {
         super(type, worldIn);
+        this.dataManager.register(DIRECTION, Direction.UP);
+        this.dataManager.register(FOCUS, false);
     }
 
-    public boolean shouldRelease() {
-        if(originBlockPos == null) return false;
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        MagickCore.proxy.addRenderer(() -> new ArtificialLifeEntityRenderer(this));
+    }
+
+    public HashSet<Vector3d> getVectorSet() {
+        return vectorSet;
+    }
+
+    public void setDirection(Direction direction) {
+        this.dataManager.set(DIRECTION, direction);
+    }
+
+    public Direction getDirection() {
+        return this.dataManager.get(DIRECTION);
+    }
+
+    public void setFocus(boolean focus) {
+        this.dataManager.set(FOCUS, focus);
+    }
+
+    public boolean isFocus() {
+        return this.dataManager.get(FOCUS);
+    }
+
+    public void checkRelease() {
+        if(originBlockPos == null) return;
         int power = 0;
         Direction powerDirection = null;
         for(Direction direction : Direction.values()) {
@@ -65,25 +111,67 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             if(!this.power) {
                 this.power = true;
                 powerCount = 0;
-                return release(powerDirection);
+                release(powerDirection);
             } else if (powerCount >= power * 2) {
                 powerCount = 0;
-                return release(powerDirection);
+                release(powerDirection);
             }
         } else {
             powerCount = 0;
             this.power = false;
         }
-        return true;
     }
 
     public boolean release(Direction direction) {
+        PositionContext position;
+        DirectionContext directionContext;
+        Vector3d self = this.getPositionVec().add(0, 0.5 * getHeight(), 0);
+        boolean focus = isFocus();
+        if(focus && !this.getVectorSet().isEmpty()) {
+            for(Vector3d vec : this.getVectorSet()) {
+                position = PositionContext.create(vec);
+                MagickContext context = MagickContext.create(this.world, spellContext())
+                        .replenishChild(DirectionContext.create(position.pos.subtract(self)))
+                        .<MagickContext>replenishChild(position)
+                        .caster(this).projectile(this)
+                        .victim(null).doBlock();
+                MagickReleaseHelper.releaseMagick(context);
+            }
+            return true;
+        }
+        if(focus) {
+            position = PositionContext.create(getTracePos());
+            directionContext = DirectionContext.create(position.pos.subtract(self));
+        } else {
+            directionContext = DirectionContext.create(Vector3d.copy(direction.getOpposite().getDirectionVec()));
+            position = PositionContext.create(self);
+        }
+
         MagickContext context = MagickContext.create(this.world, spellContext())
-                .replenishChild(DirectionContext.create(Vector3d.copy(direction.getOpposite().getDirectionVec())))
-                .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec().add(0, 0.5 * getHeight(), 0)))
+                .replenishChild(directionContext)
+                .<MagickContext>replenishChild(position)
                 .caster(this).projectile(this)
                 .victim(null);
+        if(focus)
+            context.doBlock();
         return MagickReleaseHelper.releaseMagick(context);
+    }
+
+    public Vector3d getTracePos() {
+        Vector3d vec = this.getPositionVec().add(0, this.getEyeHeight(), 0);
+        for(int i = 1; i<=8; ++i) {
+            Vector3d end = vec.add(Vector3d.copy(getDirection().getDirectionVec()).scale(i));
+            BlockPos pos = new BlockPos(end);
+            if(!world.isAirBlock(pos))
+                return end;
+        }
+
+        return vec.add(Vector3d.copy(getDirection().getDirectionVec()).scale(8));
+    }
+
+    @Override
+    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
+        return sizeIn.height * 0.5F;
     }
 
     @Override
@@ -96,7 +184,25 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;
         ItemStack stack = player.getHeldItem(hand);
-        if(stack.getItem() instanceof MagickContextItem) {
+        if(stack.getItem() instanceof BlockItem || stack.getItem() instanceof EntityItem) {
+            return EntityInteractHelper.placeBlock(player, hand, stack, this);
+        } else if(stack.getItem() instanceof WandItem) {
+            if(!isFocus()) {
+                setFocus(true);
+                HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateChildTag(WandItem.SET_KEY));
+                if(!vector3ds.isEmpty()) {
+                    this.getVectorSet().clear();
+                    this.getVectorSet().addAll(vector3ds);
+                } else {
+                    Vector3d vector3d = player.getLookVec();
+                    setDirection(Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z).getOpposite());
+                }
+            } else {
+                setFocus(false);
+                this.getVectorSet().clear();
+            }
+            return ActionResultType.CONSUME;
+        } else if(stack.getItem() instanceof MagickContextItem) {
             spellContext().copy(ExtraDataUtil.itemManaData(stack).spellContext());
             return ActionResultType.CONSUME;
         } else if(player.isSneaking())
@@ -107,6 +213,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
     @Override
     public void tick() {
+        this.fallDistance = 0;
         super.tick();
         if(originPos == null) {
             originBlockPos = new BlockPos(this.getPositionVec());
@@ -134,12 +241,30 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             if(world.isRemote)
                 spawnSupplierParticle((Entity) capacity);
         }
-        shouldRelease();
+
+        if(isFocus() && this.getVectorSet().isEmpty() && world.isRemote()) {
+            Vector3i vector3i = getDirection().getDirectionVec();
+            double scale = (0.5+rand.nextFloat());
+            LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                    , this.getPositionVec().add(0, getEyeHeight(), 0).add(vector3i.getX()*scale, vector3i.getY()*scale, vector3i.getZ()*scale)
+                    , 0.1f, 0.1f, 0.8f, 10, spellContext().element.getRenderer());
+            litPar.setGlow();
+            litPar.setParticleGravity(0f);
+            litPar.setLimitScale();
+            MagickCore.proxy.addMagickParticle(litPar);
+        }
+        checkRelease();
     }
 
     @Override
     public boolean func_241845_aY() {
         return this.isAlive();
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if(source.damageType.equals(DamageSource.FALL.damageType)) return false;
+        return super.attackEntityFrom(source, amount);
     }
 
     public void spawnSupplierParticle(Entity supplier) {
@@ -218,12 +343,20 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public void readAdditional(CompoundNBT compound) {
         super.readAdditional(compound);
         spellContext().deserialize(compound);
+        if(compound.contains("focus"))
+            this.setFocus(compound.getBoolean("focus"));
+        if(compound.contains("direction"))
+            this.setDirection(Direction.byName(compound.getString("direction")));
+        deserializeBlockSet(compound);
     }
 
     @Override
     public void writeAdditional(CompoundNBT compound) {
         super.writeAdditional(compound);
         spellContext().serialize(compound);
+        compound.putBoolean("focus", isFocus());
+        compound.putString("direction", getDirection().getName2());
+        serializeBlockSet(compound);
     }
 
     @Override
@@ -236,11 +369,32 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         CompoundNBT tag = new CompoundNBT();
         spellContext().serialize(tag);
         buffer.writeCompoundTag(tag);
+        tag = new CompoundNBT();
+        serializeBlockSet(tag);
+        buffer.writeCompoundTag(tag);
     }
 
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
         spellContext().deserialize(additionalData.readCompoundTag());
+        deserializeBlockSet(additionalData.readCompoundTag());
+    }
+
+    public void serializeBlockSet(CompoundNBT compoundNBT) {
+        CompoundNBT tag = new CompoundNBT();
+        NBTTagHelper.saveVectorSet(tag, this.vectorSet);
+        compoundNBT.put("blockVec", tag);
+    }
+
+    public void deserializeBlockSet(CompoundNBT compoundNBT) {
+        if(compoundNBT.contains("blockVec")) {
+            CompoundNBT tag = compoundNBT.getCompound("blockVec");
+            HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(tag);
+            if(!vector3ds.isEmpty()) {
+                this.vectorSet.clear();
+                this.vectorSet.addAll(vector3ds);
+            }
+        }
     }
 
     @Override

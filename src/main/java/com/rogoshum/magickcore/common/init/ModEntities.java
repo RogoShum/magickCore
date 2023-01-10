@@ -5,17 +5,13 @@ import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.*;
 import com.rogoshum.magickcore.common.entity.projectile.*;
-import com.rogoshum.magickcore.common.entity.radiated.*;
+import com.rogoshum.magickcore.common.entity.radiation.*;
 import com.rogoshum.magickcore.common.entity.superentity.*;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 
 import com.rogoshum.magickcore.common.lib.LibEntities;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;

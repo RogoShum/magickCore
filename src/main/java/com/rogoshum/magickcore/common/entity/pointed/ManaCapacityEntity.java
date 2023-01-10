@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -21,6 +22,7 @@ import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -30,6 +32,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
@@ -280,6 +283,10 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
         ActionResultType ret = super.processInitialInteract(player, hand);
         if (ret.isSuccessOrConsume()) return ret;
+        ItemStack heldItem = player.getHeldItem(hand);
+        if(heldItem.getItem() instanceof BlockItem || heldItem.getItem() instanceof EntityItem) {
+            return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
+        }
         if (!player.world.isRemote && hand == Hand.MAIN_HAND) {
             this.setOwner(player);
             if (this.getOwner() == player) {

@@ -1,9 +1,8 @@
-package com.rogoshum.magickcore.common.entity.radiated;
+package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.radiate.SphereRadiateRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.radiate.SquareRadiateRenderer;
+import com.rogoshum.magickcore.client.entity.easyrender.radiation.SphereRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
