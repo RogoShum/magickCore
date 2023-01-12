@@ -138,7 +138,7 @@ public class ArcAbility{
             BlockPos pos = new BlockPos(positionContext.pos);
             if(context.world.getTileEntity(pos) != null) {
                 TileEntity tile = context.world.getTileEntity(pos);
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 10;
                 EnergyUtil.receiveEnergy(tile, mana);
                 return true;
             }

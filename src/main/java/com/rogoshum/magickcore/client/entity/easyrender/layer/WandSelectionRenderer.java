@@ -86,7 +86,7 @@ public class WandSelectionRenderer extends EasyRenderer<PlayerEntity> {
         for (Vector3d pos : posSet) {
             if(shapes.containsKey(pos)) {
                 VoxelShape shape = shapes.get(pos);
-                RenderHelper.drawShape(params.matrixStack, params.buffer, shape, pos.x, pos.y, pos.z, color.r(), color.g(), color.b(), 0.2F);
+                RenderHelper.drawShape(params.matrixStack, params.buffer, shape, pos.x, pos.y, pos.z, color.r(), color.g(), color.b(), 1.0F);
             }
         }
     }

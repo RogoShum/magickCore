@@ -83,6 +83,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
 
     @Override
     public boolean releaseMagick() {
+        if (this.ticksExisted == 1) {
+            this.playSound(SoundEvents.BLOCK_STONE_PLACE, 1F, 1.0F + MagickCore.rand.nextFloat());
+        }
         if(coolDown > 0) {
             coolDown-=1;
             return false;

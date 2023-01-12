@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
@@ -215,6 +216,9 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public void tick() {
         this.fallDistance = 0;
         super.tick();
+        if (this.ticksExisted == 1) {
+            this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_PLACE, 0.5F, 1.0F + MagickCore.rand.nextFloat());
+        }
         if(originPos == null) {
             originBlockPos = new BlockPos(this.getPositionVec());
             originPos = Vector3d.copyCentered(originBlockPos).subtract(0, getHeight() * 0.5, 0);

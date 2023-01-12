@@ -136,6 +136,9 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public void tick() {
         super.tick();
+        if (this.ticksExisted == 1) {
+            this.playSound(SoundEvents.BLOCK_STONE_PLACE, 1F, 1.0F + MagickCore.rand.nextFloat());
+        }
     }
 
     @Override

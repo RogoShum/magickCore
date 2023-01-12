@@ -59,9 +59,6 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
 
     public void addPos(Vector3d vec, Vector3d cam) {
         BlockPos pos = new BlockPos(vec);
-        if(entity.world.isAirBlock(pos)) {
-            return;
-        }
         BlockState state = entity.world.getBlockState(pos);
         VoxelShape blockShape = state.getShape(entity.world, pos);
         VoxelShape shape = VoxelShapes.fullCube();
@@ -97,7 +94,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
         for (Vector3d pos : posSet) {
             if(shapes.containsKey(pos)) {
                 VoxelShape shape = shapes.get(pos);
-                RenderHelper.drawShape(params.matrixStack, params.buffer, shape, pos.x, pos.y, pos.z, color.r(), color.g(), color.b(), 0.5F);
+                RenderHelper.drawShape(params.matrixStack, params.buffer, shape, pos.x, pos.y, pos.z, color.r(), color.g(), color.b(), 1.0F);
             }
         }
     }
