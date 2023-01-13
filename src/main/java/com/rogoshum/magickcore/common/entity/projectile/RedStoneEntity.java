@@ -45,7 +45,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     @Override
     public void remove() {
         dead = true;
-        onRemoveRedStone(blockPos, world);
+        onRemoveRedStone(blockPos, level);
         super.remove();
     }
 
@@ -58,8 +58,8 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     @Override
     public void tick() {
         super.tick();
-        clientMotion = getMotion().add(clientMotion);
-        blockPos = onTickRedStone(getPositionVec(), blockPos, world);
+        clientMotion = getDeltaMovement().add(clientMotion);
+        blockPos = onTickRedStone(position(), blockPos, level);
     }
 
     @Override
@@ -83,16 +83,16 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
     @Override
-    protected float getGravityVelocity() {
-        BlockPos blockpos = this.getPosition();
-        BlockState blockstate = this.world.getBlockState(blockpos);
-        if (!blockstate.isAir(this.world, blockpos)) {
-            VoxelShape voxelshape = blockstate.getCollisionShape(this.world, blockpos);
+    protected float getGravity() {
+        BlockPos blockpos = this.blockPosition();
+        BlockState blockstate = this.level.getBlockState(blockpos);
+        if (!blockstate.isAir(this.level, blockpos)) {
+            VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
             if (!voxelshape.isEmpty()) {
-                Vector3d vector3d1 = this.getPositionVec();
+                Vector3d vector3d1 = this.position();
 
-                for(AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList()) {
-                    if (axisalignedbb.offset(blockpos).contains(vector3d1)) {
+                for(AxisAlignedBB axisalignedbb : voxelshape.toAabbs()) {
+                    if (axisalignedbb.move(blockpos).contains(vector3d1)) {
                         return 0;
                     }
                 }
@@ -102,36 +102,36 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
-        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
-        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
-        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length() * 0.4).add(getMotion().scale(0.5)));
-        if(pos.y < this.positionVec().y && getMotion().length() > 0.1)
-            this.setMotion(getMotion().scale(1.8 * getWidth()));
+    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
+        Vector3d pos = Vector3d.atCenterOf(p_230299_1_.getBlockPos());
+        Vector3d vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
+        this.setDeltaMovement(vec.subtract(pos).normalize().scale(this.getDeltaMovement().length() * 0.4).add(getDeltaMovement().scale(0.5)));
+        if(pos.y < this.positionVec().y && getDeltaMovement().length() > 0.1)
+            this.setDeltaMovement(getDeltaMovement().scale(1.8 * getBbWidth()));
         if(spellContext().containChild(LibContext.CONDITION)) {
             ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
-            if(!condition.test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+            if(!condition.test(null, level.getBlockState(p_230299_1_.getBlockPos()).getBlock()))
                 return;
         }
-        BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
+        BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
+        blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(world, spellContext().postContext).doBlock().noCost().caster(this.func_234616_v_()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }
 
     @Override
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                , getWidth() * 0.2f, getWidth() * 0.2f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
+                , getBbWidth() * 0.2f, getBbWidth() * 0.2f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setLimitScale();
         MagickCore.addMagickParticle(par);

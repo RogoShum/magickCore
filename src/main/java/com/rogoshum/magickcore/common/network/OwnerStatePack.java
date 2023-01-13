@@ -17,7 +17,7 @@ public class OwnerStatePack extends EntityPack{
 
     public OwnerStatePack(PacketBuffer buffer) {
         super(buffer);
-        uuid = buffer.readUniqueId();
+        uuid = buffer.readUUID();
     }
 
     public OwnerStatePack(int id, UUID uuid) {
@@ -27,14 +27,14 @@ public class OwnerStatePack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeUniqueId(uuid);
+        buf.writeUUID(uuid);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed)
             return;
         if(entity instanceof IOwnerEntity) {

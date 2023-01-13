@@ -18,6 +18,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
+import net.minecraft.item.Item.Properties;
+
 public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     public SpiritSwordItem(Properties properties) {
         super(properties);
@@ -29,12 +31,12 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        return ActionResult.resultPass(playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        return ActionResult.pass(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.NONE;
     }
 
@@ -46,14 +48,14 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     @Override
     public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
+        MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(player).victim(entity).element(element);
-        MagickReleaseHelper.releaseMagick(MagickContext.create(player.world, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
-        Hand hand = player.getHeldItemMainhand() == stack ? Hand.MAIN_HAND : Hand.OFF_HAND;
-        player.setActiveHand(hand);
+        MagickReleaseHelper.releaseMagick(MagickContext.create(player.level, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
+        Hand hand = player.getMainHandItem() == stack ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        player.startUsingItem(hand);
         boolean success = MagickReleaseHelper.releaseMagick(context);
-        player.stopActiveHand();
+        player.releaseUsingItem();
         return success;
     }
 }

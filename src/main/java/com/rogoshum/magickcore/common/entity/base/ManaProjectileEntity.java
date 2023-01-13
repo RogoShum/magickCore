@@ -60,51 +60,51 @@ import java.util.function.Supplier;
 
 public abstract class ManaProjectileEntity extends ThrowableEntity implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
-    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(ManaProjectileEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.OPTIONAL_UUID);
+    private static final DataParameter<Float> HEIGHT = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.FLOAT);
     public Entity victim;
     public double maxMotion;
     private boolean released = false;
 
     public ManaProjectileEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
-        this.dataManager.register(dataUUID, Optional.of(MagickCore.emptyUUID));
-        this.dataManager.register(HEIGHT, this.getType().getHeight());
-        this.dataManager.register(WIDTH, this.getType().getWidth());
+        this.entityData.define(dataUUID, Optional.of(MagickCore.emptyUUID));
+        this.entityData.define(HEIGHT, this.getType().getHeight());
+        this.entityData.define(WIDTH, this.getType().getWidth());
     }
 
     @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
+    public void onSyncedDataUpdated(DataParameter<?> key) {
         if (HEIGHT.equals(key) || WIDTH.equals(key)) {
-            this.recalculateSize();
+            this.refreshDimensions();
         }
-        super.notifyDataManagerChange(key);
+        super.onSyncedDataUpdated(key);
     }
 
-    public void recalculateSize() {
-        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "field_213325_aI");
+    public void refreshDimensions() {
+        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
         Pose pose = this.getPose();
-        EntitySize entitysize1 = this.getSize(pose);
+        EntitySize entitysize1 = this.getDimensions(pose);
         net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "field_213325_aI");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "field_213326_aJ");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AxisAlignedBB(this.getPosX() - d0, this.getPosY(), this.getPosZ() - d0, this.getPosX() + d0, this.getPosY() + (double)entitysize1.height, this.getPosZ() + d0));
+        this.setBoundingBox(new AxisAlignedBB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
     }
 
     @Override
-    public EntitySize getSize(Pose poseIn) {
-        return EntitySize.flexible(this.getDataManager().get(WIDTH), this.getDataManager().get(HEIGHT));
+    public EntitySize getDimensions(Pose poseIn) {
+        return EntitySize.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
     }
 
     public void setHeight(float height) {
-        this.getDataManager().set(HEIGHT, height);
+        this.getEntityData().set(HEIGHT, height);
     }
     public void setWidth(float width) {
-        this.getDataManager().set(WIDTH, width);
+        this.getEntityData().set(WIDTH, width);
     }
 
     @Override
@@ -124,17 +124,17 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
         CompoundNBT addition = new CompoundNBT();
-        writeAdditional(addition);
-        buffer.writeCompoundTag(addition);
+        addAdditionalSaveData(addition);
+        buffer.writeNbt(addition);
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         if(id == 3)
             this.remove();
         else
-            super.handleStatusUpdate(id);
+            super.handleEntityEvent(id);
     }
 
     @Override
@@ -144,51 +144,41 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
-        readAdditional(additionalData.readCompoundTag());
+        readAdditionalSaveData(additionalData.readNbt());
     }
 
     @Override
-    public boolean isImmuneToFire() {
+    public boolean fireImmune() {
         return true;
     }
 
     @Override
-    public void forceFireTicks(int ticks) {
+    public void setRemainingFireTicks(int ticks) {
     }
 
     @Override
-    public int getFireTimer() {
+    public int getRemainingFireTicks() {
         return 0;
     }
 
     @Override
-    public void setShooter(Entity entityIn) {
-        super.setShooter(entityIn);
-        if (entityIn != null)
-            this.setOwnerUUID(entityIn.getUniqueID());
-    }
-
-    @Override
     public void setOwner(Entity entityIn) {
-        this.setShooter(entityIn);
-    }
-
-    @Override
-    public Entity getOwner() {
-        return this.func_234616_v_();
+        super.setOwner(entityIn);
+        if (entityIn != null)
+            this.setOwnerUUID(entityIn.getUUID());
     }
 
     @Nullable
     @Override
-    public Entity func_234616_v_() {
-        Entity entity = super.func_234616_v_();
+    public Entity getOwner() {
+        Entity entity = super.getOwner();
         UUID uuid = getOwnerUUID();
         if(uuid == MagickCore.emptyUUID) return entity;
-        if (entity == null && this.world.isRemote) {
-            Iterator<Entity> it = ((ClientWorld) this.world).getAllEntities().iterator();
+        if (entity == null && this.level.isClientSide) {
+            Iterator<Entity> it = ((ClientWorld) this.level).entitiesForRendering().iterator();
             while (it.hasNext()) {
                 Entity entity1 = it.next();
-                if(entity1 != null && entity1.getUniqueID().equals(uuid)) {
+                if(entity1 != null && entity1.getUUID().equals(uuid)) {
                     setOwner(entity1);
                     return entity1;
                 }
@@ -202,28 +192,28 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         victim = null;
         super.tick();
         normalCollision();
-        if (!world.isRemote)
+        if (!level.isClientSide)
             makeSound();
 
         traceTarget();
         reSize();
-        if(this.world.isRemote) {
+        if(this.level.isClientSide) {
             MagickCore.proxy.addTask(this::doClientTask);
         } else
             MagickCore.proxy.addTask(this::doServerTask);
-        double length = getMotion().length();
+        double length = getDeltaMovement().length();
         if(length > maxMotion)
             maxMotion = length;
     }
 
     public void normalCollision() {
         if(victim == null) {
-            Vector3d vector3d = this.getMotion();
-            vector3d = vector3d.normalize().scale(getWidth() * 0.5);
-            World world = this.world;
-            Vector3d vector3d1 = this.getPositionVec();
+            Vector3d vector3d = this.getDeltaMovement();
+            vector3d = vector3d.normalize().scale(getBbWidth() * 0.5);
+            World world = this.level;
+            Vector3d vector3d1 = this.position();
             Vector3d vector3d2 = vector3d1.add(vector3d);
-            EntityRayTraceResult raytraceResult = ProjectileHelper.rayTraceEntities(world, this, vector3d1, vector3d2, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), Entity::isAlive);
+            EntityRayTraceResult raytraceResult = ProjectileHelper.getEntityHitResult(world, this, vector3d1, vector3d2, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), Entity::isAlive);
             if (raytraceResult != null) {
                 Entity target = raytraceResult.getEntity();
                 if(target instanceof IManaRefraction) {
@@ -231,9 +221,9 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
                         this.victim = target;
                 } else
                     this.victim = target;
-                if (victim != null && !this.world.isRemote) {
+                if (victim != null && !this.level.isClientSide) {
                     EntityRayTraceResult result = new EntityRayTraceResult(target);
-                    onEntityHit(result);
+                    onHitEntity(result);
                 }
             }
         }
@@ -241,10 +231,10 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     public void reSize() {
         float height = getType().getHeight() + spellContext().range * 0.1f;
-        if(getHeight() != height)
+        if(getBbHeight() != height)
             this.setHeight(height);
         float width = getType().getWidth() + spellContext().range * 0.1f;
-        if(getWidth() != width)
+        if(getBbWidth() != width)
             this.setWidth(width);
     }
 
@@ -260,7 +250,7 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     public void onAddedToWorld() {
         super.onAddedToWorld();
         EntityLightSourceManager.addLightSource(this);
-        if(world.isRemote) {
+        if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaProjectileEntity>> renderer = getRenderer();
             if(renderer == null)
                 MagickCore.proxy.addRenderer(() -> new ManaProjectileRenderer(this));
@@ -286,17 +276,17 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
 
     @Override
     public Vector3d positionVec() {
-        return getPositionVec();
+        return position();
     }
 
     @Override
     public World world() {
-        return getEntityWorld();
+        return getCommandSenderWorld();
     }
 
     @Override
     public float eyeHeight() {
-        return this.getHeight() * 0.5f;
+        return this.getBbHeight() * 0.5f;
     }
 
     @Override
@@ -305,49 +295,49 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     }
 
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
+        if (this.tickCount == 1) {
             this.playSound(ModSounds.glitter_another.get(), 0.25F, 1.0F + MagickCore.rand.nextFloat());
         }
     }
 
     @Override
-    public SoundCategory getSoundCategory() {
+    public SoundCategory getSoundSource() {
         return SoundCategory.NEUTRAL;
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 
     @Override
     public void setOwnerUUID(UUID uuid) {
-        this.getDataManager().set(dataUUID, Optional.of(uuid));
+        this.getEntityData().set(dataUUID, Optional.of(uuid));
     }
 
     public UUID getOwnerUUID() {
-        Optional<UUID> uuid = this.getDataManager().get(dataUUID);
+        Optional<UUID> uuid = this.getEntityData().get(dataUUID);
         return uuid.orElse(MagickCore.emptyUUID);
     }
 
     protected void traceTarget() {
-        if (!this.spellContext().containChild(LibContext.TRACE) || this.world.isRemote) return;
+        if (!this.spellContext().containChild(LibContext.TRACE) || this.level.isClientSide) return;
         TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
         Entity entity = traceContext.entity;
         if(entity == null && traceContext.uuid != MagickCore.emptyUUID) {
-            entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+            entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
             traceContext.entity = entity;
         } else if(entity != null && entity.isAlive()) {
-            Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() / 1.5f, entity.getPosZ());
-            Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+            Vector3d goal = new Vector3d(entity.getX(), entity.getY() + entity.getBbHeight() / 1.5f, entity.getZ());
+            Vector3d self = new Vector3d(this.getX(), this.getY(), this.getZ());
 
             double length = maxMotion * 0.3;
             Vector3d motion = goal.subtract(self).normalize().scale(Math.max(length * 0.2, 0.02));
-            this.setMotion(motion.add(this.getMotion().scale(0.8)));
+            this.setDeltaMovement(motion.add(this.getDeltaMovement().scale(0.8)));
         }
     }
 
-    protected void onImpact(RayTraceResult result) {
+    protected void onHit(RayTraceResult result) {
         if(result.getType() == RayTraceResult.Type.ENTITY) {
             EntityRayTraceResult result1 = ((EntityRayTraceResult)result);
             if(result1.getEntity() instanceof IManaRefraction) {
@@ -356,25 +346,25 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
             } else
                 this.victim = result1.getEntity();
         }
-        super.onImpact(result);
+        super.onHit(result);
     }
 
     @OnlyIn(Dist.CLIENT)
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                 , 0.1f, 0.1f, 1.0f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         MagickCore.addMagickParticle(par);
 
-        if(ticksExisted % 5 != 0) return;
-        LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
-                , 0.5f * this.getWidth(), 0.5f * this.getWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+        if(tickCount % 5 != 0) return;
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
+                , 0.5f * this.getBbWidth(), 0.5f * this.getBbWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(15.0f);
@@ -383,26 +373,26 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
-        if (compound.hasUniqueId("Owner")) {
-            UUID ownerUUID = compound.getUniqueId("Owner");
+    protected void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.hasUUID("Owner")) {
+            UUID ownerUUID = compound.getUUID("Owner");
             this.setOwnerUUID(ownerUUID);
         }
         spellContext().deserialize(compound);
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    protected void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.getOwner() != null) {
-            compound.putUniqueId("Owner", this.getOwner().getUniqueID());
+            compound.putUUID("Owner", this.getOwner().getUUID());
         }
         spellContext().serialize(compound);
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
+    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
         if(suitableEntity(p_213868_1_.getEntity())) {
             ConditionContext condition = null;
             if(spellContext().containChild(LibContext.CONDITION))
@@ -418,35 +408,35 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
             }
         }
 
-        if (victim != null && !this.world.isRemote) {
+        if (victim != null && !this.level.isClientSide) {
             boolean success = releaseMagick();
             if(success && hitEntityRemove(p_213868_1_)) {
                 released = true;
                 this.remove();
             }
         }
-        super.onEntityHit(p_213868_1_);
+        super.onHitEntity(p_213868_1_);
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
+    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
         if(spellContext().containChild(LibContext.CONDITION)) {
             ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
-            if(!condition.<Block>test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+            if(!condition.<Block>test(null, level.getBlockState(p_230299_1_.getBlockPos()).getBlock()))
                 return;
         }
-        BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
+        BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
+        blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(world, spellContext().postContext).doBlock().noCost().caster(this.func_234616_v_()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        if (hitBlockRemove(p_230299_1_) && !this.world.isRemote) {
+        if (hitBlockRemove(p_230299_1_) && !this.level.isClientSide) {
             this.remove();
         }
     }
@@ -458,8 +448,8 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
         if(!released)
             releaseMagick();
         removeEffect();
-        if(!world.isRemote)
-            world.setEntityState(this, (byte) 3);
+        if(!level.isClientSide)
+            level.broadcastEntityEvent(this, (byte) 3);
         super.remove();
     }
 
@@ -473,15 +463,15 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     }
 
     public void removeEffect() {
-        if (!this.world.isRemote) {
-            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 0.5F, 1.0F + this.rand.nextFloat());
+        if (!this.level.isClientSide) {
+            this.playSound(SoundEvents.ENDER_EYE_DEATH, 0.5F, 1.0F + this.random.nextFloat());
         }
-        if (this.world.isRemote()) {
+        if (this.level.isClientSide()) {
             for (int c = 0; c < 10; ++c) {
-                LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                        , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
+                LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
+                        , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                         , 0.125f, 0.125f, MagickCore.rand.nextFloat(), 80, spellContext().element.getRenderer());
                 par.setGlow();
                 par.setShakeLimit(15.0f);
@@ -489,11 +479,11 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
                 MagickCore.addMagickParticle(par);
             }
             for (int i = 0; i < 5; ++i) {
-                LitParticle litPar = new LitParticle(this.world, spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                        , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                        , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
-                        , this.getWidth() * 0.5f, this.getWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                LitParticle litPar = new LitParticle(this.level, spellContext().element.getRenderer().getMistTexture()
+                        , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
+                        , this.getBbWidth() * 0.5f, this.getBbWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
                 litPar.setGlow();
                 litPar.setParticleGravity(0f);
                 litPar.setShakeLimit(15.0f);
@@ -504,12 +494,12 @@ public abstract class ManaProjectileEntity extends ThrowableEntity implements IM
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0.005F;
     }
 

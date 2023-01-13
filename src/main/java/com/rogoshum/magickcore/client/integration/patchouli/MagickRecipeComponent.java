@@ -40,7 +40,7 @@ public class MagickRecipeComponent implements ICustomComponent {
         if(this.recipe == null) return;
         NonNullList<Ingredient>[] recipe = this.recipe.getIngredientList();
         RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(ms.getLast().getMatrix());
+        RenderSystem.multMatrix(ms.last().pose());
         RenderSystem.translatef(this.x+50, this.y+50, 150);
         RenderSystem.rotatef((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f, 0, 1, 0);
         RenderSystem.rotatef(-20f, 1, 0, 0);
@@ -52,8 +52,8 @@ public class MagickRecipeComponent implements ICustomComponent {
                 for (int x = 0; x < this.recipe.getRecipeX(); ++x){
                     for (int z = 0; z < this.recipe.getRecipeZ(); ++z){
                         Ingredient ingredient = recipe[y].get(z + x * this.recipe.getRecipeZ());
-                        if(!ingredient.hasNoMatchingItems())
-                            renderItem(ingredient.getMatchingStacks()[0].getItem(), scale1, x, y, z, width);
+                        if(!ingredient.isEmpty())
+                            renderItem(ingredient.getItems()[0].getItem(), scale1, x, y, z, width);
                     }
                 }
             }
@@ -64,8 +64,8 @@ public class MagickRecipeComponent implements ICustomComponent {
             for (int x = 0; x < this.recipe.getRecipeX(); ++x){
                 for (int z = 0; z < this.recipe.getRecipeZ(); ++z){
                     Ingredient ingredient = recipe[stack-1].get(z + x * this.recipe.getRecipeZ());
-                    if(!ingredient.hasNoMatchingItems())
-                        renderItem(ingredient.getMatchingStacks()[0].getItem(), scale1, x, y, z, width);
+                    if(!ingredient.isEmpty())
+                        renderItem(ingredient.getItems()[0].getItem(), scale1, x, y, z, width);
                 }
             }
         }
@@ -79,16 +79,16 @@ public class MagickRecipeComponent implements ICustomComponent {
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.translatef((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
         RenderSystem.scalef(scale1, scale1, scale1);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
-        renderTypeBuffer.finish();
+        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
+        renderTypeBuffer.endBatch();
         RenderSystem.popMatrix();
     }
 
     @Override
     public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
         this.magickRecipe = lookup.apply(IVariable.wrap(this.magickRecipe)).asString();
-        List<SpiritCraftingRecipe> recipes = Minecraft.getInstance().world.getRecipeManager().getRecipesForType(SpiritCraftingRecipe.SPIRIT_CRAFTING);
+        List<SpiritCraftingRecipe> recipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(SpiritCraftingRecipe.SPIRIT_CRAFTING);
         recipes.forEach(magickCraftingRecipe -> magickCraftingRecipe.getId().toString().equals(this.magickRecipe));
         Optional<SpiritCraftingRecipe> optional = recipes.stream().filter(recipe -> recipe.getId().toString().equals(this.magickRecipe)).findAny();
         optional.ifPresent(magickCraftingRecipe -> this.recipe = magickCraftingRecipe);

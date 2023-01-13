@@ -39,10 +39,10 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
     @Override
     public void update() {
         super.update();
-        alpha = Math.min(1.0f, (float)entity.ticksExisted / 100f);
-        preRotate = entity.ticksExisted % 5;
-        postRotate = (entity.ticksExisted + 1) % 5;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getRenderPartialTicks(), preRotate, postRotate);
+        alpha = Math.min(1.0f, (float)entity.tickCount / 100f);
+        preRotate = entity.tickCount % 5;
+        postRotate = (entity.tickCount + 1) % 5;
+        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         renderer = entity.spellContext().element.getRenderer();
     }
 
@@ -63,7 +63,7 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (rotate / 4)));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (rotate / 4)));
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(7.0f, 4.0f, 2
                 , 4f, 16

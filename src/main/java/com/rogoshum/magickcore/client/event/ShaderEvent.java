@@ -74,7 +74,7 @@ public class ShaderEvent {
             ResourceLocation resourceLocation = new ResourceLocation(s);
             try {
                 Minecraft mc = Minecraft.getInstance();
-                Framebuffer mainFramebuffer = mc.getFramebuffer();
+                Framebuffer mainFramebuffer = mc.getMainRenderTarget();
                 TextureManager textureManager = mc.getTextureManager();
                 IResourceManager resourceManager = mc.getResourceManager();
                 shaders.put(resourceLocation.toString(), new ShaderGroup(textureManager, resourceManager, mainFramebuffer, resourceLocation));
@@ -92,29 +92,26 @@ public class ShaderEvent {
 
     @SubscribeEvent
     public void onSetupShaders(RenderWorldEvent.PreRenderMagickEvent event) {
-        if(Minecraft.isFabulousGraphicsEnabled()) {
+        if(Minecraft.useShaderTransparency()) {
             RenderSystem.popMatrix();
         }
         if(RenderHelper.stopShader()) return;
         Minecraft mc = Minecraft.getInstance();
 
-        MainWindow mainWindow = mc.getMainWindow();
-        int width = mainWindow.getFramebufferWidth();
-        int height = mainWindow.getFramebufferHeight();
+        MainWindow mainWindow = mc.getWindow();
+        int width = mainWindow.getWidth();
+        int height = mainWindow.getHeight();
         if (width != this.framebufferWidth || height != this.framebufferHeight) {
             this.framebufferWidth = width;
             this.framebufferHeight = height;
-            shaders.values().forEach(shaderGroup -> shaderGroup.createBindFramebuffers(width, height));
+            shaders.values().forEach(shaderGroup -> shaderGroup.resize(width, height));
         }
 
         shaders.forEach( (shader, shaderGroup) -> {
-            Framebuffer framebuffer = shaderGroup.getFramebufferRaw(Objects.requireNonNull(getShaderFrameName(shader)));
-            framebuffer.framebufferClear(Minecraft.IS_RUNNING_ON_MAC);
+            Framebuffer framebuffer = shaderGroup.getTempTarget(Objects.requireNonNull(getShaderFrameName(shader)));
+            framebuffer.clear(Minecraft.ON_OSX);
         });
-        if (Minecraft.isFabulousGraphicsEnabled()) {
-            Minecraft.getInstance().worldRenderer.func_239228_q_().bindFramebuffer(false);
-        } else
-            Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
     }
 
     @SubscribeEvent
@@ -123,30 +120,27 @@ public class ShaderEvent {
         List<Framebuffer> renderFrame = new ArrayList<>();
         renderList.forEach( shader -> {
             ShaderGroup shaderGroup = shaders.get(shader);
-            Framebuffer framebuffer = shaderGroup.getFramebufferRaw(Objects.requireNonNull(getShaderFrameName(shader)));
-            framebuffer.bindFramebuffer(false);
-            shaderGroup.render(event.getPartialTicks());
+            Framebuffer framebuffer = shaderGroup.getTempTarget(Objects.requireNonNull(getShaderFrameName(shader)));
+            framebuffer.bindWrite(false);
+            shaderGroup.process(event.getPartialTicks());
             renderFrame.add(framebuffer);
         });
         renderList.clear();
 
-        if (Minecraft.isFabulousGraphicsEnabled()) {
-            Minecraft.getInstance().worldRenderer.func_239228_q_().bindFramebuffer(false);
-        } else
-            Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
-        MainWindow mainWindow = Minecraft.getInstance().getMainWindow();
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        MainWindow mainWindow = Minecraft.getInstance().getWindow();
 
         renderFrame.forEach( framebuffer -> {
             RenderSystem.pushMatrix();
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            framebuffer.framebufferRenderExt(mainWindow.getFramebufferWidth(), mainWindow.getFramebufferHeight(), false);
+            framebuffer.blitToScreen(mainWindow.getWidth(), mainWindow.getHeight(), false);
             RenderSystem.disableBlend();
             RenderSystem.popMatrix();
         });
-        if(Minecraft.isFabulousGraphicsEnabled()) {
+        if(Minecraft.useShaderTransparency()) {
             RenderSystem.pushMatrix();
-            RenderSystem.multMatrix(event.getMatrixStack().getLast().getMatrix());
+            RenderSystem.multMatrix(event.getMatrixStack().last().pose());
         }
     }
 }

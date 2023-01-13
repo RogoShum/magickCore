@@ -26,8 +26,8 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
     @Override
     public void update() {
         super.update();
-        c = entity.ticksExisted % 30;
-        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getHeight(), 0f);
+        c = entity.tickCount % 30;
+        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
     }
 
     public void renderOpacity(RenderParams params) {
@@ -36,8 +36,8 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
         baseOffset(matrixStackIn);
         float alpha = 1.0f;
 
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getWidth() * 0.5f, entity.getWidth() * 0.5f, 1
-                , 0.2f + entity.getHeight(), 16
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getBbWidth() * 0.5f, entity.getBbWidth() * 0.5f, 1
+                , 0.2f + entity.getBbHeight(), 16
                 , 0.1f * alpha, alpha, 0.3f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
@@ -48,11 +48,11 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
         baseOffset(matrixStackIn);
         float alpha = 1.0f;
 
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 29)));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 29)));
 
-        float height = entity.getHeight() - 0.2f;
+        float height = entity.getBbHeight() - 0.2f;
 
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getWidth() * 2f, entity.getWidth() * 0.5f, 2
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getBbWidth() * 2f, entity.getBbWidth() * 0.5f, 2
                 , height , 16
                 , 0, 0.7f, 0.9f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)

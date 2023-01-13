@@ -20,7 +20,7 @@ public class InjurableEntityCondition extends EntityCondition{
 
     @Override
     public boolean test(Entity entity) {
-        return entity.hurtResistantTime <= 0;
+        return entity.invulnerableTime <= 0;
     }
 
     @Override

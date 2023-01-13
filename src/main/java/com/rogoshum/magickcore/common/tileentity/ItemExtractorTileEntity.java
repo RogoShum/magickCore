@@ -32,23 +32,23 @@ public class ItemExtractorTileEntity extends TileEntity implements ITickableTile
     @Override
     public void tick() {
         if(aabb == null)
-            aabb = new AxisAlignedBB(pos).grow(0.25);
+            aabb = new AxisAlignedBB(worldPosition).inflate(0.25);
 
-        BlockState state = world.getBlockState(pos);
-        TileEntity tile = world.getTileEntity(pos.add(state.get(ItemExtractorBlock.FACING).getOpposite().getDirectionVec()));
+        BlockState state = level.getBlockState(worldPosition);
+        TileEntity tile = level.getBlockEntity(worldPosition.offset(state.getValue(ItemExtractorBlock.FACING).getOpposite().getNormal()));
         if(tile instanceof IInventory) {
             IInventory inventory = (IInventory) tile;
-            for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                ItemStack slot = inventory.getStackInSlot(i);
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                ItemStack slot = inventory.getItem(i);
                 if(!slot.isEmpty()) {
                     if(item == null || item.getItem().isEmpty()) {
                         ItemStack copy = slot.copy();
                         copy.setCount(1);
-                        ItemEntity itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.2, pos.getZ() + 0.5, copy);
-                        if(world.addEntity(itemEntity)) {
+                        ItemEntity itemEntity = new ItemEntity(level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.2, worldPosition.getZ() + 0.5, copy);
+                        if(level.addFreshEntity(itemEntity)) {
                             item = itemEntity;
                             slot.shrink(1);
-                            inventory.markDirty();
+                            inventory.setChanged();
                             break;
                         }
                     } else if(ItemStackUtil.canMergeStacks(item.getItem(), slot)){
@@ -57,7 +57,7 @@ public class ItemExtractorTileEntity extends TileEntity implements ITickableTile
                         ItemStack newItem = ItemStackUtil.mergeInventoryStacks(item.getItem(), copy, 64);
                         if(newItem.getCount() > item.getItem().getCount()) {
                             slot.shrink(1);
-                            inventory.markDirty();
+                            inventory.setChanged();
                             item.getItem().shrink(-1);
                             break;
                         }
@@ -68,33 +68,33 @@ public class ItemExtractorTileEntity extends TileEntity implements ITickableTile
 
         if(item != null) {
             if(item.isAlive()) {
-                item.setMotion(Vector3d.ZERO);
-                double y = pos.getY() + 0.2;
-                if(item.getPositionVec().add(0, 0.3, 0).distanceTo(Vector3d.copyCentered(pos)) > 1.0) {
+                item.setDeltaMovement(Vector3d.ZERO);
+                double y = worldPosition.getY() + 0.2;
+                if(item.position().add(0, 0.3, 0).distanceTo(Vector3d.atCenterOf(worldPosition)) > 1.0) {
                     item = null;
                     return;
                 }
-                item.setPosition(pos.getX() + 0.5, y, pos.getZ() + 0.5);
+                item.setPos(worldPosition.getX() + 0.5, y, worldPosition.getZ() + 0.5);
                 if(ItemStackUtil.getItemEntityAge(item) > 120)
                     ItemStackUtil.setItemEntityAge(item, 0);
-                ItemExtractorBlock.updatePower(world, pos, world.getBlockState(pos), Math.max(1, (int) (item.getItem().getCount() * 0.25)));
-                tile = world.getTileEntity(pos.add(state.get(ItemExtractorBlock.FACING).getDirectionVec()));
+                ItemExtractorBlock.updatePower(level, worldPosition, level.getBlockState(worldPosition), Math.max(1, (int) (item.getItem().getCount() * 0.25)));
+                tile = level.getBlockEntity(worldPosition.offset(state.getValue(ItemExtractorBlock.FACING).getNormal()));
                 if(tile instanceof IInventory) {
                     IInventory inventory = (IInventory) tile;
                     ItemStack copy = item.getItem().copy();
                     copy.setCount(1);
-                    for (int i = 0; i < inventory.getSizeInventory(); i++) {
-                        ItemStack slot = inventory.getStackInSlot(i);
+                    for (int i = 0; i < inventory.getContainerSize(); i++) {
+                        ItemStack slot = inventory.getItem(i);
                         if(slot.isEmpty()) {
-                            inventory.setInventorySlotContents(i, copy);
+                            inventory.setItem(i, copy);
                             item.getItem().shrink(1);
-                            inventory.markDirty();
+                            inventory.setChanged();
                             break;
                         } else if(ItemStackUtil.canMergeStacks(slot, copy)) {
-                            ItemStack newSlot = ItemStackUtil.mergeInventoryStacks(slot, copy, Math.min(inventory.getInventoryStackLimit(), slot.getMaxStackSize()));
-                            inventory.setInventorySlotContents(i, newSlot);
+                            ItemStack newSlot = ItemStackUtil.mergeInventoryStacks(slot, copy, Math.min(inventory.getMaxStackSize(), slot.getMaxStackSize()));
+                            inventory.setItem(i, newSlot);
                             item.getItem().shrink(1);
-                            inventory.markDirty();
+                            inventory.setChanged();
                             break;
                         }
                     }
@@ -103,8 +103,8 @@ public class ItemExtractorTileEntity extends TileEntity implements ITickableTile
                 item = null;
             return;
         }
-        ItemExtractorBlock.updatePower(world, pos, world.getBlockState(pos), 0);
-        List<ItemEntity> items = world.getEntitiesWithinAABB(EntityType.ITEM, aabb, Entity::isAlive);
+        ItemExtractorBlock.updatePower(level, worldPosition, level.getBlockState(worldPosition), 0);
+        List<ItemEntity> items = level.getEntities(EntityType.ITEM, aabb, Entity::isAlive);
         if(!items.isEmpty()) {
             ItemEntity entity = items.get(0);
             if(entity != null && entity.isAlive())

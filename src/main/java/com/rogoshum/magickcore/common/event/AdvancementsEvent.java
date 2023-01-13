@@ -22,32 +22,32 @@ public class AdvancementsEvent {
             ServerPlayerEntity player = ((ServerPlayerEntity)event.getEntityLiving());
             STRING_TRIGGER.trigger(player, LibAdvancements.UNLOCK_ROOT);
 
-            player.getActivePotionEffects().forEach((effectInstance) -> {
-                if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_FORCE))
+            player.getActiveEffects().forEach((effectInstance) -> {
+                if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_FORCE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.FORCE);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_CONSUM_REDUCE))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_CONSUM_REDUCE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.M_CONSUME);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_REGEN))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_REGEN))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.M_REGEN);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.SHIELD_REGEN))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.SHIELD_REGEN))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.S_REGEN);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.SHIELD_VALUE))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.SHIELD_VALUE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.S_CAPACITY);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.TRACE))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.TRACE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.TRACE);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.CHAOS_THEOREM))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.CHAOS_THEOREM))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.CHAOS);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_CONVERT))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_CONVERT))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.CONVERT);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_RANGE))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_RANGE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.RANGE);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MANA_TICK))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MANA_TICK))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.TICK);
-                else if(effectInstance.getEffectName().equals("effect.magickcore." + LibEffect.MULTI_RELEASE))
+                else if(effectInstance.getDescriptionId().equals("effect.magickcore." + LibEffect.MULTI_RELEASE))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.MULTI);
             });
 
-            player.inventory.mainInventory.forEach(itemStack -> {
+            player.inventory.items.forEach(itemStack -> {
                 String name = itemStack.getItem().getRegistryName() != null ? itemStack.getItem().getRegistryName().toString() : "";
                 if(name.contains(Items.POTION.toString()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.POTION_TYPE);

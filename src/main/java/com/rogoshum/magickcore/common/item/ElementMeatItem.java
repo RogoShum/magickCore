@@ -15,20 +15,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
+import net.minecraft.item.Item.Properties;
+
 public class ElementMeatItem extends ElementContainerItem{
     public ElementMeatItem(Properties builder) {
         super(builder);
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if (tag.contains("ELEMENT")) {
             MagickContext attribute = new MagickContext(worldIn).victim(entityLiving).applyType(ApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(600).force(2);
             attribute.addChild(TraceContext.create(entityLiving));
             MagickReleaseHelper.releaseMagick(attribute.noCost());
         }
-        return super.onItemUseFinish(stack, worldIn, entityLiving);
+        return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 
     @Override

@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity extends Entity {
     @Shadow
-    private LivingEntity attackTarget;
+    private LivingEntity target;
 
     public MixinMobEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -30,40 +30,42 @@ public abstract class MixinMobEntity extends Entity {
     protected double range;
 
     @Shadow
-    public abstract void setAttackTarget(LivingEntity livingEntity);
+    public abstract void setTarget(LivingEntity livingEntity);
 
     @Shadow
-    public abstract LivingEntity getAttackTarget();
+    public abstract LivingEntity getTarget();
 
     @Shadow
-    public abstract PathNavigator getNavigator();
+    public abstract PathNavigator getNavigation();
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void onTick(CallbackInfo info) {
         LivingEntity entity = null;
         TakenEntityData taken = ExtraDataUtil.takenEntityData(this);
-        if(taken != null && taken.getTime() > 0 && this.world instanceof ServerWorld) {
+        if(taken != null && taken.getTime() > 0 && this.level instanceof ServerWorld) {
             range = taken.getRange();
-            entity = (LivingEntity) ((ServerWorld)this.world).getEntityByUuid(taken.getOwnerUUID());
+            entity = (LivingEntity) ((ServerWorld)this.level).getEntity(taken.getOwnerUUID());
         }
         host = entity;
-        if(host != null && getAttackTarget() == null && this.rand.nextInt(80) == 1) {
-            LivingEntity target = host.getAttackingEntity();
+        if(host != null && getTarget() == null && this.random.nextInt(80) == 1) {
+            LivingEntity target = host.getLastHurtMob();
+            if(target == null)
+                target = host.getLastHurtByMob();
             if(target != null)
-                setAttackTarget(target);
+                setTarget(target);
             else
-                getNavigator().tryMoveToEntityLiving(host, 1);
+                getNavigation().moveTo(host, 1);
         }
     }
 
-    @Inject(method = "getAttackTarget", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getTarget", at = @At("RETURN"), cancellable = true)
     public void onGetAttackTarget(CallbackInfoReturnable<LivingEntity> cir) {
         if(cir.getReturnValue() != null) {
-            attackTarget = TakenTargetUtil.decideChangeTarget(this, host, cir.getReturnValue(), this.range);
-            cir.setReturnValue(attackTarget);
+            target = TakenTargetUtil.decideChangeTarget(this, host, cir.getReturnValue(), this.range);
+            cir.setReturnValue(target);
         } else {
-            attackTarget = TakenTargetUtil.getTakenTarget(this, range);
-            cir.setReturnValue(attackTarget);
+            target = TakenTargetUtil.getTakenTarget(this, range);
+            cir.setReturnValue(target);
         }
     }
 

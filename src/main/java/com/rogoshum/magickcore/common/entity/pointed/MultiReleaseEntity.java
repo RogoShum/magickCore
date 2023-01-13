@@ -31,23 +31,23 @@ import java.util.function.Predicate;
 
 public class MultiReleaseEntity extends ManaEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/multi_release.png");
-    private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(MultiReleaseEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> TARGET = EntityDataManager.defineId(MultiReleaseEntity.class, DataSerializers.INT);
     protected Entity target;
     protected ManaFactor former;
     public MultiReleaseEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        dataManager.register(TARGET, -1);
+        entityData.define(TARGET, -1);
     }
 
     @Override
     public void tick() {
-        if(world.isRemote) {
-            target = world.getEntityByID(dataManager.get(TARGET));
+        if(level.isClientSide) {
+            target = level.getEntity(entityData.get(TARGET));
         } else {
             if(target != null)
-                dataManager.set(TARGET, target.getEntityId());
+                entityData.set(TARGET, target.getId());
             else
-                dataManager.set(TARGET, -1);
+                entityData.set(TARGET, -1);
         }
         super.tick();
     }
@@ -74,17 +74,17 @@ public class MultiReleaseEntity extends ManaEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         } else
-            direction = getLookVec();
+            direction = getLookAngle();
 
         if(!spellContext().valid()) return false;
 
         if(spellContext().force >= 1) {
-            Vector3d[] vectors = ParticleUtil.drawCone(this.getPositionVec().add(0, getHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range, (int) (spellContext().force + 1));
+            Vector3d[] vectors = ParticleUtil.drawCone(this.position().add(0, getBbHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range, (int) (spellContext().force + 1));
             for (Vector3d vector : vectors) {
-                Vector3d dir = vector.subtract(this.getPositionVec().add(0, getHeight() * 0.5, 0)).normalize();
-                MagickContext context = MagickContext.create(((Entity)this).world, spellContext().postContext)
+                Vector3d dir = vector.subtract(this.position().add(0, getBbHeight() * 0.5, 0)).normalize();
+                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                         .replenishChild(RemoveHurtTimeContext.create())
                         .replenishChild(ExtraManaFactorContext.create(getManaFactor()))
                         .<MagickContext>replenishChild(DirectionContext.create(dir))
@@ -93,14 +93,14 @@ public class MultiReleaseEntity extends ManaEntity {
                 MagickReleaseHelper.releaseMagick(beforeCast(context));
             }
         } else {
-            MagickContext context = MagickContext.create(((Entity)this).world, spellContext().postContext)
+            MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                     .<MagickContext>replenishChild(DirectionContext.create(direction))
                     .caster(getOwner()).projectile((Entity) this)
                     .victim(target).noCost();
             MagickReleaseHelper.releaseMagick(beforeCast(context));
         }
         remove();
-        ParticleUtil.spawnImpactParticle(world, this.getPositionVec(), 1, direction.normalize().scale(0.2), spellContext().element, ParticleType.PARTICLE);
+        ParticleUtil.spawnImpactParticle(level, this.position(), 1, direction.normalize().scale(0.2), spellContext().element, ParticleType.PARTICLE);
         return true;
     }
 

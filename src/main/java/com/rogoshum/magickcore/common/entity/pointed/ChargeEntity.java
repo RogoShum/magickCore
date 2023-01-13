@@ -40,16 +40,16 @@ import java.util.function.Supplier;
 
 public class ChargeEntity extends ManaEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/charge.png");
-    private static final DataParameter<Integer> TARGET = EntityDataManager.createKey(ChargeEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Vector3d> FORMER = EntityDataManager.createKey(ChargeEntity.class, ModDataSerializers.VECTOR3D);
+    private static final DataParameter<Integer> TARGET = EntityDataManager.defineId(ChargeEntity.class, DataSerializers.INT);
+    private static final DataParameter<Vector3d> FORMER = EntityDataManager.defineId(ChargeEntity.class, ModDataSerializers.VECTOR3D);
     protected float charge;
     protected Entity target;
     private ManaFactor former;
 
     public ChargeEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        dataManager.register(TARGET, -1);
-        dataManager.register(FORMER, new Vector3d(1, 1, 1));
+        entityData.define(TARGET, -1);
+        entityData.define(FORMER, new Vector3d(1, 1, 1));
     }
 
     public Entity getTarget() {
@@ -63,20 +63,20 @@ public class ChargeEntity extends ManaEntity {
     }
 
     public Vector3d getFormer() {
-        return dataManager.get(FORMER);
+        return entityData.get(FORMER);
     }
 
     public void setFormer(Vector3d vec) {
-        dataManager.set(FORMER, vec);
+        entityData.set(FORMER, vec);
     }
 
     @Override
     protected void makeSound() {
         if(spellContext().element == ModElements.SOLAR) {
-            if(this.ticksExisted == 1)
-                this.world.playMovingSound(null, this, ModSounds.explosion.get(), this.getSoundCategory(), 0.2f, 1.0f);
-        } else if(ticksExisted % 20 == 0) {
-            float pitch = (float)ticksExisted / (float)spellContext().tick;
+            if(this.tickCount == 1)
+                this.level.playSound(null, this, ModSounds.explosion.get(), this.getSoundSource(), 0.2f, 1.0f);
+        } else if(tickCount % 20 == 0) {
+            float pitch = (float)tickCount / (float)spellContext().tick;
             if(Float.isNaN(pitch))
                 pitch = 0.0f;
             pitch *=2;
@@ -86,7 +86,7 @@ public class ChargeEntity extends ManaEntity {
 
     @Override
     public boolean releaseMagick() {
-        if(world.isRemote) {
+        if(level.isClientSide) {
             Vector3d former = getFormer();
             this.former = ManaFactor.create((float) former.x, (float) former.y, (float) former.z);
         } else if(former != null) {
@@ -95,26 +95,26 @@ public class ChargeEntity extends ManaEntity {
         if(spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
             Entity entity = traceContext.entity;
-            if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.world.isRemote) {
-                entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+            if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.level.isClientSide) {
+                entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
                 traceContext.entity = entity;
             } else if(entity != null && entity.isAlive()) {
-                Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
-                Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+                Vector3d goal = new Vector3d(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ());
+                Vector3d self = new Vector3d(this.getX(), this.getY(), this.getZ());
                 spellContext().addChild(DirectionContext.create(goal.subtract(self).normalize()));
             }
         }
 
         charge+=0.001f * spellContext().force;
-        if(world.isRemote) {
-            target = world.getEntityByID(dataManager.get(TARGET));
+        if(level.isClientSide) {
+            target = level.getEntity(entityData.get(TARGET));
         } else {
             if(target != null && !target.isAlive())
                 target = null;
             if(target != null)
-                dataManager.set(TARGET, target.getEntityId());
+                entityData.set(TARGET, target.getId());
             else
-                dataManager.set(TARGET, -1);
+                entityData.set(TARGET, -1);
         }
         return false;
     }
@@ -134,7 +134,7 @@ public class ChargeEntity extends ManaEntity {
                     pass = false;
             }
             if(pass) {
-                MagickContext context = MagickContext.create(this.world, spellContext().postContext)
+                MagickContext context = MagickContext.create(this.level, spellContext().postContext)
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getOwner()).projectile(this)
                         .victim(living).noCost();
@@ -183,24 +183,24 @@ public class ChargeEntity extends ManaEntity {
 
     @Override
     protected void applyParticle() {
-        double width = (this.getWidth()+charge) * 0.75;
-        LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * width + this.getPosX()
-                , MagickCore.getNegativeToOne() * width + this.getPosY() + this.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * width + this.getPosZ())
+        double width = (this.getBbWidth()+charge) * 0.75;
+        LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * width + this.getX()
+                , MagickCore.getNegativeToOne() * width + this.getY() + this.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * width + this.getZ())
                 , charge, charge, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
-        Vector3d direction = this.getPositionVec().add(0, this.getHeight() * 0.5, 0).subtract(par.positionVec()).scale(0.1);
+        Vector3d direction = this.position().add(0, this.getBbHeight() * 0.5, 0).subtract(par.positionVec()).scale(0.1);
         par.addMotion(direction.x, direction.y, direction.z);
         par.setParticleGravity(0f);
         par.setShakeLimit(15f);
         MagickCore.addMagickParticle(par);
 
         if(target == null) return;
-        LitParticle litPar = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * target.getWidth() * 0.25 + target.getPosX()
-                , MagickCore.getNegativeToOne() * target.getWidth() * 0.25 + target.getPosY() + target.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * target.getWidth() * 0.25 + target.getPosZ())
+        LitParticle litPar = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getX()
+                , MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getY() + target.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getZ())
                 , charge * 0.5f, charge * 0.5f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
         litPar.setGlow();
         litPar.setParticleGravity(0f);
@@ -208,14 +208,14 @@ public class ChargeEntity extends ManaEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
 
-        if(target != null && spellContext().tick - ticksExisted < 6) {
-            int distance = Math.max((int) (2 * target.getPositionVec().distanceTo(this.getPositionVec())), 1);
-            Vector3d end = this.getPositionVec().add(0, this.getHeight() * 0.5, 0);
-            Vector3d start = target.getPositionVec().add(0, target.getHeight() * 0.5, 0);
+        if(target != null && spellContext().tick - tickCount < 6) {
+            int distance = Math.max((int) (2 * target.position().distanceTo(this.position())), 1);
+            Vector3d end = this.position().add(0, this.getBbHeight() * 0.5, 0);
+            Vector3d start = target.position().add(0, target.getBbHeight() * 0.5, 0);
             for (int i = 0; i < distance; i++) {
                 double trailFactor = i / (distance - 1.0D);
                 Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
-                par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
+                par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
                         , new Vector3d(pos.x, pos.y, pos.z), charge * 0.5f, charge * 0.5f, 1.0f, 1, spellContext().element.getRenderer());
                 par.setParticleGravity(0);
                 par.setLimitScale();

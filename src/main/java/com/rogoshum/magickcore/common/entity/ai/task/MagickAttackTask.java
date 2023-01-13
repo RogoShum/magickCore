@@ -29,40 +29,40 @@ public class MagickAttackTask<T extends LivingEntity> extends Task<T> {
         this.range = range;
     }
 
-    protected boolean shouldExecute(ServerWorld worldIn, T owner) {
+    protected boolean checkExtraStartConditions(ServerWorld worldIn, T owner) {
         if(!(owner instanceof IManaTaskMob)) return false;
         boolean hasFight = ((IManaTaskMob) owner).conditionSpellMap().containsKey(Activity.FIGHT);
         if(!hasFight) return false;
 
         LivingEntity livingentity = this.getAttackTarget(owner);
         if(livingentity == null) return false;
-        return owner.getDistanceSq(livingentity) <= range * range && BrainUtil.isMobVisible(owner, livingentity);
+        return owner.distanceToSqr(livingentity) <= range * range && BrainUtil.canSee(owner, livingentity);
     }
 
-    protected void startExecuting(ServerWorld worldIn, T entityIn, long gameTimeIn) {
+    protected void start(ServerWorld worldIn, T entityIn, long gameTimeIn) {
         if(!(entityIn instanceof IManaTaskMob)) return;
         LivingEntity livingentity = this.getAttackTarget(entityIn);
         if(livingentity == null) return;
-        BrainUtil.lookAt(entityIn, livingentity);
-        entityIn.swingArm(Hand.MAIN_HAND);
+        BrainUtil.lookAtEntity(entityIn, livingentity);
+        entityIn.swing(Hand.MAIN_HAND);
         Queue<SpellContext> contextQueue = ((IManaTaskMob) entityIn).conditionSpellMap().get(Activity.REST);
         for (SpellContext context : contextQueue) {
             if (!context.containChild(LibContext.CONDITION)) continue;
             ConditionContext condition = context.getChild(LibContext.CONDITION);
             if (condition.test(entityIn, entityIn)) {
-                MagickContext magickContext = MagickContext.create(entityIn.world, context).caster(entityIn).victim(entityIn).noCost();
+                MagickContext magickContext = MagickContext.create(entityIn.level, context).caster(entityIn).victim(entityIn).noCost();
                 if (MagickReleaseHelper.releaseMagick(magickContext))
                     return;
             }
         }
 
         contextQueue = ((IManaTaskMob) entityIn).conditionSpellMap().get(Activity.FIGHT);
-        entityIn.getBrain().replaceMemory(MemoryModuleType.ATTACK_COOLING_DOWN, true, (long)this.cooldown);
+        entityIn.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, (long)this.cooldown);
         for (SpellContext context : contextQueue) {
             if (!context.containChild(LibContext.CONDITION)) continue;
             ConditionContext condition = context.getChild(LibContext.CONDITION);
             if (condition.test(entityIn, livingentity)) {
-                MagickContext magickContext = MagickContext.create(entityIn.world, context).caster(entityIn).victim(livingentity).noCost();
+                MagickContext magickContext = MagickContext.create(entityIn.level, context).caster(entityIn).victim(livingentity).noCost();
                 if (MagickReleaseHelper.releaseMagick(magickContext))
                     return;
             }

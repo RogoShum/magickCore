@@ -32,16 +32,16 @@ import java.util.function.Supplier;
 
 public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaCapacity {
     private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
-    private static final DataParameter<Boolean> TYPE = EntityDataManager.createKey(ManaElementOrbEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> TYPE = EntityDataManager.defineId(ManaElementOrbEntity.class, DataSerializers.BOOLEAN);
     public ManaElementOrbEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
-        this.dataManager.register(TYPE, false);
+        this.entityData.define(TYPE, false);
     }
 
     @Override
     protected void makeSound() {
-        if(!this.world.isRemote && this.ticksExisted == 1) {
-            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F - this.rand.nextFloat());
+        if(!this.level.isClientSide && this.tickCount == 1) {
+            this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.0F, 1.0F - this.random.nextFloat());
         }
     }
 
@@ -57,7 +57,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
 
     @Override
     public void normalCollision() {
-        List<Entity> list = world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0.5), entity -> entity instanceof LivingEntity && entity.isAlive());
+        List<Entity> list = level.getEntities(this, this.getBoundingBox().inflate(0.5), entity -> entity instanceof LivingEntity && entity.isAlive());
         if(!list.isEmpty()) {
             Entity entity = list.get(0);
             EntityStateData state = ExtraDataUtil.entityStateData(entity);
@@ -70,23 +70,23 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     }
 
     public boolean getOrbType() {
-        return this.dataManager.get(TYPE);
+        return this.entityData.get(TYPE);
     }
 
     public void setOrbType(boolean type) {
-        this.dataManager.set(TYPE, type);
+        this.entityData.set(TYPE, type);
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
         manaCapacity().deserialize(compound);
-        super.readAdditional(compound);
+        super.readAdditionalSaveData(compound);
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         manaCapacity().serialize(compound);
-        super.writeAdditional(compound);
+        super.addAdditionalSaveData(compound);
     }
 
     @Override
@@ -122,13 +122,13 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
 
     @Override
     protected void applyParticle() {
-        int count = (int) (20 * getWidth());
+        int count = (int) (20 * getBbWidth());
         for (int i = 0; i < count; ++i) {
-            LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                    , new Vector3d(this.getPosX() + 0.1 * MagickCore.getNegativeToOne()
-                    , this.getPosY() + 0.1 * MagickCore.getNegativeToOne() + this.getHeight() / 2
-                    , this.getPosZ() + 0.1 * MagickCore.getNegativeToOne())
-                    , 0.3f * getWidth(), 0.3f * getWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+                    , new Vector3d(this.getX() + 0.1 * MagickCore.getNegativeToOne()
+                    , this.getY() + 0.1 * MagickCore.getNegativeToOne() + this.getBbHeight() / 2
+                    , this.getZ() + 0.1 * MagickCore.getNegativeToOne())
+                    , 0.3f * getBbWidth(), 0.3f * getBbWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -138,7 +138,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0.0F;
     }
 }

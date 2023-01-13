@@ -32,7 +32,7 @@ public class ManaOrbEntity extends ManaProjectileEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
+        if (this.tickCount == 1) {
             this.playSound(ModSounds.gatorix_spawn.get(), 0.25F, 2.0F);
         }
     }
@@ -54,11 +54,11 @@ public class ManaOrbEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
-                , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
-                , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
-                , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.2f * getWidth(), 0.2f * getWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
+                , new Vector3d(this.xOld + (this.getX() - this.xOld) * partialTicks
+                , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
+                , this.zOld + (this.getZ() - this.zOld) * partialTicks)
+                , 0.2f * getBbWidth(), 0.2f * getBbWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

@@ -32,13 +32,13 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
         if(entity.spellContext().containChild(LibContext.ITEM)) {
             ItemContext context = entity.spellContext().getChild(LibContext.ITEM);
             if(context.valid()) {
-                float f3 = ((float)entity.ticksExisted + params.partialTicks) / 20.0F;
-                params.matrixStack.rotate(Vector3f.YP.rotation(f3));
-                params.matrixStack.push();
-                IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(params.buffer);
-                Minecraft.getInstance().getItemRenderer().renderItem(context.itemStack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, params.matrixStack, renderTypeBuffer);
-                renderTypeBuffer.finish();
-                params.matrixStack.pop();
+                float f3 = ((float)entity.tickCount + params.partialTicks) / 20.0F;
+                params.matrixStack.mulPose(Vector3f.YP.rotation(f3));
+                params.matrixStack.pushPose();
+                IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(params.buffer);
+                Minecraft.getInstance().getItemRenderer().renderStatic(context.itemStack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, params.matrixStack, renderTypeBuffer);
+                renderTypeBuffer.endBatch();
+                params.matrixStack.popPose();
             }
         }
     }
@@ -46,7 +46,7 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
     @Override
     public void update() {
         super.update();
-        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
+        entity.renderFrame(Minecraft.getInstance().getFrameTime());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(TYPE), (renderParams) -> {
             baseOffset(renderParams.matrixStack);
-            renderParams.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+            renderParams.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
         });
         map.put(RenderMode.ORIGIN_RENDER, this::renderItem);

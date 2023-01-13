@@ -18,7 +18,7 @@ public class ManaEntityRenderer extends EntityRenderer<ManaEntity> {
 	}
 
 	@Override
-	protected int getBlockLight(ManaEntity entityIn, BlockPos partialTicks) {
+	protected int getBlockLightLevel(ManaEntity entityIn, BlockPos partialTicks) {
 		return 15;
 	}
 
@@ -34,7 +34,7 @@ public class ManaEntityRenderer extends EntityRenderer<ManaEntity> {
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(ManaEntity entity) {
+	public ResourceLocation getTextureLocation(ManaEntity entity) {
 		return blankTex;
 	}
 }

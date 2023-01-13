@@ -32,8 +32,8 @@ public class RayEntity extends ManaProjectileEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.glitter_another.get(), 0.25F, 1.0F - this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.glitter_another.get(), 0.25F, 1.0F - this.random.nextFloat());
         }
     }
 
@@ -55,11 +55,11 @@ public class RayEntity extends ManaProjectileEntity {
     @Override
     protected void applyParticle() {
         for (int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                    , (MagickCore.getRandFloat() * this.getWidth()), (MagickCore.getRandFloat() * this.getWidth()), 1.0f, 20, spellContext().element.getRenderer());
+            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
+                    , (MagickCore.getRandFloat() * this.getBbWidth()), (MagickCore.getRandFloat() * this.getBbWidth()), 1.0f, 20, spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setShakeLimit(15.0f);
             litPar.setLimitScale();
@@ -68,7 +68,7 @@ public class RayEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0;
     }
 

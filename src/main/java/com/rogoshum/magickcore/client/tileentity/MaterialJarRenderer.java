@@ -26,17 +26,17 @@ public class MaterialJarRenderer extends TileEntityRenderer<MaterialJarTileEntit
 
     @Override
     public void render(MaterialJarTileEntity tile, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.6f, 0.99f, 0.6f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
 /*
         matrixStackIn.push();
@@ -48,22 +48,22 @@ public class MaterialJarRenderer extends TileEntityRenderer<MaterialJarTileEntit
  */
 
         if(!tile.getStack().isEmpty()) {
-            matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-            matrixStackIn.push();
+            matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+            matrixStackIn.pushPose();
             matrixStackIn.translate(0, 0.3, 0);
             matrixStackIn.scale(0.01f, 0.01f, .01f);
-            matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(180));
+            matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(180));
             String count = String.valueOf(tile.getCount());
-            Minecraft.getInstance().fontRenderer.drawString(matrixStackIn, count, -count.length()*3, 2, 0);
-            matrixStackIn.pop();
+            Minecraft.getInstance().font.draw(matrixStackIn, count, -count.length()*3, 2, 0);
+            matrixStackIn.popPose();
             matrixStackIn.translate(0, -0.2f, 0);
             //matrixStackIn.scale(0.5f, 0.5f,0.5f);
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tile.getStack(), null, null);
-            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-            Minecraft.getInstance().getItemRenderer().renderItem(tile.getStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-            renderTypeBuffer.finish();
+            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(tile.getStack(), null, null);
+            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+            Minecraft.getInstance().getItemRenderer().render(tile.getStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            renderTypeBuffer.endBatch();
         }
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

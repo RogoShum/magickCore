@@ -35,8 +35,8 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
         Vector2f rota = getRotationFromVector(dir);
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y + 90));
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y + 90));
         if(!vector3dList.isEmpty())
             RenderHelper.renderPoint(
                     BufferContext.create(params.matrixStack, params.buffer, TYPE)
@@ -55,7 +55,7 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
         if(this.vector3dList.isEmpty()) {
             scale = entity.getRange();
             List<Vector3d> vector3dList = new ArrayList<>();
-            Vector3d[] vectors = ParticleUtil.drawCone(Vector3d.ZERO, new Vector3d(Direction.UP.toVector3f()).scale(scale), 90.0, (int) Math.max(3, scale) * 2);
+            Vector3d[] vectors = ParticleUtil.drawCone(Vector3d.ZERO, new Vector3d(Direction.UP.step()).scale(scale), 90.0, (int) Math.max(3, scale) * 2);
             for (Vector3d vec : vectors) {
                 vector3dList.add(vec);
                 vector3dList.add(Vector3d.ZERO);

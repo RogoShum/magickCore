@@ -21,11 +21,11 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
     protected static final ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind.png");
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
-        matrixStackIn.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
-        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().world);
-        ContextPointerEntity pointer = ModEntities.CONTEXT_POINTER.get().create(Minecraft.getInstance().world);
+        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().level);
+        ContextPointerEntity pointer = ModEntities.CONTEXT_POINTER.get().create(Minecraft.getInstance().level);
         if(entity instanceof ContextPointerEntity)
             pointer = (ContextPointerEntity) entity;
         float alpha = 0.5f - MagickCore.proxy.getRunTick() % 100 / 100f;
@@ -34,29 +34,29 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
             alpha = 0.8f;
 
         float c = MagickCore.proxy.getRunTick() % 30;
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 29)));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 29)));
 
-        float height = 0.2f + pointer.getHeight();
+        float height = 0.2f + pointer.getBbHeight();
         float radius = 0.25f;
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
-                        wind, pointer.getHeight(), 0f))
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+                        wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
 
-        height = pointer.getHeight() - 0.2f;
+        height = pointer.getBbHeight() - 0.2f;
         alpha = 1.0f;
         matrixStackIn.translate(0, 0.2, 0);
         radius = 0.5f;
         context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
-                        wind, pointer.getHeight(), 0f))
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+                        wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
         matrixStackIn.translate(0, -0.2, 0);
         radius = 0.4f;
         context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedCylinderGlint(
-                        wind, pointer.getHeight(), 0f))
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+                        wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

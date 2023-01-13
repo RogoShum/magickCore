@@ -30,13 +30,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import static net.minecraft.client.renderer.entity.LivingRenderer.getPackedOverlay;
-
 @Mixin(LivingRenderer.class)
 public abstract class MixinLivingRender<T extends LivingEntity, M extends EntityModel<T>>{
 
     @Shadow
-    protected final List<LayerRenderer<T, M>> layerRenderers = Lists.newArrayList();
+    protected final List<LayerRenderer<T, M>> layers = Lists.newArrayList();
     @Inject(
             method = "net/minecraft/client/renderer/entity/LivingRenderer.render (Lnet/minecraft/entity/LivingEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V",
             at = @At(
@@ -45,7 +43,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
             )
     )
     public void onRender(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, CallbackInfo callbackInfo) {
-        boolean flag = this.isVisible(entityIn);
+        boolean flag = this.isBodyVisible(entityIn);
         if(!flag) return;
 
         EntityStateData state = ExtraDataUtil.entityStateData(entityIn);
@@ -61,7 +59,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor());
             }
         }
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         if (color.r() > 0.0f || color.g() > 0.0f || color.b() > 0.0f) {
             renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, color, RenderHelper.SPHERE_ROTATE);
         }
@@ -83,11 +81,11 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
         for(ManaBuff buff : buffMap.values()) {
             renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getColor(), RenderHelper.RES_ITEM_GLINT);
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     public void onRenderLayer(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, CallbackInfo ci) {
-        boolean flag = this.isVisible(entityIn);
+        boolean flag = this.isBodyVisible(entityIn);
         if(!flag) return;
         if (entityIn.isSpectator()) return;
 
@@ -104,7 +102,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
                 color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor());
             }
         }
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         if (color.r() > 0.0f || color.g() > 0.0f || color.b() > 0.0f) {
             renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, color, RenderHelper.SPHERE_ROTATE);
         }
@@ -126,37 +124,37 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
         for(ManaBuff buff : buffMap.values()) {
             renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getColor(), RenderHelper.RES_ITEM_GLINT);
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     public void renderBuffLayer(T entityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, Color color, ResourceLocation texture) {
         RenderType rendertype = RenderHelper.getLayerEntityGlint(texture, 1.0f, 10f);
         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(rendertype);
-        int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
-        getEntityModel().render(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
+        int i = LivingRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
     }
 
     public void renderBuffLayerSolid(T entityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, Color color, ResourceLocation texture) {
         RenderType rendertype = RenderHelper.getLayerEntityGlintSolid(texture, 1.5f, 10f);
         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(rendertype);
-        int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
-        getEntityModel().render(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
+        int i = LivingRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
     }
 
     public void renderBuffLayerLayer(T entityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, Color color, ResourceLocation texture) {
-        float f6 = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
-        float f = MathHelper.interpolateAngle(partialTicks, entityIn.prevRenderYawOffset, entityIn.renderYawOffset);
-        float f1 = MathHelper.interpolateAngle(partialTicks, entityIn.prevRotationYawHead, entityIn.rotationYawHead);
+        float f6 = MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot);
+        float f = MathHelper.rotLerp(partialTicks, entityIn.yBodyRotO, entityIn.yBodyRot);
+        float f1 = MathHelper.rotLerp(partialTicks, entityIn.yHeadRotO, entityIn.yHeadRot);
         float f2 = f1 - f;
-        boolean shouldSit = entityIn.isPassenger() && (entityIn.getRidingEntity() != null && entityIn.getRidingEntity().shouldRiderSit());
-        float f7 = this.handleRotationFloat(entityIn, partialTicks);
+        boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+        float f7 = this.getBob(entityIn, partialTicks);
 
         float f8 = 0.0F;
         float f5 = 0.0F;
         if (!shouldSit && entityIn.isAlive()) {
-            f8 = MathHelper.lerp(partialTicks, entityIn.prevLimbSwingAmount, entityIn.limbSwingAmount);
-            f5 = entityIn.limbSwing - entityIn.limbSwingAmount * (1.0F - partialTicks);
-            if (entityIn.isChild()) {
+            f8 = MathHelper.lerp(partialTicks, entityIn.animationSpeedOld, entityIn.animationSpeed);
+            f5 = entityIn.animationPosition - entityIn.animationSpeed * (1.0F - partialTicks);
+            if (entityIn.isBaby()) {
                 f5 *= 3.0F;
             }
 
@@ -164,9 +162,9 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
                 f8 = 1.0F;
             }
         }
-        if (shouldSit && entityIn.getRidingEntity() instanceof LivingEntity) {
-            LivingEntity livingentity = (LivingEntity)entityIn.getRidingEntity();
-            f = MathHelper.interpolateAngle(partialTicks, livingentity.prevRenderYawOffset, livingentity.renderYawOffset);
+        if (shouldSit && entityIn.getVehicle() instanceof LivingEntity) {
+            LivingEntity livingentity = (LivingEntity)entityIn.getVehicle();
+            f = MathHelper.rotLerp(partialTicks, livingentity.yBodyRotO, livingentity.yBodyRot);
             f2 = f1 - f;
             float f3 = MathHelper.wrapDegrees(f2);
             if (f3 < -85.0F) {
@@ -186,14 +184,14 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
         }
 
         SingleBuffer RENDER_TYPE_BUFFER = new SingleBuffer(RenderHelper::getLayerEntityGlint, texture);
-        for(LayerRenderer<T, M> layerrenderer : this.layerRenderers) {
+        for(LayerRenderer<T, M> layerrenderer : this.layers) {
             layerrenderer.render(matrixStackIn, RENDER_TYPE_BUFFER, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);
         }
         RENDER_TYPE_BUFFER.finish();
     }
 
     @Shadow
-    protected abstract float handleRotationFloat(T livingBase, float partialTicks);
+    protected abstract float getBob(T livingBase, float partialTicks);
 
     public Color getColorBlender(int time, Color preColor, Color blend) {
         float[] newColor = new float[3];
@@ -212,11 +210,11 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
     }
 
     @Shadow
-    protected abstract float getOverlayProgress(T livingEntityIn, float partialTicks);
+    protected abstract float getWhiteOverlayProgress(T livingEntityIn, float partialTicks);
 
     @Shadow
-    public abstract M getEntityModel();
+    public abstract M getModel();
 
     @Shadow
-    protected abstract boolean isVisible(T livingEntityIn);
+    protected abstract boolean isBodyVisible(T livingEntityIn);
 }

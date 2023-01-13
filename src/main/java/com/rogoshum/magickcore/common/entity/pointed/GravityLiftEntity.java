@@ -33,8 +33,8 @@ import java.util.function.Supplier;
 public class GravityLiftEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/gravity_lift.png");
     public final Predicate<Entity> inCylinder = (entity -> {
-        Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        return this.getDistanceSq(pos) <= liftHeight() * liftHeight() && rightDirection(pos);
+        Vector3d pos = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
+        return this.distanceToSqr(pos) <= liftHeight() * liftHeight() && rightDirection(pos);
     });
     public GravityLiftEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -58,11 +58,11 @@ public class GravityLiftEntity extends ManaPointEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.random.nextFloat());
         }
-        this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 0.3F, 2.0f);
-        this.playSound(SoundEvents.ENTITY_BEE_POLLINATE, 1.2F, 0.0f);
+        this.playSound(SoundEvents.BEE_POLLINATE, 0.3F, 2.0f);
+        this.playSound(SoundEvents.BEE_POLLINATE, 1.2F, 0.0f);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class GravityLiftEntity extends ManaPointEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(liftHeight()),
+        return this.level.getEntities(this, this.getBoundingBox().inflate(liftHeight()),
                 predicate != null ? predicate.and(inCylinder)
                         : inCylinder);
     }
@@ -94,15 +94,15 @@ public class GravityLiftEntity extends ManaPointEntity {
     protected void applyParticle() {
         if(!spellContext().containChild(LibContext.DIRECTION)) return;
         Vector3d dir = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        double x = getPositionVec().x;
-        double y = getPositionVec().y;
-        double z = getPositionVec().z;
+        double x = position().x;
+        double y = position().y;
+        double z = position().z;
         for (int i = 0; i < 5; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 0.5f * this.getWidth() + x
-                    , MagickCore.getNegativeToOne() * 0.5f * this.getWidth() + y + 1f
-                    , MagickCore.getNegativeToOne() * 0.5f * this.getWidth() + z)
-                    , getWidth() * 0.5f, getWidth() * 0.5f, 0.2f, (int) (spellContext().range * 3), MagickCore.proxy.getElementRender(spellContext().element.type()));
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + x
+                    , MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + y + 1f
+                    , MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + z)
+                    , getBbWidth() * 0.5f, getBbWidth() * 0.5f, 0.2f, (int) (spellContext().range * 3), MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.addMotion(dir.x, dir.y, dir.z);
             par.setLimitScale();
             par.setShakeLimit(15);
@@ -111,11 +111,11 @@ public class GravityLiftEntity extends ManaPointEntity {
         }
         LitParticle par;
         for (int i = 0; i < 4; ++i) {
-            par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 0.25f * this.getWidth() + x
-                    , MagickCore.getNegativeToOne() * 0.25f * this.getWidth() + y + 1f
-                    , MagickCore.getNegativeToOne() * 0.25f * this.getWidth() + z)
-                    , getWidth() * 0.35f, getWidth() * 0.35f, 0.3f, (int) (spellContext().range), MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + x
+                    , MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + y + 1f
+                    , MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + z)
+                    , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.3f, (int) (spellContext().range), MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.addMotion(dir.x, dir.y, dir.z);
             par.setLimitScale();
             par.setCanCollide(false);
@@ -125,12 +125,12 @@ public class GravityLiftEntity extends ManaPointEntity {
         }
 
         for (int i = 0; i < 6; ++i) {
-            par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 3f * this.getWidth() + x
+            par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 3f * this.getBbWidth() + x
                     , MagickCore.getNegativeToOne() * 3f + y + 1f
-                    , MagickCore.getNegativeToOne() * 3f * this.getWidth() + z)
-                    , getWidth() * 0.35f, getWidth() * 0.35f, 0.2f, 7, MagickCore.proxy.getElementRender(spellContext().element.type()));
-            Vector3d direction = this.getPositionVec().add(0, 1, 0).subtract(par.positionVec()).scale(0.2);
+                    , MagickCore.getNegativeToOne() * 3f * this.getBbWidth() + z)
+                    , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.2f, 7, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            Vector3d direction = this.position().add(0, 1, 0).subtract(par.positionVec()).scale(0.2);
             par.addMotion(direction.x, direction.y, direction.z);
             par.setNoScale();
             par.setShakeLimit(15);
@@ -140,7 +140,7 @@ public class GravityLiftEntity extends ManaPointEntity {
         }
 
         for (int i = 0; i < 2; ++i) {
-            par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
+            par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
                     , new Vector3d(+ x
                     , y + 1f
                     , z)
@@ -154,10 +154,10 @@ public class GravityLiftEntity extends ManaPointEntity {
             MagickCore.addMagickParticle(par);
         }
 
-        par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5f + x
+        par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5f + x
                 , y + 1f
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5f + z)
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5f + z)
                 , 0.05f, 0.05f, 1.0f, (int) (spellContext().range * 4), MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.addMotion(dir.x, dir.y, dir.z);
         par.setLimitScale();
@@ -174,7 +174,7 @@ public class GravityLiftEntity extends ManaPointEntity {
     }
 
     public float liftHeight() {
-        return getHeight() + spellContext().range * 2;
+        return getBbHeight() + spellContext().range * 2;
     }
 
     public boolean rightDirection(Vector3d vec) {
@@ -182,13 +182,13 @@ public class GravityLiftEntity extends ManaPointEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         }
         if(direction == null || direction.equals(Vector3d.ZERO)) return false;
-        boolean forward = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction)) <= 0;
+        boolean forward = (this.position().subtract(vec).normalize().dot(direction)) <= 0;
         if(!forward) return false;
 
-        return this.getPositionVec().subtract(vec).crossProduct(direction).length() < 1.5f;
+        return this.position().subtract(vec).cross(direction).length() < 1.5f;
     }
 
     @Override

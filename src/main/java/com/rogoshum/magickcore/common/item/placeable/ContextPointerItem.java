@@ -17,26 +17,26 @@ import net.minecraft.world.World;
 
 public class ContextPointerItem extends EntityItem {
     public ContextPointerItem() {
-        super(properties().maxStackSize(32).setISTER(() -> ContextPointerRenderer::new));
+        super(properties().stacksTo(32).setISTER(() -> ContextPointerRenderer::new));
     }
 
     @Override
     public void placeEntity(BlockItemUseContext context) {
-        BlockPos blockpos = context.getPos();
-        World world = context.getWorld();
+        BlockPos blockpos = context.getClickedPos();
+        World world = context.getLevel();
         PlayerEntity playerentity = context.getPlayer();
-        ItemStack itemstack = context.getItem();
-        Entity createEntity = NBTTagHelper.createEntityByItem(context.getItem(), world);
+        ItemStack itemstack = context.getItemInHand();
+        Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ContextPointerEntity contextPointer = ModEntities.CONTEXT_POINTER.get().create(world);
         if(createEntity instanceof ContextPointerEntity)
             contextPointer = (ContextPointerEntity) createEntity;
-        Vector3d pos = Vector3d.copyCentered(blockpos);
-        contextPointer.setPosition(pos.x, pos.y - 0.5, pos.z);
+        Vector3d pos = Vector3d.atCenterOf(blockpos);
+        contextPointer.setPos(pos.x, pos.y - 0.5, pos.z);
         contextPointer.setOwner(playerentity);
-        if (playerentity == null || !playerentity.abilities.isCreativeMode) {
+        if (playerentity == null || !playerentity.abilities.instabuild) {
             itemstack.shrink(1);
         }
-        world.addEntity(contextPointer);
+        world.addFreshEntity(contextPointer);
     }
 
     @Override

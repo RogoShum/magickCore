@@ -42,7 +42,7 @@ public class EntityTypeCondition extends EntityCondition{
 
     @Override
     protected void deserialize(CompoundNBT tag) {
-        Optional<EntityType<?>> entityType = EntityType.byKey(tag.getString("ENTITY_TYPE"));
+        Optional<EntityType<?>> entityType = EntityType.byString(tag.getString("ENTITY_TYPE"));
         entityType.ifPresent(type -> this.entityType = type);
     }
 
@@ -50,7 +50,7 @@ public class EntityTypeCondition extends EntityCondition{
     public String toString() {
         if(entityType == null)
             return "";
-        return new TranslationTextComponent(entityType.getTranslationKey()).getString();
+        return new TranslationTextComponent(entityType.getDescriptionId()).getString();
     }
 
     @Override

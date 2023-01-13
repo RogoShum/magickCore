@@ -45,7 +45,7 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
     }
 
     public boolean isRemote() {
-        return tile.getWorld().isRemote();
+        return tile.getLevel().isClientSide();
     }
 
     public Vector3d getEntityRenderVector(float partialTicks) {
@@ -54,31 +54,31 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
 
     @Override
     public void update() {
-        Vector3d vec = getEntityRenderVector(Minecraft.getInstance().getRenderPartialTicks());
+        Vector3d vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
         x = vec.x;
         y = vec.y;
         z = vec.z;
     }
 
     public void baseOffset(MatrixStack matrixStackIn) {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         matrixStackIn.translate(x - camX, y - camY, z - camZ);
     }
 
     @Override
     public boolean alive() {
-        return !tile.isRemoved() && tile.hasWorld() && tile.getWorld() == Minecraft.getInstance().world;
+        return !tile.isRemoved() && tile.hasLevel() && tile.getLevel() == Minecraft.getInstance().level;
     }
 
     @Override
     public AxisAlignedBB boundingBox() {
-        return new AxisAlignedBB(tile.getPos());
+        return new AxisAlignedBB(tile.getBlockPos());
     }
 
     @Override
     public Vector3d positionVec() {
-        return Vector3d.copyCentered(tile.getPos());
+        return Vector3d.atCenterOf(tile.getBlockPos());
     }
 
     @Override

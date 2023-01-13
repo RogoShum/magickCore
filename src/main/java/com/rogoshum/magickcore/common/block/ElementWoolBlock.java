@@ -20,6 +20,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class ElementWoolBlock extends BaseBlock{
     public ElementWoolBlock(Properties properties) {
         super(properties);
@@ -48,10 +50,10 @@ public class ElementWoolBlock extends BaseBlock{
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-        Vector3d pos = builder.get(LootParameters.field_237457_g_);
+        Vector3d pos = builder.getOptionalParameter(LootParameters.ORIGIN);
         if(pos == null) return super.getDrops(state, builder);
         BlockPos blockPos = new BlockPos(pos.x, pos.y, pos.z);
-        TileEntity tileentity = builder.getWorld().getTileEntity(blockPos);
+        TileEntity tileentity = builder.getLevel().getBlockEntity(blockPos);
         if (tileentity instanceof ElementWoolTileEntity) {
             ElementWoolTileEntity tile = (ElementWoolTileEntity)tileentity;
             return tile.getDrops();
@@ -60,12 +62,12 @@ public class ElementWoolBlock extends BaseBlock{
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        TileEntity tileentity = worldIn.getBlockEntity(pos);
         if (!player.isCreative() && tileentity instanceof ElementWoolTileEntity) {
             ElementWoolTileEntity tile = (ElementWoolTileEntity)tileentity;
             tile.dropItem();
         }
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.playerWillDestroy(worldIn, pos, state, player);
     }
 }

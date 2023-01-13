@@ -18,22 +18,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public class MixinWorldRender {
 
-    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "net/minecraft/client/shader/ShaderGroup.render (F)V", ordinal = 1))
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "net/minecraft/client/shader/ShaderGroup.process (F)V", ordinal = 1))
     public void onFabulousRender(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci) {
         RenderHelper.setRenderingWorld(true);
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         RenderHelper.setRenderingWorld(false);
     }
 
-    @Inject(method = "updateCameraAndRender", at = @At(value = "TAIL"))
+    @Inject(method = "renderLevel", at = @At(value = "TAIL"))
     public void onNormalRender(MatrixStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, ActiveRenderInfo activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci) {
-        if (Minecraft.isFabulousGraphicsEnabled()) return;
+        if (Minecraft.useShaderTransparency()) return;
         RenderHelper.setRenderingWorld(true);
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
-        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
+        MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         RenderHelper.setRenderingWorld(false);
     }
 }

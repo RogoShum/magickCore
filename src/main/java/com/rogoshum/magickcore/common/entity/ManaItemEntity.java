@@ -13,9 +13,9 @@ public class ManaItemEntity extends ItemEntity {
 
     public ManaItemEntity(World worldIn, double x, double y, double z) {
         this(EntityType.ITEM, worldIn);
-        this.setPosition(x, y, z);
-        this.rotationYaw = this.rand.nextFloat() * 360.0F;
-        this.setMotion(this.rand.nextDouble() * 0.2D - 0.1D, 0.02D, this.rand.nextDouble() * 0.2D - 0.1D);
+        this.setPos(x, y, z);
+        this.yRot = this.random.nextFloat() * 360.0F;
+        this.setDeltaMovement(this.random.nextDouble() * 0.2D - 0.1D, 0.02D, this.random.nextDouble() * 0.2D - 0.1D);
     }
 
     public ManaItemEntity(World worldIn, double x, double y, double z, ItemStack stack) {
@@ -32,16 +32,16 @@ public class ManaItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean isImmuneToFire() {
+    public boolean fireImmune() {
         return true;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if(source.getTrueSource() != null)
-            source.getTrueSource().attackEntityFrom(source, amount * 0.9f);
-        else if(source.getImmediateSource() != null)
-            source.getImmediateSource().attackEntityFrom(source, amount * 0.9f);
+    public boolean hurt(DamageSource source, float amount) {
+        if(source.getEntity() != null)
+            source.getEntity().hurt(source, amount * 0.9f);
+        else if(source.getDirectEntity() != null)
+            source.getDirectEntity().hurt(source, amount * 0.9f);
         return false;
     }
 

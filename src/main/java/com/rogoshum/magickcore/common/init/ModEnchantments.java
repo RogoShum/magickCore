@@ -9,6 +9,8 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import net.minecraft.enchantment.Enchantment.Rarity;
+
 public class ModEnchantments {
     public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, MagickCore.MOD_ID);
     public static RegistryObject<Enchantment> ELEMENT_DEPRIVATION = ENCHANTMENTS.register(LibEnchantment.ELEMENT_DEPRIVATION, () -> new ElementDeprivationEnchantment(Enchantment.Rarity.UNCOMMON, EnchantmentType.WEAPON, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND}));
@@ -18,11 +20,11 @@ public class ModEnchantments {
             super(rarityIn, typeIn, slots);
         }
 
-        public int getMinEnchantability(int enchantmentLevel) {
+        public int getMinCost(int enchantmentLevel) {
             return 10;
         }
 
-        public int getMaxEnchantability(int enchantmentLevel) {
+        public int getMaxCost(int enchantmentLevel) {
             return 1000;
         }
 

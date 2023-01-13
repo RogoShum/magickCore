@@ -24,8 +24,8 @@ import net.minecraft.util.math.vector.Vector3i;
 import java.util.OptionalDouble;
 
 public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTileEntity> {
-    private static final RenderType TYPE = RenderType.makeType(MagickCore.MOD_ID + "_lines", DefaultVertexFormats.POSITION_COLOR, 1, 256
-            , RenderType.State.getBuilder().transparency(new RenderState.TransparencyState("magick_translucent_transparency", () -> {
+    private static final RenderType TYPE = RenderType.create(MagickCore.MOD_ID + "_lines", DefaultVertexFormats.POSITION_COLOR, 1, 256
+            , RenderType.State.builder().setTransparencyState(new RenderState.TransparencyState("magick_translucent_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
@@ -33,7 +33,7 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
-    })).line(new RenderState.LineState(OptionalDouble.of(5))).build(false));
+    })).setLineState(new RenderState.LineState(OptionalDouble.of(5))).createCompositeState(false));
 
     public MagickCraftingRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -42,29 +42,29 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
     @Override
     public void render(MagickCraftingTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float alpha = Math.min(tileEntityIn.ticksExisted / 30f, 1.0f);
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5f, 0.001f, 0.5f);
         RenderType type = RenderHelper.getTexedCylinderGlint(RenderHelper.ripple_5, 0.5f, 0);
-        matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(180));
+        matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(180));
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.9f, 1.2f, 2f, 2.4f, 16
                 , 0, 0.2f * alpha, 0.4f, Color.BLUE_COLOR);
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), context);
-        matrixStackIn.rotate(Vector3f.YN.rotationDegrees(90));
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), context);
+        matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(90));
         type = RenderHelper.getTexedCylinderGlint(RenderHelper.ripple_4, 10, 0);
         context = new RenderHelper.CylinderContext(1.4f, 1.2f, 3f, 1.6f, 16
                 , 0.5f * alpha, alpha, 1f, Color.BLUE_COLOR);
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), context);
-        matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90));
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), context);
+        matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(90));
         matrixStackIn.scale(1.3f, 1.3f, 1f);
         type = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (tileEntityIn.ticksExisted % 10) + ".png"));
-        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), new RenderHelper.RenderContext(0.3f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(0.3f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
         matrixStackIn.scale(1.17f, 1.17f, 1f);
         type = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
-        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), new RenderHelper.RenderContext(0.2f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
-        matrixStackIn.pop();
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(0.2f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
+        matrixStackIn.popPose();
 
-        Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        double dis = view.distanceTo(Vector3d.copyCentered(tileEntityIn.getPos()));
+        Vector3d view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        double dis = view.distanceTo(Vector3d.atCenterOf(tileEntityIn.getBlockPos()));
         if(dis > 5) return;
         float baseAlpha = (float) ((5f - dis) * 0.1f);
 
@@ -92,7 +92,7 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
     }
 
     public void renderCube(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, Vector3i offset, Color color, float alpha) {
-        WorldRenderer.drawBoundingBox(matrixStackIn, bufferIn.getBuffer(TYPE), new AxisAlignedBB(BlockPos.ZERO)
-                .grow(-0.66666).offset(offset.getX() * 0.333, offset.getY() * 0.333 - 0.333, offset.getZ() * 0.333), color.r(), color.g(), color.b(), alpha);
+        WorldRenderer.renderLineBox(matrixStackIn, bufferIn.getBuffer(TYPE), new AxisAlignedBB(BlockPos.ZERO)
+                .inflate(-0.66666).move(offset.getX() * 0.333, offset.getY() * 0.333 - 0.333, offset.getZ() * 0.333), color.r(), color.g(), color.b(), alpha);
     }
 }

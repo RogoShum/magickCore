@@ -22,21 +22,21 @@ public class PlaceableItemEntityRenderer extends EntityRenderer<PlaceableItemEnt
 	@Override
 	public void render(PlaceableItemEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-		if(entityIn.getDirection().getAxis().isVertical() && entityIn.getDirection().getAxisDirection().getOffset() == -1) {
-			matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+		if(entityIn.getDirection().getAxis().isVertical() && entityIn.getDirection().getAxisDirection().getStep() == -1) {
+			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
 		} else if(entityIn.getDirection().getAxis().equals(Direction.Axis.X)) {
-			matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(entityIn.getDirection().toVector3f().getX() * 90));
+			matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(entityIn.getDirection().step().x() * 90));
 		} else if(entityIn.getDirection().getAxis().equals(Direction.Axis.Z)) {
-			matrixStackIn.rotate(Vector3f.XP.rotationDegrees(entityIn.getDirection().toVector3f().getZ() * 90));
+			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityIn.getDirection().step().z() * 90));
 		}
-		matrixStackIn.push();
-		IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(entityIn.getItemStack(), entityIn.world, (LivingEntity)null);
-		Minecraft.getInstance().getItemRenderer().renderItem(entityIn.getItemStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
-		matrixStackIn.pop();
+		matrixStackIn.pushPose();
+		IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getModel(entityIn.getItemStack(), entityIn.level, (LivingEntity)null);
+		Minecraft.getInstance().getItemRenderer().render(entityIn.getItemStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
+		matrixStackIn.popPose();
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(PlaceableItemEntity entity) {
+	public ResourceLocation getTextureLocation(PlaceableItemEntity entity) {
 		return null;
 	}
 }

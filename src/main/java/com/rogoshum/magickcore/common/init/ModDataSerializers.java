@@ -19,12 +19,12 @@ public class ModDataSerializers {
         public void write(PacketBuffer buf, ManaCapacity value) {
             CompoundNBT tag = new CompoundNBT();
             value.serialize(tag);
-            buf.writeCompoundTag(tag);
+            buf.writeNbt(tag);
         }
 
         @Override
         public ManaCapacity read(PacketBuffer buf) {
-            CompoundNBT tag = buf.readCompoundTag();
+            CompoundNBT tag = buf.readNbt();
             ManaCapacity capacity = ManaCapacity.create(tag);
             if(capacity == null)
                 return new ManaCapacity(0);
@@ -32,7 +32,7 @@ public class ModDataSerializers {
         }
 
         @Override
-        public ManaCapacity copyValue(ManaCapacity value) {
+        public ManaCapacity copy(ManaCapacity value) {
             CompoundNBT tag = new CompoundNBT();
             value.serialize(tag);
             ManaCapacity capacity = ManaCapacity.create(tag);
@@ -47,17 +47,17 @@ public class ModDataSerializers {
         public void write(PacketBuffer buf, SpellContext value) {
             CompoundNBT tag = new CompoundNBT();
             value.serialize(tag);
-            buf.writeCompoundTag(tag);
+            buf.writeNbt(tag);
         }
 
         @Override
         public SpellContext read(PacketBuffer buf) {
-            CompoundNBT tag = buf.readCompoundTag();
+            CompoundNBT tag = buf.readNbt();
             return SpellContext.create(tag);
         }
 
         @Override
-        public SpellContext copyValue(SpellContext value) {
+        public SpellContext copy(SpellContext value) {
             CompoundNBT tag = new CompoundNBT();
             value.serialize(tag);
             return SpellContext.create(tag);
@@ -78,7 +78,7 @@ public class ModDataSerializers {
         }
 
         @Override
-        public Vector3d copyValue(Vector3d value) {
+        public Vector3d copy(Vector3d value) {
             return new Vector3d(value.x, value.y, value.z);
         }
     };

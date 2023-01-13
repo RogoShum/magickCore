@@ -12,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
+import net.minecraft.item.Item.Properties;
+
 public class SpiritCrystalRingItem extends ManaItem implements ICurioItem, IManaContextItem {
     public SpiritCrystalRingItem(Properties properties) {
         super(properties);

@@ -24,13 +24,13 @@ public class ItemExtractorRenderer extends ItemStackTileEntityRenderer {
     private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 0.1f, 0f);
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer typeBufferIn, int combinedLight, int combinedOverlay) {
-        matrixStackIn.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer typeBufferIn, int combinedLight, int combinedOverlay) {
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5F, 0.5F, 0.5F);
-        BufferBuilder bufferIn = Tessellator.getInstance().getBuffer();
+        BufferBuilder bufferIn = Tessellator.getInstance().getBuilder();
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
         //RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight));
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

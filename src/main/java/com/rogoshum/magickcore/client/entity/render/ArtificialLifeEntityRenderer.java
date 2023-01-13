@@ -43,7 +43,7 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 	}
 
 	@Override
-	protected int getBlockLight(ArtificialLifeEntity entityIn, BlockPos partialTicks) {
+	protected int getBlockLightLevel(ArtificialLifeEntity entityIn, BlockPos partialTicks) {
 		return 15;
 	}
 
@@ -51,32 +51,32 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 	public void render(ArtificialLifeEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 		if(entityIn.deathTime <= 0 && entityIn.isFocus()) {
-			matrixStackIn.push();
+			matrixStackIn.pushPose();
 			matrixStackIn.translate(0, entityIn.getEyeHeight(), 0);
 			if(entityIn.getVectorSet().isEmpty()) {
 				matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-				Vector3d direction = Vector3d.copy(entityIn.getDirection().getOpposite().getDirectionVec());
+				Vector3d direction = Vector3d.atLowerCornerOf(entityIn.getDirection().getOpposite().getNormal());
 				Vector2f rota = EasyRenderer.getRotationFromVector(direction);
-				matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
-				matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+				matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+				matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
 				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
 				matrixStackIn.translate(0, 0.98f, 0);
-				matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
-				RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
+				matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+				RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			} else {
 				matrixStackIn.scale(0.98f, 0.98f, 0.98f);
 				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
-				RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
+				RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			}
-			matrixStackIn.pop();
+			matrixStackIn.popPose();
 		}
 		if(ITEM == null)
 			ITEM = new ItemStack(ModItems.ARTIFICIAL_LIFE.get());
 		ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
 		ExtraDataUtil.itemManaData(stack).spellContext().copy(entityIn.spellContext());
-		float f3 = ((float)entityIn.ticksExisted + partialTicks) / 20.0F;
-		matrixStackIn.push();
-		matrixStackIn.translate(0, entityIn.getHeight() * 0.25, 0);
+		float f3 = ((float)entityIn.tickCount + partialTicks) / 20.0F;
+		matrixStackIn.pushPose();
+		matrixStackIn.translate(0, entityIn.getBbHeight() * 0.25, 0);
 		if(entityIn.deathTime > 0) {
 			float f4 = (20 - entityIn.deathTime) * 0.05f;
 			if(f4 < 0)
@@ -85,16 +85,16 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 				f4 = 1;
 			matrixStackIn.scale(1, f4, 1);
 		}
-		matrixStackIn.push();
-		matrixStackIn.rotate(Vector3f.YP.rotation(f3));
-		Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
-		matrixStackIn.pop();
-		matrixStackIn.push();
-		matrixStackIn.translate(0, -entityIn.getHeight() * 0.5, 0);
+		matrixStackIn.pushPose();
+		matrixStackIn.mulPose(Vector3f.YP.rotation(f3));
+		Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
+		matrixStackIn.popPose();
+		matrixStackIn.pushPose();
+		matrixStackIn.translate(0, -entityIn.getBbHeight() * 0.5, 0);
 		matrixStackIn.scale(4, 4, 4);
-		Minecraft.getInstance().getItemRenderer().renderItem(ITEM, ItemCameraTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
-		matrixStackIn.pop();
-		matrixStackIn.pop();
+		Minecraft.getInstance().getItemRenderer().renderStatic(ITEM, ItemCameraTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
+		matrixStackIn.popPose();
+		matrixStackIn.popPose();
 
 		if(!RenderHelper.showDebug()) return;
 		String information = entityIn.spellContext().toString();
@@ -108,25 +108,25 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 			if (s.length() > contextLength)
 				contextLength = s.length();
 		}
-		matrixStackIn.push();
-		matrixStackIn.translate(0, entityIn.getHeight()*2, 0);
-		matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+		matrixStackIn.pushPose();
+		matrixStackIn.translate(0, entityIn.getBbHeight()*2, 0);
+		matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
 		matrixStackIn.scale(0.015f, 0.015f, 0.015f);
-		matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(180));
+		matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(180));
 		matrixStackIn.translate(-contextLength, debugSpellContext.length * -4, 0);
 		for (int i = 0; i < debugSpellContext.length; ++i) {
 			String tip = debugSpellContext[i];
 			if(!tip.isEmpty()) {
-				matrixStackIn.push();
-				Minecraft.getInstance().fontRenderer.drawString(matrixStackIn, tip, 0, i*8, 0);
-				matrixStackIn.pop();
+				matrixStackIn.pushPose();
+				Minecraft.getInstance().font.draw(matrixStackIn, tip, 0, i*8, 0);
+				matrixStackIn.popPose();
 			}
 		}
-		matrixStackIn.pop();
+		matrixStackIn.popPose();
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(ArtificialLifeEntity entity) {
+	public ResourceLocation getTextureLocation(ArtificialLifeEntity entity) {
 		return TEXTURE;
 	}
 }

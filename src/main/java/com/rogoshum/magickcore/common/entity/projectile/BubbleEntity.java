@@ -59,22 +59,22 @@ public class BubbleEntity extends ManaProjectileEntity {
     @Override
     protected void applyParticle() {
         if(isInWater()) return;
-        float partial = Minecraft.getInstance().getRenderPartialTicks();
-        double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
-        double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
-        double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        float partial = Minecraft.getInstance().getFrameTime();
+        double x = MathHelper.lerp(partial, this.xOld, this.getX());
+        double y = MathHelper.lerp(partial, this.yOld, this.getY());
+        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
 
-        LitParticle par = new LitParticle(this.world, ICON
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + x
-                , MagickCore.getNegativeToOne() * this.getWidth() / 2 + y + this.getHeight() / 2
-                , MagickCore.getNegativeToOne() * this.getWidth() / 2 + z)
+        LitParticle par = new LitParticle(this.level, ICON
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + x
+                , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + y + this.getBbHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + z)
                 , scale, scale, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setParticleGravity(0f);
         par.setGlow();
         par.setShakeLimit(5f);
         par.setNoScale();
-        par.addMotion(getMotion().x * 0.2, getMotion().y * 0.2, getMotion().z * 0.2);
+        par.addMotion(getDeltaMovement().x * 0.2, getDeltaMovement().y * 0.2, getDeltaMovement().z * 0.2);
         MagickCore.addMagickParticle(par);
     }
 }

@@ -41,11 +41,11 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
         double d2 = direction.z;
         double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
         Entity entity = (Entity) this;
-        entity.rotationPitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(d1, d3) * (double)(180F / (float)Math.PI))));
-        entity.rotationYaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F);
-        entity.setRotationYawHead(entity.rotationYaw);
-        entity.prevRotationPitch = entity.rotationPitch;
-        entity.prevRotationYaw = entity.rotationYaw;
+        entity.xRot = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(d1, d3) * (double)(180F / (float)Math.PI))));
+        entity.yRot = MathHelper.wrapDegrees((float)(MathHelper.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F);
+        entity.setYHeadRot(entity.yRot);
+        entity.xRotO = entity.xRot;
+        entity.yRotO = entity.yRot;
     }
 
     default boolean releaseMagick() {
@@ -63,7 +63,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
                     pass = false;
             }
             if(pass) {
-                MagickContext context = MagickContext.create(((Entity)this).world, spellContext().postContext)
+                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getOwner()).projectile((Entity) this)
                         .victim(living).noCost();
@@ -104,7 +104,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
     }
 
     default Vector3d getPostDirection(Entity entity) {
-        return entity.getPositionVec().add(0, entity.getHeight() * 0.75, 0).subtract(((Entity) this).getPositionVec().add(0, ((Entity) this).getHeight() * 0.5, 0));
+        return entity.position().add(0, entity.getBbHeight() * 0.75, 0).subtract(((Entity) this).position().add(0, ((Entity) this).getBbHeight() * 0.5, 0));
     }
 
     @OnlyIn(Dist.CLIENT)

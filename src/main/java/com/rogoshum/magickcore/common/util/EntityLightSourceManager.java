@@ -21,7 +21,7 @@ public class EntityLightSourceManager {
     private static final List<ILightSourceEntity> lightList = new ArrayList<>();
 
     public static void tick(LogicalSide side) {
-        if(side.isClient() && Minecraft.getInstance().world == null) return;
+        if(side.isClient() && Minecraft.getInstance().level == null) return;
 
         for (int i = 0; i < lightList.size(); ++i) {
             ILightSourceEntity entity = lightList.get(i);
@@ -40,7 +40,7 @@ public class EntityLightSourceManager {
     }
 
     public static ILightSourceEntity getPosLighting(World world, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if(tile instanceof GlowAirTileEntity) {
             return ((GlowAirTileEntity) tile).getLight();
         }
@@ -58,21 +58,21 @@ public class EntityLightSourceManager {
         boolean done = false;
         if (block.equals(Blocks.AIR)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.FAKE_AIR.get().withLight((int) entity.getSourceLight()));
+            entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.CAVE_AIR)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.FAKE_CAVE_AIR.get().withLight((int) entity.getSourceLight()));
+            entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_CAVE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.WATER)) {
             done = true;
-            entity.world().setBlockState(pos, ModBlocks.FAKE_WATER.get().withLightAndFluid((int) entity.getSourceLight(), entity.world().getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
+            entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_WATER.get().withLightAndFluid((int) entity.getSourceLight(), entity.world().getBlockState(pos).getValue(FlowingFluidBlock.LEVEL)));
         }
 
         if(done) {
-            TileEntity tile = entity.world().getTileEntity(pos);
+            TileEntity tile = entity.world().getBlockEntity(pos);
             if(tile instanceof GlowAirTileEntity) {
                 ((GlowAirTileEntity) tile).setLight(entity);
                 ((GlowAirTileEntity) tile).setState(state);

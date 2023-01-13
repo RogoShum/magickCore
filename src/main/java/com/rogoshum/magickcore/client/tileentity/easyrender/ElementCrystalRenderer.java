@@ -30,38 +30,38 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
     public void render(RenderParams renderParams) {
         MatrixStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        BufferBuilder buffer = Tessellator.getInstance().getBuilder();
         RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(1.0f, color);
         matrixStackIn.translate(0, -0.1, 0);
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.0, 0.0, 0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.0, 0.0, -0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, 0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
     public void update() {
         super.update();
-        int age = tile.getWorld().getBlockState(tile.getPos()).get(CropsBlock.AGE);
+        int age = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(CropsBlock.AGE);
         ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + Integer.toString(age) + ".png");
         TYPE = RenderHelper.getTexedOrbGlow(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);

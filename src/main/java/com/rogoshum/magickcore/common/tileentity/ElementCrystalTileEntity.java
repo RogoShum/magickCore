@@ -39,8 +39,8 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
     }
 
     @Override
@@ -49,26 +49,26 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
     }
 
     public void dropItem() {
-        if(age == 6 && world.rand.nextInt(2) == 0)
+        if(age == 6 && level.random.nextInt(2) == 0)
             dropCrystal();
 
         if(age == 7) {
             dropCrystal();
-            if(world.rand.nextInt(2) == 0)
+            if(level.random.nextInt(2) == 0)
                 dropCrystal();
         }
     }
 
     public List<ItemStack> getDrops() {
-        age = world.getBlockState(getPos()).get(CropsBlock.AGE);
-        if(this.world.isRemote || age != 7) return Collections.emptyList();
+        age = level.getBlockState(getBlockPos()).getValue(CropsBlock.AGE);
+        if(this.level.isClientSide || age != 7) return Collections.emptyList();
         ArrayList<ItemStack> stacks = new ArrayList<>();
         ItemStack stack = new ItemStack(ModItems.ELEMENT_CRYSTAL.get());
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ELEMENT", eType);
         stack.setTag(tag);
         stacks.add(stack);
-        if(world.rand.nextInt(4) > 0) {
+        if(level.random.nextInt(4) > 0) {
             stack = new ItemStack(ModItems.ELEMENT_CRYSTAL_SEEDS.get());
             tag = new CompoundNBT();
             tag.putString("ELEMENT", eType);
@@ -79,45 +79,45 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
     }
 
     private void dropCrystal() {
-        if(this.world.isRemote) return;
+        if(this.level.isClientSide) return;
         ItemStack stack = new ItemStack(ModItems.ELEMENT_CRYSTAL.get());
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ELEMENT", eType);
         stack.setTag(tag);
 
-        ItemEntity entity = new ItemEntity(world, this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
+        ItemEntity entity = new ItemEntity(level, this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.5, this.worldPosition.getZ() + 0.5);
         entity.setItem(stack);
-        entity.setPickupDelay(20);
-        world.addEntity(entity);
+        entity.setPickUpDelay(20);
+        level.addFreshEntity(entity);
 
-        if(world.rand.nextInt(4) > 0) {
+        if(level.random.nextInt(4) > 0) {
             spawnElementOrb();
-            if(world.rand.nextBoolean())
+            if(level.random.nextBoolean())
                 spawnElementOrb();
         }
     }
 
     private void spawnElementOrb() {
-        ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), world);
-        orb.setPosition(this.pos.getX() + 0.5 * world.rand.nextFloat(), this.pos.getY() + 0.5, this.pos.getZ() + 0.5 * world.rand.nextFloat());
+        ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), level);
+        orb.setPos(this.worldPosition.getX() + 0.5 * level.random.nextFloat(), this.worldPosition.getY() + 0.5, this.worldPosition.getZ() + 0.5 * level.random.nextFloat());
         orb.spellContext().element(MagickRegistry.getElement(eType));
         orb.spellContext().tick(200);
         orb.manaCapacity().setMana(5);
         orb.setOrbType(true);
-        world.addEntity(orb);
+        level.addFreshEntity(orb);
     }
 
-    private void updateInfo() { world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
+    private void updateInfo() { level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
 
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
     }
 
     @Override
@@ -133,27 +133,27 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT compound) {
+    public void load(BlockState state, CompoundNBT compound) {
         this.eType = compound.getString("TYPE");
-        super.read(state, compound);
+        super.load(state, compound);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putString("TYPE", this.eType);
-        return super.write(compound);
+        return super.save(compound);
     }
 
     @Override
     public void tick() {
-        age = world.getBlockState(getPos()).get(CropsBlock.AGE);
-        if(!world.isRemote) return;
+        age = level.getBlockState(getBlockPos()).getValue(CropsBlock.AGE);
+        if(!level.isClientSide) return;
 
         float scale = age / 100f;
         ElementRenderer renderer = MagickCore.proxy.getElementRender(this.eType);
 
-        LitParticle par = new LitParticle(this.world, renderer.getParticleTexture()
-                , new Vector3d(pos.getX() + 0.5 + MagickCore.getNegativeToOne() * 0.5, pos.getY() + 0.5 + MagickCore.getNegativeToOne() * 0.5, pos.getZ() + 0.5 + MagickCore.getNegativeToOne() * 0.5)
+        LitParticle par = new LitParticle(this.level, renderer.getParticleTexture()
+                , new Vector3d(worldPosition.getX() + 0.5 + MagickCore.getNegativeToOne() * 0.5, worldPosition.getY() + 0.5 + MagickCore.getNegativeToOne() * 0.5, worldPosition.getZ() + 0.5 + MagickCore.getNegativeToOne() * 0.5)
                 , scale, scale, MagickCore.getNegativeToOne(), 20, renderer);
         par.setParticleGravity(0);
         par.setGlow();
@@ -168,12 +168,12 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
 
     @Override
     public boolean alive() {
-        return !this.removed;
+        return !this.remove;
     }
 
     @Override
     public Vector3d positionVec() {
-        return Vector3d.copyCentered(this.getPos());
+        return Vector3d.atCenterOf(this.getBlockPos());
     }
 
     @Override
@@ -183,7 +183,7 @@ public class ElementCrystalTileEntity extends TileEntity implements ITickableTil
 
     @Override
     public World world() {
-        return this.getWorld();
+        return this.getLevel();
     }
 
     @Override

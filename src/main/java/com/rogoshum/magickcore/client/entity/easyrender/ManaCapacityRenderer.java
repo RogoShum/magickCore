@@ -30,13 +30,13 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.getWidth() * 0.999f;
-        if(entity.ticksExisted == 0)
+        scale = entity.getBbWidth() * 0.999f;
+        if(entity.tickCount == 0)
             scale *= 0;
-        else if(entity.ticksExisted < 30)
-            scale *= 1f - 1f / (float)entity.ticksExisted;
+        else if(entity.tickCount < 30)
+            scale *= 1f - 1f / (float)entity.tickCount;
 
-        lightmap = Minecraft.getInstance().getRenderManager().getPackedLight(entity, Minecraft.getInstance().getRenderPartialTicks());
+        lightmap = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(entity, Minecraft.getInstance().getFrameTime());
     }
 
     public void render(RenderParams params) {
@@ -51,7 +51,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
         float scale = entity.manaCapacity().getMana() / entity.manaCapacity().getMaxMana() * this.scale;
         matrixStackIn.scale(scale, scale, scale);
         for (int i = 0; i < 2; ++i) {
@@ -59,7 +59,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
                 RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), lightmap));
             else
                 RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), lightmap));
-            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         }
     }
 

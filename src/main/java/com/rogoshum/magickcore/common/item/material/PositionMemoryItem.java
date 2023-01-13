@@ -75,7 +75,7 @@ public class PositionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         if(stack.hasTag() && NBTTagHelper.hasVectorDouble(stack.getTag(), "position"))
             tooltip.add(new StringTextComponent(
@@ -85,20 +85,20 @@ public class PositionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        NBTTagHelper.putVectorDouble(context.getItem().getOrCreateTag(), "position", Vector3d.copyCentered(context.getPos()));
-        context.getWorld().playSound(null, context.getPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
+    public ActionResultType useOn(ItemUseContext context) {
+        NBTTagHelper.putVectorDouble(context.getItemInHand().getOrCreateTag(), "position", Vector3d.atCenterOf(context.getClickedPos()));
+        context.getLevel().playSound(null, context.getClickedPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if(playerIn.isSneaking() && itemstack.hasTag()) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if(playerIn.isShiftKeyDown() && itemstack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "position"))
                 NBTTagHelper.removeVectorDouble(itemstack.getTag(), "position");
-            return ActionResult.resultSuccess(itemstack);
+            return ActionResult.success(itemstack);
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 }

@@ -26,7 +26,7 @@ public class DistanceCondition extends EntityCondition{
         if(!((LivingEntity) entity).getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).isPresent())
             return false;
         LivingEntity target = ((LivingEntity) entity).getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).get();
-        return entity.getDistanceSq(target) <= distance * distance;
+        return entity.distanceToSqr(target) <= distance * distance;
     }
 
     @Override

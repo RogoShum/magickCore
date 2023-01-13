@@ -162,7 +162,7 @@ public class SpellContext {
         tagHelper.ifContainInt("TICK", (i) -> tick = i);
         tagHelper.ifContainFloat("RANGE", (i) -> range = i);
         tagHelper.ifContainFloat("FORCE", (f) -> force = f);
-        tagHelper.ifContainNBT("CHILD_CONTEXT", (nbt) -> nbt.keySet().forEach(s -> {
+        tagHelper.ifContainNBT("CHILD_CONTEXT", (nbt) -> nbt.getAllKeys().forEach(s -> {
             ChildContext context = MagickRegistry.getChildContext(s);
             if(context != null) {
                 CompoundNBT childTag = nbt.getCompound(s);

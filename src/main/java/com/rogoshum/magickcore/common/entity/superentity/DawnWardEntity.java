@@ -51,7 +51,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     public void tick() {
         super.tick();
 
-        if(this.ticksExisted <= 15)
+        if(this.tickCount <= 15)
             return;
         initial = true;
     }
@@ -63,11 +63,11 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     protected void applyParticle() {
-        if(this.ticksExisted % 2 == 0 && this.world.isRemote) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
+        if(this.tickCount % 2 == 0 && this.level.isClientSide) {
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                     , 0.2f, 0.2f, 0.9f, 50, this.spellContext().element.getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
@@ -76,37 +76,37 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1)
+        if(this.tickCount == 1)
         {
-            this.playSound(ModSounds.dawnward_spawn.get(), 2.0F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.dawnward_spawn.get(), 2.0F, 1.0F - this.random.nextFloat());
         }
 
-        if(this.ticksExisted % 10 == 0)
+        if(this.tickCount % 10 == 0)
         {
-            this.playSound(ModSounds.wall_ambience.get(), 0.2F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.wall_ambience.get(), 0.2F, 1.0F - this.random.nextFloat());
         }
     }
 
     @Override
-    public boolean canCollide(Entity entity) {
+    public boolean canCollideWith(Entity entity) {
         return !(entity instanceof PlayerEntity) && testBoundingBox(entity);
     }
 
     @Override
-    public boolean func_241845_aY() {
+    public boolean canBeCollidedWith() {
         return false;
     }
 
     @Override
     protected void collideWithNearbyEntities() {
         if(!initial) return;
-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox().grow(2));
+        List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(2));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
 
                 if(testBoundingBox(entity))
-                    this.applyEntityCollision(entity);
+                    this.push(entity);
             }
         }
     }
@@ -134,28 +134,28 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     public boolean testBoundingBoxPoint(double x, double y, double z) {
         boolean flag = false;
         Vector3d vec = new Vector3d(x, y, z);
-        Vector3d center = new Vector3d(this.getPosX(), this.getPosY() + this.getHeight() / 2, this.getPosZ());
+        Vector3d center = new Vector3d(this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ());
 
-        if(vec.subtract(center).length() <= (this.getWidth() / 2) + 0.25)
+        if(vec.subtract(center).length() <= (this.getBbWidth() / 2) + 0.25)
             flag = true;
         return flag;
     }
 
     @Override
-    public void applyEntityCollision(Entity entityIn) {
+    public void push(Entity entityIn) {
         if(MagickReleaseHelper.sameLikeOwner(this.getOwner(), entityIn)) {
             if(entityIn instanceof LivingEntity) {
-                MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
+                MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
                 MagickReleaseHelper.releaseMagick(context);
-                ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
+                ((LivingEntity) entityIn).addEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
             }
             return;
         }
 
-        Vector3d vec = new Vector3d(this.getPosX() - entityIn.getPosX(), (this.getPosY() + this.getHeight() / 2) - (entityIn.getPosY() + entityIn.getHeight() / 2), this.getPosZ() - entityIn.getPosZ());
-        hitReactions.put(entityIn.getEntityId(), new VectorHitReaction(vec.normalize()));
-        double d0 = entityIn.getPosX() - this.getPosX();
-        double d1 = entityIn.getPosZ() - this.getPosZ();
+        Vector3d vec = new Vector3d(this.getX() - entityIn.getX(), (this.getY() + this.getBbHeight() / 2) - (entityIn.getY() + entityIn.getBbHeight() / 2), this.getZ() - entityIn.getZ());
+        hitReactions.put(entityIn.getId(), new VectorHitReaction(vec.normalize()));
+        double d0 = entityIn.getX() - this.getX();
+        double d1 = entityIn.getZ() - this.getZ();
         double d2 = MathHelper.absMax(d0, d1);
         if (d2 >= (double)0.01F) {
             d2 = (double)MathHelper.sqrt(d2);
@@ -165,20 +165,20 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
             if (d3 > 1.0D) {
                 d3 = 1.0D;
             }
-            this.entityCollisionReduction = -100;
+            this.pushthrough = -100;
             d0 = d0 * d3;
             d1 = d1 * d3;
             d0 = d0 * (double)0.05F;
             d1 = d1 * (double)0.05F;
-            d0 = d0 * (double)(1.0F - this.entityCollisionReduction);
-            d1 = d1 * (double)(1.0F - this.entityCollisionReduction);
-            if (!this.isBeingRidden()) {
-                this.addVelocity(-d0, 0.0D, -d1);
+            d0 = d0 * (double)(1.0F - this.pushthrough);
+            d1 = d1 * (double)(1.0F - this.pushthrough);
+            if (!this.isVehicle()) {
+                this.push(-d0, 0.0D, -d1);
             }
 
-            if (!entityIn.isBeingRidden()) {
-                entityIn.addVelocity(d0, 0.0D, d1);
-                this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_FALL, 2.0F, 1.0F - this.rand.nextFloat());
+            if (!entityIn.isVehicle()) {
+                entityIn.push(d0, 0.0D, d1);
+                this.playSound(SoundEvents.SLIME_BLOCK_FALL, 2.0F, 1.0F - this.random.nextFloat());
             }
         }
     }

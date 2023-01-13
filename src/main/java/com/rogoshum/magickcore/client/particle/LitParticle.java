@@ -218,7 +218,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
             this.motionY -= 0.04D * (double) this.particleGravity;
 
             if (this.traceTarget != null) {
-                Vector3d vec = this.traceTarget.getPositionVec().add(0, this.traceTarget.getHeight() / 2, 0).subtract(this.posX, this.posY, this.posZ).normalize();
+                Vector3d vec = this.traceTarget.position().add(0, this.traceTarget.getBbHeight() / 2, 0).subtract(this.posX, this.posY, this.posZ).normalize();
                 double length = 0.3;
 
                 this.motionX += (vec.x / 2 + MagickCore.getNegativeToOne()) * length;
@@ -252,14 +252,14 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
             double d1 = y;
             double d2 = z;
             if (this.canCollide && (x != 0.0D || y != 0.0D || z != 0.0D)) {
-                Vector3d vector3d = Entity.collideBoundingBoxHeuristically((Entity) null, new Vector3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.dummy(), new ReuseableStream<>(Stream.empty()));
+                Vector3d vector3d = Entity.collideBoundingBoxHeuristically((Entity) null, new Vector3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.empty(), new ReuseableStream<>(Stream.empty()));
                 x = vector3d.x;
                 y = vector3d.y;
                 z = vector3d.z;
             }
 
             if (x != 0.0D || y != 0.0D || z != 0.0D) {
-                this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
+                this.setBoundingBox(this.getBoundingBox().move(x, y, z));
                 this.resetPositionToBB();
             }
 
@@ -317,7 +317,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public boolean shouldRender(ClippingHelper camera) {
-        return camera.isBoundingBoxInFrustum(this.boundingBox);
+        return camera.isVisible(this.boundingBox);
     }
 
     @Override
@@ -344,33 +344,33 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     public void render(RenderParams renderParams) {
         MatrixStack matrixStackIn = renderParams.matrixStack;
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
-        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+        matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
         if(shakeLimit <= 0.0f) {
             RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
         } else if(quad != null && color != null) {
-            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+            Matrix4f matrix4f = matrixStackIn.last().pose();
             BufferBuilder buffer = renderParams.buffer;
             BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
             RenderHelper.begin(context);
             try {
-                buffer.pos(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 1.0f)
-                        .lightmap(RenderHelper.renderLight).endVertex();
-                buffer.pos(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(1.0f, 0.0f)
-                        .lightmap(RenderHelper.renderLight).endVertex();
-                buffer.pos(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 0.0f)
-                        .lightmap(RenderHelper.renderLight).endVertex();
-                buffer.pos(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).tex(0.0f, 1.0f)
-                        .lightmap(RenderHelper.renderLight).endVertex();
+                buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(1.0f, 1.0f)
+                        .uv2(RenderHelper.renderLight).endVertex();
+                buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(1.0f, 0.0f)
+                        .uv2(RenderHelper.renderLight).endVertex();
+                buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(0.0f, 0.0f)
+                        .uv2(RenderHelper.renderLight).endVertex();
+                buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(0.0f, 1.0f)
+                        .uv2(RenderHelper.renderLight).endVertex();
             } catch (Exception ignored) {
 
             }
 
             RenderHelper.finish(context);
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
@@ -385,15 +385,15 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         Vector3d V3 = QuadVector[3];
         if (shakeLimit > 0.0f) {
             VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(this.toString());
-            group.putVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ(), shakeLimit);
-            group.putVertex(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ(), shakeLimit);
-            group.putVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ(), shakeLimit);
-            group.putVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ(), shakeLimit);
+            group.putVertex(QuadVector[0].x(), QuadVector[0].y(), QuadVector[0].z(), shakeLimit);
+            group.putVertex(QuadVector[1].x(), QuadVector[1].y(), QuadVector[1].z(), shakeLimit);
+            group.putVertex(QuadVector[2].x(), QuadVector[2].y(), QuadVector[2].z(), shakeLimit);
+            group.putVertex(QuadVector[3].x(), QuadVector[3].y(), QuadVector[3].z(), shakeLimit);
 
-            V0 = group.getVertex(QuadVector[0].getX(), QuadVector[0].getY(), QuadVector[0].getZ()).getPositionVec();
-            V1 = group.getVertex(QuadVector[1].getX(), QuadVector[1].getY(), QuadVector[1].getZ()).getPositionVec();
-            V2 = group.getVertex(QuadVector[2].getX(), QuadVector[2].getY(), QuadVector[2].getZ()).getPositionVec();
-            V3 = group.getVertex(QuadVector[3].getX(), QuadVector[3].getY(), QuadVector[3].getZ()).getPositionVec();
+            V0 = group.getVertex(QuadVector[0].x(), QuadVector[0].y(), QuadVector[0].z()).getPositionVec();
+            V1 = group.getVertex(QuadVector[1].x(), QuadVector[1].y(), QuadVector[1].z()).getPositionVec();
+            V2 = group.getVertex(QuadVector[2].x(), QuadVector[2].y(), QuadVector[2].z()).getPositionVec();
+            V3 = group.getVertex(QuadVector[3].x(), QuadVector[3].y(), QuadVector[3].z()).getPositionVec();
         }
 
         Vector3d[] Quad = new Vector3d[4];
@@ -401,11 +401,11 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         quad = Quad;
         renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
 
-        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
-        if(Minecraft.getInstance().isGamePaused()) {
+        float partialTicks = Minecraft.getInstance().getFrameTime();
+        if(Minecraft.getInstance().isPaused()) {
             partialTicks = 0;
         }
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
 
         double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
@@ -418,7 +418,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     @Override
     public boolean alive() {
-        return !isDead() && world == Minecraft.getInstance().world;
+        return !isDead() && world == Minecraft.getInstance().level;
     }
 
     public void remove() {

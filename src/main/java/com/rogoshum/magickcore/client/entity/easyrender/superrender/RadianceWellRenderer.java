@@ -44,18 +44,18 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
     public void renderSword(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() / 2, z - camZ);
+        matrixStackIn.translate(x - camX, y - camY + entity.getBbHeight() / 2, z - camZ);
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(225));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(225));
         matrixStackIn.translate(0.4, 0.1, 0);
         matrixStackIn.scale(2.5f, 2.5f, 2.5f);
         ItemStack stack = new ItemStack(Items.GOLDEN_SWORD);
-        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack, null, null);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(bufferIn);
-        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-        renderTypeBuffer.finish();
+        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
+        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(bufferIn);
+        Minecraft.getInstance().getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+        renderTypeBuffer.endBatch();
     }
 
     public void renderSphere(RenderParams params) {
@@ -77,8 +77,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         baseOffset(params.matrixStack);
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 2f, entity.getHeight() * 2f, entity.getWidth() * 2f);
+        matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
+        matrixStackIn.scale(entity.getBbWidth() * 2f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2f);
         if(CYLINDER_INNER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER);
     }
@@ -87,8 +87,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         baseOffset(params.matrixStack);
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.translate(0, -entity.getHeight() * 2, 0);
-        matrixStackIn.scale(entity.getWidth() * 2.001f, entity.getHeight() * 2f, entity.getWidth() * 2.001f);
+        matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
+        matrixStackIn.scale(entity.getBbWidth() * 2.001f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2.001f);
         if(CYLINDER_OUTER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER);
     }
@@ -96,16 +96,16 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     @Override
     public void baseOffset(MatrixStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
-        matrixStackIn.translate(0, entity.getHeight() * 0.5, 0);
+        matrixStackIn.translate(0, entity.getBbHeight() * 0.5, 0);
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);
     }
 
     @Override
     public void update() {
         super.update();
-        packedLightIn = Minecraft.getInstance().getRenderManager().getPackedLight(entity, Minecraft.getInstance().getRenderPartialTicks());
-        alphaS = Math.min(1f, (float)entity.ticksExisted / 5f);
-        alphaC = Math.min(1f, (float) entity.ticksExisted / 20f);
+        packedLightIn = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(entity, Minecraft.getInstance().getFrameTime());
+        alphaS = Math.min(1f, (float)entity.tickCount / 5f);
+        alphaC = Math.min(1f, (float) entity.tickCount / 20f);
         RENDER_5 = new RenderHelper.RenderContext(
                 RenderHelper.isRenderingShader() ? 0.15f * alphaS : 0.5f * alphaS
                 , entity.spellContext().element.color(), packedLightIn);

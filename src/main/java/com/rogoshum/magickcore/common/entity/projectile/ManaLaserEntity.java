@@ -33,8 +33,8 @@ public class ManaLaserEntity extends ManaProjectileEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.gatorix_spawn.get(), 0.25F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.gatorix_spawn.get(), 0.25F, 1.0F + this.random.nextFloat());
         }
     }
 
@@ -44,7 +44,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0.0F;
     }
 
@@ -70,11 +70,11 @@ public class ManaLaserEntity extends ManaProjectileEntity {
 
          */
 
-        LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                , 0.15f * getWidth(), 0.15f * getWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
+        LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
+                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
         par.setGlow();
         MagickCore.addMagickParticle(par);
     }

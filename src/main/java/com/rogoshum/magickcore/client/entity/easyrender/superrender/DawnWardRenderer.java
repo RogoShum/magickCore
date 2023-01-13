@@ -27,24 +27,24 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.scale(scale, scale, scale);
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         if(!RenderHelper.isRenderingShader()) {
             RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
                     , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                    , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getEntityId(), 0.5f)
+                    , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.5f)
                     , 16);
         }
         matrixStackIn.scale(1.01f, 1.01f, 1.01f);
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(RenderMode.ShaderList.SLIME_SHADER)
                 , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getEntityId(), 0.3f)
+                , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getId(), 0.3f)
                 , 16);
     }
 
     public void renderInner(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.scale(0.99f, 0.99f, 0.99f);
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
@@ -57,7 +57,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
     public void update() {
         super.update();
         if(entity.initial)
-            scale = Math.min(1f, (float) (entity.ticksExisted - 15) / 5f) * entity.getWidth();
+            scale = Math.min(1f, (float) (entity.tickCount - 15) / 5f) * entity.getBbWidth();
     }
 
     @Override

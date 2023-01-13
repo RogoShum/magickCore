@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
     float alpha;
     Quaternion rotate;
-    RenderType TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getHeight(), 0f);
+    RenderType TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
 
     public ContextPointerRenderer(ContextPointerEntity entity) {
         super(entity);
@@ -37,33 +37,33 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
     @Override
     public void update() {
         super.update();
-        alpha = 0.5f - (float)entity.ticksExisted % 100 / 100f;
+        alpha = 0.5f - (float)entity.tickCount % 100 / 100f;
         alpha *= alpha * 4;
         if(alpha < 0.8f)
             alpha = 0.8f;
-        float c = entity.ticksExisted % 30;
+        float c = entity.tickCount % 30;
         rotate = Vector3f.YP.rotationDegrees(360f * (c / 29));
-        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getHeight(), 0f);
+        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
     }
 
     public void renderItems(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        float partialTicks = Minecraft.getInstance().getRenderPartialTicks();
+        float partialTicks = Minecraft.getInstance().getFrameTime();
         List<ContextPointerEntity.PosItem> stacks = entity.getStacks();
         for(int i = 0; i < stacks.size(); i++) {
             ContextPointerEntity.PosItem item = stacks.get(i);
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             double x = item.prePos.x + (item.pos.x - item.prePos.x) * (double) partialTicks;
             double y = item.prePos.y + (item.pos.y - item.prePos.y) * (double) partialTicks;
             double z = item.prePos.z + (item.pos.z - item.prePos.z) * (double) partialTicks;
-            matrixStackIn.translate(x, y - entity.getHeight() / 2, z);
+            matrixStackIn.translate(x, y - entity.getBbHeight() / 2, z);
             float f3 = ((float)item.age + partialTicks) / 20.0F + item.hoverStart;
-            matrixStackIn.rotate(Vector3f.YP.rotation(f3));
-            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(params.buffer);
-            Minecraft.getInstance().getItemRenderer().renderItem(item.getItemStack(), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, renderTypeBuffer);
-            renderTypeBuffer.finish();
-            matrixStackIn.pop();
+            matrixStackIn.mulPose(Vector3f.YP.rotation(f3));
+            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(params.buffer);
+            Minecraft.getInstance().getItemRenderer().renderStatic(item.getItemStack(), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, renderTypeBuffer);
+            renderTypeBuffer.endBatch();
+            matrixStackIn.popPose();
         }
     }
 
@@ -71,10 +71,10 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
-        matrixStackIn.rotate(rotate);
+        matrixStackIn.mulPose(rotate);
         RenderHelper.CylinderContext context =
                 new RenderHelper.CylinderContext(0.25f, 0.25f, 1
-                        , 0.2f + entity.getHeight(), 16
+                        , 0.2f + entity.getBbHeight(), 16
                         , 0.5f * alpha, alpha, 0.3f, entity.spellContext().element.color());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE), context);
     }
@@ -83,9 +83,9 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
-        matrixStackIn.rotate(rotate);
+        matrixStackIn.mulPose(rotate);
 
-        float height = entity.getHeight() - 0.2f;
+        float height = entity.getBbHeight() - 0.2f;
         alpha = 1.0f;
         matrixStackIn.translate(0, 0.2, 0);
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.3f, 1.5f
@@ -103,11 +103,11 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
 
     @Override
     protected void updateSpellContext() {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
         debugX = x - camX + offset.x;
-        debugY = y - camY + entity.getHeight() * 0.5 + offset.y;
+        debugY = y - camY + entity.getBbHeight() * 0.5 + offset.y;
         debugZ = z - camZ + offset.z;
 
         SpellContext context = SpellContext.create();

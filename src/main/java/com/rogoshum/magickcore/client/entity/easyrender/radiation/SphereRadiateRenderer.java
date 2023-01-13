@@ -23,7 +23,7 @@ public class SphereRadiateRenderer extends EasyRenderer<SphereEntity> {
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(scale, scale, scale);
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderSphere(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SHADER)
                 , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)

@@ -44,8 +44,8 @@ public class RepeaterEntity extends ManaPointEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.random.nextFloat());
         }
     }
 
@@ -53,31 +53,31 @@ public class RepeaterEntity extends ManaPointEntity {
     @Override
     public boolean releaseMagick() {
         if(!spellContext().valid()) return false;
-        if(world.isRemote) return false;
+        if(level.isClientSide) return false;
 
         if(cool_down >= 0)
             cool_down -= Math.max(this.spellContext().force * 3, 1);
 
         if(spawnEntity != null && spawnEntity.isAlive()) return false;
         if(cool_down < 0) {
-            this.playSound(ModSounds.thunder.get(), 0.15F, 1.0F - this.rand.nextFloat());
-            MagickContext context = MagickContext.create(this.world, spellContext().postContext)
-                    .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
+            this.playSound(ModSounds.thunder.get(), 0.15F, 1.0F - this.random.nextFloat());
+            MagickContext context = MagickContext.create(this.level, spellContext().postContext)
+                    .<MagickContext>replenishChild(PositionContext.create(this.position()))
                     .caster(getOwner()).projectile(this).noCost();
 
             if(spellContext().containChild(LibContext.TRACE)) {
                 TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
                 context.addChild(traceContext);
                 Entity entity = traceContext.entity;
-                if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.world.isRemote) {
-                    entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+                if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.level.isClientSide) {
+                    entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
                     traceContext.entity = entity;
                     if(entity == null)
                         traceContext.uuid = MagickCore.emptyUUID;
                 }
                 if(entity != null && entity.isAlive()) {
-                    Vector3d goal = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getHeight() * 0.5, entity.getPosZ());
-                    Vector3d self = new Vector3d(this.getPosX(), this.getPosY(), this.getPosZ());
+                    Vector3d goal = new Vector3d(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ());
+                    Vector3d self = new Vector3d(this.getX(), this.getY(), this.getZ());
                     context.replenishChild(DirectionContext.create(goal.subtract(self).normalize()));
                 } else if(spellContext().containChild(LibContext.DIRECTION)) {
                     context.replenishChild(spellContext().getChild(LibContext.DIRECTION));
@@ -124,10 +124,10 @@ public class RepeaterEntity extends ManaPointEntity {
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                , new Vector3d(this.getPosX()
-                , this.getPosY() + this.getHeight() * 0.5
-                , this.getPosZ())
+        LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+                , new Vector3d(this.getX()
+                , this.getY() + this.getBbHeight() * 0.5
+                , this.getZ())
                 , MagickCore.getRandFloat() * 0.25f, MagickCore.getRandFloat() * 0.25f
                 , MagickCore.getRandFloat()
                 , this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
@@ -135,12 +135,12 @@ public class RepeaterEntity extends ManaPointEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
 
-        float height = Float.parseFloat(String.format("%.1f", this.rand.nextFloat())) * 0.6f;
-        float width = Float.parseFloat(String.format("%.1f", this.rand.nextFloat())) * 0.6f;
-        LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                , new Vector3d(this.getPosX()
-                , this.getPosY() + this.getHeight() * 0.5
-                , this.getPosZ())
+        float height = Float.parseFloat(String.format("%.1f", this.random.nextFloat())) * 0.6f;
+        float width = Float.parseFloat(String.format("%.1f", this.random.nextFloat())) * 0.6f;
+        LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                , new Vector3d(this.getX()
+                , this.getY() + this.getBbHeight() * 0.5
+                , this.getZ())
                 , width, height, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0f);

@@ -56,22 +56,22 @@ public class WitherAbility{
         if(context.victim == null) return false;
         if(context.victim instanceof ItemEntity) {
             ItemEntity itemEntity = ((ItemEntity) context.victim);
-            ITagCollection<Item> itagcollection = ItemTags.getCollection();
+            ITagCollection<Item> itagcollection = ItemTags.getAllTags();
             AtomicReference<ITag<Item>> iTag = new AtomicReference<>();
             AtomicBoolean ores = new AtomicBoolean(false);
-            itagcollection.getIDTagMap().forEach((key, itemITag) -> {
-                if((key.getPath().contains("ores/") || key.getPath().contains("ingots/")) && itemEntity.getItem().getItem().isIn(itemITag)) {
+            itagcollection.getAllTags().forEach((key, itemITag) -> {
+                if((key.getPath().contains("ores/") || key.getPath().contains("ingots/")) && itemEntity.getItem().getItem().is(itemITag)) {
                     ResourceLocation res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ingots", "dusts"));
                     if(key.getPath().contains("ores")) {
                         ores.set(true);
                         res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "dusts"));
                     }
-                    if(itagcollection.getIDTagMap().containsKey(res))
-                        iTag.set(itagcollection.getIDTagMap().get(res));
+                    if(itagcollection.getAllTags().containsKey(res))
+                        iTag.set(itagcollection.getAllTags().get(res));
                     else if(key.getPath().contains("ores/")){
                         res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "gems"));
-                        if(itagcollection.getIDTagMap().containsKey(res))
-                            iTag.set(itagcollection.getIDTagMap().get(res));
+                        if(itagcollection.getAllTags().containsKey(res))
+                            iTag.set(itagcollection.getAllTags().get(res));
                     }
                 }
             });
@@ -79,39 +79,39 @@ public class WitherAbility{
                 return false;
             ITag<Item> itemITag = iTag.get();
             Item item = itemEntity.getItem().getItem();
-            for (Item tagItem : itemITag.getAllElements()) {
+            for (Item tagItem : itemITag.getValues()) {
                 if(tagItem.getRegistryName().getNamespace().equals(itemEntity.getItem().getItem().getRegistryName().getNamespace()))
                     item = tagItem;
-                else if(!item.isIn(itemITag))
+                else if(!item.is(itemITag))
                     item = tagItem;
             }
             if(item == itemEntity.getItem().getItem()) return false;
-            CompoundNBT nbt = itemEntity.getItem().write(new CompoundNBT());
+            CompoundNBT nbt = itemEntity.getItem().save(new CompoundNBT());
             ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(item);
             nbt.putString("id", resourcelocation.toString());
-            ItemStack dustItem = ItemStack.read(nbt);
+            ItemStack dustItem = ItemStack.of(nbt);
             if(dustItem.isEmpty()) return false;
             itemEntity.setItem(dustItem);
             if(ores.get()) {
                 ItemStack dustCopy = itemEntity.getItem().copy();
                 dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
                 if(!dustCopy.isEmpty()) {
-                    ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustCopy);
-                    if(!entity.world.isRemote)
-                        entity.world.addEntity(entity);
+                    ItemEntity entity = new ItemEntity(itemEntity.level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), dustCopy);
+                    if(!entity.level.isClientSide)
+                        entity.level.addFreshEntity(entity);
                 }
             }
             if(context.force >= 7) {
                 ItemStack dustCopy = itemEntity.getItem().copy();
                 dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
                 if(!dustCopy.isEmpty()) {
-                    ItemEntity entity = new ItemEntity(itemEntity.world, itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), dustCopy);
-                    if(!entity.world.isRemote)
-                        entity.world.addEntity(entity);
+                    ItemEntity entity = new ItemEntity(itemEntity.level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), dustCopy);
+                    if(!entity.level.isClientSide)
+                        entity.level.addFreshEntity(entity);
                 }
             }
             itemEntity.setItem(dustItem);
-            ParticleUtil.spawnBlastParticle(context.world, itemEntity.getPositionVec().add(0, itemEntity.getHeight(), 0), 2, ModElements.WITHER, ParticleType.PARTICLE);
+            ParticleUtil.spawnBlastParticle(context.world, itemEntity.position().add(0, itemEntity.getBbHeight(), 0), 2, ModElements.WITHER, ParticleType.PARTICLE);
             return true;
         } else
             return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
@@ -124,13 +124,13 @@ public class WitherAbility{
 
         boolean flag = false;
         if(context.caster != null && context.projectile instanceof ProjectileEntity)
-            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityWitherDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityWitherDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamages.getWitherDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getWitherDamage(), context.force);
 
         return flag;
     }
@@ -143,8 +143,8 @@ public class WitherAbility{
         if (state.getBlock() instanceof IGrowable) {
             IGrowable igrowable = (IGrowable)state.getBlock();
             for (int i = 0; i < context.force; i++) {
-                if(igrowable.canGrow((ServerWorld)context.world, pos, state, false))
-                    igrowable.grow((ServerWorld)context.world, context.world.rand, pos, context.world.getBlockState(pos));
+                if(igrowable.isValidBonemealTarget((ServerWorld)context.world, pos, state, false))
+                    igrowable.performBonemeal((ServerWorld)context.world, context.world.random, pos, context.world.getBlockState(pos));
                 spawnLoot(context, block,  pos, context.world.getBlockState(pos), CropsBlock.AGE);
             }
             return true;
@@ -152,27 +152,27 @@ public class WitherAbility{
             boolean hasAge = false;
             IntegerProperty integerProperty = null;
             int force = (int) context.force;
-            if(containProperty(context.world, pos, BlockStateProperties.AGE_0_1, force)) {
+            if(containProperty(context.world, pos, BlockStateProperties.AGE_1, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_1;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_2, force)) {
+                integerProperty = BlockStateProperties.AGE_1;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_2, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_2;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_3, force)) {
+                integerProperty = BlockStateProperties.AGE_2;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_3, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_3;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_5, force)) {
+                integerProperty = BlockStateProperties.AGE_3;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_5, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_5;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_7, force)) {
+                integerProperty = BlockStateProperties.AGE_5;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_7, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_7;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_15, force)) {
+                integerProperty = BlockStateProperties.AGE_7;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_15, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_15;
-            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_0_25, force)) {
+                integerProperty = BlockStateProperties.AGE_15;
+            } else if(containProperty(context.world, pos, BlockStateProperties.AGE_25, force)) {
                 hasAge = true;
-                integerProperty = BlockStateProperties.AGE_0_25;
+                integerProperty = BlockStateProperties.AGE_25;
             }
             if(hasAge)
                 spawnLoot(context, block, pos, state, integerProperty);
@@ -183,13 +183,13 @@ public class WitherAbility{
     public static boolean containProperty(World world, BlockPos pos, IntegerProperty integerProperty, int force) {
         BlockState state = world.getBlockState(pos);
         if (state.getProperties().stream().anyMatch(p -> p.equals(integerProperty))) {
-            int age = (force + state.get(integerProperty));
-            Collection<Integer> integers = integerProperty.getAllowedValues();
+            int age = (force + state.getValue(integerProperty));
+            Collection<Integer> integers = integerProperty.getPossibleValues();
             if(integers.size() < 1) return false;
             if (!integers.contains(age)) {
                 age = (int) integers.toArray()[integers.size() - 1];
             }
-            world.setBlockState(pos, state.with(integerProperty, age));
+            world.setBlockAndUpdate(pos, state.setValue(integerProperty, age));
             return true;
         }
         return false;
@@ -197,26 +197,26 @@ public class WitherAbility{
 
     public static void spawnLoot(MagickContext context, Block block, BlockPos pos, BlockState state, IntegerProperty property) {
         if (state.getProperties().stream().anyMatch(p -> p.equals(property))) {
-            Collection<Integer> integers = property.getAllowedValues();
-            if(state.get(property) != (int) integers.toArray()[integers.size() - 1])
+            Collection<Integer> integers = property.getPossibleValues();
+            if(state.getValue(property) != (int) integers.toArray()[integers.size() - 1])
                 return;
         }
          else
              return;
         LootContext.Builder lootContext = new LootContext.Builder((ServerWorld) context.world)
-                .withParameter(LootParameters.field_237457_g_, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
+                .withParameter(LootParameters.ORIGIN, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
                 .withParameter(LootParameters.BLOCK_STATE, state)
-                .withNullableParameter(LootParameters.THIS_ENTITY, context.caster);
+                .withOptionalParameter(LootParameters.THIS_ENTITY, context.caster);
         lootContext.withParameter(LootParameters.TOOL, ItemStack.EMPTY);
         List<ItemStack> drops = state.getDrops(lootContext);
 
-        context.world.setBlockState(pos, state.with(property, 0));
+        context.world.setBlockAndUpdate(pos, state.setValue(property, 0));
 
         for (ItemStack stack : drops) {
             ItemEntity entity = new ItemEntity(context.world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             entity.setItem(stack);
-            entity.setPickupDelay(20);
-            context.world.addEntity(entity);
+            entity.setPickUpDelay(20);
+            context.world.addFreshEntity(entity);
         }
     }
 
@@ -231,19 +231,19 @@ public class WitherAbility{
     }
 
     public static boolean applyToolElement(MagickContext context) {
-        if(!context.containChild(LibContext.ITEM) || context.world.isRemote()) return false;
+        if(!context.containChild(LibContext.ITEM) || context.world.isClientSide()) return false;
         ItemContext itemStack = context.getChild(LibContext.ITEM);
         if(!context.valid()) return false;
-        if(itemStack.itemStack.getDamage() > 0) {
+        if(itemStack.itemStack.getDamageValue() > 0) {
             NBTTagHelper.consumeElementOnTool(itemStack.itemStack, LibElements.WITHER);
             int maxDamage = 3;
             int damage;
-            if(itemStack.itemStack.getDamage() <= maxDamage)
-                damage = MagickCore.rand.nextInt(itemStack.itemStack.getDamage());
+            if(itemStack.itemStack.getDamageValue() <= maxDamage)
+                damage = MagickCore.rand.nextInt(itemStack.itemStack.getDamageValue());
             else {
-                damage = itemStack.itemStack.getDamage() - MagickCore.rand.nextInt(maxDamage);
+                damage = itemStack.itemStack.getDamageValue() - MagickCore.rand.nextInt(maxDamage);
             }
-            itemStack.itemStack.setDamage(damage);
+            itemStack.itemStack.setDamageValue(damage);
         }
         return true;
     }
@@ -262,7 +262,7 @@ public class WitherAbility{
             if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
                 PositionContext positionContext = context.getChild(LibContext.POSITION);
                 BlockPos pos = new BlockPos(positionContext.pos);
-                TileEntity tile = context.world.getTileEntity(pos);
+                TileEntity tile = context.world.getBlockEntity(pos);
                 if(tile instanceof ITickableTileEntity) {
                     ITickableTileEntity tickable = (ITickableTileEntity) tile;
                     float force = context.force*20;
@@ -293,33 +293,33 @@ public class WitherAbility{
             if(context.world instanceof ServerWorld) {
                 BlockState blockstate = context.world.getBlockState(pos);
                 if(growBlock(context, blockstate.getBlock(), pos, blockstate)) {
-                    context.world.playEvent(2005, pos, 0);
+                    context.world.levelEvent(2005, pos, 0);
                     return true;
                 }
-                blockstate = context.world.getBlockState(pos.up());
-                if(growBlock(context, blockstate.getBlock(), pos.up(), blockstate)) {
-                    context.world.playEvent(2005, pos, 0);
+                blockstate = context.world.getBlockState(pos.above());
+                if(growBlock(context, blockstate.getBlock(), pos.above(), blockstate)) {
+                    context.world.levelEvent(2005, pos, 0);
                     return true;
                 }
             }
-        } else if (!context.world.isRemote && context.victim instanceof AgeableEntity) {
+        } else if (!context.world.isClientSide && context.victim instanceof AgeableEntity) {
             AgeableEntity ageable = (AgeableEntity) context.victim;
-            int i = ageable.getGrowingAge();
+            int i = ageable.getAge();
             if (i < 0) {
                 i += context.force * 400;
-                ageable.setGrowingAge(i);
+                ageable.setAge(i);
             }
             return true;
         }
-        if(context.world.isRemote && context.victim instanceof AgeableEntity) {
-            Vector3d vector3d = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0);
+        if(context.world.isClientSide && context.victim instanceof AgeableEntity) {
+            Vector3d vector3d = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0);
             for(int i = 0; i < 15; ++i) {
                 double d2 = MagickCore.rand.nextGaussian() * 0.5D;
                 double d3 = MagickCore.rand.nextGaussian() * 0.5D;
                 double d4 = MagickCore.rand.nextGaussian() * 0.5D;
-                double d6 = (double)vector3d.getX() + d2 * context.victim.getWidth();
-                double d7 = (double)vector3d.getY() + d3 * context.victim.getHeight();
-                double d8 = (double)vector3d.getZ() + d4 * context.victim.getWidth();
+                double d6 = (double)vector3d.x() + d2 * context.victim.getBbWidth();
+                double d7 = (double)vector3d.y() + d3 * context.victim.getBbHeight();
+                double d8 = (double)vector3d.z() + d4 * context.victim.getBbWidth();
                 context.world.addParticle(ParticleTypes.HAPPY_VILLAGER, d6, d7, d8, d2, d3, d4);
             }
         }

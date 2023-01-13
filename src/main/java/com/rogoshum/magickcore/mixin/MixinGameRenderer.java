@@ -19,8 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public class MixinGameRenderer{
     //, target = "net/minecraft/client/Minecraft.getMainWindow ()Lnet/minecraft/client/MainWindow;", ordinal = 6
-    @Inject(method = "updateCameraAndRender", at = @At(value = "TAIL"))
-    public void onFabulousRender(float partialTicks, long nanoTime, boolean renderWorldIn, CallbackInfo ci) {
+    /*
+    @Inject(method = "renderLevel", at = @At(value = "TAIL"))
+    public void onFabulousRender(float p_228378_1_, long p_228378_2_, MatrixStack p_228378_4_, CallbackInfo ci) {
         /*
         if (Minecraft.isFabulousGraphicsEnabled()) return;
         MatrixStack matrixStack = new MatrixStack();
@@ -39,6 +40,7 @@ public class MixinGameRenderer{
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
 
-         */
+         
     }
+    */
 }

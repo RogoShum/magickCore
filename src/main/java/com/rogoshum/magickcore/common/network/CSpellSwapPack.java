@@ -69,31 +69,31 @@ public class CSpellSwapPack extends EntityPack {
         NBTTagHelper.PlayerData data = NBTTagHelper.PlayerData.playerData(player);
         if(operate == 125) {
             ItemStack stack = data.popSpell();
-            if(!player.addItemStackToInventory(stack))
-                player.dropItem(stack, false, true);
-            player.world.playSound((PlayerEntity)null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+            if(!player.addItem(stack))
+                player.drop(stack, false, true);
+            player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
         } else if(operate == 126) {
-            if(player.getHeldItemMainhand().getItem() instanceof IManaContextItem) {
-                swapSpell(data, player.getHeldItemMainhand());
-            } else if(player.getHeldItemOffhand().getItem() instanceof IManaContextItem) {
-                swapSpell(data, player.getHeldItemOffhand());
+            if(player.getMainHandItem().getItem() instanceof IManaContextItem) {
+                swapSpell(data, player.getMainHandItem());
+            } else if(player.getOffhandItem().getItem() instanceof IManaContextItem) {
+                swapSpell(data, player.getOffhandItem());
             }
-            player.world.playSound((PlayerEntity)null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.soft_buildup_mid.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+            player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_mid.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
         } else if(operate == 127 && data.getSpells().size() < data.getLimit()) {
-            if(player.getHeldItemMainhand().getItem() instanceof MagickContextItem) {
-                ItemStack mainHand = player.getHeldItemMainhand();
+            if(player.getMainHandItem().getItem() instanceof MagickContextItem) {
+                ItemStack mainHand = player.getMainHandItem();
                 ItemStack copy = mainHand.copy();
                 copy.setCount(1);
                 data.pushSpell(copy);
                 mainHand.shrink(1);
-                player.world.playSound((PlayerEntity)null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-            } else if(player.getHeldItemOffhand().getItem() instanceof MagickContextItem) {
-                ItemStack offHand = player.getHeldItemOffhand();
+                player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+            } else if(player.getOffhandItem().getItem() instanceof MagickContextItem) {
+                ItemStack offHand = player.getOffhandItem();
                 ItemStack copy = offHand.copy();
                 copy.setCount(1);
                 data.pushSpell(copy);
                 offHand.shrink(1);
-                player.world.playSound((PlayerEntity)null, player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
             }
         } else if(operate == 124) {
             SSpellSwapPack sSpellSwapPack = new SSpellSwapPack(id, player);

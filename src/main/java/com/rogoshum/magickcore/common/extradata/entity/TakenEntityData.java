@@ -45,8 +45,8 @@ public class TakenEntityData extends EntityExtraData {
 
         if(time == 0)
             this.owner = MagickCore.emptyUUID;
-        if(entity.world instanceof ServerWorld) {
-            Entity entity1 = ((ServerWorld) entity.world).getEntityByUuid(this.owner);
+        if(entity.level instanceof ServerWorld) {
+            Entity entity1 = ((ServerWorld) entity.level).getEntity(this.owner);
             if(entity1 instanceof LivingEntity) {
                 EntityStateData state = ExtraDataUtil.entityStateData(entity1);
                 if(state.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
@@ -63,14 +63,14 @@ public class TakenEntityData extends EntityExtraData {
 
     @Override
     public void read(CompoundNBT nbt) {
-        if(nbt.hasUniqueId("UUID"))
-            this.setOwner(nbt.getUniqueId("UUID"));
+        if(nbt.hasUUID("UUID"))
+            this.setOwner(nbt.getUUID("UUID"));
         this.setTime(nbt.getInt("TIME"));
     }
 
     @Override
     public void write(CompoundNBT nbt) {
-        nbt.putUniqueId("UUID", this.getOwnerUUID());
+        nbt.putUUID("UUID", this.getOwnerUUID());
         nbt.putInt("TIME", this.getTime());
     }
 }

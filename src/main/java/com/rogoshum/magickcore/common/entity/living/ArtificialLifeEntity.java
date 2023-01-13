@@ -55,8 +55,8 @@ import java.util.List;
 public class ArtificialLifeEntity extends LivingEntity implements ISpellContext, IManaRefraction, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
     public static final NonNullList<ItemStack> ARMOR_ITEMS = NonNullList.withSize(1, ItemStack.EMPTY);
-    private static final DataParameter<Direction> DIRECTION = EntityDataManager.createKey(ArtificialLifeEntity.class, DataSerializers.DIRECTION);
-    private static final DataParameter<Boolean> FOCUS = EntityDataManager.createKey(ArtificialLifeEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Direction> DIRECTION = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.DIRECTION);
+    private static final DataParameter<Boolean> FOCUS = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.BOOLEAN);
     private Vector3d originPos;
     private BlockPos originBlockPos;
     private boolean power = false;
@@ -64,8 +64,8 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     private final HashSet<Vector3d> vectorSet = new HashSet<>();
     public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, World worldIn) {
         super(type, worldIn);
-        this.dataManager.register(DIRECTION, Direction.UP);
-        this.dataManager.register(FOCUS, false);
+        this.entityData.define(DIRECTION, Direction.UP);
+        this.entityData.define(FOCUS, false);
     }
 
     @Override
@@ -79,19 +79,19 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     public void setDirection(Direction direction) {
-        this.dataManager.set(DIRECTION, direction);
+        this.entityData.set(DIRECTION, direction);
     }
 
     public Direction getDirection() {
-        return this.dataManager.get(DIRECTION);
+        return this.entityData.get(DIRECTION);
     }
 
     public void setFocus(boolean focus) {
-        this.dataManager.set(FOCUS, focus);
+        this.entityData.set(FOCUS, focus);
     }
 
     public boolean isFocus() {
-        return this.dataManager.get(FOCUS);
+        return this.entityData.get(FOCUS);
     }
 
     public void checkRelease() {
@@ -99,7 +99,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         int power = 0;
         Direction powerDirection = null;
         for(Direction direction : Direction.values()) {
-            int j = world.getRedstonePower(originBlockPos.offset(direction), direction);
+            int j = level.getSignal(originBlockPos.relative(direction), direction);
 
             if (j > power) {
                 power = j;
@@ -126,12 +126,12 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public boolean release(Direction direction) {
         PositionContext position;
         DirectionContext directionContext;
-        Vector3d self = this.getPositionVec().add(0, 0.5 * getHeight(), 0);
+        Vector3d self = this.position().add(0, 0.5 * getBbHeight(), 0);
         boolean focus = isFocus();
         if(focus && !this.getVectorSet().isEmpty()) {
             for(Vector3d vec : this.getVectorSet()) {
                 position = PositionContext.create(vec);
-                MagickContext context = MagickContext.create(this.world, spellContext())
+                MagickContext context = MagickContext.create(this.level, spellContext())
                         .replenishChild(DirectionContext.create(position.pos.subtract(self)))
                         .<MagickContext>replenishChild(position)
                         .caster(this).projectile(this)
@@ -144,11 +144,11 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             position = PositionContext.create(getTracePos());
             directionContext = DirectionContext.create(position.pos.subtract(self));
         } else {
-            directionContext = DirectionContext.create(Vector3d.copy(direction.getOpposite().getDirectionVec()));
+            directionContext = DirectionContext.create(Vector3d.atLowerCornerOf(direction.getOpposite().getNormal()));
             position = PositionContext.create(self);
         }
 
-        MagickContext context = MagickContext.create(this.world, spellContext())
+        MagickContext context = MagickContext.create(this.level, spellContext())
                 .replenishChild(directionContext)
                 .<MagickContext>replenishChild(position)
                 .caster(this).projectile(this)
@@ -159,15 +159,15 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     public Vector3d getTracePos() {
-        Vector3d vec = this.getPositionVec().add(0, this.getEyeHeight(), 0);
+        Vector3d vec = this.position().add(0, this.getEyeHeight(), 0);
         for(int i = 1; i<=8; ++i) {
-            Vector3d end = vec.add(Vector3d.copy(getDirection().getDirectionVec()).scale(i));
+            Vector3d end = vec.add(Vector3d.atLowerCornerOf(getDirection().getNormal()).scale(i));
             BlockPos pos = new BlockPos(end);
-            if(!world.isAirBlock(pos))
+            if(!level.isEmptyBlock(pos))
                 return end;
         }
 
-        return vec.add(Vector3d.copy(getDirection().getDirectionVec()).scale(8));
+        return vec.add(Vector3d.atLowerCornerOf(getDirection().getNormal()).scale(8));
     }
 
     @Override
@@ -176,27 +176,28 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public boolean canBeCollidedWith() {
-        return super.canBeCollidedWith();
+    public boolean isPickable() {
+        return super.isPickable();
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.processInitialInteract(player, hand);
-        if (ret.isSuccessOrConsume()) return ret;
-        ItemStack stack = player.getHeldItem(hand);
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        ActionResultType ret = super.interact(player, hand);
+        if (ret.consumesAction()) return ret;
+        this.playSound(SoundEvents.SLIME_BLOCK_PLACE, 0.5F, MagickCore.rand.nextFloat() * 2);
+        ItemStack stack = player.getItemInHand(hand);
         if(stack.getItem() instanceof BlockItem || stack.getItem() instanceof EntityItem) {
             return EntityInteractHelper.placeBlock(player, hand, stack, this);
         } else if(stack.getItem() instanceof WandItem) {
             if(!isFocus()) {
                 setFocus(true);
-                HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateChildTag(WandItem.SET_KEY));
+                HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateTagElement(WandItem.SET_KEY));
                 if(!vector3ds.isEmpty()) {
                     this.getVectorSet().clear();
                     this.getVectorSet().addAll(vector3ds);
                 } else {
-                    Vector3d vector3d = player.getLookVec();
-                    setDirection(Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z).getOpposite());
+                    Vector3d vector3d = player.getLookAngle();
+                    setDirection(Direction.getNearest(vector3d.x, vector3d.y, vector3d.z).getOpposite());
                 }
             } else {
                 setFocus(false);
@@ -206,7 +207,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         } else if(stack.getItem() instanceof MagickContextItem) {
             spellContext().copy(ExtraDataUtil.itemManaData(stack).spellContext());
             return ActionResultType.CONSUME;
-        } else if(player.isSneaking())
+        } else if(player.isShiftKeyDown())
             spellContext().clear();
 
         return ActionResultType.PASS;
@@ -216,16 +217,16 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public void tick() {
         this.fallDistance = 0;
         super.tick();
-        if (this.ticksExisted == 1) {
-            this.playSound(SoundEvents.BLOCK_SLIME_BLOCK_PLACE, 0.5F, 1.0F + MagickCore.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(SoundEvents.SLIME_BLOCK_PLACE, 0.5F, 1.0F + MagickCore.rand.nextFloat());
         }
         if(originPos == null) {
-            originBlockPos = new BlockPos(this.getPositionVec());
-            originPos = Vector3d.copyCentered(originBlockPos).subtract(0, getHeight() * 0.5, 0);
+            originBlockPos = new BlockPos(this.position());
+            originPos = Vector3d.atCenterOf(originBlockPos).subtract(0, getBbHeight() * 0.5, 0);
         } else
-            this.setPosition(originPos.x, originPos.y, originPos.z);
+            this.setPos(originPos.x, originPos.y, originPos.z);
 
-        List<? extends Entity> capacities = world.getEntitiesInAABBexcluding(this, getBoundingBox().grow(8), entity -> entity instanceof IManaCapacity);
+        List<? extends Entity> capacities = level.getEntities(this, getBoundingBox().inflate(8), entity -> entity instanceof IManaCapacity);
         int count = capacities.size();
         float manaNeed = 0;
         EntityStateData state = ExtraDataUtil.entityStateData(this);
@@ -242,15 +243,15 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
                 state.setManaValue(state.getManaValue() + mana);
             }
 
-            if(world.isRemote)
+            if(level.isClientSide)
                 spawnSupplierParticle((Entity) capacity);
         }
 
-        if(isFocus() && this.getVectorSet().isEmpty() && world.isRemote()) {
-            Vector3i vector3i = getDirection().getDirectionVec();
-            double scale = (0.5+rand.nextFloat());
-            LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                    , this.getPositionVec().add(0, getEyeHeight(), 0).add(vector3i.getX()*scale, vector3i.getY()*scale, vector3i.getZ()*scale)
+        if(isFocus() && this.getVectorSet().isEmpty() && level.isClientSide()) {
+            Vector3i vector3i = getDirection().getNormal();
+            double scale = (0.5+random.nextFloat());
+            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                    , this.position().add(0, getEyeHeight(), 0).add(vector3i.getX()*scale, vector3i.getY()*scale, vector3i.getZ()*scale)
                     , 0.1f, 0.1f, 0.8f, 10, spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
@@ -261,27 +262,27 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public boolean func_241845_aY() {
+    public boolean canBeCollidedWith() {
         return this.isAlive();
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if(source.damageType.equals(DamageSource.FALL.damageType)) return false;
-        return super.attackEntityFrom(source, amount);
+    public boolean hurt(DamageSource source, float amount) {
+        if(source.msgId.equals(DamageSource.FALL.msgId)) return false;
+        return super.hurt(source, amount);
     }
 
     public void spawnSupplierParticle(Entity supplier) {
-        Vector3d center = new Vector3d(0, this.getHeight() * 0.5, 0);
-        Vector3d end = this.getPositionVec().add(center);
-        Vector3d start = supplier.getPositionVec().add(0, supplier.getHeight() * 0.5, 0);
+        Vector3d center = new Vector3d(0, this.getBbHeight() * 0.5, 0);
+        Vector3d end = this.position().add(center);
+        Vector3d start = supplier.position().add(0, supplier.getBbHeight() * 0.5, 0);
         double dis = start.subtract(end).length();
         if(dis < 0.2)
             dis = 0.2;
         int distance = (int) (6 * dis);
         if(distance < 1)
             distance = 1;
-        float directionPoint = (float) (supplier.ticksExisted % distance) / distance;
+        float directionPoint = (float) (supplier.tickCount % distance) / distance;
         int c = (int) (directionPoint * distance);
 
         Vector3d direction = Vector3d.ZERO;
@@ -308,7 +309,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
             double trailFactor = i / (distance - 1.0D);
             Vector3d pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
-            LitParticle par = new LitParticle(this.world, element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, element.getRenderer().getParticleTexture()
                     , new Vector3d(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -319,22 +320,22 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
     @Nonnull
     @Override
-    public Iterable<ItemStack> getArmorInventoryList() {
+    public Iterable<ItemStack> getArmorSlots() {
         return ARMOR_ITEMS;
     }
 
     @Nonnull
     @Override
-    public ItemStack getItemStackFromSlot(EquipmentSlotType slotIn) {
+    public ItemStack getItemBySlot(EquipmentSlotType slotIn) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {}
+    public void setItemSlot(EquipmentSlotType slotIn, ItemStack stack) {}
 
     @Nonnull
     @Override
-    public HandSide getPrimaryHand() {
+    public HandSide getMainArm() {
         return HandSide.LEFT;
     }
 
@@ -344,8 +345,8 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         spellContext().deserialize(compound);
         if(compound.contains("focus"))
             this.setFocus(compound.getBoolean("focus"));
@@ -355,11 +356,11 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         spellContext().serialize(compound);
         compound.putBoolean("focus", isFocus());
-        compound.putString("direction", getDirection().getName2());
+        compound.putString("direction", getDirection().getName());
         serializeBlockSet(compound);
     }
 
@@ -372,16 +373,16 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public void writeSpawnData(PacketBuffer buffer) {
         CompoundNBT tag = new CompoundNBT();
         spellContext().serialize(tag);
-        buffer.writeCompoundTag(tag);
+        buffer.writeNbt(tag);
         tag = new CompoundNBT();
         serializeBlockSet(tag);
-        buffer.writeCompoundTag(tag);
+        buffer.writeNbt(tag);
     }
 
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
-        spellContext().deserialize(additionalData.readCompoundTag());
-        deserializeBlockSet(additionalData.readCompoundTag());
+        spellContext().deserialize(additionalData.readNbt());
+        deserializeBlockSet(additionalData.readNbt());
     }
 
     public void serializeBlockSet(CompoundNBT compoundNBT) {
@@ -402,7 +403,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

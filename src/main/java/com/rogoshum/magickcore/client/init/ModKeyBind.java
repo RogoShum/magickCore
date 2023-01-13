@@ -32,36 +32,36 @@ public class ModKeyBind {
 
     @SubscribeEvent
     public static void onKeyboardInput(InputEvent.KeyInputEvent event) {
-        if (SWAP_KEY.isPressed() && Minecraft.getInstance().player != null) {
+        if (SWAP_KEY.consumeClick() && Minecraft.getInstance().player != null) {
             PlayerEntity player = Minecraft.getInstance().player;
             if(press >= 0) {
                 press++;
-                ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getEyeHeight(), 0), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(player.level, player.position().add(0, player.getEyeHeight(), 0), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
             }
-            ItemStack mainHand = player.getHeldItemMainhand();
-            ItemStack offHand = player.getHeldItemOffhand();
+            ItemStack mainHand = player.getMainHandItem();
+            ItemStack offHand = player.getOffhandItem();
             if(mainHand.getItem() instanceof IManaContextItem || offHand.getItem() instanceof IManaContextItem) {
                 press = -1;
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.openGUI(player.getEntityId()));
+                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.openGUI(player.getId()));
             } else if(press > 20 && (mainHand.getItem() instanceof MagickContextItem || offHand.getItem() instanceof MagickContextItem)) {
                 press = -1;
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getEntityId()));
+                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getId()));
             } else if(press > 20 && offHand.getItem() instanceof MagickContextItem) {
                 press = -1;
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getEntityId()));
+                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getId()));
             } else if(press > 20) {
                 press = -1;
-                if(player.isSneaking()) {
+                if(player.isShiftKeyDown()) {
                     for(int i = 0; i < 3; ++i) {
                         Networking.INSTANCE.send(
-                                PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getEntityId()));
+                                PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getId()));
                     }
                 } else {
                     Networking.INSTANCE.send(
-                            PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getEntityId()));
+                            PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getId()));
                 }
             }
         } else

@@ -15,7 +15,7 @@ public class RelicEntity extends MobEntity{
 
 	protected RelicEntity(EntityType<? extends MobEntity> type, World worldIn) {
 		super(type, worldIn);
-		this.getAttributeManager().createInstanceIfAbsent(Attributes.MAX_HEALTH);
+		this.getAttributes().getInstance(Attributes.MAX_HEALTH);
 	}
 
 }

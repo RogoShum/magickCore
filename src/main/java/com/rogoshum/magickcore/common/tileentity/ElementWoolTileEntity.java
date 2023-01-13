@@ -32,8 +32,8 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
     }
 
     @Override
@@ -41,20 +41,20 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
         return true;
     }
     public void dropItem() {
-        if(this.world.isRemote) return;
+        if(this.level.isClientSide) return;
         ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ELEMENT", eType);
         stack.setTag(tag);
 
-        ItemEntity entity = new ItemEntity(world, this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5);
+        ItemEntity entity = new ItemEntity(level, this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.5, this.worldPosition.getZ() + 0.5);
         entity.setItem(stack);
-        entity.setPickupDelay(20);
-        world.addEntity(entity);
+        entity.setPickUpDelay(20);
+        level.addFreshEntity(entity);
     }
 
     public List<ItemStack> getDrops() {
-        if(this.world.isRemote) return Collections.emptyList();
+        if(this.level.isClientSide) return Collections.emptyList();
         ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
         CompoundNBT tag = new CompoundNBT();
         tag.putString("ELEMENT", eType);
@@ -65,12 +65,12 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
     }
 
     @Override
@@ -86,15 +86,15 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT compound) {
+    public void load(BlockState state, CompoundNBT compound) {
         this.eType = compound.getString("TYPE");
-        super.read(state, compound);
+        super.load(state, compound);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putString("TYPE", this.eType);
-        return super.write(compound);
+        return super.save(compound);
     }
 
     @Override
@@ -104,12 +104,12 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
 
     @Override
     public boolean alive() {
-        return !this.removed;
+        return !this.remove;
     }
 
     @Override
     public Vector3d positionVec() {
-        return Vector3d.copyCentered(this.getPos());
+        return Vector3d.atCenterOf(this.getBlockPos());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ElementWoolTileEntity extends TileEntity implements ILightSourceEnt
 
     @Override
     public World world() {
-        return this.getWorld();
+        return this.getLevel();
     }
 
     @Override

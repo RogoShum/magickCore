@@ -11,22 +11,22 @@ public class TimeManagerModel extends EntityModel<TimeManagerEntity> {
     private final ModelRenderer body;
 
     public TimeManagerModel() {
-        textureWidth = 128;
-        textureHeight = 128;
+        texWidth = 128;
+        texHeight = 128;
  
         body = new ModelRenderer(this);
         this.body.addBox(-4.0F, 16.0F, -4.0F, 8.0F, 8.0F, 8.0F);
     }
 
     @Override
-    public void setRotationAngles(TimeManagerEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        body.rotateAngleX = limbSwing;
-        body.rotateAngleY = netHeadYaw;
-        body.rotateAngleZ = headPitch;
+    public void setupAnim(TimeManagerEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        body.xRot = limbSwing;
+        body.yRot = netHeadYaw;
+        body.zRot = headPitch;
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
     }
 

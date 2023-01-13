@@ -22,8 +22,10 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class SpiritCrystalBlock extends BaseBlock {
-    protected static final VoxelShape SHAPE = Block.makeCuboidShape(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
+    protected static final VoxelShape SHAPE = Block.box(6.0D, 0.0D, 6.0D, 10.0D, 6.0D, 10.0D);
     public final BlockPattern MAGICK_CRAFTING =
             BlockPatternBuilder.start().aisle("sas", "aaa", "sas")
                     .where('s', CachedBlockInfo.hasState(BlockMatcher.forBlock(this)))
@@ -46,12 +48,12 @@ public class SpiritCrystalBlock extends BaseBlock {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        BlockPattern.PatternHelper patternHelper = MAGICK_CRAFTING.match(worldIn, pos);
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(worldIn, pos, state, placer, stack);
+        BlockPattern.PatternHelper patternHelper = MAGICK_CRAFTING.find(worldIn, pos);
         if(patternHelper != null) {
-            BlockPos target = patternHelper.translateOffset(1, 1, 0).getPos();
-            worldIn.setBlockState(target, ModBlocks.MAGICK_CRAFTING.get().getDefaultState());
+            BlockPos target = patternHelper.getBlock(1, 1, 0).getPos();
+            worldIn.setBlockAndUpdate(target, ModBlocks.MAGICK_CRAFTING.get().defaultBlockState());
         }
     }
 

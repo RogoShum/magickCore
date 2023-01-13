@@ -20,13 +20,13 @@ public class BubbleRenderer extends EasyRenderer<BubbleEntity> {
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        params.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+        params.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
         RenderHelper.renderParticle(BufferContext.create(params.matrixStack, params.buffer, TYPE), new RenderHelper.RenderContext(0.4f, entity.spellContext().element.color(), RenderHelper.renderLight));
     }
 
     public void renderDistortion(RenderParams params) {
         baseOffset(params.matrixStack);
-        params.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+        params.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
         RenderHelper.renderParticle(BufferContext.create(params.matrixStack, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
     }
 

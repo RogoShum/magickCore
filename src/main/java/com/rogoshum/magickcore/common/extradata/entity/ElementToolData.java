@@ -29,8 +29,8 @@ public class ElementToolData extends EntityExtraData {
     public void tick(LivingEntity entity) {
         HashMap<String, Integer> map = new HashMap<>();
 
-        if(entity.getEquipmentAndArmor() != null) {
-            for (ItemStack stack : entity.getEquipmentAndArmor()) {
+        if(entity.getAllSlots() != null) {
+            for (ItemStack stack : entity.getAllSlots()) {
                 if (stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT)) {
                     CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
                     if(tag.isEmpty()) {
@@ -38,9 +38,9 @@ public class ElementToolData extends EntityExtraData {
                     }
 
                     try {
-                        for (String key : tag.keySet()) {
+                        for (String key : tag.getAllKeys()) {
                             if(key != null && key.equals(LibElements.ORIGIN)) continue;
-                            MagickContext context = new MagickContext(entity.world).element(MagickRegistry.getElement(key)).force(1).applyType(ApplyType.ELEMENT_TOOL);
+                            MagickContext context = new MagickContext(entity.level).element(MagickRegistry.getElement(key)).force(1).applyType(ApplyType.ELEMENT_TOOL);
                             context.addChild(ItemContext.create(stack));
                             MagickReleaseHelper.releaseMagick(context.noCost());
                             //MagickReleaseHelper.releaseMagick(MagickContext.create(entity.world).entity(entity).force(1).applyType(Enum));
@@ -55,7 +55,7 @@ public class ElementToolData extends EntityExtraData {
 
         for(String key : map.keySet()) {
             if(key.equals(LibElements.ORIGIN)) continue;
-            MagickContext context = new MagickContext(entity.world).element(MagickRegistry.getElement(key)).<MagickContext>force(map.get(key)).caster(entity).applyType(ApplyType.ELEMENT_TOOL);
+            MagickContext context = new MagickContext(entity.level).element(MagickRegistry.getElement(key)).<MagickContext>force(map.get(key)).caster(entity).applyType(ApplyType.ELEMENT_TOOL);
             MagickReleaseHelper.releaseMagick(context.noCost());
         }
 
@@ -79,7 +79,7 @@ public class ElementToolData extends EntityExtraData {
     }
 
     public void consumeElementOnTool(LivingEntity entity, String element) {
-        entity.getEquipmentAndArmor().forEach((s) -> NBTTagHelper.consumeElementOnTool(s, element));
+        entity.getAllSlots().forEach((s) -> NBTTagHelper.consumeElementOnTool(s, element));
     }
 
     @Override

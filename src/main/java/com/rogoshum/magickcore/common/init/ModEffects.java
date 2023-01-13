@@ -70,12 +70,12 @@ public class ModEffects {
         }
 
         @Override
-        public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, LivingEntity entityLivingBaseIn, int amplifier, double health) {
+        public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity indirectSource, LivingEntity entityLivingBaseIn, int amplifier, double health) {
 
         }
 
         @Override
-        public void performEffect(LivingEntity entityLivingBaseIn, int amplifier) {
+        public void applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
 
         }
     }

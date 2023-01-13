@@ -17,7 +17,7 @@ public class TakenStatePack extends EntityPack{
 
     public TakenStatePack(PacketBuffer buffer) {
         super(buffer);
-        uuid = buffer.readUniqueId();
+        uuid = buffer.readUUID();
         time = buffer.readInt();
     }
 
@@ -29,14 +29,14 @@ public class TakenStatePack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeUniqueId(uuid);
+        buf.writeUUID(uuid);
         buf.writeInt(time);
     }
 
     @Override
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed)
             return;
         TakenEntityData state = ExtraDataUtil.takenEntityData(entity);

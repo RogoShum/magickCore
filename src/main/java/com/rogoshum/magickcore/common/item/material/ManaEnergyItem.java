@@ -49,7 +49,7 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         if(!entity.isAlive()) return false;
         if(entity.getItem().getCount() > 1) return false;
-        List<Entity> entities = entity.world.getEntitiesInAABBexcluding(entity, entity.getBoundingBox().grow(1.5)
+        List<Entity> entities = entity.level.getEntities(entity, entity.getBoundingBox().inflate(1.5)
                 , (entity1 -> entity1 instanceof ItemEntity &&
                         ((ItemEntity) entity1).getItem().getItem() instanceof ManaEnergyItem));
 
@@ -58,14 +58,14 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
         }
         entities.forEach(entity1 -> {
             ItemStackUtil.setItemEntityAge((ItemEntity)entity1, -32768);
-            double speed = entity1.getMotion().length();
-            Vector3d motion = entity.getPositionVec().subtract(entity1.getPositionVec()).normalize().scale(speed);
-            entity1.setMotion(entity1.getMotion().scale(0.4).add(motion.scale(0.6)));
+            double speed = entity1.getDeltaMovement().length();
+            Vector3d motion = entity.position().subtract(entity1.position()).normalize().scale(speed);
+            entity1.setDeltaMovement(entity1.getDeltaMovement().scale(0.4).add(motion.scale(0.6)));
 
-            if(entity.getDistanceSq(entity1) <= 0.01) {
+            if(entity.distanceToSqr(entity1) <= 0.01) {
                 SpellContext other = ExtraDataUtil.itemManaData(((ItemEntity) entity1).getItem()).spellContext();
                 SpellContext mine = ExtraDataUtil.itemManaData(entity.getItem()).spellContext();
-                if(entity.getEntityId() < entity1.getEntityId() || entity.getItem().getCount() < ((ItemEntity) entity1).getItem().getCount()) {
+                if(entity.getId() < entity1.getId() || entity.getItem().getCount() < ((ItemEntity) entity1).getItem().getCount()) {
                     for (int i = 0; i < ((ItemEntity) entity1).getItem().getCount(); ++i)
                         mine.merge(other);
                     entity1.remove();
@@ -79,13 +79,13 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     }
 
     public void spawnParticle(ItemEntity entity) {
-        if(!entity.world.isRemote) return;
-        Vector3d vec = entity.getPositionVec().add(0, entity.getHeight(), 0);
+        if(!entity.level.isClientSide) return;
+        Vector3d vec = entity.position().add(0, entity.getBbHeight(), 0);
         for(int i = 0; i < 16; ++i) {
-            LitParticle par = new LitParticle(entity.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getWidth() + vec.x
-                    , MagickCore.getNegativeToOne() * entity.getWidth() + vec.y
-                    , MagickCore.getNegativeToOne() * entity.getWidth() + vec.z)
+            LitParticle par = new LitParticle(entity.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.x
+                    , MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.y
+                    , MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.z)
                     , 0.05f, 0.05f, MagickCore.rand.nextFloat(), 20, ModElements.ORIGIN.getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
@@ -118,8 +118,8 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(group)) {
             ItemStack manaEnergy = new ItemStack(this);
             ItemStack rangeEnergy = manaEnergy.copy();
             ExtraDataUtil.itemManaData(rangeEnergy, (data) -> data.spellContext().range(1.0f));
@@ -136,9 +136,9 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

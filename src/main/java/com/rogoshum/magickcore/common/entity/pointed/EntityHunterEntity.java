@@ -49,7 +49,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        List<Entity> entityList = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), predicate);
+        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox(), predicate);
         for(int i = 0; i < entityList.size(); ++i) {
             Entity entity = entityList.get(i);
             if(!suitableEntity(entity)) continue;
@@ -69,15 +69,15 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Override
     public boolean releaseMagick() {
         if(victim != null) {
-            Vector3d motion = this.getPositionVec().add(0, getHeight() * 0.5, 0).subtract(victim.getPositionVec().add(0, victim.getHeight() * 0.5, 0)).normalize();
-            victim.setMotion(motion.x, motion.y, motion.z);
+            Vector3d motion = this.position().add(0, getBbHeight() * 0.5, 0).subtract(victim.position().add(0, victim.getBbHeight() * 0.5, 0)).normalize();
+            victim.setDeltaMovement(motion.x, motion.y, motion.z);
             if(!victim.isAlive())
                 victim = null;
             return false;
         }
-        float width = getWidth();
-        float height = getHeight();
-        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof ProjectileEntity) && entity.getHeight() < height && entity.getWidth() < width;
+        float width = getBbWidth();
+        float height = getBbHeight();
+        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof ProjectileEntity) && entity.getBbHeight() < height && entity.getBbWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)
@@ -89,10 +89,10 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Override
     public void reSize() {
         float height = getType().getHeight() + spellContext().range * 0.5f;
-        if(getHeight() != height)
+        if(getBbHeight() != height)
             this.setHeight(height);
         float width = getType().getWidth() + spellContext().range * 0.5f;
-        if(getWidth() != width)
+        if(getBbWidth() != width)
             this.setWidth(width);
     }
 
@@ -107,20 +107,20 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.processInitialInteract(player, hand);
-        if (ret.isSuccessOrConsume()) return ret;
-        if (!this.world.isRemote && hand == Hand.MAIN_HAND) {
-            if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        ActionResultType ret = super.interact(player, hand);
+        if (ret.consumesAction()) return ret;
+        if (!this.level.isClientSide && hand == Hand.MAIN_HAND) {
+            if(player.getMainHandItem().getItem() instanceof WandItem) {
                 if(this.victim != null) {
                     ItemStack type = new ItemStack(ModItems.ENTITY_TYPE.get());
                     ExtraDataUtil.itemManaData(type, (data) -> data.spellContext().applyType(ApplyType.SPAWN_ENTITY).addChild(SpawnContext.create(victim.getType())));
-                    this.entityDropItem(type, this.getHeight() * 0.5f);
+                    this.spawnAtLocation(type, this.getBbHeight() * 0.5f);
                 }
                 this.remove();
             }
@@ -137,15 +137,15 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Override
     protected void applyParticle() {
         if(victim == null) return;
-        Vector3d center = victim.getPositionVec().add(0, victim.getHeight() * 0.5, 0);
-        Vector3d center1 = getPositionVec().add(0, getHeight() * 0.5, 0);
+        Vector3d center = victim.position().add(0, victim.getBbHeight() * 0.5, 0);
+        Vector3d center1 = position().add(0, getBbHeight() * 0.5, 0);
         for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
             float[] vertex = RenderHelper.vertex_list[i];
-            double d0 = getWidth() * 0.7f;
+            double d0 = getBbWidth() * 0.7f;
             Vector3d vector3d = new Vector3d(vertex[0], vertex[1], vertex[2]).scale(Math.sqrt(d0 * d0 * 2)).add(center1);
             double dis = vector3d.distanceTo(center);
             int distance = Math.max((int) (10 * dis), 1);
-            float directionPoint = (float) (this.ticksExisted % distance) / distance;
+            float directionPoint = (float) (this.tickCount % distance) / distance;
             int b = (int) (directionPoint * distance);
 
             float scale;
@@ -156,7 +156,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
                     scale = 0.10f;
                 double trailFactor = c / (distance - 1.0D);
                 Vector3d pos = ParticleUtil.drawLine(vector3d, center, trailFactor);
-                LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
+                LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
                         , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, spellContext().element.getRenderer());
                 par.setParticleGravity(0);
                 par.setLimitScale();

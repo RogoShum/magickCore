@@ -114,7 +114,7 @@ public class ManaData {
     public CompoundNBT serialize(CompoundNBT tag) {
         CompoundNBT manaData = new CompoundNBT();
         manaData.putString("ELEMENT", element.type());
-        manaData.putUniqueId("TRACE_TARGET", traceTarget);
+        manaData.putUUID("TRACE_TARGET", traceTarget);
         manaData.putBoolean("TRACE", trace);
         manaData.putFloat("FORCE", force);
         manaData.putInt("RANGE", range);
@@ -123,7 +123,7 @@ public class ManaData {
         manaData.putString("SPAWN_TYPE", spawnType.getLabel());
         if(spawnEntity != null)
             manaData.putString("ENTITY_TYPE", EntityType.getKey(spawnEntity).toString());
-        manaData.put("ITEM_STACK", stack.write(new CompoundNBT()));
+        manaData.put("ITEM_STACK", stack.save(new CompoundNBT()));
 
         tag.put("ManaData", manaData);
         return tag;
@@ -135,7 +135,7 @@ public class ManaData {
         if(tag.contains("ELEMENT"))
             this.element = MagickRegistry.getElement(tag.getString("ELEMENT"));
         if(tag.contains("TRACE_TARGET"))
-            this.traceTarget = tag.getUniqueId("TRACE_TARGET");
+            this.traceTarget = tag.getUUID("TRACE_TARGET");
         if(tag.contains("FORCE"))
             this.force = tag.getFloat("FORCE");
         if(tag.contains("RANGE"))
@@ -148,8 +148,8 @@ public class ManaData {
             this.spawnType = ApplyType.getEnum(tag.getString("SPAWN_TYPE"));
         if(tag.contains("TRACE"))
             this.trace = tag.getBoolean("TRACE");
-        Optional<EntityType<?>> typeOptional = EntityType.byKey(tag.getString("ENTITY_TYPE"));
-        stack = ItemStack.read(tag.getCompound("ITEM_STACK"));
+        Optional<EntityType<?>> typeOptional = EntityType.byString(tag.getString("ENTITY_TYPE"));
+        stack = ItemStack.of(tag.getCompound("ITEM_STACK"));
         spawnEntity = typeOptional.orElse(null);
     }
 

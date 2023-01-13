@@ -25,18 +25,18 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
     public void update() {
         super.update();
         if(entity.initial)
-            TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.ticksExisted % 10) + ".png"));
+            TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
     }
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        float scale = Math.min(1f, (float) (entity.ticksExisted - 30) / 5f) * 0.75f;
+        float scale = Math.min(1f, (float) (entity.tickCount - 30) / 5f) * 0.75f;
         MatrixStack matrixStackIn = params.matrixStack;
-        matrixStackIn.scale(entity.getWidth() * scale, entity.getWidth() * scale, entity.getWidth() * scale);
-        matrixStackIn.push();
+        matrixStackIn.scale(entity.getBbWidth() * scale, entity.getBbWidth() * scale, entity.getBbWidth() * scale);
+        matrixStackIn.pushPose();
         matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
         RenderHelper.renderParticle(BufferContext.create(matrixStackIn, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.halfLight));
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override

@@ -29,6 +29,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     public DirectionMemoryItem(Properties properties) {
         super(properties);
@@ -59,7 +61,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position"))
@@ -76,9 +78,9 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        addPosition(context.getItem(), Vector3d.copyCentered(context.getPos()));
-        context.getWorld().playSound(null, context.getPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
+    public ActionResultType useOn(ItemUseContext context) {
+        addPosition(context.getItemInHand(), Vector3d.atCenterOf(context.getClickedPos()));
+        context.getLevel().playSound(null, context.getClickedPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
         return ActionResultType.SUCCESS;
     }
 
@@ -98,23 +100,23 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if(playerIn.isSneaking() && itemstack.hasTag()) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if(playerIn.isShiftKeyDown() && itemstack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "direction"))
                 NBTTagHelper.removeVectorDouble(itemstack.getTag(), "direction");
             if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "position"))
                 NBTTagHelper.removeVectorDouble(itemstack.getTag(), "position");
-            return ActionResult.resultSuccess(itemstack);
+            return ActionResult.success(itemstack);
         }
-        Vector3d dir = playerIn.getLookVec();
+        Vector3d dir = playerIn.getLookAngle();
         Entity entity = MagickReleaseHelper.getEntityLookedAt(playerIn, 4);
         if(entity != null) {
-            dir = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
+            dir = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
             addPosition(itemstack, dir);
         } else
             NBTTagHelper.putVectorDouble(itemstack.getOrCreateTag(), "direction", dir);
-        worldIn.playSound(null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
-        return ActionResult.resultSuccess(itemstack);
+        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
+        return ActionResult.success(itemstack);
     }
 }

@@ -95,7 +95,7 @@ public class ParticleBuilder {
     public void send () {
         ParticlePack pack = new ParticlePack(0, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element, glow, trace, grav, limitSize, motion, canCollide, color, shake);
         Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                position.x, position.y, position.z, 32, world.getDimensionKey()
+                position.x, position.y, position.z, 32, world.dimension()
         )), pack);
     }
 }

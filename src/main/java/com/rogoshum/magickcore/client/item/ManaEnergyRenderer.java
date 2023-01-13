@@ -69,9 +69,9 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     }
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
-        matrixStack.push();
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+        matrixStack.pushPose();
+        BufferBuilder buffer = Tessellator.getInstance().getBuilder();
         matrixStack.translate(0.5, 0.5, 0.5);
         ItemManaData itemManaData = ExtraDataUtil.itemManaData(stack);
         SpellContext spellContext = itemManaData.spellContext();
@@ -79,13 +79,13 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             RenderType RENDER_TYPE = RenderHelper.getTexedEntity(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
             for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
                 float[] vertex = RenderHelper.vertex_list[i];
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(vertex[0] * 0.6, vertex[1] * 0.6, vertex[2] * 0.6);
                 matrixStack.scale(0.25f, 0.25f, 0.25f);
-                matrixStack.rotate(Vector3f.XP.rotationDegrees(270));
-                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE)
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(270));
+                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE)
                         , new RenderHelper.RenderContext(0.3f, Color.ORIGIN_COLOR, combinedLight));
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
         matrixStack.scale(1.1f, 1.1f, 1.1f);
@@ -96,19 +96,19 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         while (post != null) {
             float angle = MagickCore.proxy.getRunTick() % tick;
             tick-=1;
-            matrixStack.push();
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(360f * (angle / tick)));
-            matrixStack.rotate(Vector3f.XP.rotationDegrees(360f * (angle / tick)));
-            matrixStack.rotate(Vector3f.ZN.rotationDegrees(360f * (angle / tick)));
+            matrixStack.pushPose();
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(360f * (angle / tick)));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(360f * (angle / tick)));
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(360f * (angle / tick)));
             tick += 20;
             matrixStack.translate(0.32, 0.32, 0.32);
             matrixStack.scale(scale, scale, scale);
             scale *= 0.7f;
             renderSingleEnergy(matrixStack, bufferIn, buffer, post, combinedLight, stack);
-            matrixStack.pop();
+            matrixStack.popPose();
             post = post.postContext;
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void renderSingleEnergy(MatrixStack matrixStack, IRenderTypeBuffer bufferIn, BufferBuilder buffer, SpellContext spellContext, int combinedLight, ItemStack stack) {
@@ -117,9 +117,9 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         int orbStack = tick / 20;
         float last = (tick % 20) / 20f;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         float angle = MagickCore.proxy.getRunTick() % 60;
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(360f * (angle / 59)));
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(360f * (angle / 59)));
         if(tick > 0)
             renderEnergy(matrixStack, combinedLight, 0, orbStack, last);
 
@@ -127,7 +127,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         float force = spellContext.force;
         orbStack = (int) (force);
         last = force % 1f;
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(360f * (angle / 59)));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(360f * (angle / 59)));
         if(force > 0)
             renderEnergy(matrixStack, combinedLight, 1, orbStack, last);
 
@@ -135,10 +135,10 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         float range = spellContext.range;
         orbStack = (int) (range);
         last = range % 1f;
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(360f * (angle / 59)));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(360f * (angle / 59)));
         if(range > 0)
             renderEnergy(matrixStack, combinedLight, 2, orbStack, last);
-        matrixStack.pop();
+        matrixStack.popPose();
 
         if(spellContext.containChild(LibContext.SPAWN)) {
             SpawnContext spawnContext = spellContext.getChild(LibContext.SPAWN);
@@ -147,7 +147,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             }
         }
 
-        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().world);
+        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().level);
         if(entity instanceof ContextCreatorEntity)
             renderMaterial(((ContextCreatorEntity) entity).getInnerManaData(), matrixStack, bufferIn, combinedLight);
         else if(entity instanceof IMaterialLimit)
@@ -157,11 +157,11 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             renderMaterial(material, matrixStack, bufferIn, combinedLight);
         }
 
-        matrixStack.push();
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        matrixStack.pushPose();
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         if(spellContext.containChild(LibContext.POTION)) {
             PotionContext potionContext = spellContext.getChild(LibContext.POTION);
-            int color = PotionUtils.getPotionColorFromEffectList(potionContext.effectInstances);
+            int color = PotionUtils.getColor(potionContext.effectInstances);
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1)
                     , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, Color.create(color), combinedLight)
                             , RenderHelper.EmptyVertexContext));
@@ -186,14 +186,14 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         }
         else
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0), INNER_SPHERE_0);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void renderEnergy(MatrixStack matrixStack, int combinedLight, int energyType, int stack, float last) {
         float scale = 0.1f;
         float alpha = 0.2f;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         if(energyType == 0)
             matrixStack.translate(0, 0.15, 0);
         else if(energyType == 1)
@@ -210,7 +210,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         else if(energyType == 2)
             color = Color.RED_COLOR;
         matrixStack.scale(scale, scale, scale);
-        matrixStack.push();
+        matrixStack.pushPose();
         stack = Math.min(stack, 10);
         alpha = 1;
         for (int i = 0; i <= stack; i++) {
@@ -235,49 +235,49 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             renderOrb(matrixStack, combinedLight, color, last, alpha);
         }
          */
-        matrixStack.pop();
-        matrixStack.pop();
+        matrixStack.popPose();
+        matrixStack.popPose();
     }
 
     public void renderOrb(MatrixStack matrixStack, int combinedLight, Color color, float scale, float alpha) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.scale(scale, scale, scale);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(alpha, color, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
         scale = 1.5f;
         matrixStack.scale(scale, scale, scale);
-        matrixStack.rotate(Vector3f.YP.rotation(45));
-        matrixStack.rotate(Vector3f.ZP.rotation(45));
+        matrixStack.mulPose(Vector3f.YP.rotation(45));
+        matrixStack.mulPose(Vector3f.ZP.rotation(45));
     }
 
     public void renderEntity(EntityType<?> entityType, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
-        Entity entity = entityType.create(Minecraft.getInstance().world);
+        Entity entity = entityType.create(Minecraft.getInstance().level);
         if(entity == null) return;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         if(entity instanceof IManaEntity) {
             IManaEntity manaEntity = (IManaEntity) entity;
             ResourceLocation icon = manaEntity.getEntityIcon();
             if(icon == null)
                 icon = IManaEntity.orbTex;
 
-            BufferContext bufferContext = BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbGlow(icon));
+            BufferContext bufferContext = BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrbGlow(icon));
             Color color = manaEntity.spellContext().element.color();
-            Matrix4f matrix4f = matrixStack.getLast().getMatrix();
+            Matrix4f matrix4f = matrixStack.last().pose();
             float alpha = 0.5f;
             float scale = 0.4f;
             matrixStack.scale(scale, scale, scale);
-            matrixStack.rotate(Vector3f.YN.rotationDegrees(45));
-            matrixStack.rotate(Vector3f.XN.rotationDegrees(30));
-            matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
+            matrixStack.mulPose(Vector3f.YN.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.XN.rotationDegrees(30));
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
             RenderHelper.renderStaticParticle(bufferContext, new RenderHelper.RenderContext(alpha, color, RenderHelper.renderLight));
         } else if(!ERROR_TYPE.contains(entity.getType())){
             float scale = 0.4f;
-            double xSize = entity.getRenderBoundingBox().getXSize();
-            double ySize = entity.getRenderBoundingBox().getYSize();
-            double zSize = entity.getRenderBoundingBox().getZSize();
+            double xSize = entity.getBoundingBoxForCulling().getXsize();
+            double ySize = entity.getBoundingBoxForCulling().getYsize();
+            double zSize = entity.getBoundingBoxForCulling().getZsize();
             double longest = Math.max(xSize, Math.max(zSize, ySize));
 
             scale = (float) (scale / longest);
@@ -286,14 +286,14 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
 
             matrixStack.translate(0, -ySize / 2, 0);
             try {
-                Minecraft.getInstance().getRenderManager().renderEntityStatic(entity, 0, 0, 0, 0
+                Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0, 0, 0, 0
                         , 0, matrixStack
                         , bufferIn, combinedLight);
             } catch (Exception e) {
                 ERROR_TYPE.add(entity.getType());
             }
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void renderMaterial(IMaterialLimit material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
@@ -301,13 +301,13 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     }
 
     public void renderMaterial(Material material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
-        matrixStack.push();
+        matrixStack.pushPose();
         ItemStack stack = new ItemStack(material.getItem());
-        float f3 = ((float) MagickCore.proxy.getRunTick() + Minecraft.getInstance().getRenderPartialTicks()) / 100.0F;
+        float f3 = ((float) MagickCore.proxy.getRunTick() + Minecraft.getInstance().getFrameTime()) / 100.0F;
         matrixStack.translate(0, -0.1, 0);
-        matrixStack.rotate(Vector3f.YP.rotation(f3));
-        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack, null, null);
-        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-        matrixStack.pop();
+        matrixStack.mulPose(Vector3f.YP.rotation(f3));
+        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
+        Minecraft.getInstance().getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+        matrixStack.popPose();
     }
 }

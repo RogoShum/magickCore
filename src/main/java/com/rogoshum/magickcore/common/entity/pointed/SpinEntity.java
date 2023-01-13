@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SpinEntity extends ManaPointEntity {
-    protected Vector3d hitPoint = this.getPositionVec();
+    protected Vector3d hitPoint = this.position();
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/spin.png");
     public SpinEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -41,18 +41,18 @@ public class SpinEntity extends ManaPointEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.random.nextFloat());
         }
-        if (this.ticksExisted % 2 == 0) {
-            this.playSound(SoundEvents.BLOCK_CHAIN_HIT, 0.5F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount % 2 == 0) {
+            this.playSound(SoundEvents.CHAIN_HIT, 0.5F, 1.0F + this.random.nextFloat());
         }
     }
 
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return world.getEntitiesInAABBexcluding(this, new AxisAlignedBB(getHitPoint(), getHitPoint()).grow(getRange()), predicate);
+        return level.getEntities(this, new AxisAlignedBB(getHitPoint(), getHitPoint()).inflate(getRange()), predicate);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -72,7 +72,7 @@ public class SpinEntity extends ManaPointEntity {
         Vector2f rotation = ParticleUtil.getRotationForVector(vec);
         vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(14 - spellContext().range * 0.5f, 1f));
         spellContext().addChild(DirectionContext.create(vec));
-        hitPoint =  getPositionVec().add(vec.scale(range * 2));
+        hitPoint =  position().add(vec.scale(range * 2));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class SpinEntity extends ManaPointEntity {
         List<Vector3d> list = ParticleUtil.drawRectangle(hit, scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vector3d pos = list.get(i);
-            LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , pos.add(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f)
                     , 0.05f, 0.05f, 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();

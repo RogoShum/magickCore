@@ -58,17 +58,17 @@ public class MagickItemRecipeCategory implements IRecipeCategory<MagickWorkbench
 
     @Override
     public void setIngredients(MagickWorkbenchRecipe inbtRecipe, IIngredients iIngredients) {
-        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getMatchingStacks()));
+        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getItems()));
         iIngredients.setInputs(VanillaTypes.ITEM, stacks);
-        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getRecipeOutput());
+        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getResultItem());
     }
 
     @Override
     public void setRecipe(IRecipeLayout iRecipeLayout, MagickWorkbenchRecipe inbtRecipe, IIngredients iIngredients) {
         iRecipeLayout.getItemStacks().init(0, false, 80, 18);
         iRecipeLayout.getItemStacks().init(1, true, 18, 18);
-        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getRecipeOutput());
-        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getMatchingStacks()));
+        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getResultItem());
+        List<ItemStack> stacks = new ArrayList<>(Arrays.asList(inbtRecipe.getIngredient().getItems()));
         iRecipeLayout.getItemStacks().set(1, stacks);
     }
 }

@@ -40,7 +40,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public void tick() {
         super.tick();
-        if(this.ticksExisted <= 10)
+        if(this.tickCount <= 10)
             return;
         initial = true;
     }
@@ -59,7 +59,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(0, getHeight(), 0), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(0, getBbHeight(), 0), predicate);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         if(!initial) return false;
         List<Entity> livings = findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(this.getOwner(), living));
         livings.forEach(living -> {
-            MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);
+            MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);
             MagickReleaseHelper.releaseMagick(context);
         });
         return true;
@@ -81,9 +81,9 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     protected void doClientTask() {
         super.doClientTask();
-        if(this.ticksExisted % 2 == 0) {
+        if(this.tickCount % 2 == 0) {
             Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-            this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.06F, 0.01F));
+            this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.06F, 0.01F));
         }
     }
 
@@ -94,51 +94,51 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1)
+        if(this.tickCount == 1)
         {
-            this.playSound(ModSounds.wall_spawn.get(), 2.0F, 0.7F + this.rand.nextFloat());
+            this.playSound(ModSounds.wall_spawn.get(), 2.0F, 0.7F + this.random.nextFloat());
         }
 
-        if(this.ticksExisted % 10 == 0)
+        if(this.tickCount % 10 == 0)
         {
-            this.playSound(ModSounds.wall_ambience.get(), 1.0F, 0.8F - this.rand.nextFloat() / 4);
+            this.playSound(ModSounds.wall_ambience.get(), 1.0F, 0.8F - this.random.nextFloat() / 4);
         }
 
-        if(this.ticksExisted == this.spellContext().tick - 5)
-            this.playSound(ModSounds.wall_dissipate.get(), 2.0F, 1.0F + this.rand.nextFloat());
+        if(this.tickCount == this.spellContext().tick - 5)
+            this.playSound(ModSounds.wall_dissipate.get(), 2.0F, 1.0F + this.random.nextFloat());
     }
 
     @Override
     protected void applyParticle()
     {
-        if(this.ticksExisted % 5 ==0) {
-            LitParticle cc = new LitParticle(this.world, this.spellContext().element.getRenderer().getRingTexture()
-                    , new Vector3d(this.getPosX()
-                    , this.getPosY() + this.getHeight()
-                    , this.getPosZ())
+        if(this.tickCount % 5 ==0) {
+            LitParticle cc = new LitParticle(this.level, this.spellContext().element.getRenderer().getRingTexture()
+                    , new Vector3d(this.getX()
+                    , this.getY() + this.getBbHeight()
+                    , this.getZ())
                     , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
             cc.setGlow();
             cc.setParticleGravity(0);
             MagickCore.addMagickParticle(cc);
         }
         for(int i = 0; i < 5; ++i) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                    , this.getPosY() + this.getHeight() / 5
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                    , 0.1f, 0.1f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , this.getY() + this.getBbHeight() / 5
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
+                    , 0.1f, 0.1f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
             par.setGlow();
             par.setParticleGravity(-0.15f);
             par.addMotion(MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.01);
             MagickCore.addMagickParticle(par);
         }
 
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 3; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getPosX()
-                    , this.getPosY() + this.getHeight()
-                    , this.getPosZ())
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(this.getX()
+                    , this.getY() + this.getBbHeight()
+                    , this.getZ())
                     , 0.2f, 0.2f, 1.0f, 18, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0.5f);

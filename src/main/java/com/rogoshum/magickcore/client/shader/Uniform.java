@@ -20,7 +20,7 @@ public class Uniform extends ShaderDefault {
     public void setSafe(float p_148092_1_, float p_148092_2_, float p_148092_3_, float p_148092_4_) {
     }
 
-    public void set(int p_148083_1_, int p_148083_2_, int p_148083_3_, int p_148083_4_) {
+    public void setSafe(int p_148083_1_, int p_148083_2_, int p_148083_3_, int p_148083_4_) {
     }
 
     public void set(float[] p_148097_1_) {

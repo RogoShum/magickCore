@@ -53,22 +53,22 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     public void render(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-        matrixStackIn.push();
+        matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+        matrixStackIn.pushPose();
         RenderSystem.disableDepthTest();
         RenderSystem.disableTexture();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
         matrixStackIn.translate(0, 0.5f, 0);
-        this.draw(bufferbuilder, matrixStackIn.getLast().getMatrix(), 1.05f, 0.02f, 0, 0, 0);
-        this.draw(bufferbuilder, matrixStackIn.getLast().getMatrix(), percentage, 0, color.r(), color.g(), color.b());
+        this.draw(bufferbuilder, matrixStackIn.last().pose(), 1.05f, 0.02f, 0, 0, 0);
+        this.draw(bufferbuilder, matrixStackIn.last().pose(), percentage, 0, color.r(), color.g(), color.b());
         RenderSystem.enableBlend();
         RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     private void draw(BufferBuilder renderer, Matrix4f matrix, float width, float height, float red, float green, float blue) {
@@ -76,11 +76,11 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         height += 0.03f;
         height *= 0.5;
         renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos(matrix, -width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
-        renderer.pos(matrix, -width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
-        renderer.pos(matrix, width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
-        renderer.pos(matrix, width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
-        Tessellator.getInstance().draw();
+        renderer.vertex(matrix, -width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
+        renderer.vertex(matrix, -width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
+        renderer.vertex(matrix, width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
+        renderer.vertex(matrix, width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
+        Tessellator.getInstance().end();
     }
 
     @Override
@@ -92,11 +92,11 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
 
     @Override
     protected void updateSpellContext() {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
         debugX = x - camX + offset.x;
-        debugY = y - camY + entity.getHeight() + offset.y;
+        debugY = y - camY + entity.getBbHeight() + offset.y;
         debugZ = z - camZ + offset.z;
 
         String information = ExtraDataUtil.itemManaData(entity.getItem()).spellContext().toString();

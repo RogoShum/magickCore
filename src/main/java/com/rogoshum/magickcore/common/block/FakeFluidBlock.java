@@ -8,11 +8,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class FakeFluidBlock extends FlowingFluidBlock implements ILightingBlock {
 
     public FakeFluidBlock(FlowingFluid fluidIn, Properties builder) {
         super(fluidIn, builder);
-        this.setDefaultState(this.stateContainer.getBaseState().with(LIGHT_LEVEL, 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(LIGHT_LEVEL, 0));
     }
 
     @Override
@@ -21,21 +23,21 @@ public class FakeFluidBlock extends FlowingFluidBlock implements ILightingBlock 
     }
 
     protected int getLight(BlockState state) {
-        return state.get(LIGHT_LEVEL);
+        return state.getValue(LIGHT_LEVEL);
     }
 
     public void changeLight(ServerWorld worldIn, BlockPos pos, BlockState state, int level) {
-        worldIn.setBlockState(pos, withLightAndFluid(level, state.get(LEVEL)), 2);
+        worldIn.setBlock(pos, withLightAndFluid(level, state.getValue(LEVEL)), 2);
     }
 
     public BlockState withLightAndFluid(int light, int fluid) {
         light = Math.min(Math.max(light, 0), 15);
-        return this.getDefaultState().with(LIGHT_LEVEL, light).with(LEVEL, fluid);
+        return this.defaultBlockState().setValue(LIGHT_LEVEL, light).setValue(LEVEL, fluid);
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(LIGHT_LEVEL);
         builder.add(STATE);
     }

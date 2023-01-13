@@ -19,6 +19,8 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 
 
+import net.minecraft.client.gui.widget.button.Button.IPressable;
+
 public class ItemStackButton extends Button {
     public final ItemStack stack;
 
@@ -35,8 +37,8 @@ public class ItemStackButton extends Button {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        minecraft.getTextureManager().bindTexture(new ResourceLocation("textures/gui/widgets.png"));
+        FontRenderer fontrenderer = minecraft.font;
+        minecraft.getTextureManager().bind(new ResourceLocation("textures/gui/widgets.png"));
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 
         RenderSystem.enableBlend();
@@ -48,7 +50,7 @@ public class ItemStackButton extends Button {
         this.renderBg(matrixStack, minecraft, mouseX, mouseY);
         int j = getFGColor();
         drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + 21, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
-        minecraft.getItemRenderer().renderItemIntoGUI(stack, this.x+2, this.y+2);
+        minecraft.getItemRenderer().renderGuiItem(stack, this.x+2, this.y+2);
     }
 
     @Override
@@ -56,9 +58,9 @@ public class ItemStackButton extends Button {
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         net.minecraftforge.fml.client.gui.GuiUtils.preItemToolTip(stack);
         net.minecraftforge.fml.client.gui.GuiUtils.drawHoveringText(
-                matrixStack, stack.getTooltip(Minecraft.getInstance().player,
-                        Minecraft.getInstance().gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL)
-                , mouseX, mouseY, width, height, -1, font == null ? Minecraft.getInstance().fontRenderer : font);
+                matrixStack, stack.getTooltipLines(Minecraft.getInstance().player,
+                        Minecraft.getInstance().options.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL)
+                , mouseX, mouseY, width, height, -1, font == null ? Minecraft.getInstance().font : font);
         net.minecraftforge.fml.client.gui.GuiUtils.postItemToolTip();
     }
 }

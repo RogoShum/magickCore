@@ -56,13 +56,13 @@ public class MagickWorkbenchRecipe implements IRecipe<IInventory> {
         return MAGICK_WORKBENCH;
     }
 
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return this.recipeOutput;
     }
 
     @Nonnull
     public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.from(ingredient);
+        return NonNullList.of(ingredient);
     }
 
     @Nonnull
@@ -87,7 +87,7 @@ public class MagickWorkbenchRecipe implements IRecipe<IInventory> {
     /**
      * Used to determine if this recipe can fit in a grid of the given width/height
      */
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width*height==1;
     }
 
@@ -95,52 +95,52 @@ public class MagickWorkbenchRecipe implements IRecipe<IInventory> {
      * Used to check if a recipe matches current crafting inventory
      */
     public boolean matches(IInventory inv, World worldIn) {
-        if(inv.getSizeInventory() < 1)
+        if(inv.getContainerSize() < 1)
             return false;
-        ItemStack stack = inv.getStackInSlot(0);
+        ItemStack stack = inv.getItem(0);
         return ingredient.test(stack);
     }
 
     /**
      * Returns an Item that is the result of this recipe
      */
-    public ItemStack getCraftingResult(IInventory inv) {
-        if(inv.getSizeInventory() < 1)
+    public ItemStack assemble(IInventory inv) {
+        if(inv.getContainerSize() < 1)
             return ItemStack.EMPTY;
-        ItemStack stack = inv.getStackInSlot(0);
+        ItemStack stack = inv.getItem(0);
         HashSet<String> keys = new HashSet<>();
         if(stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
             keys = NBTTagHelper.getNBTKeySet(tag);
         }
         if(keys.containsAll(this.keySet)) {
-            ItemStack copy = this.getRecipeOutput().copy();
+            ItemStack copy = this.getResultItem().copy();
             if(stack.hasTag())
                 copy.setTag(stack.getTag().copy());
             return copy;
         }
-        return this.getRecipeOutput().copy();
+        return this.getResultItem().copy();
     }
 
     public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<MagickWorkbenchRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "magick_workbench");
         public static final IRecipeSerializer<?> INSTANCE = new Serializer().setRegistryName(NAME);
-        public MagickWorkbenchRecipe read(ResourceLocation recipeId, JsonObject json) {
-            String s = JSONUtils.getString(json, "group", "");
-            Ingredient ingredient = Ingredient.deserialize(JSONUtils.getJsonObject(json, "input"));
-            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+        public MagickWorkbenchRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            String s = JSONUtils.getAsString(json, "group", "");
+            Ingredient ingredient = Ingredient.fromJson(JSONUtils.getAsJsonObject(json, "input"));
+            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getAsJsonObject(json, "result"));
             return new MagickWorkbenchRecipe(recipeId, s, ingredient, itemstack);
         }
 
-        public MagickWorkbenchRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            String s = buffer.readString(32767);
-            return new MagickWorkbenchRecipe(recipeId, s, Ingredient.read(buffer), buffer.readItemStack());
+        public MagickWorkbenchRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            String s = buffer.readUtf(32767);
+            return new MagickWorkbenchRecipe(recipeId, s, Ingredient.fromNetwork(buffer), buffer.readItem());
         }
 
-        public void write(PacketBuffer buffer, MagickWorkbenchRecipe recipe) {
-            buffer.writeString(recipe.group);
-            recipe.ingredient.write(buffer);
-            buffer.writeItemStack(recipe.recipeOutput);
+        public void toNetwork(PacketBuffer buffer, MagickWorkbenchRecipe recipe) {
+            buffer.writeUtf(recipe.group);
+            recipe.ingredient.toNetwork(buffer);
+            buffer.writeItem(recipe.recipeOutput);
         }
     }
 }

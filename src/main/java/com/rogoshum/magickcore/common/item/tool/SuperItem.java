@@ -27,12 +27,12 @@ import java.util.List;
 
 public class SuperItem extends BaseItem {
     public SuperItem() {
-        super(properties().maxStackSize(1));
+        super(properties().stacksTo(1));
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity playerIn) {
-        if(!worldIn.isRemote) {
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity playerIn) {
+        if(!worldIn.isClientSide) {
             EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
             float mana = state.getManaValue();
             if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
@@ -42,17 +42,17 @@ public class SuperItem extends BaseItem {
             boolean success = MagickReleaseHelper.releaseMagick(context);
             if(success) {
                 state.setManaValue(0);
-                ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 5, state.getElement(), ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(playerIn.level, playerIn.position().add(0, playerIn.getBbHeight() * 0.5, 0), 5, state.getElement(), ParticleType.PARTICLE);
             }
         }
-        return super.onItemUseFinish(stack, worldIn, playerIn);
+        return super.finishUsingItem(stack, worldIn, playerIn);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
-        return ActionResult.resultConsume(itemstack);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
+        return ActionResult.consume(itemstack);
     }
 
     @Override
@@ -61,12 +61,12 @@ public class SuperItem extends BaseItem {
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.SUPER_D));
     }
 }

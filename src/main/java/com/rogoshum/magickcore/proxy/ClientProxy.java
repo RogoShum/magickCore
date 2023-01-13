@@ -18,6 +18,7 @@ import com.rogoshum.magickcore.client.tileentity.*;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
 import com.rogoshum.magickcore.common.init.*;
+import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.ObjectRegistry;
@@ -31,6 +32,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.settings.ParticleStatus;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -250,9 +252,7 @@ public class ClientProxy implements IProxy {
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		IItemColor color = (stack, p_getColor_2_) -> {
 			if(NBTTagHelper.hasElement(stack)) {
-				com.rogoshum.magickcore.common.magick.Color color1 = MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor();
-				float[] hsv = Color.RGBtoHSB((int) (color1.r() * 255), (int) (color1.g() * 255), (int) (color1.b() * 255), null);
-				return MathHelper.hsvToRGB(hsv[0], hsv[1], hsv[2]);
+				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor().getDecimalColor();
 			}
 			return 	16777215;
 		};
@@ -261,6 +261,13 @@ public class ClientProxy implements IProxy {
 		event.getItemColors().register(color, ModItems.ELEMENT_CRYSTAL.get());
 		event.getItemColors().register(color, ModItems.ELEMENT_STRING.get());
 		event.getItemColors().register(color, ModItems.ELEMENT_WOOL.get());
+		color = (stack, p_getColor_2_) -> {
+			CompoundNBT tag = stack.getOrCreateTag();
+			if(tag.contains(WandItem.SET_KEY) && !tag.getCompound(WandItem.SET_KEY).isEmpty())
+				return RenderHelper.getRGB().getDecimalColor();
+			return 	16777215;
+		};
+		event.getItemColors().register(color, ModItems.WAND.get());
 	}
 
 	public void putElementRendererIn(String name, ElementRenderer renderer) {
@@ -269,17 +276,17 @@ public class ClientProxy implements IProxy {
 
 	public void initBlockRenderer() {
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.getTranslucent());
+		RenderTypeLookup.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
 		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.getSolid());
+		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}
 
 	private void putElementRenderer() {
@@ -295,16 +302,16 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void addMagickParticle(LitParticle par) {
-		Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+		Vector3d vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
 		if(!RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
 			return;
 
-		if(Minecraft.getInstance().gameSettings.particles == ParticleStatus.DECREASED) {
+		if(Minecraft.getInstance().options.particles == ParticleStatus.DECREASED) {
 			if(MagickCore.rand.nextInt(3) > 0)
 				RenderEvent.addMagickParticle(par);
 		}
-		else if(Minecraft.getInstance().gameSettings.particles == ParticleStatus.MINIMAL) {
+		else if(Minecraft.getInstance().options.particles == ParticleStatus.MINIMAL) {
 			if(MagickCore.rand.nextInt(4) == 0)
 				RenderEvent.addMagickParticle(par);
 		}

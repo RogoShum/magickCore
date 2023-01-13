@@ -18,26 +18,26 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 public class EntityInteractHelper {
     public static ActionResultType placeBlock(PlayerEntity player, Hand hand, ItemStack stack, Entity entity) {
         if(stack.getItem() instanceof BlockItem) {
-            Vector3d vector3d = player.getLookVec();
+            Vector3d vector3d = player.getLookAngle();
             BlockItemUseContext blockItemUseContext = new BlockItemUseContext(player, hand, stack,
                     new BlockRayTraceResult(
-                            entity.getPositionVec().add(0, entity.getHeight() * 0.5f, 0),
-                            Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z).getOpposite(),
-                            new BlockPos(entity.getPositionVec()),
+                            entity.position().add(0, entity.getBbHeight() * 0.5f, 0),
+                            Direction.getNearest(vector3d.x, vector3d.y, vector3d.z).getOpposite(),
+                            new BlockPos(entity.position()),
                             false
                     ));
-            ObfuscationReflectionHelper.setPrivateValue(BlockItemUseContext.class, blockItemUseContext, false, "field_196013_a");
-            return ((BlockItem) stack.getItem()).tryPlace(blockItemUseContext);
+            ObfuscationReflectionHelper.setPrivateValue(BlockItemUseContext.class, blockItemUseContext, false, "replaceClicked");
+            return ((BlockItem) stack.getItem()).place(blockItemUseContext);
         } else if(stack.getItem() instanceof EntityItem) {
-            Vector3d vector3d = player.getLookVec();
+            Vector3d vector3d = player.getLookAngle();
             BlockItemUseContext blockItemUseContext = new BlockItemUseContext(player, hand, stack,
                     new BlockRayTraceResult(
-                            entity.getPositionVec().add(0, entity.getHeight() * 0.5f, 0),
-                            Direction.getFacingFromVector(vector3d.x, vector3d.y, vector3d.z).getOpposite(),
-                            new BlockPos(entity.getPositionVec()),
+                            entity.position().add(0, entity.getBbHeight() * 0.5f, 0),
+                            Direction.getNearest(vector3d.x, vector3d.y, vector3d.z).getOpposite(),
+                            new BlockPos(entity.position()),
                             false
                     ));
-            ObfuscationReflectionHelper.setPrivateValue(BlockItemUseContext.class, blockItemUseContext, false, "field_196013_a");
+            ObfuscationReflectionHelper.setPrivateValue(BlockItemUseContext.class, blockItemUseContext, false, "replaceClicked");
             return ((EntityItem) stack.getItem()).tryPlace(blockItemUseContext);
         }
         return ActionResultType.PASS;

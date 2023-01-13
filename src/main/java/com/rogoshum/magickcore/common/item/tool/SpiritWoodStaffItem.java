@@ -28,6 +28,8 @@ import net.minecraft.item.UseAction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
+import net.minecraft.item.Item.Properties;
+
 public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
     public SpiritWoodStaffItem(Properties properties) {
         super(properties);
@@ -44,7 +46,7 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
@@ -52,7 +54,7 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
         super.onUsingTick(stack, player, count);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
+        MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(player).victim(player).element(element);
         if(context.containChild(LibContext.TRACE)) {
@@ -87,7 +89,7 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
             context1 = context1.postContext;
         }
         if(MagickReleaseHelper.releaseMagick(context, factor)) {
-            ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getHeight() * 0.5, 0), 2, state.getElement(), ParticleType.PARTICLE);
+            ParticleUtil.spawnBlastParticle(player.level, player.position().add(0, player.getBbHeight() * 0.5, 0), 2, state.getElement(), ParticleType.PARTICLE);
         }
     }
 

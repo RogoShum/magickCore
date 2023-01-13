@@ -19,45 +19,45 @@ import net.minecraft.util.math.vector.Vector3f;
 public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
-        matrixStackIn.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.1901, 0.5);
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
-        matrixStackIn.push();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.3f, 0.42f, 0.3f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
         if(!stack.hasTag()) {
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
             return;
         }
         CompoundNBT blockTag = NBTTagHelper.getBlockTag(stack.getTag());
         if(!blockTag.contains("stack")) {
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
             return;
         }
-        ItemStack stack1 = ItemStack.read(blockTag.getCompound("stack"));
+        ItemStack stack1 = ItemStack.of(blockTag.getCompound("stack"));
         if(!stack1.isEmpty()) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             matrixStackIn.translate(0, 0.15, 0);
             matrixStackIn.scale(0.01f, 0.01f, .01f);
-            matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(180));
+            matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(180));
             String count = String.valueOf(blockTag.getInt("count"));
-            Minecraft.getInstance().fontRenderer.drawString(matrixStackIn, count, -count.length()*3, 2, 0);
-            matrixStackIn.pop();
+            Minecraft.getInstance().font.draw(matrixStackIn, count, -count.length()*3, 2, 0);
+            matrixStackIn.popPose();
             matrixStackIn.translate(0, -0.12f, 0);
             matrixStackIn.scale(0.5f, 0.5f, .5f);
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(stack1, null, null);
-            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-            Minecraft.getInstance().getItemRenderer().renderItem(stack1, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-            renderTypeBuffer.finish();
+            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack1, null, null);
+            IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+            Minecraft.getInstance().getItemRenderer().render(stack1, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            renderTypeBuffer.endBatch();
         }
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

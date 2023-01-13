@@ -22,23 +22,23 @@ public class EntityHunterRenderer extends EntityRenderer<EntityHunterEntity> {
 	}
 
 	@Override
-	protected int getBlockLight(EntityHunterEntity entityIn, BlockPos partialTicks) {
+	protected int getBlockLightLevel(EntityHunterEntity entityIn, BlockPos partialTicks) {
 		return 15;
 	}
 
 	@Override
 	public void render(EntityHunterEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-		matrixStackIn.push();
-		matrixStackIn.scale(entityIn.getWidth(), entityIn.getHeight(), entityIn.getWidth());
+		matrixStackIn.pushPose();
+		matrixStackIn.scale(entityIn.getBbWidth(), entityIn.getBbHeight(), entityIn.getBbWidth());
 		matrixStackIn.translate(0, -0.5, 0);
 		Color color = entityIn.spellContext().element.color();
-		this.model.render(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedEntityGlow(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
-		matrixStackIn.pop();
+		this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedEntityGlow(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
+		matrixStackIn.popPose();
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(EntityHunterEntity entity) {
+	public ResourceLocation getTextureLocation(EntityHunterEntity entity) {
 		return TEXTURE;
 	}
 }

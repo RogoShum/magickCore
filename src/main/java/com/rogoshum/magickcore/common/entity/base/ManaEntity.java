@@ -48,18 +48,18 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     private final SpellContext spellContext = SpellContext.create();
     private UUID owner_uuid;
     private int owner_id;
-    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.createKey(ManaEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-    private static final DataParameter<Integer> DAMAGE = EntityDataManager.createKey(ManaEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(ManaEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(ManaEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.defineId(ManaEntity.class, DataSerializers.OPTIONAL_UUID);
+    private static final DataParameter<Integer> DAMAGE = EntityDataManager.defineId(ManaEntity.class, DataSerializers.INT);
+    private static final DataParameter<Float> HEIGHT = EntityDataManager.defineId(ManaEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(ManaEntity.class, DataSerializers.FLOAT);
     private int lastDamageTick;
 
     public ManaEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        this.dataManager.register(dataUUID, Optional.of(MagickCore.emptyUUID));
-        this.dataManager.register(DAMAGE, 3);
-        this.dataManager.register(HEIGHT, this.getType().getHeight());
-        this.dataManager.register(WIDTH, this.getType().getWidth());
+        this.entityData.define(dataUUID, Optional.of(MagickCore.emptyUUID));
+        this.entityData.define(DAMAGE, 3);
+        this.entityData.define(HEIGHT, this.getType().getHeight());
+        this.entityData.define(WIDTH, this.getType().getWidth());
     }
 
     @Override
@@ -67,24 +67,24 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         return sizeIn.height * -0.5f;
     }
     @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
+    public void onSyncedDataUpdated(DataParameter<?> key) {
         if (HEIGHT.equals(key) || WIDTH.equals(key)) {
-            this.recalculateSize();
+            this.refreshDimensions();
         }
-        super.notifyDataManagerChange(key);
+        super.onSyncedDataUpdated(key);
     }
 
-    public void recalculateSize() {
-        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "field_213325_aI");
+    public void refreshDimensions() {
+        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
         Pose pose = this.getPose();
-        EntitySize entitysize1 = this.getSize(pose);
+        EntitySize entitysize1 = this.getDimensions(pose);
         net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "field_213325_aI");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "field_213326_aJ");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AxisAlignedBB(this.getPosX() - d0, this.getPosY(), this.getPosZ() - d0, this.getPosX() + d0, this.getPosY() + (double)entitysize1.height, this.getPosZ() + d0));
+        this.setBoundingBox(new AxisAlignedBB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
     }
 
     @Override
@@ -93,31 +93,31 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public EntitySize getSize(Pose poseIn) {
-        return EntitySize.flexible(this.getDataManager().get(WIDTH), this.getDataManager().get(HEIGHT));
+    public EntitySize getDimensions(Pose poseIn) {
+        return EntitySize.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
     }
 
     public void setHeight(float height) {
-        this.getDataManager().set(HEIGHT, height);
+        this.getEntityData().set(HEIGHT, height);
     }
     public void setWidth(float width) {
-        this.getDataManager().set(WIDTH, width);
+        this.getEntityData().set(WIDTH, width);
     }
 
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
         CompoundNBT addition = new CompoundNBT();
-        writeAdditional(addition);
-        buffer.writeCompoundTag(addition);
+        addAdditionalSaveData(addition);
+        buffer.writeNbt(addition);
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         if(id == 3)
             this.remove();
         else
-            super.handleStatusUpdate(id);
+            super.handleEntityEvent(id);
     }
 
     @Override
@@ -127,47 +127,47 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
-        readAdditional(additionalData.readCompoundTag());
+        readAdditionalSaveData(additionalData.readNbt());
     }
 
     @Override
     public void setOwner(@Nullable Entity entityIn) {
         if (entityIn != null) {
-            this.owner_uuid = entityIn.getUniqueID();
-            this.owner_id = entityIn.getEntityId();
-            this.setOwnerUUID(entityIn.getUniqueID());
+            this.owner_uuid = entityIn.getUUID();
+            this.owner_id = entityIn.getId();
+            this.setOwnerUUID(entityIn.getUUID());
         }
     }
 
     @Override
-    public boolean isImmuneToFire() {
+    public boolean fireImmune() {
         return true;
     }
 
     @Override
-    public void forceFireTicks(int ticks) {
+    public void setRemainingFireTicks(int ticks) {
     }
 
     @Override
-    public int getFireTimer() {
+    public int getRemainingFireTicks() {
         return 0;
     }
 
     @Override
     @Nullable
     public Entity getOwner() {
-        if (this.owner_uuid != null && this.world instanceof ServerWorld) {
-            return ((ServerWorld)this.world).getEntityByUuid(this.owner_uuid);
-        } else if(this.world instanceof ServerWorld){
-            return this.owner_id != 0 ? this.world.getEntityByID(this.owner_id) : null;
+        if (this.owner_uuid != null && this.level instanceof ServerWorld) {
+            return ((ServerWorld)this.level).getEntity(this.owner_uuid);
+        } else if(this.level instanceof ServerWorld){
+            return this.owner_id != 0 ? this.level.getEntity(this.owner_id) : null;
         }
         else{
             ArrayList<Entity> list = new ArrayList<>();
-            ((ClientWorld)this.world).getAllEntities().forEach((list::add));
+            ((ClientWorld)this.level).entitiesForRendering().forEach((list::add));
 
             for (Entity entity : list)
             {
-                if(entity.getUniqueID().equals(getOwnerUUID()))
+                if(entity.getUUID().equals(getOwnerUUID()))
                     return entity;
             }
 
@@ -176,12 +176,12 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_GENERIC_HURT;
+        return SoundEvents.GENERIC_HURT;
     }
 
     protected void playHurtSound(DamageSource source) {
@@ -199,7 +199,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
      * Gets the pitch of living sounds in living entities.
      */
     protected float getSoundPitch() {
-        return (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F;
+        return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F;
     }
 
     @Override
@@ -208,34 +208,34 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     public void damageEntity() {
-        if(this.ticksExisted - lastDamageTick < 10) return;
+        if(this.tickCount - lastDamageTick < 10) return;
         playHurtSound(null);
         setDamage(getDamage() - 1);
-        lastDamageTick = this.ticksExisted;
-        if(!world.isRemote && getDamage() <= 0) {
-            this.world.setEntityState(this, (byte) 3);
+        lastDamageTick = this.tickCount;
+        if(!level.isClientSide && getDamage() <= 0) {
+            this.level.broadcastEntityEvent(this, (byte) 3);
             if(!removed)
                 this.remove();
         }
     }
 
     public void setDamage(int damage) {
-        this.dataManager.set(DAMAGE, damage);
+        this.entityData.set(DAMAGE, damage);
     }
 
     public int getDamage() {
-       return this.dataManager.get(DAMAGE);
+       return this.entityData.get(DAMAGE);
     }
 
     @Override
     public void setOwnerUUID(UUID uuid) {
-        this.getDataManager().set(dataUUID, Optional.of(uuid));
+        this.getEntityData().set(dataUUID, Optional.of(uuid));
     }
 
     public UUID getOwnerUUID() {
         try{
-            if(this.getDataManager().get(dataUUID).isPresent())
-                return this.getDataManager().get(dataUUID).get();
+            if(this.getEntityData().get(dataUUID).isPresent())
+                return this.getEntityData().get(dataUUID).get();
         }
         catch (Exception ignored)
         {
@@ -251,20 +251,20 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     @Override
     public void tick() {
         super.tick();
-        Vector3d vector3d = this.getMotion();
-        double d2 = this.getPosX() + vector3d.x;
-        double d0 = this.getPosY() + vector3d.y;
-        double d1 = this.getPosZ() + vector3d.z;
-        this.setMotion(vector3d.scale(0.9));
-        this.setPosition(d2, d0, d1);
+        Vector3d vector3d = this.getDeltaMovement();
+        double d2 = this.getX() + vector3d.x;
+        double d0 = this.getY() + vector3d.y;
+        double d1 = this.getZ() + vector3d.z;
+        this.setDeltaMovement(vector3d.scale(0.9));
+        this.setPos(d2, d0, d1);
         collideWithNearbyEntities();
-        if(!this.world.isRemote)
+        if(!this.level.isClientSide)
             makeSound();
-        if(this.world.isRemote) {
+        if(this.level.isClientSide) {
             MagickCore.proxy.addTask(this::doClientTask);
         } else
             MagickCore.proxy.addTask(this::doServerTask);
-        if(getDamage() > 0 && getDamage() < 3 && this.ticksExisted - lastDamageTick > 200)
+        if(getDamage() > 0 && getDamage() < 3 && this.tickCount - lastDamageTick > 200)
             setDamage(getDamage() + 1);
         reSize();
         releaseMagick();
@@ -272,10 +272,10 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     public void reSize() {
         float height = getType().getHeight() + spellContext().range * 0.1f;
-        if(getHeight() != height)
+        if(getBbHeight() != height)
             this.setHeight(height);
         float width = getType().getWidth() + spellContext().range * 0.1f;
-        if(getWidth() != width)
+        if(getBbWidth() != width)
             this.setWidth(width);
     }
 
@@ -300,17 +300,17 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    public boolean canBeAttackedWithItem() {
+    public boolean isAttackable() {
         return false;
     }
 
     protected void collideWithNearbyEntities() {
-        List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), EntityPredicates.pushableBy(this));
+        List<Entity> list = this.level.getEntities(this, this.getBoundingBox(), EntityPredicates.pushableBy(this));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
@@ -320,18 +320,18 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     }
     @Override
-    protected void readAdditional(CompoundNBT compound) {
-        if (compound.hasUniqueId("Owner")) {
-            this.owner_uuid = compound.getUniqueId("Owner");
+    protected void readAdditionalSaveData(CompoundNBT compound) {
+        if (compound.hasUUID("Owner")) {
+            this.owner_uuid = compound.getUUID("Owner");
             this.setOwnerUUID(this.owner_uuid);
         }
         spellContext().deserialize(compound);
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         if (this.owner_uuid != null) {
-            compound.putUniqueId("Owner", this.owner_uuid);
+            compound.putUUID("Owner", this.owner_uuid);
         }
         spellContext().serialize(compound);
     }
@@ -340,7 +340,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     public void onAddedToWorld() {
         super.onAddedToWorld();
         EntityLightSourceManager.addLightSource(this);
-        if(world.isRemote) {
+        if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaEntity>> renderer = getRenderer();
             if(renderer == null)
                 MagickCore.proxy.addRenderer(() -> new ManaEntityRenderer(this));
@@ -356,7 +356,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public float getSourceLight() {
-        return this.getWidth() * 1.5f;
+        return this.getBbWidth() * 1.5f;
     }
 
     @Override
@@ -366,21 +366,21 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public Vector3d positionVec() {
-        return getPositionVec();
+        return position();
     }
 
     @Override
     public World world() {
-        return getEntityWorld();
+        return getCommandSenderWorld();
     }
 
     @Override
     public float eyeHeight() {
-        return this.getHeight() * 0.5f;
+        return this.getBbHeight() * 0.5f;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

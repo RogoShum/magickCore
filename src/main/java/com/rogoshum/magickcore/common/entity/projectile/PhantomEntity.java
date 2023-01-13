@@ -41,7 +41,7 @@ public class PhantomEntity extends ManaProjectileEntity {
 
     @Override
     public EntityClassification getClassification(boolean forSpawnCount) {
-        return ModEntities.PHANTOM.get().getClassification();
+        return ModEntities.PHANTOM.get().getCategory();
     }
 
     @Override
@@ -50,60 +50,60 @@ public class PhantomEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
 
     @Override
-    public boolean canBeAttackedWithItem() {
+    public boolean isAttackable() {
         return true;
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0;
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if(entity != null)
-            entity.attackEntityFrom(source, amount);
-        return super.attackEntityFrom(source, amount);
+            entity.hurt(source, amount);
+        return super.hurt(source, amount);
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
         if(entity != null)
-            entity.processInitialInteract(player, hand);
-        return super.processInitialInteract(player, hand);
+            entity.interact(player, hand);
+        return super.interact(player, hand);
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    protected void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if(compound.contains("phantom"))
-            entity = world.getEntityByID(compound.getInt("phantom"));
+            entity = level.getEntity(compound.getInt("phantom"));
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    protected void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if(entity != null)
-            compound.putInt("phantom", entity.getEntityId());
+            compound.putInt("phantom", entity.getId());
     }
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth()*2 + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth()*2 + this.getPosY() + this.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * this.getWidth()*2 + this.getPosZ())
-                , 0.15f * this.getWidth(), 0.15f * this.getWidth(), 0.8f, 20, spellContext().element.getRenderer());
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getY() + this.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getZ())
+                , 0.15f * this.getBbWidth(), 0.15f * this.getBbWidth(), 0.8f, 20, spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(15.0f);
@@ -121,11 +121,11 @@ public class PhantomEntity extends ManaProjectileEntity {
     @Override
     public void reSize() {
         if(entity == null) return;
-        float height = entity.getHeight();
-        if(getHeight() != height)
+        float height = entity.getBbHeight();
+        if(getBbHeight() != height)
             this.setHeight(height);
-        float width = entity.getWidth();
-        if(getWidth() != width)
+        float width = entity.getBbWidth();
+        if(getBbWidth() != width)
             this.setWidth(width);
     }
 

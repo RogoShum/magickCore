@@ -41,12 +41,12 @@ public class MagickPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         ImmutableList.Builder<MagickWorkbenchRecipe> magickWorkbenchRecipeBuilder = ImmutableList.builder();
-        Minecraft.getInstance().world.getRecipeManager().getRecipesForType(MagickWorkbenchRecipe.MAGICK_WORKBENCH).forEach(
+        Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(MagickWorkbenchRecipe.MAGICK_WORKBENCH).forEach(
                 magickWorkbenchRecipeBuilder::add
         );
         registration.addRecipes(magickWorkbenchRecipeBuilder.build(), MagickItemRecipeCategory.UID);
         ImmutableList.Builder<SpiritCraftingRecipe> spiritCraftingRecipeBuilder = ImmutableList.builder();
-        Minecraft.getInstance().world.getRecipeManager().getRecipesForType(SpiritCraftingRecipe.SPIRIT_CRAFTING).forEach(
+        Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(SpiritCraftingRecipe.SPIRIT_CRAFTING).forEach(
                 spiritCraftingRecipeBuilder::add
         );
         registration.addRecipes(spiritCraftingRecipeBuilder.build(), SpiritCraftingRecipeCategory.UID);

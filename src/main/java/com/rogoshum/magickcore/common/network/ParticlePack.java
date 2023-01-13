@@ -39,8 +39,8 @@ public class ParticlePack extends EntityPack{
     private final float shake;
     public ParticlePack(PacketBuffer buffer) {
         super(buffer);
-        element = buffer.readString();
-        texture = buffer.readEnumValue(ParticleType.class);
+        element = buffer.readUtf();
+        texture = buffer.readEnum(ParticleType.class);
         position = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         scaleWidth = buffer.readFloat();
         scaleHeight = buffer.readFloat();
@@ -78,8 +78,8 @@ public class ParticlePack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(this.element);
-        buf.writeEnumValue(texture);
+        buf.writeUtf(this.element);
+        buf.writeEnum(texture);
         buf.writeDouble(position.x);
         buf.writeDouble(position.y);
         buf.writeDouble(position.z);
@@ -109,13 +109,13 @@ public class ParticlePack extends EntityPack{
         ElementRenderer renderer = MagickCore.proxy.getElementRender(element);
         ResourceLocation res = ParticleType.getResourceLocation(texture, element1);
 
-        LitParticle par = new LitParticle(Minecraft.getInstance().world, res, position, scaleWidth, scaleHeight, alpha, maxAge, renderer);
+        LitParticle par = new LitParticle(Minecraft.getInstance().level, res, position, scaleWidth, scaleHeight, alpha, maxAge, renderer);
         if(glow)
             par.setGlow();
         if(limitSize)
             par.setLimitScale();
         par.addMotion(motion.x, motion.y, motion.z);
-        Entity entity = Minecraft.getInstance().world.getEntityByID(trace);
+        Entity entity = Minecraft.getInstance().level.getEntity(trace);
 
         if(entity != null)
             par.setTraceTarget(entity);

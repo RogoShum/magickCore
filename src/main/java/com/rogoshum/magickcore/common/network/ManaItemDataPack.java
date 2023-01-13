@@ -21,7 +21,7 @@ public class ManaItemDataPack extends EntityPack{
 
     public ManaItemDataPack(PacketBuffer buffer) {
         super(buffer);
-        nbt = buffer.readCompoundTag();
+        nbt = buffer.readNbt();
         slot = buffer.readInt();
     }
 
@@ -35,7 +35,7 @@ public class ManaItemDataPack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeCompoundTag(nbt);
+        buf.writeNbt(nbt);
         buf.writeInt(this.slot);
     }
 
@@ -43,13 +43,13 @@ public class ManaItemDataPack extends EntityPack{
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
 
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed)
             return;
         ItemStack stack = ItemStack.EMPTY;
 
         if(entity instanceof PlayerEntity)
-            stack = ((PlayerEntity)entity).inventory.getStackInSlot(this.slot);
+            stack = ((PlayerEntity)entity).inventory.getItem(this.slot);
 
         if(entity instanceof ItemEntity)
             stack = ((ItemEntity)entity).getItem();

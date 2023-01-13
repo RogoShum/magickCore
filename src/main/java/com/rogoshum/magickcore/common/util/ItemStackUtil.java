@@ -11,7 +11,7 @@ public class ItemStackUtil {
     public static void mergeItemEntity(ItemEntity item, ItemEntity other) {
         ItemStack itemstack = item.getItem();
         ItemStack itemstack1 = other.getItem();
-        if (Objects.equals(item.getOwnerId(), other.getOwnerId()) && canMergeStacks(itemstack, itemstack1)) {
+        if (Objects.equals(item.getOwner(), other.getOwner()) && canMergeStacks(itemstack, itemstack1)) {
             if (itemstack1.getCount() < itemstack.getCount()) {
                 mergeItemEntity(item, itemstack, other, itemstack1);
             } else {
@@ -35,7 +35,7 @@ public class ItemStackUtil {
     }
 
     public static ItemStack mergeStacks(ItemStack stack1, ItemStack stack2, int maxCount) {
-        return ItemEntity.mergeStacks(stack1, stack2, maxCount);
+        return ItemEntity.merge(stack1, stack2, maxCount);
     }
 
     public static ItemStack mergeInventoryStacks(ItemStack stack1, ItemStack stack2, int maxCount) {
@@ -53,7 +53,7 @@ public class ItemStackUtil {
 
     public static void mergeItemEntity(ItemEntity entity1, ItemStack stack1, ItemEntity entity2, ItemStack stack2) {
         mergeItemEntity(entity1, stack1, stack2);
-        entity1.setPickupDelay(Math.max(getItemEntityPickupDelay(entity1), getItemEntityPickupDelay(entity2)));
+        entity1.setPickUpDelay(Math.max(getItemEntityPickupDelay(entity1), getItemEntityPickupDelay(entity2)));
         setItemEntityAge(entity1, Math.min(getItemEntityAge(entity1), getItemEntityAge(entity2)));
         if (stack2.isEmpty()) {
             entity2.remove();
@@ -61,14 +61,14 @@ public class ItemStackUtil {
     }
 
     public static int getItemEntityAge(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "field_70292_b");
+        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "age");
     }
 
     public static int getItemEntityPickupDelay(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "field_145804_b");
+        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "pickupDelay");
     }
 
     public static void setItemEntityAge(ItemEntity entity, int age) {
-        ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, age, "field_70292_b");
+        ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, age, "age");
     }
 }

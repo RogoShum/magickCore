@@ -23,7 +23,7 @@ public class ManaStarRenderer extends EasyRenderer<ManaStarEntity> {
     @Override
     public void update() {
         super.update();
-        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
+        entity.renderFrame(Minecraft.getInstance().getFrameTime());
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ManaStarRenderer extends EasyRenderer<ManaStarEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(TYPE), (renderParams) -> {
             baseOffset(renderParams.matrixStack);
-            renderParams.matrixStack.scale(entity.getWidth(), entity.getWidth(), entity.getWidth());
+            renderParams.matrixStack.scale(entity.getBbWidth(), entity.getBbWidth(), entity.getBbWidth());
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));

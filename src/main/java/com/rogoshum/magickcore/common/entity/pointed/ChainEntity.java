@@ -39,30 +39,30 @@ import java.util.function.Predicate;
 
 public class ChainEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/chain.png");
-    private static final DataParameter<Integer> POST = EntityDataManager.createKey(ChainEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> VICTIM = EntityDataManager.createKey(ChainEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> POST = EntityDataManager.defineId(ChainEntity.class, DataSerializers.INT);
+    private static final DataParameter<Integer> VICTIM = EntityDataManager.defineId(ChainEntity.class, DataSerializers.INT);
     protected Entity postEntity;
     protected Entity victimEntity;
     public ChainEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        this.dataManager.register(POST, -1);
-        this.dataManager.register(VICTIM, -1);
+        this.entityData.define(POST, -1);
+        this.entityData.define(VICTIM, -1);
     }
 
     public void setPostEntity(int entityId) {
-        this.dataManager.set(POST, entityId);
+        this.entityData.set(POST, entityId);
     }
 
     public void setVictimEntity(int entityId) {
-        this.dataManager.set(VICTIM, entityId);
+        this.entityData.set(VICTIM, entityId);
     }
 
     public int getPostEntity() {
-        return this.dataManager.get(POST);
+        return this.entityData.get(POST);
     }
 
     public int getVictimEntity() {
-        return this.dataManager.get(VICTIM);
+        return this.entityData.get(VICTIM);
     }
 
     public void setPostEntity(Entity entity) {
@@ -76,8 +76,8 @@ public class ChainEntity extends ManaPointEntity {
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
         super.writeSpawnData(buffer);
-        buffer.writeInt(this.postEntity == null ? -1 : this.postEntity.getEntityId());
-        buffer.writeInt(this.victimEntity == null ? -1 : this.victimEntity.getEntityId());
+        buffer.writeInt(this.postEntity == null ? -1 : this.postEntity.getId());
+        buffer.writeInt(this.victimEntity == null ? -1 : this.victimEntity.getId());
     }
 
     @Override
@@ -86,9 +86,9 @@ public class ChainEntity extends ManaPointEntity {
         int post = additionalData.readInt();
         int victim = additionalData.readInt();
         if(post != -1)
-            postEntity = world.getEntityByID(post);
+            postEntity = level.getEntity(post);
         if(victim != -1)
-            victimEntity = world.getEntityByID(victim);
+            victimEntity = level.getEntity(victim);
     }
 
     @Override
@@ -102,8 +102,8 @@ public class ChainEntity extends ManaPointEntity {
     public void tick() {
         super.tick();
 
-        if(victimEntity == null && !world.isRemote) {
-            List<Entity> entities = world.getEntitiesInAABBexcluding(this, getBoundingBox(), null);
+        if(victimEntity == null && !level.isClientSide) {
+            List<Entity> entities = level.getEntities(this, getBoundingBox(), null);
             for (Entity entity : entities) {
                 if(suitableEntity(entity)) {
                     victimEntity = entity;
@@ -113,38 +113,38 @@ public class ChainEntity extends ManaPointEntity {
         } else if(victimEntity != null && !victimEntity.isAlive())
             victimEntity = null;
 
-        if(!world.isRemote) {
+        if(!level.isClientSide) {
             if(postEntity != null)
-                setPostEntity(postEntity.getEntityId());
+                setPostEntity(postEntity.getId());
             else
                 setPostEntity(-1);
             if(victimEntity != null)
-                setVictimEntity(victimEntity.getEntityId());
+                setVictimEntity(victimEntity.getId());
             else
                 setVictimEntity(-1);
         } else {
-            postEntity = world.getEntityByID(getPostEntity());
-            victimEntity = world.getEntityByID(getVictimEntity());
+            postEntity = level.getEntity(getPostEntity());
+            victimEntity = level.getEntity(getVictimEntity());
         }
 
         if(postEntity != null && !postEntity.isAlive()) {
             if(victimEntity != null)
-                setPosition(postEntity.getPosX(), postEntity.getPosY() + postEntity.getHeight() * 0.5 - 0.25, postEntity.getPosZ());
+                setPos(postEntity.getX(), postEntity.getY() + postEntity.getBbHeight() * 0.5 - 0.25, postEntity.getZ());
             postEntity = null;
         }
 
         if(!fixedPosition() && victimEntity != null) {
-            setPosition(victimEntity.getPosX(), victimEntity.getPosY() + victimEntity.getHeight() * 0.5 - 0.25, victimEntity.getPosZ());
+            setPos(victimEntity.getX(), victimEntity.getY() + victimEntity.getBbHeight() * 0.5 - 0.25, victimEntity.getZ());
         }
-        if(world.isRemote && !(victimEntity instanceof PlayerEntity)) return;
+        if(level.isClientSide && !(victimEntity instanceof PlayerEntity)) return;
         float range = spellContext().range;
         float force = spellContext().force;
         if(victimEntity != null && postEntity != null) {
-            if(victimEntity.getDistanceSq(postEntity) >= range * range) {
+            if(victimEntity.distanceToSqr(postEntity) >= range * range) {
                 Entity slower = victimEntity;
                 Entity faster = postEntity;
-                Vector3d vicPos = victimEntity.getPositionVec().add(0,  victimEntity.getHeight() * 0.5, 0);
-                Vector3d postPos = postEntity.getPositionVec().add(0,  postEntity.getHeight() * 0.5, 0);
+                Vector3d vicPos = victimEntity.position().add(0,  victimEntity.getBbHeight() * 0.5, 0);
+                Vector3d postPos = postEntity.position().add(0,  postEntity.getBbHeight() * 0.5, 0);
                 Vector3d fasterPos = postPos;
                 Vector3d direction = postPos.subtract(vicPos).normalize();
                 if(spellContext().containChild(LibContext.TRACE)) {
@@ -157,11 +157,11 @@ public class ChainEntity extends ManaPointEntity {
                     direction = direction.scale(0.03);
                 else
                     direction = direction.scale(0.2);
-                slower.addVelocity(direction.x, direction.y, direction.z);
-                if(slower.getMotion().y <= 0.0D && slower instanceof LivingEntity) {
-                    ((LivingEntity) slower).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
+                slower.push(direction.x, direction.y, direction.z);
+                if(slower.getDeltaMovement().y <= 0.0D && slower instanceof LivingEntity) {
+                    ((LivingEntity) slower).addEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
                 }
-                if(victimEntity.getDistanceSq(postEntity) >= (range + force) * (range + force) && slower.getMotion().normalize().dotProduct(direction.normalize()) < 0) {
+                if(victimEntity.distanceToSqr(postEntity) >= (range + force) * (range + force) && slower.getDeltaMovement().normalize().dot(direction.normalize()) < 0) {
                     if(slower == postEntity)
                         postEntity = null;
                     else
@@ -169,17 +169,17 @@ public class ChainEntity extends ManaPointEntity {
                 }
             }
         } else if(victimEntity != null) {
-            if(victimEntity.getDistanceSq(this) >= range * range) {
-                Vector3d direction = this.getPositionVec().add(0,  this.getHeight() * 0.5, 0).subtract(victimEntity.getPositionVec().add(0, victimEntity.getHeight() * 0.5, 0));
+            if(victimEntity.distanceToSqr(this) >= range * range) {
+                Vector3d direction = this.position().add(0,  this.getBbHeight() * 0.5, 0).subtract(victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0));
                 if(victimEntity instanceof LivingEntity)
                     direction = direction.scale(0.03);
                 else
                     direction = direction.scale(0.2);
-                victimEntity.addVelocity(direction.x, direction.y, direction.z);
-                if(victimEntity.getMotion().y <= 0.0D && victimEntity instanceof LivingEntity) {
-                    ((LivingEntity) victimEntity).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
+                victimEntity.push(direction.x, direction.y, direction.z);
+                if(victimEntity.getDeltaMovement().y <= 0.0D && victimEntity instanceof LivingEntity) {
+                    ((LivingEntity) victimEntity).addEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
                 }
-                if(victimEntity.getDistanceSq(this) >= (range + force) * (range + force) && victimEntity.getMotion().normalize().dotProduct(direction.normalize()) < 0) {
+                if(victimEntity.distanceToSqr(this) >= (range + force) * (range + force) && victimEntity.getDeltaMovement().normalize().dot(direction.normalize()) < 0) {
                     victimEntity = null;
                 }
             }
@@ -205,13 +205,13 @@ public class ChainEntity extends ManaPointEntity {
 
     @Override
     protected void applyParticle() {
-        Vector3d self = getPositionVec().add(0, getHeight() * 0.5, 0);
+        Vector3d self = position().add(0, getBbHeight() * 0.5, 0);
         Vector3d target = self;
         if(victimEntity != null && postEntity != null) {
-            self = victimEntity.getPositionVec().add(0, victimEntity.getHeight() * 0.5, 0);
-            target = postEntity.getPositionVec().add(0, postEntity.getHeight() * 0.5, 0);
+            self = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0);
+            target = postEntity.position().add(0, postEntity.getBbHeight() * 0.5, 0);
         } else if(victimEntity != null)
-            target = victimEntity.getPositionVec().add(0, victimEntity.getHeight() * 0.5, 0);
+            target = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0);
         Vector3d end = self;
         Vector3d start = target;
         double dis = Math.max(start.subtract(end).length() * 10, 1);
@@ -219,7 +219,7 @@ public class ChainEntity extends ManaPointEntity {
         for (int i = 0; i < dis; i++) {
             double trailFactor = i / Math.max((dis - 1.0D), 1);
             Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
-            LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
                     , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 1, spellContext().element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -239,13 +239,13 @@ public class ChainEntity extends ManaPointEntity {
         victimEntity = context.victim;
         if(context.separator instanceof IManaEntity)
             victimEntity = context.separator;
-        MagickContext magickContext = MagickContext.create(world, spellContext().postContext)
+        MagickContext magickContext = MagickContext.create(level, spellContext().postContext)
                 .caster(getOwner()).projectile(this)
                 .victim(victimEntity).noCost();
         if(spellContext().containChild(LibContext.DIRECTION))
             magickContext.<MagickContext>replenishChild(spellContext().getChild(LibContext.DIRECTION));
         else if(victimEntity != null) {
-            Vector3d dir = victimEntity.getPositionVec().add(0, victimEntity.getHeight() * 0.5, 0).subtract((this).getPositionVec());
+            Vector3d dir = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0).subtract((this).position());
             magickContext.<MagickContext>replenishChild(DirectionContext.create(dir));
         }
         MagickReleaseHelper.releaseMagick(beforeCast(magickContext));

@@ -29,8 +29,8 @@ public class WandItem extends BaseItem {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        CompoundNBT tag = context.getItem().getOrCreateChildTag(SET_KEY);
+    public ActionResultType useOn(ItemUseContext context) {
+        CompoundNBT tag = context.getItemInHand().getOrCreateTagElement(SET_KEY);
         int count = 1;
         PlayerEntity player = context.getPlayer();
         EntityStateData state = null;
@@ -39,20 +39,19 @@ public class WandItem extends BaseItem {
         if(state != null)
             count = (int) (state.getMaxManaValue() / 39);
         HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(tag);
-        if(vector3ds.size() < count)
-            NBTTagHelper.addOrDeleteVector(tag, Vector3d.copyCentered(context.getPos()));
-        BlockState state1 = context.getWorld().getBlockState(context.getPos());
-        context.getWorld().playSound(null, context.getPos(), state1.getSoundType().getHitSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f+ MagickCore.rand.nextFloat());
+        NBTTagHelper.addOrDeleteVector(tag, Vector3d.atCenterOf(context.getClickedPos()), vector3ds.size() >= count);
+        BlockState state1 = context.getLevel().getBlockState(context.getClickedPos());
+        context.getLevel().playSound(null, context.getClickedPos(), state1.getSoundType().getHitSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f+ MagickCore.rand.nextFloat());
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if(playerIn.isSneaking()) {
-            playerIn.getHeldItem(handIn).getOrCreateTag().remove(SET_KEY);
-            worldIn.playSound(null, new BlockPos(playerIn.getPositionVec()), SoundEvents.ENTITY_ITEM_FRAME_BREAK, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-            return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if(playerIn.isShiftKeyDown()) {
+            playerIn.getItemInHand(handIn).getOrCreateTag().remove(SET_KEY);
+            worldIn.playSound(null, new BlockPos(playerIn.position()), SoundEvents.ITEM_FRAME_BREAK, SoundCategory.NEUTRAL, 1.0f, 1.0f);
+            return ActionResult.success(playerIn.getItemInHand(handIn));
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 }

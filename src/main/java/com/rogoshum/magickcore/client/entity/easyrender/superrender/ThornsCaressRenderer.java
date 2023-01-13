@@ -36,9 +36,9 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     @Override
     public void update() {
         super.update();
-        preRotate = entity.ticksExisted % 11;
-        postRotate = (entity.ticksExisted + 1) % 11;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getRenderPartialTicks(), preRotate, postRotate);
+        preRotate = entity.tickCount % 11;
+        postRotate = (entity.tickCount + 1) % 11;
+        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         degrees = 360f * (rotate / 10);
     }
 

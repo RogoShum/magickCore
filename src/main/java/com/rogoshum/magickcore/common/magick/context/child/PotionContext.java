@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PotionContext extends ChildContext{
-    private static final IFormattableTextComponent field_242400_a = (new TranslationTextComponent("effect.none")).mergeStyle(TextFormatting.GRAY);
+    private static final IFormattableTextComponent NO_EFFECT = (new TranslationTextComponent("effect.none")).withStyle(TextFormatting.GRAY);
     public List<EffectInstance> effectInstances = new ArrayList<>();
 
     @Override
@@ -32,10 +32,10 @@ public class PotionContext extends ChildContext{
 
     public static PotionContext create(ItemStack stack) {
         PotionContext context = new PotionContext();
-        for(EffectInstance effectInstance : PotionUtils.getEffectsFromStack(stack)) {
-            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+        for(EffectInstance effectInstance : PotionUtils.getMobEffects(stack)) {
+            CompoundNBT tag = effectInstance.save(new CompoundNBT());
             tag.putInt("Duration", effectInstance.getDuration() / 10);
-            context.effectInstances.add(EffectInstance.read(tag));
+            context.effectInstances.add(EffectInstance.load(tag));
         }
         return context;
     }
@@ -43,9 +43,9 @@ public class PotionContext extends ChildContext{
     public static PotionContext create(Potion potion) {
         PotionContext context = new PotionContext();
         for(EffectInstance effectInstance : potion.getEffects()) {
-            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+            CompoundNBT tag = effectInstance.save(new CompoundNBT());
             tag.putInt("Duration", effectInstance.getDuration() / 10);
-            context.effectInstances.add(EffectInstance.read(tag));
+            context.effectInstances.add(EffectInstance.load(tag));
         }
         return context;
     }
@@ -53,15 +53,15 @@ public class PotionContext extends ChildContext{
     @Override
     public void serialize(CompoundNBT tag) {
         effectInstances.forEach(effectInstance -> {
-            tag.put(effectInstance.getEffectName(), effectInstance.write(new CompoundNBT()));
+            tag.put(effectInstance.getDescriptionId(), effectInstance.save(new CompoundNBT()));
         });
     }
 
     @Override
     public void deserialize(CompoundNBT tag) {
-        Iterator<String> it = tag.keySet().iterator();
+        Iterator<String> it = tag.getAllKeys().iterator();
         while (it.hasNext()) {
-            effectInstances.add(EffectInstance.read(tag.getCompound(it.next())));
+            effectInstances.add(EffectInstance.load(tag.getCompound(it.next())));
         }
     }
 
@@ -89,16 +89,16 @@ public class PotionContext extends ChildContext{
         List<EffectInstance> list = effectInstances;
         List<Pair<Attribute, AttributeModifier>> list1 = Lists.newArrayList();
         if (list.isEmpty()) {
-            lores.nextTrans("  " + field_242400_a.getString());
+            lores.nextTrans("  " + NO_EFFECT.getString());
         } else {
             for(EffectInstance effectinstance : list) {
-                IFormattableTextComponent iformattabletextcomponent = new TranslationTextComponent(effectinstance.getEffectName());
-                Effect effect = effectinstance.getPotion();
-                Map<Attribute, AttributeModifier> map = effect.getAttributeModifierMap();
+                IFormattableTextComponent iformattabletextcomponent = new TranslationTextComponent(effectinstance.getDescriptionId());
+                Effect effect = effectinstance.getEffect();
+                Map<Attribute, AttributeModifier> map = effect.getAttributeModifiers();
                 if (!map.isEmpty()) {
                     for(Map.Entry<Attribute, AttributeModifier> entry : map.entrySet()) {
                         AttributeModifier attributemodifier = entry.getValue();
-                        AttributeModifier attributemodifier1 = new AttributeModifier(attributemodifier.getName(), effect.getAttributeModifierAmount(effectinstance.getAmplifier(), attributemodifier), attributemodifier.getOperation());
+                        AttributeModifier attributemodifier1 = new AttributeModifier(attributemodifier.getName(), effect.getAttributeModifierValue(effectinstance.getAmplifier(), attributemodifier), attributemodifier.getOperation());
                         list1.add(new Pair<>(entry.getKey(), attributemodifier1));
                     }
                 }
@@ -108,10 +108,10 @@ public class PotionContext extends ChildContext{
                 }
 
                 if (effectinstance.getDuration() > 20) {
-                    iformattabletextcomponent = new TranslationTextComponent("potion.withDuration", iformattabletextcomponent, EffectUtils.getPotionDurationString(effectinstance, durationFactor));
+                    iformattabletextcomponent = new TranslationTextComponent("potion.withDuration", iformattabletextcomponent, EffectUtils.formatDuration(effectinstance, durationFactor));
                 }
 
-                lores.nextTrans("  " + iformattabletextcomponent.getString(), effect.getEffectType().getColor().toString());
+                lores.nextTrans("  " + iformattabletextcomponent.getString(), effect.getCategory().getTooltipFormatting().toString());
             }
         }
 
@@ -130,10 +130,10 @@ public class PotionContext extends ChildContext{
                 }
 
                 if (d0 > 0.0D) {
-                    lores.nextTrans("  " + (new TranslationTextComponent("attribute.modifier.plus." + attributemodifier2.getOperation().getId(), ItemStack.DECIMALFORMAT.format(d1), new TranslationTextComponent(pair.getFirst().getAttributeName()))).getString(), TextFormatting.BLUE.toString());
+                    lores.nextTrans("  " + (new TranslationTextComponent("attribute.modifier.plus." + attributemodifier2.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), new TranslationTextComponent(pair.getFirst().getDescriptionId()))).getString(), TextFormatting.BLUE.toString());
                 } else if (d0 < 0.0D) {
                     d1 = d1 * -1.0D;
-                    lores.nextTrans("  " + (new TranslationTextComponent("attribute.modifier.take." + attributemodifier2.getOperation().getId(), ItemStack.DECIMALFORMAT.format(d1), new TranslationTextComponent(pair.getFirst().getAttributeName()))).getString(), TextFormatting.RED.toString());
+                    lores.nextTrans("  " + (new TranslationTextComponent("attribute.modifier.take." + attributemodifier2.getOperation().toValue(), ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1), new TranslationTextComponent(pair.getFirst().getDescriptionId()))).getString(), TextFormatting.RED.toString());
                 }
             }
         }

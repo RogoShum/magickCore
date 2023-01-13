@@ -72,7 +72,7 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
 
     public static boolean canTransform(ItemStack stack) {
         if(stack.getItem() == Items.POTION.getItem()) {
-            return !PotionUtils.getPotionFromItem(stack).getEffects().isEmpty();
+            return !PotionUtils.getPotion(stack).getEffects().isEmpty();
         }
         return false;
     }
@@ -90,7 +90,7 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
         ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.POTION));
         if (group == ModGroups.POTION_TYPE_GROUP) {
@@ -99,9 +99,9 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

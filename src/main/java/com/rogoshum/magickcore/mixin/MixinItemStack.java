@@ -22,10 +22,10 @@ public class MixinItemStack{
     public int getMaxDamage() { return 0; }
 
     @Shadow
-    public int getDamage() {return 0;}
+    public int getDamageValue() {return 0;}
 
     @Shadow
-    public void setDamage(int damage) {}
+    public void setDamageValue(int damage) {}
 
     @Shadow
     public CompoundNBT getTag() { return new CompoundNBT(); }
@@ -200,7 +200,7 @@ public class MixinItemStack{
 
      */
 
-    @Inject(method = "attemptDamageItem", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "hurt", at = @At("RETURN"), cancellable = true)
     public void onAttemptDamageItem(int amount, Random rand, @Nullable ServerPlayerEntity damager, CallbackInfoReturnable<Boolean> cir) {
         if(cir.getReturnValueZ() && getTag() != null && getTag().contains(LibElementTool.TOOL_ELEMENT)) {
             CompoundNBT tag = getTag();
@@ -211,7 +211,7 @@ public class MixinItemStack{
                     elements.putInt(LibElements.WITHER, count - amount);
                 else
                     elements.remove(LibElements.WITHER);
-                setDamage(getMaxDamage() - 1);
+                setDamageValue(getMaxDamage() - 1);
                 cir.setReturnValue(false);
             }
         }

@@ -26,7 +26,7 @@ public class SphereEntity extends ManaRadiateEntity {
     public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.15f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sphere.png");
     public final Predicate<Entity> inSphere = (entity ->
-            this.getDistanceSq(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0))
+            this.distanceToSqr(entity.position().add(0, entity.getBbHeight() * 0.5, 0))
                     <= spellContext().range * spellContext().range);
     public SphereEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -49,7 +49,7 @@ public class SphereEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range),
+        return this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range),
                 predicate != null ? predicate.and(inSphere)
                         : inSphere);
     }
@@ -80,8 +80,8 @@ public class SphereEntity extends ManaRadiateEntity {
                 z = (float) Math.cos(rho);
 
                 Vector3d pos = new Vector3d(x * radius, y * radius, z * radius);
-                LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                        , pos.add(this.getPositionVec())
+                LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                        , pos.add(this.position())
                         , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setGlow();
                 par.setParticleGravity(0);
@@ -95,13 +95,13 @@ public class SphereEntity extends ManaRadiateEntity {
     @Override
     public Iterable<BlockPos> findBlocks() {
         int range = (int) (spellContext().range);
-        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        return BlockPos.betweenClosed(new BlockPos(this.position()).above(range).east(range).south(range), new BlockPos(this.position()).below(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
         float rangeCube = spellContext().range * spellContext().range;
-        return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+        return (pos -> this.distanceToSqr( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
                 <= rangeCube);
     }
 }

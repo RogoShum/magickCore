@@ -23,13 +23,13 @@ import net.minecraft.world.World;
 
 public class RayStaffItem extends ManaItem{
     public RayStaffItem() {
-        super(properties().maxStackSize(1));
+        super(properties().stacksTo(1));
     }
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
+        MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(playerIn).element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.RAY.get());

@@ -236,7 +236,7 @@ public class EntityStateData extends EntityExtraData {
         CompoundNBT effectTick = nbt.getCompound(EFFECT_TICK);
         CompoundNBT effectForce = nbt.getCompound(EFFECT_FORCE);
         this.setFinalMaxElementShield(nbt.getFloat(FINAL_MAX_SHIELD_VALUE));
-        for (String type : effectTick.keySet()) {
+        for (String type : effectTick.getAllKeys()) {
             if (effectForce.contains(type)) {
                 this.applyBuff(ModBuffs.getBuff(type).setTick(effectTick.getInt(type)).setForce(effectForce.getFloat(type)));
             }

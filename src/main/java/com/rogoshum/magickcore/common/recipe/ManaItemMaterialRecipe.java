@@ -38,8 +38,8 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
     public boolean matches(CraftingInventory inv, World worldIn) {
         ItemStack tool = null;
         ItemStack contextCore = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() instanceof ManaMaterialItem) {
                 if(tool != null)
                     return false;
@@ -66,11 +66,11 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack tool = null;
         ItemStack contextCore = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() instanceof ManaMaterialItem) {
                 if(tool != null)
                     return ItemStack.EMPTY;
@@ -114,13 +114,13 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
-            ItemStack item = inv.getStackInSlot(i);
+            ItemStack item = inv.getItem(i);
             if(item.getItem() instanceof ManaMaterialItem) {
                 nonnulllist.set(i, item);
-                inv.setInventorySlotContents(i, ItemStack.EMPTY);
+                inv.setItem(i, ItemStack.EMPTY);
             }
         }
 
@@ -128,7 +128,7 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height)  {
+    public boolean canCraftInDimensions(int width, int height)  {
         return width * height >= 2;
     }
 

@@ -50,27 +50,27 @@ public class ManaSphereEntity extends ManaPointEntity {
     protected void doClientTask() {
         super.doClientTask();
         Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.rand.nextInt(200) - this.rand.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.07F));
+        this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.07F));
     }
 
     @Override
     protected void makeSound() {
-        if(!this.world.isRemote && this.ticksExisted == 1)
+        if(!this.level.isClientSide && this.tickCount == 1)
         {
-            this.playSound(ModSounds.sphere_spawn.get(), 1.0F, 1.0F - this.rand.nextFloat() / 5);
+            this.playSound(ModSounds.sphere_spawn.get(), 1.0F, 1.0F - this.random.nextFloat() / 5);
         }
 
-        if(!this.world.isRemote && this.ticksExisted == 10)
-            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+        if(!this.level.isClientSide && this.tickCount == 10)
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.random.nextFloat() / 5));
 
-        if(!this.world.isRemote && this.ticksExisted % 15 == 0 && this.ticksExisted < this.spellContext().tick - 10 && this.ticksExisted > 10)
+        if(!this.level.isClientSide && this.tickCount % 15 == 0 && this.tickCount < this.spellContext().tick - 10 && this.tickCount > 10)
         {
-            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.rand.nextFloat() / 5));
+            this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.random.nextFloat() / 5));
         }
 
-        if(!this.world.isRemote && this.ticksExisted == this.spellContext().tick - 20)
+        if(!this.level.isClientSide && this.tickCount == this.spellContext().tick - 20)
         {
-            this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.rand.nextFloat()));
+            this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.random.nextFloat()));
         }
     }
 
@@ -81,21 +81,21 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     protected void collideWithNearbyEntities() {
-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox().grow(1.2));
+        List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(1.2));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
 
                 if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && !ModBuffs.hasBuff(entity, LibBuff.FREEZE))
-                    this.applyEntityCollision(entity);
+                    this.push(entity);
             }
         }
     }
 
     @Override
-    public void applyEntityCollision(Entity entityIn) {
-                double d0 = entityIn.getPosX() - this.getPosX();
-                double d1 = entityIn.getPosZ() - this.getPosZ();
+    public void push(Entity entityIn) {
+                double d0 = entityIn.getX() - this.getX();
+                double d1 = entityIn.getZ() - this.getZ();
                 double d2 = MathHelper.absMax(d0, d1);
                 if (d2 >= (double)0.01F) {
                     d2 = (double)MathHelper.sqrt(d2);
@@ -112,19 +112,19 @@ public class ManaSphereEntity extends ManaPointEntity {
                     d1 = d1 * (double)0.05F;
                     d0 = d0 * (double)(1.0F - 1.5);
                     d1 = d1 * (double)(1.0F - 1.5);
-                    if (!entityIn.isBeingRidden()) {
-                        entityIn.addVelocity(d0, 0.0D, d1);
+                    if (!entityIn.isVehicle()) {
+                        entityIn.push(d0, 0.0D, d1);
                     }
                 }
     }
 
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosY() + this.getHeight() / 2
-                , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                , MagickCore.getRandFloat() * this.getWidth()
-                , MagickCore.getRandFloat() * this.getWidth()
+        LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
+                , MagickCore.getRandFloat() * this.getBbWidth()
+                , MagickCore.getRandFloat() * this.getBbWidth()
                 , 0.5f * MagickCore.getRandFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
@@ -133,12 +133,12 @@ public class ManaSphereEntity extends ManaPointEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
         MagickCore.addMagickParticle(litPar);
 
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 2; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.25 + this.getPosZ())
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getX()
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getZ())
                     , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);
@@ -150,7 +150,7 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), predicate);
+        return this.level.getEntities(this, this.getBoundingBox(), predicate);
     }
 
     @Override

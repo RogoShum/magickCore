@@ -54,8 +54,8 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         if(entity.spellContext().containChild(LibContext.DIRECTION)) {
             Vector3d dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.scale(-1);
             Vector2f rota = getRotationFromVector(dir);
-            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
-            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         }
         matrixStackIn.translate(0, 0, 0);
     }
@@ -63,8 +63,8 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     @Override
     public void update() {
         super.update();
-        height = (float) (entity.liftHeight() * Math.min((entity.ticksExisted * 0.05), 1));
-        c = entity.ticksExisted % 20;
+        height = (float) (entity.liftHeight() * Math.min((entity.tickCount * 0.05), 1));
+        c = entity.tickCount % 20;
 
         INNER_CYLINDER = new RenderHelper.CylinderContext(0.3f, 0.1f, 2f
                 , height, 16
@@ -74,7 +74,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
                 , 0.5f, 16
                 , 0.0f, 0.8f, 0.1f, entity.spellContext().element.color());
 
-        c = entity.ticksExisted % 30;
+        c = entity.tickCount % 30;
         Queue<RenderHelper.CylinderContext> cylinders = Queues.newArrayDeque();
         for (int i = 0; i < height; i+=2) {
             float radius = 1.2f;
@@ -106,8 +106,8 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         baseOffset(matrixStackIn);
         matrixStackIn.translate(0,  height * 0.5-1, 0);
 
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 19)));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         if(INNER_CYLINDER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
                         wind, height, 0f))
@@ -118,8 +118,8 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         MatrixStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.translate(0,  height * 0.5-1, 0);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 19)));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         if(AIR_CYLINDER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
                             wind, height, 0f))
@@ -129,22 +129,22 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     private void renderBase(RenderParams renderParams) {
         baseOffset(renderParams.matrixStack);
         MatrixStack matrixStackIn = renderParams.matrixStack;
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(360f * (c / 19)));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         RenderType renderType = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
         if(BASE_CYLINDER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
                 , BASE_CYLINDER);
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0, -0.5, 0);
         matrixStackIn.scale(1.2f, 2f, 1.2f);
         if(BASE_CYLINDER != null)
             RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
                 , BASE_CYLINDER);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
         matrixStackIn.translate(0,  -height, 0);
-        c = entity.ticksExisted % 30;
+        c = entity.tickCount % 30;
         matrixStackIn.translate(0,  height - 0.5 + (-c / 29 * 2), 0);
         if(OUTER_CYLINDER != null) {
             for(RenderHelper.CylinderContext cylinder : OUTER_CYLINDER) {

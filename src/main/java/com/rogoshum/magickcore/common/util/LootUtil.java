@@ -39,10 +39,10 @@ public class LootUtil {
            ItemStack stack = new ItemStack(Items.POTION);
            HashMap<String, EffectInstance> map = new HashMap<>();
            Effect effect = ModEffects.effectList.get(MagickCore.rand.nextInt(ModEffects.effectList.size()));
-           effect.getName();
-           map.put(effect.getName(), new EffectInstance(effect, tick, Math.min(MagickCore.rand.nextInt(lucky), 2)));
-           PotionUtils.appendEffects(stack, map.values());
-           stack.setDisplayName(new TranslationTextComponent(effect.getName()));
+           effect.getDescriptionId();
+           map.put(effect.getDescriptionId(), new EffectInstance(effect, tick, Math.min(MagickCore.rand.nextInt(lucky), 2)));
+           PotionUtils.setCustomEffects(stack, map.values());
+           stack.setHoverName(new TranslationTextComponent(effect.getDescriptionId()));
            return stack;
        } else if(type == 1){
            if(tick > 600)

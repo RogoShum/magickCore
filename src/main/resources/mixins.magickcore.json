@@ -6,7 +6,6 @@
     "MixinItemStack",
     "MixinLivingEntity",
     "MixinMobEntity",
-    "MixinProfilerChange",
     "MixinRecipeManager",
     "MixinWorld"
   ],
@@ -22,6 +21,7 @@
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
     "MixinLivingRender",
+    "MixinClientProfiler",
     "MixinWorldRender"
   ]
 }

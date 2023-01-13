@@ -22,12 +22,12 @@ public class LivingLootsEvent {
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
-        if(event.getEntityLiving().world.isRemote()) return;
+        if(event.getEntityLiving().level.isClientSide()) return;
 
         if(livingLoots.containsKey(event.getEntityLiving().getType())) {
-            ManaItemEntity mana = new ManaItemEntity(event.getEntityLiving().getEntityWorld(), event.getEntityLiving().getPosX(), event.getEntityLiving().getPosY(), event.getEntityLiving().getPosZ(), livingLoots.get(event.getEntityLiving().getType()));
-            event.getEntityLiving().getEntityWorld().addEntity(mana);
-            mana.setNoDespawn();
+            ManaItemEntity mana = new ManaItemEntity(event.getEntityLiving().getCommandSenderWorld(), event.getEntityLiving().getX(), event.getEntityLiving().getY(), event.getEntityLiving().getZ(), livingLoots.get(event.getEntityLiving().getType()));
+            event.getEntityLiving().getCommandSenderWorld().addFreshEntity(mana);
+            mana.setExtendedLifetime();
         }
     }
 }

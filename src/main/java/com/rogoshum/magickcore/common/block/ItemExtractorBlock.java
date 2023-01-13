@@ -19,12 +19,14 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class ItemExtractorBlock extends BaseBlock {
     public static final DirectionProperty FACING = DirectionalBlock.FACING;
-    public static final IntegerProperty POWER = BlockStateProperties.POWER_0_15;
+    public static final IntegerProperty POWER = BlockStateProperties.POWER;
     public ItemExtractorBlock(Properties properties) {
         super(properties);
-        this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.UP).with(POWER, 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP).setValue(POWER, 0));
     }
 
     @Override
@@ -33,54 +35,54 @@ public class ItemExtractorBlock extends BaseBlock {
     }
 
     public BlockState rotate(BlockState state, Rotation rot) {
-        return state.with(FACING, rot.rotate(state.get(FACING)));
+        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.toRotation(state.get(FACING)));
+        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
     }
 
     public static BlockState withPower(BlockState state, int power) {
         if(power > 15)
             power = 15;
-        if(state.get(POWER) == power)
+        if(state.getValue(POWER) == power)
             return state;
-        return state.with(POWER, power);
+        return state.setValue(POWER, power);
     }
 
     public static void updatePower(World world, BlockPos pos, BlockState state, int power) {
         BlockState newState = withPower(state, power);
         if(newState != state) {
-            world.setBlockState(pos, newState);
+            world.setBlockAndUpdate(pos, newState);
             updateNeighbors(newState, world, pos);
         }
     }
 
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
+        return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
     }
 
     private static void updateNeighbors(BlockState state, World world, BlockPos pos) {
-        world.notifyNeighborsOfStateChange(pos, ModBlocks.ITEM_EXTRACTOR.get());
+        world.updateNeighborsAt(pos, ModBlocks.ITEM_EXTRACTOR.get());
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING, POWER);
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return getWeakPower(blockState, blockAccess, pos, side);
+    public int getDirectSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        return getSignal(blockState, blockAccess, pos, side);
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return blockState.get(POWER);
+    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        return blockState.getValue(POWER);
     }
 
     @Nullable

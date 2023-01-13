@@ -29,8 +29,8 @@ public class ParticleSamplePack extends EntityPack{
     private final float force;
     public ParticleSamplePack(PacketBuffer buffer) {
         super(buffer);
-        element = buffer.readString();
-        particle = buffer.readEnumValue(ParticleType.class);
+        element = buffer.readUtf();
+        particle = buffer.readEnum(ParticleType.class);
         position = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         type = buffer.readByte();
         force = buffer.readFloat();
@@ -49,8 +49,8 @@ public class ParticleSamplePack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(this.element);
-        buf.writeEnumValue(particle);
+        buf.writeUtf(this.element);
+        buf.writeEnum(particle);
         buf.writeDouble(position.x);
         buf.writeDouble(position.y);
         buf.writeDouble(position.z);
@@ -66,13 +66,13 @@ public class ParticleSamplePack extends EntityPack{
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
         MagickElement element1 = MagickRegistry.getElement(element);
-        if(Minecraft.getInstance().world != null) {
+        if(Minecraft.getInstance().level != null) {
             if(type == 0)
-                ParticleUtil.spawnBlastParticle(Minecraft.getInstance().world, position, force, element1, particle);
+                ParticleUtil.spawnBlastParticle(Minecraft.getInstance().level, position, force, element1, particle);
             else if(type == 1)
-                ParticleUtil.spawnImpactParticle(Minecraft.getInstance().world, position, force, motion, element1, particle);
+                ParticleUtil.spawnImpactParticle(Minecraft.getInstance().level, position, force, motion, element1, particle);
             else if(type == 2)
-                ParticleUtil.spawnRaiseParticle(Minecraft.getInstance().world, position, force, element1, particle);
+                ParticleUtil.spawnRaiseParticle(Minecraft.getInstance().level, position, force, element1, particle);
         }
     }
 }

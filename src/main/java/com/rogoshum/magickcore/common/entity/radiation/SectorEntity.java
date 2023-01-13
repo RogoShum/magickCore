@@ -30,8 +30,8 @@ public class SectorEntity extends ManaRadiateEntity {
     public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sector.png");
     public final Predicate<Entity> inSector = (entity -> {
-        Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
-        return this.getDistanceSq(pos) <= getRange() * getRange() && rightDirection(pos, (entity.getHeight() + entity.getWidth()) * 0.5f);
+        Vector3d pos = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
+        return this.distanceToSqr(pos) <= getRange() * getRange() && rightDirection(pos, (entity.getBbHeight() + entity.getBbWidth()) * 0.5f);
     });
     public SectorEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -59,7 +59,7 @@ public class SectorEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()),
+        return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()),
                 predicate != null ? predicate.and(inSector)
                         : inSector);
     }
@@ -80,21 +80,21 @@ public class SectorEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         }
         if(direction == null) return;
 
-        List<Vector3d> vectors = ParticleUtil.drawSector(this.getPositionVec(), direction.normalize().scale(range*2), 90, 15);
+        List<Vector3d> vectors = ParticleUtil.drawSector(this.position(), direction.normalize().scale(range*2), 90, 15);
         for (Vector3d vector : vectors) {
-            LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , vector
                     , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
-            Vector3d dir = this.getPositionVec().subtract(vector);
-            par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            Vector3d dir = this.position().subtract(vector);
+            par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , vector
                     , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
@@ -110,7 +110,7 @@ public class SectorEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         }
         if(direction == null) return false;
         //boolean inCone = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.2 * getRange();
@@ -123,7 +123,7 @@ public class SectorEntity extends ManaRadiateEntity {
         Vector3d bottom = vec.subtract(normal.scale(halfHeight));
 
         double a = normal.x, b = normal.y, c = normal.z;
-        double d = - (a * getPositionVec().x + b * getPositionVec().y + c * getPositionVec().z);
+        double d = - (a * position().x + b * position().y + c * position().z);
 
         double x0 = top.x, y0 = top.y, z0 = top.z;
         double t = - (a * x0 + b * y0 + c * z0 + d) / (a * a + b * b + c * c);
@@ -132,19 +132,19 @@ public class SectorEntity extends ManaRadiateEntity {
         double y = y0 + b * t;
         double z = z0 + c * t;
         Vector3d foot = new Vector3d(x, y, z);
-        return top.subtract(foot).dotProduct(bottom.subtract(foot)) <= 0;
+        return top.subtract(foot).dot(bottom.subtract(foot)) <= 0;
     }
 
     @Override
     public Iterable<BlockPos> findBlocks() {
         int range = (int) getRange();
-        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        return BlockPos.betweenClosed(new BlockPos(this.position()).above(range).east(range).south(range), new BlockPos(this.position()).below(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
         float rangeCube = getRange() * getRange();
-        return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
-                <= rangeCube && rightDirection(Vector3d.copyCentered(pos), 1));
+        return (pos -> this.distanceToSqr( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                <= rangeCube && rightDirection(Vector3d.atCenterOf(pos), 1));
     }
 }

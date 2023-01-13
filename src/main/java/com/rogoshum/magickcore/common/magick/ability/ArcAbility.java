@@ -47,37 +47,37 @@ public class ArcAbility{
 
         boolean flag;
         if(context.caster != null && context.projectile instanceof ProjectileEntity)
-            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityArcDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityArcDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamages.getArcDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getArcDamage(), context.force);
 
         //if(flag && !victim.world.isRemote)
-        //victim.func_241841_a((ServerWorld) victim.world, null);
+        //victim.thunderHit((ServerWorld) victim.world, null);
 
         if(flag) {
-            List<Entity> list = context.victim.world.getEntitiesWithinAABBExcludingEntity(context.victim, context.victim.getBoundingBox().grow(context.range));
+            List<Entity> list = context.victim.level.getEntities(context.victim, context.victim.getBoundingBox().inflate(context.range));
 
             for(Entity entity1 : list) {
                 if(entity1 instanceof LivingEntity && !ModBuffs.hasBuff(entity1, LibBuff.PARALYSIS) &&
                         !MagickReleaseHelper.sameLikeOwner(context.caster, entity1)) {
-                    if(!context.victim.world.isRemote) {
-                        ManaStarEntity starEntity = new ManaStarEntity(ModEntities.MANA_STAR.get(), context.victim.world);
+                    if(!context.victim.level.isClientSide) {
+                        ManaStarEntity starEntity = new ManaStarEntity(ModEntities.MANA_STAR.get(), context.victim.level);
 
-                        starEntity.setShooter(context.caster);
-                        starEntity.setPosition(context.victim.getPosX(), context.victim.getPosY() + context.victim.getHeight() / 2, context.victim.getPosZ());
-                        Vector3d motion = entity1.getPositionVec().add(0, entity1.getHeight() / 2, 0).subtract(starEntity.getPositionVec()).normalize();
+                        starEntity.setOwner(context.caster);
+                        starEntity.setPos(context.victim.getX(), context.victim.getY() + context.victim.getBbHeight() / 2, context.victim.getZ());
+                        Vector3d motion = entity1.position().add(0, entity1.getBbHeight() / 2, 0).subtract(starEntity.position()).normalize();
                         starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
                         starEntity.spellContext().element(MagickRegistry.getElement(LibElements.ARC));
                         starEntity.spellContext().force(context.force * 0.5f);
                         starEntity.spellContext().applyType(ApplyType.ATTACK);
                         starEntity.spellContext().tick(Math.max(context.tick / 10, 20));
                         starEntity.spellContext().range(0);
-                        starEntity.spellContext().addChild(TraceContext.create(entity1.getUniqueID()));
-                        context.victim.world.addEntity(starEntity);
+                        starEntity.spellContext().addChild(TraceContext.create(entity1.getUUID()));
+                        context.victim.level.addFreshEntity(starEntity);
                     }
                 }
             }
@@ -87,15 +87,15 @@ public class ArcAbility{
     }
 
     public static void makeParticle(World world, Vector3d pos, Vector3d pos1, String type, float scaleP) {
-        if(!world.isRemote) return;
+        if(!world.isClientSide) return;
         ElementRenderer renderer = MagickCore.proxy.getElementRender(type);
         double dis = pos.subtract(pos1).length();
         int distance = (int) (10 * dis);
         for (int i = 0; i < distance; i++) {
             double trailFactor = i / (distance - 1.0D);
-            double tx = pos.getX() + (pos1.getX() - pos.getX()) * trailFactor + world.rand.nextGaussian() * 0.5;
-            double ty = pos.getY() + (pos1.getY() - pos.getY()) * trailFactor + world.rand.nextGaussian() * 0.5;
-            double tz = pos.getZ() + (pos1.getZ() - pos.getZ()) * trailFactor + world.rand.nextGaussian() * 0.5;
+            double tx = pos.x() + (pos1.x() - pos.x()) * trailFactor + world.random.nextGaussian() * 0.5;
+            double ty = pos.y() + (pos1.y() - pos.y()) * trailFactor + world.random.nextGaussian() * 0.5;
+            double tz = pos.z() + (pos1.z() - pos.z()) * trailFactor + world.random.nextGaussian() * 0.5;
             LitParticle par = new LitParticle(world, renderer.getParticleTexture()
                     , new Vector3d(tx, ty, tz), scaleP, scaleP, 1.0f, 15, renderer);
             par.setParticleGravity(0);
@@ -106,11 +106,11 @@ public class ArcAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+        if(!context.world.isClientSide && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
-            if(context.world.getTileEntity(pos) != null) {
-                TileEntity tile = context.world.getTileEntity(pos);
+            if(context.world.getBlockEntity(pos) != null) {
+                TileEntity tile = context.world.getBlockEntity(pos);
                 boolean extract = false;
 
                 if(context.containChild(LibContext.APPLY_TYPE)) {
@@ -133,12 +133,12 @@ public class ArcAbility{
     }
 
     public static boolean charge(MagickContext context) {
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+        if(!context.world.isClientSide && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
-            if(context.world.getTileEntity(pos) != null) {
-                TileEntity tile = context.world.getTileEntity(pos);
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 10;
+            if(context.world.getBlockEntity(pos) != null) {
+                TileEntity tile = context.world.getBlockEntity(pos);
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 5;
                 EnergyUtil.receiveEnergy(tile, mana);
                 return true;
             }
@@ -150,8 +150,8 @@ public class ArcAbility{
         if(context.doBlock)
             return charge(context);
         if(context.force >= 1 && context.victim instanceof LivingEntity) {
-            boolean flag = ((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.SPEED, context.tick * 2, (int) (context.force - 1)));
-            if(((LivingEntity)context.victim).addPotionEffect(new EffectInstance(Effects.HASTE, context.tick * 2, (int) (context.force - 1))))
+            boolean flag = ((LivingEntity)context.victim).addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, context.tick * 2, (int) (context.force - 1)));
+            if(((LivingEntity)context.victim).addEffect(new EffectInstance(Effects.DIG_SPEED, context.tick * 2, (int) (context.force - 1))))
                 flag = true;
             return flag;
         }
@@ -176,11 +176,11 @@ public class ArcAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(context.doBlock) {
-            if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+            if(!context.world.isClientSide && context.containChild(LibContext.POSITION)) {
                 PositionContext positionContext = context.getChild(LibContext.POSITION);
                 BlockPos pos = new BlockPos(positionContext.pos);
-                if(context.world.getTileEntity(pos) != null) {
-                    TileEntity tile = context.world.getTileEntity(pos);
+                if(context.world.getBlockEntity(pos) != null) {
+                    TileEntity tile = context.world.getBlockEntity(pos);
                     int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
                     int get = (int) (EnergyUtil.extractEnergy(tile, mana) * 0.03);
                     if(get > 0 && context.caster != null)
@@ -192,7 +192,7 @@ public class ArcAbility{
 
         if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof LivingEntity)) return false;
         float health = context.force * 0.5f;
-        if(context.victim.attackEntityFrom(ModDamages.getArcDamage(), health)) {
+        if(context.victim.hurt(ModDamages.getArcDamage(), health)) {
             ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + health * 50));
             return true;
         }
@@ -203,15 +203,15 @@ public class ArcAbility{
     public static boolean agglomerate(MagickContext context) {
         if(context.doBlock)
             return charge(context);
-        if(!context.world.isRemote) {
+        if(!context.world.isClientSide) {
             Vector3d pos = Vector3d.ZERO;
             if(context.victim != null)
-                pos = context.victim.getPositionVec();
+                pos = context.victim.position();
             if(context.containChild(LibContext.POSITION))
                 pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
 
             if(pos.y > 192) {
-                ((ServerWorld)context.world).func_241113_a_(0, 6000, true, true);
+                ((ServerWorld)context.world).setWeatherParameters(0, 6000, true, true);
             }
         }
         if(context.victim == null) {
@@ -221,18 +221,18 @@ public class ArcAbility{
         if(context.containChild(LibContext.DIRECTION)) {
             motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if(context.projectile != null) {
-            motion = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0).subtract(context.projectile.getPositionVec().add(0, context.projectile.getHeight() * 0.5, 0)).normalize();
+            motion = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0).subtract(context.projectile.position().add(0, context.projectile.getBbHeight() * 0.5, 0)).normalize();
         } else if(context.victim == context.caster)
-            motion = context.caster.getLookVec().normalize();
+            motion = context.caster.getLookAngle().normalize();
         else
-            motion = context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0).subtract(context.caster.getPositionVec().add(0, context.caster.getHeight() * 0.5, 0)).normalize();
+            motion = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0).subtract(context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0)).normalize();
 
         motion = motion.scale(context.force * 0.2);
-        Vector3d originMotion = context.victim.getMotion();
-        context.victim.setMotion(motion.scale(0.8).add(originMotion.scale(0.2)));
+        Vector3d originMotion = context.victim.getDeltaMovement();
+        context.victim.setDeltaMovement(motion.scale(0.8).add(originMotion.scale(0.2)));
         context.victim.setOnGround(true);
         if(context.victim instanceof LivingEntity) {
-            ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 60));
+            ((LivingEntity) context.victim).addEffect(new EffectInstance(Effects.SLOW_FALLING, 60));
         }
         return true;
     }

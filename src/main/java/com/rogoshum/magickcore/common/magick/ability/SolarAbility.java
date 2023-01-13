@@ -42,9 +42,9 @@ public class SolarAbility{
         if(context.victim == null) return false;
         if(context.victim instanceof ItemEntity) {
             ItemStack stack = ((ItemEntity) context.victim).getItem();
-            Optional<FurnaceRecipe> optional = context.world.getRecipeManager().getRecipe(IRecipeType.SMELTING, new Inventory(stack), context.world);
+            Optional<FurnaceRecipe> optional = context.world.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, new Inventory(stack), context.world);
             if (optional.isPresent()) {
-                ItemStack itemstack = optional.get().getRecipeOutput();
+                ItemStack itemstack = optional.get().getResultItem();
                 if (!itemstack.isEmpty()) {
                     ItemStack itemstack1 = itemstack.copy();
                     itemstack1.setCount(stack.getCount() * itemstack.getCount()); //Forge: Support smelting returning multiple
@@ -52,50 +52,50 @@ public class SolarAbility{
                         ItemStack outputCopy = itemstack1.copy();
                         itemstack1 = ItemStackUtil.mergeStacks(itemstack1, outputCopy, 64);
                         if(!outputCopy.isEmpty()) {
-                            ItemEntity entity = new ItemEntity(context.victim.world, context.victim.getPosX(), context.victim.getPosY(), context.victim.getPosZ(), outputCopy);
-                            if(!entity.world.isRemote)
-                                entity.world.addEntity(entity);
+                            ItemEntity entity = new ItemEntity(context.victim.level, context.victim.getX(), context.victim.getY(), context.victim.getZ(), outputCopy);
+                            if(!entity.level.isClientSide)
+                                entity.level.addFreshEntity(entity);
                         }
                     }
                     ((ItemEntity) context.victim).setItem(itemstack1);
-                    ParticleUtil.spawnBlastParticle(context.world, context.victim.getPositionVec().add(0, context.victim.getHeight(), 0), 2, ModElements.SOLAR, ParticleType.PARTICLE);
+                    ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight(), 0), 2, ModElements.SOLAR, ParticleType.PARTICLE);
                     return true;
                 }
             }
             return false;
         } else
-            context.victim.setFire(Math.max(context.tick / 10, 20));
-        return context.victim.getFireTimer() > 0;
+            context.victim.setSecondsOnFire(Math.max(context.tick / 10, 20));
+        return context.victim.getRemainingFireTicks() > 0;
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null || context.victim instanceof ItemEntity) return false;
-        if(context.victim.getFireTimer() > 0)
+        if(context.victim.getRemainingFireTicks() > 0)
             context.force *= 1.5;
 
         if(context.caster != null && context.projectile instanceof ProjectileEntity)
-            return context.victim.attackEntityFrom(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            return context.victim.attackEntityFrom(ModDamages.applyEntitySolarDamage(context.caster), context.force);
+            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.caster), context.force);
         else if(context.projectile != null)
-            return context.victim.attackEntityFrom(ModDamages.applyEntitySolarDamage(context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.projectile), context.force);
         else
-            return context.victim.attackEntityFrom(ModDamages.getSolarDamage(), context.force);
+            return context.victim.hurt(ModDamages.getSolarDamage(), context.force);
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+        if(!context.world.isClientSide && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
 
             BlockPos pos = new BlockPos(positionContext.pos);
             boolean success = false;
             if (context.world.getBlockState(pos).getBlock().equals(Blocks.ICE.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW.getBlock()) || context.world.getBlockState(pos).getBlock().equals(Blocks.SNOW_BLOCK.getBlock())) {
-                context.world.setBlockState(pos, Blocks.WATER.getDefaultState());
+                context.world.setBlockAndUpdate(pos, Blocks.WATER.defaultBlockState());
                 success = true;
             }
 
-            if (!success && context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.FIRE.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0))) {
-                context.world.setBlockState(pos.add(0, 1, 0), Blocks.FIRE.getDefaultState());
+            if (!success && context.world.isEmptyBlock(pos.offset(0, 1, 0)) && Blocks.FIRE.defaultBlockState().canSurvive(context.world, pos.offset(0, 1, 0))) {
+                context.world.setBlockAndUpdate(pos.offset(0, 1, 0), Blocks.FIRE.defaultBlockState());
                 success = true;
             }
 
@@ -111,9 +111,9 @@ public class SolarAbility{
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        if(!context.victim.isImmuneToFire()){
-            context.victim.setFire((int) (context.tick * (context.force + 1)));
-            return context.victim.getFireTimer() > 0;
+        if(!context.victim.fireImmune()){
+            context.victim.setSecondsOnFire((int) (context.tick * (context.force + 1)));
+            return context.victim.getRemainingFireTicks() > 0;
         }
         return false;
     }
@@ -133,8 +133,8 @@ public class SolarAbility{
             if(positionContext == null)
                 return false;
             BlockPos pos = new BlockPos(positionContext.pos);
-            Explosion explosion = context.world.createExplosion(context.caster, pos.getX(), pos.getY(), pos.getZ(), context.force, Explosion.Mode.NONE);
-            boolean success = !explosion.getAffectedBlockPositions().isEmpty();
+            Explosion explosion = context.world.explode(context.caster, pos.getX(), pos.getY(), pos.getZ(), context.force, Explosion.Mode.NONE);
+            boolean success = !explosion.getToBlow().isEmpty();
             if(success) {
                 ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, context.force, ModElements.SOLAR, ParticleType.MIST);
                 return true;
@@ -142,24 +142,24 @@ public class SolarAbility{
                 return false;
         }
         if(context.victim == null) return false;
-        Explosion explosion = context.world.createExplosion(context.caster, context.victim.getPosX(), context.victim.getPosY(), context.victim.getPosZ(), context.force, Explosion.Mode.NONE);
-        boolean success = !explosion.getAffectedBlockPositions().isEmpty();
+        Explosion explosion = context.world.explode(context.caster, context.victim.getX(), context.victim.getY(), context.victim.getZ(), context.force, Explosion.Mode.NONE);
+        boolean success = !explosion.getToBlow().isEmpty();
         if(success)
-            ParticleUtil.spawnBlastParticle(context.world, context.victim.getPositionVec().add(0, context.victim.getHeight() * 0.5, 0), context.force, ModElements.SOLAR, ParticleType.MIST);
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), context.force, ModElements.SOLAR, ParticleType.MIST);
         return success;
     }
 
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) {
-            if(!context.world.isRemote) {
+            if(!context.world.isClientSide) {
                 Vector3d pos = Vector3d.ZERO;
                 if(context.victim != null)
-                    pos = context.victim.getPositionVec();
+                    pos = context.victim.position();
                 if(context.containChild(LibContext.POSITION))
                     pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
 
                 if(pos.y > 192) {
-                    ((ServerWorld)context.world).func_241113_a_(6000, 0, false, false);
+                    ((ServerWorld)context.world).setWeatherParameters(6000, 0, false, false);
                 }
             }
             return false;
@@ -171,7 +171,7 @@ public class SolarAbility{
             double d0 = MagickCore.rand.nextGaussian() * 0.02D;
             double d1 = MagickCore.rand.nextGaussian() * 0.02D;
             double d2 = MagickCore.rand.nextGaussian() * 0.02D;
-            context.victim.world.addParticle(iparticledata, context.victim.getPosXRandom(1.0D), context.victim.getPosYRandom() + 0.5D, context.victim.getPosZRandom(1.0D), d0, d1, d2);
+            context.victim.level.addParticle(iparticledata, context.victim.getRandomX(1.0D), context.victim.getRandomY() + 0.5D, context.victim.getRandomZ(1.0D), d0, d1, d2);
         }
         return true;
     }

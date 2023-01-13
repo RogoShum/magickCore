@@ -58,26 +58,26 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     }
 
     public boolean isRemote() {
-        return entity.world.isRemote;
+        return entity.level.isClientSide;
     }
 
     public Vector3d getEntityRenderVector(float partialTicks) {
-        double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
-        double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
-        double z = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * (double) partialTicks;
+        double x = entity.xOld + (entity.getX() - entity.xOld) * (double) partialTicks;
+        double y = entity.yOld + (entity.getY() - entity.yOld) * (double) partialTicks;
+        double z = entity.zOld + (entity.getZ() - entity.zOld) * (double) partialTicks;
         return new Vector3d(x, y, z);
     }
 
     public static Vector3d getEntityRenderVector(Entity entity, float partialTicks) {
-        double x = entity.lastTickPosX + (entity.getPosX() - entity.lastTickPosX) * (double) partialTicks;
-        double y = entity.lastTickPosY + (entity.getPosY() - entity.lastTickPosY) * (double) partialTicks;
-        double z = entity.lastTickPosZ + (entity.getPosZ() - entity.lastTickPosZ) * (double) partialTicks;
+        double x = entity.xOld + (entity.getX() - entity.xOld) * (double) partialTicks;
+        double y = entity.yOld + (entity.getY() - entity.yOld) * (double) partialTicks;
+        double z = entity.zOld + (entity.getZ() - entity.zOld) * (double) partialTicks;
         return new Vector3d(x, y, z);
     }
 
     @Override
     public void update() {
-        Vector3d vec = getEntityRenderVector(Minecraft.getInstance().getRenderPartialTicks());
+        Vector3d vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
         x = vec.x;
         y = vec.y;
         z = vec.z;
@@ -86,14 +86,14 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     }
 
     public void baseOffset(MatrixStack matrixStackIn) {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        matrixStackIn.translate(x - camX, y - camY + entity.getHeight() * 0.5, z - camZ);
+        matrixStackIn.translate(x - camX, y - camY + entity.getBbHeight() * 0.5, z - camZ);
     }
 
     @Override
     public boolean alive() {
-        return entity.isAlive() && entity.isAddedToWorld() && entity.world == Minecraft.getInstance().world;
+        return entity.isAlive() && entity.isAddedToWorld() && entity.level == Minecraft.getInstance().level;
     }
 
     @Override
@@ -103,7 +103,7 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
 
     @Override
     public Vector3d positionVec() {
-        return entity.getPositionVec();
+        return entity.position();
     }
 
     protected void renderDebug(RenderParams renderParams) {
@@ -113,11 +113,11 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
     }
 
     protected void updateSpellContext() {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getWidth() * 0.5);
+        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
         debugX = x - camX + offset.x;
-        debugY = y - camY + entity.getHeight() * 0.5 + offset.y;
+        debugY = y - camY + entity.getBbHeight() * 0.5 + offset.y;
         debugZ = z - camZ + offset.z;
 
         String information = ((IManaEntity)entity).spellContext().toString();
@@ -136,21 +136,21 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
 
     protected void renderSpellContext(RenderParams renderParams) {
         if(debugSpellContext != null) {
-            renderParams.matrixStack.push();
+            renderParams.matrixStack.pushPose();
             renderParams.matrixStack.translate(debugX, debugY, debugZ);
-            renderParams.matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
+            renderParams.matrixStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
             renderParams.matrixStack.scale(0.015f, 0.015f, 0.015f);
-            renderParams.matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
+            renderParams.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
             renderParams.matrixStack.translate(-contextLength, debugSpellContext.length * -4, 0);
             for (int i = 0; i < debugSpellContext.length; ++i) {
                 String tip = debugSpellContext[i];
                 if(!tip.isEmpty()) {
-                    renderParams.matrixStack.push();
-                    Minecraft.getInstance().fontRenderer.drawString(renderParams.matrixStack, tip, 0, i*8, 0);
-                    renderParams.matrixStack.pop();
+                    renderParams.matrixStack.pushPose();
+                    Minecraft.getInstance().font.draw(renderParams.matrixStack, tip, 0, i*8, 0);
+                    renderParams.matrixStack.popPose();
                 }
             }
-            renderParams.matrixStack.pop();
+            renderParams.matrixStack.popPose();
         }
     }
 

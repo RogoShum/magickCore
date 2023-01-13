@@ -33,7 +33,7 @@ public class ManaMaterialItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return false;
     }
 
@@ -47,12 +47,12 @@ public class ManaMaterialItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
+    public ITextComponent getName(ItemStack stack) {
         return new TranslationTextComponent("item.magickcore.magick_core");
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + this.material));
     }
 }

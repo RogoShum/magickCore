@@ -138,7 +138,7 @@ public class LightShaderManager {
         if(true) return;
         if(RenderHelper.stopShader()) return;
         postedLights = false;
-        GlStateManager.disableLighting();
+        GlStateManager._disableLighting();
         shader.stopShader();
     }
 
@@ -165,21 +165,21 @@ public class LightShaderManager {
             b = b*b* scale + (1-scale) * b;
 
             //alpha += 1 - (Math.max(15f, light.getSourceLight()) / 30f);
-            int pos = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].position");
+            int pos = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].position");
             GL20.glUniform3f(pos, (float)light.positionVec().x, (float)light.positionVec().y, (float)light.positionVec().z);
-            int color = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].color");
+            int color = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].color");
             GL20.glUniform4f(color, r, g, b, alpha);
-            int radius = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].radius");
+            int radius = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].radius");
             GL20.glUniform1f(radius, light.getSourceLight());
         }
 
         if(minCount < 256) {
             for(int i = minCount; i < 256; i++) {
-                int pos = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].position");
+                int pos = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].position");
                 GL20.glUniform3f(pos, 0f, 0f, 0f);
-                int color = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].color");
+                int color = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].color");
                 GL20.glUniform4f(color, 0f, 0f, 0f, 0f);
-                int radius = GL20.glGetUniformLocation(shader.getProgram(), "lights["+i+"].radius");
+                int radius = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"].radius");
                 GL20.glUniform1f(radius, 0f);
             }
         }

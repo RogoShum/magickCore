@@ -21,7 +21,7 @@ public class ModGroups {
 	    }
 
 	    @Override
-	    public ItemStack createIcon() {
+	    public ItemStack makeIcon() {
 	        return new ItemStack(ModItems.MAGICK_CONTAINER.get());
 	    }
 	}
@@ -32,7 +32,7 @@ public class ModGroups {
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			ItemStack stack = new ItemStack(ModItems.ENTITY_TYPE.get());
 			ExtraDataUtil.itemManaData(stack).spellContext().addChild(SpawnContext.create(ModEntities.MANA_ORB.get()));
 			return stack;
@@ -45,7 +45,7 @@ public class ModGroups {
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return new ItemStack(ModItems.ELEMENT_CRYSTAL.get());
 		}
 	}
@@ -56,7 +56,7 @@ public class ModGroups {
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return new ItemStack(ModItems.MAGICK_CORE.get());
 		}
 	}
@@ -67,7 +67,7 @@ public class ModGroups {
 		}
 
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			ItemStack stack = new ItemStack(ModItems.POTION_TYPE.get());
 			ExtraDataUtil.itemManaData(stack).spellContext().addChild(PotionContext.create(ModEffects.SHIELD_REGEN_P.get()));
 			return stack;

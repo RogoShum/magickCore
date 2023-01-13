@@ -29,9 +29,9 @@ public class ConeEntity extends ManaRadiateEntity {
     public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.2f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cone.png");
     public final Predicate<Entity> inCone = (entity -> {
-        Vector3d pos = entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0);
+        Vector3d pos = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
         double range = getRange();
-        return this.getDistanceSq(pos) <= range * range && rightDirection(pos);
+        return this.distanceToSqr(pos) <= range * range && rightDirection(pos);
     });
 
     public ConeEntity(EntityType<?> entityTypeIn, World worldIn) {
@@ -51,7 +51,7 @@ public class ConeEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()),
+        return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()),
                 predicate != null ? predicate.and(inCone)
                         : inCone);
     }
@@ -76,10 +76,10 @@ public class ConeEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         }
         if(direction == null) return;
-        ParticleUtil.spawnImpactParticle(world, this.getPositionVec(), range, direction, spellContext().element, ParticleType.PARTICLE);
+        ParticleUtil.spawnImpactParticle(level, this.position(), range, direction, spellContext().element, ParticleType.PARTICLE);
         /*
         for (int i = 1; i <= range; ++i) {
             Vector3d[] vectors = ParticleUtil.drawCone(this.getPositionVec(), direction.normalize().scale(getRange()), 4.5 * i, i * 2);
@@ -118,22 +118,22 @@ public class ConeEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
-            direction = getOwner().getLookVec().normalize();
+            direction = getOwner().getLookAngle().normalize();
         }
 
-        return direction != null && (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= Math.toRadians(getRange() * 2.25);
+        return direction != null && (this.position().subtract(vec).normalize().dot(direction) + 1) <= Math.toRadians(getRange() * 2.25);
     }
 
     @Override
     public Iterable<BlockPos> findBlocks() {
         int range = (int) getRange();
-        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        return BlockPos.betweenClosed(new BlockPos(this.position()).above(range).east(range).south(range), new BlockPos(this.position()).below(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
         float rangeCube = getRange() * getRange();
-        return (pos -> this.getDistanceSq( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
-                <= rangeCube && rightDirection(Vector3d.copy(pos)));
+        return (pos -> this.distanceToSqr( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
+                <= rangeCube && rightDirection(Vector3d.atLowerCornerOf(pos)));
     }
 }

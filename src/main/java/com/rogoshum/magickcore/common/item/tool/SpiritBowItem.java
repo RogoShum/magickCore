@@ -17,16 +17,18 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import net.minecraft.item.Item.Properties;
+
 public class SpiritBowItem extends ManaItem implements IManaContextItem {
     public SpiritBowItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
+    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
         EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(entityLiving.world);
+        MagickContext magickContext = MagickContext.create(entityLiving.level);
         int tick = Math.min(40, (getUseDuration(stack) - timeLeft));
         magickContext.range(tick * 0.25f);
         magickContext.tick(tick * 4);
@@ -45,7 +47,7 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem {
         boolean success = MagickReleaseHelper.releaseMagick(context);
         if(success)
             spawnParticle(entityLiving, state);
-        super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
+        super.releaseUsing(stack, worldIn, entityLiving, timeLeft);
     }
 
     public int getUseDuration(ItemStack stack) {

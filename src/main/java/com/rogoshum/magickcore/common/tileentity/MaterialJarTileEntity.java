@@ -33,24 +33,24 @@ public class MaterialJarTileEntity extends TileEntity {
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT compound) {
+    public void load(BlockState state, CompoundNBT compound) {
         extractTag(compound);
-        super.read(state, compound);
+        super.load(state, compound);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         storageTag(compound);
-        return super.write(compound);
+        return super.save(compound);
     }
 
     public void extractTag(CompoundNBT compound) {
-        stack = ItemStack.read(compound.getCompound("stack"));
+        stack = ItemStack.of(compound.getCompound("stack"));
         count = compound.getInt("count");
     }
 
     public void storageTag(CompoundNBT compound) {
-        compound.put("stack", stack.write(new CompoundNBT()));
+        compound.put("stack", stack.save(new CompoundNBT()));
         compound.putInt("count", count);
     }
 
@@ -69,7 +69,7 @@ public class MaterialJarTileEntity extends TileEntity {
             this.count = count;
             stack.shrink(count);
             updateInfo();
-        } else if (this.stack.isItemEqual(stack) && ((stack1 && stack2) || ItemStack.areItemStackTagsEqual(stack, this.stack))) {
+        } else if (this.stack.sameItem(stack) && ((stack1 && stack2) || ItemStack.tagMatches(stack, this.stack))) {
             this.count += count;
             stack.shrink(count);
             updateInfo();
@@ -100,37 +100,37 @@ public class MaterialJarTileEntity extends TileEntity {
     }
 
     protected void updateInfo() {
-        if (!world.isRemote)
-            world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+        if (!level.isClientSide)
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
     }
 
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
     }
 
     public void dropItem() {
-        if (!world.isRemote && getCount() > 0 && !getStack().isEmpty()) {
+        if (!level.isClientSide && getCount() > 0 && !getStack().isEmpty()) {
             ItemStack itemstack = new ItemStack(ModItems.MATERIAL_JAR.get());
-            CompoundNBT compoundnbt = write(new CompoundNBT());
+            CompoundNBT compoundnbt = save(new CompoundNBT());
             if (!compoundnbt.isEmpty()) {
-                itemstack.setTagInfo("BlockEntityTag", compoundnbt);
+                itemstack.addTagElement("BlockEntityTag", compoundnbt);
             }
 
-            ItemEntity itementity = new ItemEntity(world, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, itemstack);
-            itementity.setDefaultPickupDelay();
-            world.addEntity(itementity);
+            ItemEntity itementity = new ItemEntity(level, (double)worldPosition.getX() + 0.5D, (double)worldPosition.getY() + 0.5D, (double)worldPosition.getZ() + 0.5D, itemstack);
+            itementity.setDefaultPickUpDelay();
+            level.addFreshEntity(itementity);
         }
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
     }
 }

@@ -32,7 +32,7 @@ public class LeafRenderer extends EasyRenderer<LeafEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(renderType), (renderParams) -> {
             baseOffset(renderParams.matrixStack);
-            renderParams.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+            renderParams.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, renderType), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
         });
         return map;

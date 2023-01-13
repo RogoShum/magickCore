@@ -70,13 +70,13 @@ public class RegisterEvent {
         spawnElementMap.put(SnowGolemEntity.class, new LivingElementTable(10, 20, LibElements.TAKEN));
         spawnElementMap.put(IronGolemEntity.class, new LivingElementTable(1, 10, LibElements.TAKEN));
 
-        spawnElementMap_dimension.put(Dimension.THE_END.getLocation().toString(), new LivingElementTable(5, 70, LibElements.VOID));
-        spawnElementMap_dimension.put(Dimension.THE_NETHER.getLocation().toString(), new LivingElementTable(7, 70, LibElements.SOLAR));
+        spawnElementMap_dimension.put(Dimension.END.location().toString(), new LivingElementTable(5, 70, LibElements.VOID));
+        spawnElementMap_dimension.put(Dimension.NETHER.location().toString(), new LivingElementTable(7, 70, LibElements.SOLAR));
 
-        spawnElementMap_biome.put(Biome.Category.SWAMP.getString(), new LivingElementTable(4, 30, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.Category.ICY.getString(), new LivingElementTable(4, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.MESA.getString(), new LivingElementTable(6, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getString(), new LivingElementTable(5, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.SWAMP.getSerializedName(), new LivingElementTable(4, 30, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.Category.ICY.getSerializedName(), new LivingElementTable(4, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.MESA.getSerializedName(), new LivingElementTable(6, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getSerializedName(), new LivingElementTable(5, 30, LibElements.STASIS));
 
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
@@ -124,7 +124,7 @@ public class RegisterEvent {
     @SubscribeEvent
     public void onDrops(LivingDropsEvent event) {
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
-            if(!event.getEntityLiving().world.isRemote) {
+            if(!event.getEntityLiving().level.isClientSide) {
                 /*
                 if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived()) {
                     ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
@@ -145,24 +145,24 @@ public class RegisterEvent {
                 }
 
                  */
-                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().world);
-                Vector3d vec = event.getEntityLiving().getPositionVec();
-                orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
+                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
+                Vector3d vec = event.getEntityLiving().position();
+                orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
                 orb.spellContext().element(state.getElement());
                 orb.setOrbType(true);
                 orb.manaCapacity().setMana(event.getEntityLiving().getMaxHealth());
                 orb.spellContext().tick(200);
-                orb.setShooter(event.getEntityLiving());
-                event.getEntityLiving().world.addEntity(orb);
+                orb.setOwner(event.getEntityLiving());
+                event.getEntityLiving().level.addFreshEntity(orb);
             }
         });
 
 
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
-            if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().world.isRemote) {
+            if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().level.isClientSide) {
                 Collection<ItemEntity> loots = event.getDrops();
                 loots.forEach((e) -> {
-                    if (e.getItem().isFood()) {
+                    if (e.getItem().isEdible()) {
                         int count = e.getItem().getCount();
                         ItemStack stack = new ItemStack(ModItems.ELEMENT_MEAT.get());
                         CompoundNBT tag = new CompoundNBT();
@@ -215,10 +215,10 @@ public class RegisterEvent {
 
 
     public static boolean testIfGenerateShield(LivingEntity livingEntity) {
-        for(PlayerEntity playerEntity : livingEntity.world.getPlayers()) {
-            if(playerEntity.getHeldItemOffhand().getItem() instanceof EnderPearlItem &&
-                    playerEntity.getEntityWorld() == livingEntity.getEntityWorld() &&
-                    playerEntity.getDistanceSq(livingEntity) <= 4096)
+        for(PlayerEntity playerEntity : livingEntity.level.players()) {
+            if(playerEntity.getOffhandItem().getItem() instanceof EnderPearlItem &&
+                    playerEntity.getCommandSenderWorld() == livingEntity.getCommandSenderWorld() &&
+                    playerEntity.distanceToSqr(livingEntity) <= 4096)
                 return true;
         }
 
@@ -231,24 +231,24 @@ public class RegisterEvent {
     }
 
     public static boolean testIfElement(LivingEntity living) {
-        if(!living.isAlive() || living.world.isRemote) return false;
+        if(!living.isAlive() || living.level.isClientSide) return false;
         EntityStateData state = ExtraDataUtil.entityStateData(living);
         if(state == null) return false;
         if(!state.allowElement())
             return state.getElement() != ModElements.ORIGIN;
-        if(!living.isNonBoss())
+        if(!living.canChangeDimensions())
             state.setElemented();
 
         if(spawnElementMap.containsKey(living.getClass())) {
             transEntityElement(living, state, spawnElementMap.get(living.getClass()));
         }
 
-        String dimension_name = living.world.getDimensionKey().getLocation().toString();
+        String dimension_name = living.level.dimension().location().toString();
         if(living instanceof IMob && spawnElementMap_dimension.containsKey(dimension_name)) {
             transEntityElement(living, state, spawnElementMap_dimension.get(dimension_name));
         }
 
-        String biome_type = living.world.getBiome(living.getPosition()).getCategory().getString();
+        String biome_type = living.level.getBiome(living.blockPosition()).getBiomeCategory().getSerializedName();
         if(living instanceof IMob && spawnElementMap_biome.containsKey(biome_type)) {
             transEntityElement(living, state, spawnElementMap_biome.get(biome_type));
         }
@@ -307,10 +307,10 @@ public class RegisterEvent {
         if(event.getClimate().temperature > 0.5 && event.getClimate().temperature < 1.3) {
             event.getSpawns().getSpawner(EntityClassification.CREATURE).add(new MobSpawnInfo.Spawners(ModEntities.MAGE.get(), 10, 1, 1));
         }
-        event.getGeneration().withFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD,
-                ModBlocks.SPIRIT_ORE.get().getDefaultState(),
+        event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.configured(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE,
+                ModBlocks.SPIRIT_ORE.get().defaultBlockState(),
                 6)
-        ).range(64).square().func_242731_b(20));
+        ).range(64).squared().count(20));
     }
 
     @SubscribeEvent

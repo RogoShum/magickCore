@@ -37,13 +37,13 @@ public class StasisAbility{
 
         boolean flag = false;
         if(context.caster != null && context.projectile instanceof ProjectileEntity)
-            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityStasisDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityStasisDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityStasisDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityStasisDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamages.getStasisDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getStasisDamage(), context.force);
         if(flag)
             ModBuffs.applyBuff(context.victim, LibBuff.FREEZE, context.tick / 8, 0, false);
 
@@ -51,17 +51,17 @@ public class StasisAbility{
     }
 
     public static boolean hitBlock(MagickContext context) {
-        if(!context.world.isRemote && context.containChild(LibContext.POSITION)) {
+        if(!context.world.isClientSide && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
 
             BlockPos pos = new BlockPos(positionContext.pos);
             if (context.world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock())) {
-                context.world.setBlockState(pos, Blocks.ICE.getDefaultState());
+                context.world.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
                 return true;
             }
 
-            if (context.world.isAirBlock(pos.add(0, 1, 0)) && Blocks.SNOW.getDefaultState().isValidPosition(context.world, pos.add(0, 1, 0))) {
-                context.world.setBlockState(pos.add(0, 1, 0), Blocks.SNOW.getDefaultState(), 2);
+            if (context.world.isEmptyBlock(pos.offset(0, 1, 0)) && Blocks.SNOW.defaultBlockState().canSurvive(context.world, pos.offset(0, 1, 0))) {
+                context.world.setBlock(pos.offset(0, 1, 0), Blocks.SNOW.defaultBlockState(), 2);
                 return true;
             }
         }
@@ -86,17 +86,17 @@ public class StasisAbility{
         LivingEntity entity = (LivingEntity) context.caster;
 
         boolean worked = false;
-        List<Entity> list = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getBoundingBox().grow(level * 2));
+        List<Entity> list = entity.level.getEntities(entity, entity.getBoundingBox().inflate(level * 2));
         for (Entity entity1 : list) {
-            Vector3d dir = entity1.getPositionVec().add(0, entity1.getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize();
+            Vector3d dir = entity1.position().add(0, entity1.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize();
 
-            if(dir.dotProduct(entity.getLookVec()) > 0.3 && !MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
-                entity1.setMotion(entity1.getMotion().scale(Math.pow(0.7, level)));
+            if(dir.dot(entity.getLookAngle()) > 0.3 && !MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
+                entity1.setDeltaMovement(entity1.getDeltaMovement().scale(Math.pow(0.7, level)));
                 worked = true;
             }
         }
 
-        if(worked && entity.ticksExisted % 20 == 0) {
+        if(worked && entity.tickCount % 20 == 0) {
             ElementToolData tool = ExtraDataUtil.elementToolData(entity);
             if (tool != null) {
                 tool.consumeElementOnTool(entity, LibElements.STASIS);
@@ -115,23 +115,23 @@ public class StasisAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
-        if(!(context.victim instanceof LivingEntity) && !context.world.isRemote) {
+        if(!(context.victim instanceof LivingEntity) && !context.world.isClientSide) {
             Vector3d pos = Vector3d.ZERO;
             if(context.victim != null)
-                pos = context.victim.getPositionVec();
+                pos = context.victim.position();
             if(context.containChild(LibContext.POSITION))
                 pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
 
             if(pos.y > 192) {
-                ((ServerWorld)context.world).func_241113_a_(0, 6000, true, false);
+                ((ServerWorld)context.world).setWeatherParameters(0, 6000, true, false);
             }
         }
-        if(!(context.victim instanceof LivingEntity) || context.world.isRemote) return false;
+        if(!(context.victim instanceof LivingEntity) || context.world.isClientSide) return false;
         PhantomEntity phantom = new PhantomEntity(ModEntities.PHANTOM.get(), context.world);
         phantom.setEntity((LivingEntity) context.victim);
-        phantom.setPosition(context.victim.getPosX(), context.victim.getPosY(), context.victim.getPosZ());
+        phantom.setPos(context.victim.getX(), context.victim.getY(), context.victim.getZ());
         phantom.spellContext().tick(context.tick * 2);
-        context.world.addEntity(phantom);
+        context.world.addFreshEntity(phantom);
         return true;
     }
 

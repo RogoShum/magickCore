@@ -17,11 +17,11 @@ import java.util.Set;
 public class VillagerHostilesSensor extends Sensor<LivingEntity> {
     private static final ImmutableMap<EntityType<?>, Float> enemyPresenceRange = ImmutableMap.<EntityType<?>, Float>builder().put(EntityType.DROWNED, 8.0F).put(EntityType.EVOKER, 12.0F).put(EntityType.HUSK, 8.0F).put(EntityType.ILLUSIONER, 12.0F).put(EntityType.PILLAGER, 15.0F).put(EntityType.RAVAGER, 12.0F).put(EntityType.VEX, 8.0F).put(EntityType.VINDICATOR, 10.0F).put(EntityType.ZOGLIN, 10.0F).put(EntityType.ZOMBIE, 8.0F).put(EntityType.ZOMBIE_VILLAGER, 8.0F).build();
 
-    public Set<MemoryModuleType<?>> getUsedMemories() {
+    public Set<MemoryModuleType<?>> requires() {
         return ImmutableSet.of(MemoryModuleType.ATTACK_TARGET);
     }
 
-    protected void update(ServerWorld worldIn, LivingEntity entityIn) {
+    protected void doTick(ServerWorld worldIn, LivingEntity entityIn) {
         entityIn.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, this.findNearestHostile(entityIn));
     }
 
@@ -36,16 +36,16 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
     }
 
     private Optional<List<LivingEntity>> getVisibleEntities(LivingEntity livingEntity) {
-        return livingEntity.getBrain().getMemory(MemoryModuleType.VISIBLE_MOBS);
+        return livingEntity.getBrain().getMemory(MemoryModuleType.VISIBLE_LIVING_ENTITIES);
     }
 
     private int compareHostileDistances(LivingEntity livingEntity, LivingEntity target1, LivingEntity target2) {
-        return MathHelper.floor(target1.getDistanceSq(livingEntity) - target2.getDistanceSq(livingEntity));
+        return MathHelper.floor(target1.distanceToSqr(livingEntity) - target2.distanceToSqr(livingEntity));
     }
 
     private boolean canNoticePresence(LivingEntity livingEntity, LivingEntity target) {
         float f = enemyPresenceRange.get(target.getType()) * 2;
-        return target.getDistanceSq(livingEntity) <= (double)(f * f);
+        return target.distanceToSqr(livingEntity) <= (double)(f * f);
     }
 
     private boolean hasPresence(LivingEntity livingEntity) {

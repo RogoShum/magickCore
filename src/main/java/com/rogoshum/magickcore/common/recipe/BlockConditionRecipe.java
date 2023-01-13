@@ -43,8 +43,8 @@ public class BlockConditionRecipe extends SpecialRecipe {
     public boolean matches(CraftingInventory inv, World worldIn) {
         boolean hasBlock = false;
         ItemStack condition = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() == ModItems.CONDITION_BLOCK.get()) {
                 if(condition != null)
                     return false;
@@ -60,11 +60,11 @@ public class BlockConditionRecipe extends SpecialRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         List<Block> list = new ArrayList<>();
         ItemStack condition = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() == ModItems.CONDITION_BLOCK.get()) {
                 if(condition != null)
                     return ItemStack.EMPTY;
@@ -108,13 +108,13 @@ public class BlockConditionRecipe extends SpecialRecipe {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
-            ItemStack item = inv.getStackInSlot(i);
+            ItemStack item = inv.getItem(i);
             if(item.getItem() instanceof BlockItem) {
                 nonnulllist.set(i, item);
-                inv.setInventorySlotContents(i, ItemStack.EMPTY);
+                inv.setItem(i, ItemStack.EMPTY);
             }
         }
 
@@ -122,7 +122,7 @@ public class BlockConditionRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height)  {
+    public boolean canCraftInDimensions(int width, int height)  {
         return width * height >= 2;
     }
 

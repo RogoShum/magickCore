@@ -20,18 +20,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientWorld.class)
 public class MixinClientWorld {
 
-    @Inject(method = "addEntityImpl", at = @At(value = "TAIL"))
+    @Inject(method = "addEntity", at = @At(value = "TAIL"))
     public void onAddEntity(int entityIdIn, Entity entityToSpawn, CallbackInfo ci) {
         EntityEvents.EntityAddedToWorldEvent event = new EntityEvents.EntityAddedToWorldEvent(entityToSpawn);
         MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Redirect(method = "playMovingSound", at = @At(value = "INVOKE", target = "net/minecraft/client/audio/SoundHandler.play (Lnet/minecraft/client/audio/ISound;)V"))
+    @Redirect(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V", at = @At(value = "INVOKE", target = "net/minecraft/client/audio/SoundHandler.play (Lnet/minecraft/client/audio/ISound;)V"))
     public void onMovingSound(SoundHandler instance, ISound sound) {
     }
 
-    @Inject(method = "playMovingSound", at = @At(value = "INVOKE", target = "net/minecraft/client/audio/SoundHandler.play (Lnet/minecraft/client/audio/ISound;)V"))
+    @Inject(method = "playSound(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/util/SoundEvent;Lnet/minecraft/util/SoundCategory;FF)V", at = @At(value = "INVOKE", target = "net/minecraft/client/audio/SoundHandler.play (Lnet/minecraft/client/audio/ISound;)V"))
     public void onMovingSound(PlayerEntity playerIn, Entity entityIn, SoundEvent eventIn, SoundCategory categoryIn, float volume, float pitch, CallbackInfo ci) {
-        Minecraft.getInstance().getSoundHandler().play(new EntityTickableSound(eventIn, categoryIn, volume, pitch, entityIn));
+        Minecraft.getInstance().getSoundManager().play(new EntityTickableSound(eventIn, categoryIn, volume, pitch, entityIn));
     }
 }

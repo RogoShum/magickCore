@@ -150,13 +150,13 @@ public class ParticleUtil {
 
     public static Vector3d rotateVector(Vector3f axis, float angle, Vector3d direction) {
         Quaternion quaternion = axis.rotationDegrees(angle);
-        double d = -quaternion.getX() * direction.x - quaternion.getY() * direction.y - quaternion.getZ() * direction.z;
-        double d1 = quaternion.getW() * direction.x + quaternion.getY() * direction.z - quaternion.getZ() * direction.y;
-        double d2 = quaternion.getW() * direction.y - quaternion.getX() * direction.z + quaternion.getZ() * direction.x;
-        double d3 = quaternion.getW() * direction.z + quaternion.getX() * direction.y - quaternion.getY() * direction.x;
-        double x = d1 * quaternion.getW() - d * quaternion.getX() - d2 * quaternion.getZ() + d3 * quaternion.getY();
-        double y = d2 * quaternion.getW() - d * quaternion.getY() + d1 * quaternion.getZ() - d3 * quaternion.getX();
-        double z = d3 * quaternion.getW() - d * quaternion.getZ() - d1 * quaternion.getY() + d2 * quaternion.getX();
+        double d = -quaternion.i() * direction.x - quaternion.j() * direction.y - quaternion.k() * direction.z;
+        double d1 = quaternion.r() * direction.x + quaternion.j() * direction.z - quaternion.k() * direction.y;
+        double d2 = quaternion.r() * direction.y - quaternion.i() * direction.z + quaternion.k() * direction.x;
+        double d3 = quaternion.r() * direction.z + quaternion.i() * direction.y - quaternion.j() * direction.x;
+        double x = d1 * quaternion.r() - d * quaternion.i() - d2 * quaternion.k() + d3 * quaternion.j();
+        double y = d2 * quaternion.r() - d * quaternion.j() + d1 * quaternion.k() - d3 * quaternion.i();
+        double z = d3 * quaternion.r() - d * quaternion.k() - d1 * quaternion.j() + d2 * quaternion.i();
         return new Vector3d(x, y, z);
     }
 
@@ -191,21 +191,21 @@ public class ParticleUtil {
     }
 
     public static Vector3d drawLine(Vector3d start, Vector3d end, double factor) {
-        double tx = start.getX() + (end.getX() - start.getX()) * factor + MagickCore.rand.nextGaussian() * 0.005;
-        double ty = start.getY() + (end.getY() - start.getY()) * factor + MagickCore.rand.nextGaussian() * 0.005;
-        double tz = start.getZ() + (end.getZ() - start.getZ()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double tx = start.x() + (end.x() - start.x()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double ty = start.y() + (end.y() - start.y()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double tz = start.z() + (end.z() - start.z()) * factor + MagickCore.rand.nextGaussian() * 0.005;
         return new Vector3d(tx, ty, tz);
     }
 
     public static Vector3d drawParabola(Vector3d start, Vector3d end, double factor, double height, Direction direction) {
-        return drawParabola(start, end, factor, height, new Vector3d(direction.toVector3f()));
+        return drawParabola(start, end, factor, height, new Vector3d(direction.step()));
     }
 
     public static Vector3d drawParabola(Vector3d start, Vector3d end, double factor, double height, Vector3d direction) {
         direction = direction.normalize();
-        double tx = start.getX() + (end.getX() - start.getX()) * factor + MagickCore.rand.nextGaussian() * 0.005;
-        double ty = start.getY() + (end.getY() - start.getY()) * factor + MagickCore.rand.nextGaussian() * 0.005;
-        double tz = start.getZ() + (end.getZ() - start.getZ()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double tx = start.x() + (end.x() - start.x()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double ty = start.y() + (end.y() - start.y()) * factor + MagickCore.rand.nextGaussian() * 0.005;
+        double tz = start.z() + (end.z() - start.z()) * factor + MagickCore.rand.nextGaussian() * 0.005;
         factor = 1 - factor * 2;
         double y = factor * factor * height;
         return new Vector3d(tx, ty, tz).add(direction.scale(-y)).add(direction.scale(height));
@@ -214,10 +214,10 @@ public class ParticleUtil {
     public static void spawnBlastParticle(World world, Vector3d center, float force, MagickElement element, ParticleType type) {
         float count = (10 * force);
         float scale = Math.max(0.1f, 0.05f * force);
-        if(!world.isRemote) {
+        if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 0, element.type(), Vector3d.ZERO);
             Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.getDimensionKey()
+                    center.x, center.y, center.z, 48, world.dimension()
             )), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
@@ -239,10 +239,10 @@ public class ParticleUtil {
     public static void spawnImpactParticle(World world, Vector3d center, float force, Vector3d motion, MagickElement element, ParticleType type) {
         float count = (10 * force);
         float scale = Math.max(0.1f, 0.05f * force);
-        if(!world.isRemote) {
+        if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 1, element.type(), motion);
             Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.getDimensionKey()
+                    center.x, center.y, center.z, 48, world.dimension()
             )), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
@@ -264,10 +264,10 @@ public class ParticleUtil {
     public static void spawnRaiseParticle(World world, Vector3d center, float force, MagickElement element, ParticleType type) {
         float count = (10 * force);
         float scale = 1f;
-        if(!world.isRemote) {
+        if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 2, element.type(), Vector3d.ZERO);
             Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.getDimensionKey()
+                    center.x, center.y, center.z, 48, world.dimension()
             )), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);

@@ -46,20 +46,20 @@ public class SpellSwapBoxGUI extends Screen {
     protected void init() {
         PlayerEntity player = Minecraft.getInstance().player;
         if(player == null) {
-            closeScreen();
+            onClose();
             return;
         }
-        if(player.getHeldItemMainhand().getItem() instanceof IManaContextItem)
-            heldItem = player.getHeldItemMainhand();
-        else if(player.getHeldItemOffhand().getItem() instanceof IManaContextItem)
-            heldItem = player.getHeldItemOffhand();
+        if(player.getMainHandItem().getItem() instanceof IManaContextItem)
+            heldItem = player.getMainHandItem();
+        else if(player.getOffhandItem().getItem() instanceof IManaContextItem)
+            heldItem = player.getOffhandItem();
 
         if(heldItem.isEmpty()) {
-            closeScreen();
+            onClose();
             return;
         }
         NBTTagHelper.PlayerData playerData = NBTTagHelper.PlayerData.playerData(player);
-        this.minecraft.keyboardListener.enableRepeatEvents(true);
+        this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         int x = (int) (this.width * 0.35);
         int y = (int) (this.height * 0.10);
@@ -74,10 +74,10 @@ public class SpellSwapBoxGUI extends Screen {
             ItemStack item = entry.getValue();
 
             int finalI = i;
-            this.addButton(new ItemStackButton(x, y, 21, 21, item.getDisplayName(), (button) -> {
+            this.addButton(new ItemStackButton(x, y, 21, 21, item.getHoverName(), (button) -> {
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getEntityId(), finalI));
-                closeScreen();
+                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getId(), finalI));
+                onClose();
             }, item));
             y+=30;
             i++;
@@ -93,8 +93,8 @@ public class SpellSwapBoxGUI extends Screen {
             int finalC = i;
             this.addButton(new ItemStackButton(x, y, 21, 21, new StringTextComponent(""), (button) -> {
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getEntityId(), finalC));
-                closeScreen();
+                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getId(), finalC));
+                onClose();
             }, ItemStack.EMPTY));
             y+=30;
             i++;
@@ -108,9 +108,9 @@ public class SpellSwapBoxGUI extends Screen {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.pushMatrix();
         RenderSystem.scaled(5, 5, 0);
-        minecraft.getItemRenderer().renderItemIntoGUI(heldItem, width / 12, height / 16);
+        minecraft.getItemRenderer().renderGuiItem(heldItem, width / 12, height / 16);
         RenderSystem.popMatrix();
-        drawCenteredString(matrixStack, this.font, heldItem.getDisplayName(), this.width / 2, (int) (this.height * 0.7), 0xFFFFFF);
+        drawCenteredString(matrixStack, this.font, heldItem.getHoverName(), this.width / 2, (int) (this.height * 0.7), 0xFFFFFF);
         boolean hover = false;
         for (Widget button : buttons) {
             if(button instanceof ItemStackButton) {
@@ -128,7 +128,7 @@ public class SpellSwapBoxGUI extends Screen {
     }
 
     protected void renderHoveredTooltip(MatrixStack matrixStack, int x, int y) {
-        if (this.minecraft.player.inventory.getItemStack().isEmpty() && this.hoverItem != null && !this.hoverItem.isEmpty()) {
+        if (this.minecraft.player.inventory.getCarried().isEmpty() && this.hoverItem != null && !this.hoverItem.isEmpty()) {
             this.renderTooltip(matrixStack, hoverItem, x, y);
         }
     }

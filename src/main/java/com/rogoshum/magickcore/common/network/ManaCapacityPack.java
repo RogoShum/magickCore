@@ -16,7 +16,7 @@ public class ManaCapacityPack extends EntityPack{
 
     public ManaCapacityPack(PacketBuffer buffer) {
         super(buffer);
-        nbt = buffer.readCompoundTag();
+        nbt = buffer.readNbt();
     }
 
     public ManaCapacityPack(int id, ManaCapacity manaCapacity) {
@@ -28,14 +28,14 @@ public class ManaCapacityPack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeCompoundTag(nbt);
+        buf.writeNbt(nbt);
     }
 
     @Override
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
 
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed || !(entity instanceof IManaCapacity))
             return;
 

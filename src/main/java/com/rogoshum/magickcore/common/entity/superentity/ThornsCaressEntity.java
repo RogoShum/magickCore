@@ -50,12 +50,12 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     public boolean releaseMagick() {
-        if(this.ticksExisted % 2 ==0) {
+        if(this.tickCount % 2 ==0) {
             List<Entity> livings = this.findEntity((entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)));
             for (Entity entity : livings) {
-                MagickContext context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
+                MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
+                context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }
@@ -79,32 +79,32 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
 
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1) {
-            this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.rand.nextFloat() / 3);
+        if(this.tickCount == 1) {
+            this.playSound(ModSounds.wither_spawn.get(), 2.0F, 1.0F + this.random.nextFloat() / 3);
         }
-        if(this.ticksExisted % 13 == 0) {
-            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.rand.nextFloat() * 0.5f);
+        if(this.tickCount % 13 == 0) {
+            this.playSound(ModSounds.wither_ambience.get(), 0.7F, 0.85F - this.random.nextFloat() * 0.5f);
         }
     }
 
     protected void applyParticle() {
-        if(this.ticksExisted % 2 == 0){
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getPosX()
-                    , this.getPosY() + this.getHeight() / 2
-                    , this.getPosZ())
-                    , 0.45f, 0.45f, this.rand.nextFloat(), 60, this.spellContext().element.getRenderer());
+        if(this.tickCount % 2 == 0){
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(this.getX()
+                    , this.getY() + this.getBbHeight() / 2
+                    , this.getZ())
+                    , 0.45f, 0.45f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
             par.setGlow();
             //par.setParticleGravity(0);
             par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05);
             MagickCore.addMagickParticle(par);
         }
-        if(this.ticksExisted % 5 == 0){
-            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * this.getWidth() / 2 + this.getPosZ())
-                    , this.rand.nextFloat() * this.getWidth(), this.rand.nextFloat() * this.getWidth(), 0.6f + 0.4f * this.rand.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
+        if(this.tickCount % 5 == 0){
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
+                    , this.random.nextFloat() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth(), 0.6f + 0.4f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(35.0f);
@@ -121,6 +121,6 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(16), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(16), predicate);
     }
 }

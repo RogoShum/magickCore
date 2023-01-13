@@ -112,7 +112,7 @@ public class NBTIngredient extends Ingredient {
         if(!inputKeys.containsAll(this.keySet))
             return false;
         for(String key : this.keyMap.keySet()) {
-            if(!inputKeyMap.containsKey(key) || !inputKeyMap.get(key).getString().equals(this.keyMap.get(key).getString()))
+            if(!inputKeyMap.containsKey(key) || !inputKeyMap.get(key).getAsString().equals(this.keyMap.get(key).getAsString()))
                 return false;
         }
         return true;
@@ -130,7 +130,7 @@ public class NBTIngredient extends Ingredient {
     }
 
     @Override
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("type", CraftingHelper.getID(Serializer.INSTANCE).toString());
         if(item != null)
@@ -141,8 +141,8 @@ public class NBTIngredient extends Ingredient {
             json.addProperty("name", this.name);
         json.addProperty("count", this.count);
         if (tag != null)
-            json.addProperty("nbt", this.tag.getString());
-        super.serialize();
+            json.addProperty("nbt", this.tag.getAsString());
+        super.toJson();
         return json;
     }
 
@@ -155,14 +155,14 @@ public class NBTIngredient extends Ingredient {
             int limit = buffer.readVarInt();
             Ingredient.IItemList[] ingredientList = new Ingredient.IItemList[limit];
             for (int i = 0; i < limit; ++i) {
-                ingredientList[i] = new Ingredient.SingleItemList(buffer.readItemStack());
+                ingredientList[i] = new Ingredient.SingleItemList(buffer.readItem());
             }
 
             Stream<? extends Ingredient.IItemList> itemLists = Stream.of(ingredientList);
-            CompoundNBT tag = buffer.readCompoundTag();
+            CompoundNBT tag = buffer.readNbt();
             int count = buffer.readVarInt();
             int type = buffer.readVarInt();
-            String string = buffer.readString();
+            String string = buffer.readUtf();
             return new NBTIngredient(type, string, itemLists, tag, count);
         }
 
@@ -170,22 +170,22 @@ public class NBTIngredient extends Ingredient {
         public NBTIngredient parse(JsonObject json) {
             if(!json.has("name")) {
                 try {
-                    int count = JSONUtils.getInt(json, "count", 1);
+                    int count = JSONUtils.getAsInt(json, "count", 1);
                     CompoundNBT nbt = new CompoundNBT();
                     if(json.has("nbt")) {
                         JsonElement element = json.get("nbt");
                         if (element.isJsonObject())
-                            nbt = JsonToNBT.getTagFromJson(GSON.toJson(element));
+                            nbt = JsonToNBT.parseTag(GSON.toJson(element));
                         else
-                            nbt = JsonToNBT.getTagFromJson(JSONUtils.getString(element, "nbt"));
+                            nbt = JsonToNBT.parseTag(JSONUtils.convertToString(element, "nbt"));
                     }
-                    Stream<? extends Ingredient.IItemList> itemLists = Stream.of(Ingredient.deserializeItemList(json));
+                    Stream<? extends Ingredient.IItemList> itemLists = Stream.of(Ingredient.valueFromJson(json));
                     Optional<? extends Ingredient.IItemList> optional = itemLists.findFirst();
                     if(json.has("tag")) {
-                        String tag = JSONUtils.getString(json, "tag");
+                        String tag = JSONUtils.getAsString(json, "tag");
                         return new NBTIngredient(tag, itemLists, nbt, count);
                     } else {
-                        String item = JSONUtils.getString(json, "item");
+                        String item = JSONUtils.getAsString(json, "item");
                         return new NBTIngredient(item, optional.get(), nbt, count);
                     }
                 } catch (CommandSyntaxException e) {
@@ -193,16 +193,16 @@ public class NBTIngredient extends Ingredient {
                 }
             } else {
                 try {
-                    String name = JSONUtils.getString(json, "name");
-                    int count = JSONUtils.getInt(json, "count", 1);
+                    String name = JSONUtils.getAsString(json, "name");
+                    int count = JSONUtils.getAsInt(json, "count", 1);
 
                     CompoundNBT nbt = new CompoundNBT();
                     if(json.has("nbt")) {
                         JsonElement element = json.get("nbt");
                         if (element.isJsonObject())
-                            nbt = JsonToNBT.getTagFromJson(GSON.toJson(element));
+                            nbt = JsonToNBT.parseTag(GSON.toJson(element));
                         else
-                            nbt = JsonToNBT.getTagFromJson(JSONUtils.getString(element, "nbt"));
+                            nbt = JsonToNBT.parseTag(JSONUtils.convertToString(element, "nbt"));
                     }
 
                     ImmutableList.Builder<ItemStack> items = ImmutableList.builder();
@@ -220,22 +220,22 @@ public class NBTIngredient extends Ingredient {
 
         @Override
         public void write(PacketBuffer buffer, NBTIngredient ingredient) {
-            ItemStack[] items = ingredient.getMatchingStacks();
+            ItemStack[] items = ingredient.getItems();
             buffer.writeVarInt(items.length);
 
             for (ItemStack stack : items)
-                buffer.writeItemStack(stack);
-            buffer.writeCompoundTag(ingredient.tag);
+                buffer.writeItem(stack);
+            buffer.writeNbt(ingredient.tag);
             buffer.writeVarInt(ingredient.count);
             if(ingredient.item != null) {
                 buffer.writeVarInt(0);
-                buffer.writeString(ingredient.item);
+                buffer.writeUtf(ingredient.item);
             } else if(ingredient.name != null) {
                 buffer.writeVarInt(1);
-                buffer.writeString(ingredient.name);
+                buffer.writeUtf(ingredient.name);
             } else {
                 buffer.writeVarInt(2);
-                buffer.writeString(ingredient.itemTag);
+                buffer.writeUtf(ingredient.itemTag);
             }
         }
     }

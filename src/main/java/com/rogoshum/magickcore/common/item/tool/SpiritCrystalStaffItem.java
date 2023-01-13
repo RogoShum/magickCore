@@ -21,6 +21,8 @@ import net.minecraft.item.ItemStack;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import net.minecraft.item.Item.Properties;
+
 public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem {
     public SpiritCrystalStaffItem(Properties properties) {
         super(properties);
@@ -29,7 +31,7 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(playerIn.world, data.spellContext());
+        MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(playerIn).victim(playerIn).element(element);
         if(context.containChild(LibContext.TRACE)) {

@@ -44,33 +44,33 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(entity.getThrowerId() == null) return false;
-        PlayerEntity player = entity.world.getPlayerByUuid(entity.getThrowerId());
+        if(entity.getThrower() == null) return false;
+        PlayerEntity player = entity.level.getPlayerByUUID(entity.getThrower());
         if(player == null) return false;
         NBTTagHelper.PlayerData playerData = NBTTagHelper.PlayerData.playerData(player);
-        List<ItemEntity> entities = entity.world.getEntitiesWithinAABB(EntityType.ITEM, entity.getBoundingBox().grow(1), Entity::isAlive);
+        List<ItemEntity> entities = entity.level.getEntities(EntityType.ITEM, entity.getBoundingBox().inflate(1), Entity::isAlive);
         for(ItemEntity item : entities) {
             if(playerData.getLimit() < 6 && item.getItem().getItem() == Items.DIAMOND) {
                 item.getItem().shrink(1);
                 entity.getItem().shrink(1);
                 playerData.setLimit(Math.min(playerData.getLimit() + 1, 6));
-                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
-                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+                entity.level.playSound((PlayerEntity)null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.level, player.position(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.level, entity.position(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
             } else if(playerData.getLimit() < 9 && item.getItem().getItem() == Items.MAGMA_CREAM) {
                 item.getItem().shrink(1);
                 entity.getItem().shrink(1);
                 playerData.setLimit(Math.min(playerData.getLimit() + 1, 9));
-                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
-                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+                entity.level.playSound((PlayerEntity)null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.level, player.position(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.level, entity.position(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
             } else if(playerData.getLimit() < 12 && item.getItem().getItem() == Items.CHORUS_FRUIT) {
                 item.getItem().shrink(1);
                 entity.getItem().shrink(1);
                 playerData.setLimit(Math.min(playerData.getLimit() + 1, 12));
-                entity.world.playSound((PlayerEntity)null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-                ParticleUtil.spawnRaiseParticle(entity.world, player.getPositionVec(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
-                ParticleUtil.spawnBlastParticle(entity.world, entity.getPositionVec(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
+                entity.level.playSound((PlayerEntity)null, entity.getX(), entity.getY(), entity.getZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                ParticleUtil.spawnRaiseParticle(entity.level, player.position(), 2, ModElements.ORIGIN, ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(entity.level, entity.position(), 1, ModElements.ORIGIN, ParticleType.PARTICLE);
             }
         }
         return false;
@@ -85,24 +85,24 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
 
     @Override
     public void placeEntity(BlockItemUseContext context) {
-        Vector3d pos = context.getHitVec();
-        Direction direction = context.getFace();
-        Vector3d offset = Vector3d.copy(direction.getDirectionVec()).scale(WIDTH);
+        Vector3d pos = context.getClickLocation();
+        Direction direction = context.getClickedFace();
+        Vector3d offset = Vector3d.atLowerCornerOf(direction.getNormal()).scale(WIDTH);
         if(direction.getAxis().isVertical()) {
             if(direction.getAxisDirection().equals(Direction.AxisDirection.POSITIVE))
                 offset = Vector3d.ZERO;
             else
-                offset = Vector3d.copy(direction.getDirectionVec()).scale(HEIGHT);
+                offset = Vector3d.atLowerCornerOf(direction.getNormal()).scale(HEIGHT);
         }
         pos.add(offset);
-        PlaceableItemEntity entity = placeEntity(context.getWorld(), context.getItem(), direction, pos);
+        PlaceableItemEntity entity = placeEntity(context.getLevel(), context.getItemInHand(), direction, pos);
         if(entity != null)
-            entity.world.addEntity(entity);
-        BlockPos crafting = validCrafting(context.getWorld(), new BlockPos(pos), false);
+            entity.level.addFreshEntity(entity);
+        BlockPos crafting = validCrafting(context.getLevel(), new BlockPos(pos), false);
         if(crafting != null) {
-            context.getWorld().setBlockState(crafting, ModBlocks.MAGICK_CRAFTING.get().getDefaultState());
+            context.getLevel().setBlockAndUpdate(crafting, ModBlocks.MAGICK_CRAFTING.get().defaultBlockState());
             if(context.getPlayer() instanceof ServerPlayerEntity) {
-                entity.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.5f, 0.0f);
+                entity.playSound(SoundEvents.BEACON_POWER_SELECT, 0.5f, 0.0f);
                 AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) context.getPlayer(), LibAdvancements.MAGICK_CRAFTING);
             }
         }
@@ -110,17 +110,17 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
 
     public static BlockPos validCrafting(World world, BlockPos pos, boolean center) {
         if(center) {
-            if(validCrafting(world, pos.add(-1, 0, -1)))
+            if(validCrafting(world, pos.offset(-1, 0, -1)))
                 return pos;
             return null;
         } else if(validCrafting(world, pos)) {
-            return pos.add(1, 0, 1);
-        } else if(validCrafting(world, pos.add(-2, 0, 0))) {
-            return pos.add(-1, 0, 1);
-        } else if(validCrafting(world, pos.add(0, 0, -2))) {
-            return pos.add(1, 0, -1);
-        } else if(validCrafting(world, pos.add(-2, 0, -2))) {
-            return pos.add(-1, 0, -1);
+            return pos.offset(1, 0, 1);
+        } else if(validCrafting(world, pos.offset(-2, 0, 0))) {
+            return pos.offset(-1, 0, 1);
+        } else if(validCrafting(world, pos.offset(0, 0, -2))) {
+            return pos.offset(1, 0, -1);
+        } else if(validCrafting(world, pos.offset(-2, 0, -2))) {
+            return pos.offset(-1, 0, -1);
         }
 
         return null;
@@ -129,12 +129,12 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
     private static boolean validCrafting(World world, BlockPos pos) {
         for(int i = 0; i < 3; ++i) {
             for (int c = 0; c < 3; ++c) {
-                BlockPos offset = pos.add(i, 0, c);
-                if(!world.isAirBlock(offset) && !(world.getBlockState(offset).getBlock() instanceof MagickCraftingBlock))
+                BlockPos offset = pos.offset(i, 0, c);
+                if(!world.isEmptyBlock(offset) && !(world.getBlockState(offset).getBlock() instanceof MagickCraftingBlock))
                     return false;
                 String pattern = CRAFTING_RECIPE[i][c];
                 if(pattern.equals("s")) {
-                    if(world.getEntitiesInAABBexcluding(null, new AxisAlignedBB(offset), (entity) -> entity instanceof PlaceableItemEntity && ((PlaceableItemEntity) entity).getItemStack().getItem() instanceof SpiritCrystalItem).isEmpty())
+                    if(world.getEntities((Entity) null, new AxisAlignedBB(offset), (entity) -> entity instanceof PlaceableItemEntity && ((PlaceableItemEntity) entity).getItemStack().getItem() instanceof SpiritCrystalItem).isEmpty())
                         return false;
                 }
             }

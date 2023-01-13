@@ -56,7 +56,7 @@ public class MagickReleaseHelper {
         UUID uuid = MagickCore.emptyUUID;
         Entity entity = getEntityLookedAt(playerIn);
         if (entity != null)
-            uuid = entity.getUniqueID();
+            uuid = entity.getUUID();
         return uuid;
     }
 
@@ -96,9 +96,9 @@ public class MagickReleaseHelper {
 
     public static void failed(MagickContext context, Entity entity) {
         for(int i = 0; i < 40; ++i) {
-            context.world.addParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + entity.getEntity().getPosX()
-                    , MagickCore.getNegativeToOne() + entity.getEntity().getPosY() + entity.getEntity().getHeight() * 0.5
-                    , MagickCore.getNegativeToOne() + entity.getEntity().getPosZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
+            context.world.addParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + entity.getEntity().getX()
+                    , MagickCore.getNegativeToOne() + entity.getEntity().getY() + entity.getEntity().getBbHeight() * 0.5
+                    , MagickCore.getNegativeToOne() + entity.getEntity().getZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
         }
     }
 
@@ -138,9 +138,9 @@ public class MagickReleaseHelper {
             element = ExtraDataUtil.entityStateData(context.caster).getElement();
 
         if(context.caster != null) {
-            context.replenishChild(DirectionContext.create(reverse ? context.caster.getLookVec().scale(-1) : context.caster.getLookVec()));
+            context.replenishChild(DirectionContext.create(reverse ? context.caster.getLookAngle().scale(-1) : context.caster.getLookAngle()));
         } else if (context.projectile != null) {
-            context.replenishChild(DirectionContext.create(reverse ? context.projectile.getMotion().scale(-1) : context.projectile.getMotion()));
+            context.replenishChild(DirectionContext.create(reverse ? context.projectile.getDeltaMovement().scale(-1) : context.projectile.getDeltaMovement()));
         }
 
         if(context.projectile instanceof IManaEntity) {
@@ -177,7 +177,7 @@ public class MagickReleaseHelper {
     }
 
     public static boolean spawnEntity(MagickContext context) {
-        if (context.doBlock || context.world == null || context.world.isRemote)
+        if (context.doBlock || context.world == null || context.world.isClientSide)
             return false;
         if(!context.containChild(LibContext.SPAWN))
             return false;
@@ -239,43 +239,43 @@ public class MagickReleaseHelper {
 
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
-            pro.setPosition(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
+            pro.setPos(positionContext.pos.x, positionContext.pos.y, positionContext.pos.z);
         } else if(context.projectile != null) {
-            pro.setPosition(context.projectile.getPosX(), context.projectile.getPosY() + context.projectile.getHeight() * 0.5 + pro.getEyeHeight(), context.projectile.getPosZ());
+            pro.setPos(context.projectile.getX(), context.projectile.getY() + context.projectile.getBbHeight() * 0.5 + pro.getEyeHeight(), context.projectile.getZ());
         } else if(context.caster != null) {
             if(pro instanceof ProjectileEntity)
-                pro.setPosition(context.caster.getPosX() + context.caster.getLookVec().x * (1.25 + pro.getWidth() * 0.5),
-                        context.caster.getPosY() + context.caster.getEyeHeight() + context.caster.getLookVec().y * (1.25 + pro.getHeight() * 0.5),
-                        context.caster.getPosZ() + context.caster.getLookVec().z * (1.25 + pro.getWidth() * 0.5));
+                pro.setPos(context.caster.getX() + context.caster.getLookAngle().x * (1.25 + pro.getBbWidth() * 0.5),
+                        context.caster.getY() + context.caster.getEyeHeight() + context.caster.getLookAngle().y * (1.25 + pro.getBbHeight() * 0.5),
+                        context.caster.getZ() + context.caster.getLookAngle().z * (1.25 + pro.getBbWidth() * 0.5));
             else
-                pro.setPosition(context.caster.getPosX(), context.caster.getPosY() + (context.caster.getHeight() * 0.5) - (pro.getHeight() * 0.5), context.caster.getPosZ());
+                pro.setPos(context.caster.getX(), context.caster.getY() + (context.caster.getBbHeight() * 0.5) - (pro.getBbHeight() * 0.5), context.caster.getZ());
         }
 
         if(context.containChild(LibContext.OFFSET)) {
             OffsetContext offsetContext = context.getChild(LibContext.OFFSET);
-            Vector3d pos = pro.getPositionVec();
+            Vector3d pos = pro.position();
             pos = pos.add(offsetContext.direction);
-            pro.setPosition(pos.x, pos.y, pos.z);
+            pro.setPos(pos.x, pos.y, pos.z);
         }
 
         if(context.caster != null && pro instanceof ProjectileEntity) {
-            ((ProjectileEntity)pro).setShooter(context.caster);
+            ((ProjectileEntity)pro).setOwner(context.caster);
             boolean reverse = context.containChild(LibContext.REVERSE);
             if(context.containChild(LibContext.DIRECTION)) {
                 Vector3d motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
             } else if(context.victim != null && context.victim != context.caster) {
-                Vector3d motion = context.victim.getPositionVec().add(0, (context.victim.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
+                Vector3d motion = context.victim.position().add(0, (context.victim.getBbHeight() * 0.5) - (pro.getBbHeight() * 0.5), 0).subtract(pro.position());
                 if(reverse)
                     motion = motion.scale(-1);
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
             } else if(traceContext != null && traceContext.entity != null) {
-                Vector3d motion = traceContext.entity.getPositionVec().add(0, (traceContext.entity.getHeight() * 0.5) - (pro.getHeight() * 0.5), 0).subtract(pro.getPositionVec());
+                Vector3d motion = traceContext.entity.position().add(0, (traceContext.entity.getBbHeight() * 0.5) - (pro.getBbHeight() * 0.5), 0).subtract(pro.position());
                 if(reverse)
                     motion = motion.scale(-1);
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));
             } else {
-                Vector3d motion = context.caster.getLookVec();
+                Vector3d motion = context.caster.getLookAngle();
                 if(reverse)
                     motion = motion.scale(-1);
                 ((ProjectileEntity)pro).shoot(motion.x, motion.y, motion.z, getVelocity(pro), getInaccuracy(pro));;
@@ -297,7 +297,7 @@ public class MagickReleaseHelper {
                         MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(context.projectile).victim(context.victim).separator(pro);
                         if(traceContext != null)
                             magickContext.replenishChild(traceContext);
-                        magickContext.replenishChild(PositionContext.create(pro.getPositionVec()));
+                        magickContext.replenishChild(PositionContext.create(pro.position()));
                         if(((IManaEntity) pro).spellContext().containChild(LibContext.DIRECTION))
                             magickContext.replenishChild(
                                     DirectionContext.create(
@@ -310,7 +310,7 @@ public class MagickReleaseHelper {
                     }
                 }
             }
-            context.world.addEntity(pro);
+            context.world.addFreshEntity(pro);
             return true;
         }
             return false;
@@ -339,15 +339,15 @@ public class MagickReleaseHelper {
     }
 
     public static Entity getEntityLookedAt(Entity e) {
-        return getEntityRayTrace(e, new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ()), e.getLookVec(), 64);
+        return getEntityRayTrace(e, new Vector3d(e.getX(), e.getY() + e.getEyeHeight(), e.getZ()), e.getLookAngle(), 64);
     }
 
     public static Entity getEntityLookedAt(Entity e, float distance) {
-        return getEntityRayTrace(e, new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ()), e.getLookVec(), distance);
+        return getEntityRayTrace(e, new Vector3d(e.getX(), e.getY() + e.getEyeHeight(), e.getZ()), e.getLookAngle(), distance);
     }
 
     public static boolean canEntityTraceAnother(Entity e, Entity another) {
-        return another == getEntityRayTrace(e, e.getPositionVec().add(0, e.getHeight() / 2, 0), another.getPositionVec().add(0, another.getHeight() / 2, 0).subtract(e.getPositionVec().add(0, e.getHeight() / 2, 0)).normalize(), 64);
+        return another == getEntityRayTrace(e, e.position().add(0, e.getBbHeight() / 2, 0), another.position().add(0, another.getBbHeight() / 2, 0).subtract(e.position().add(0, e.getBbHeight() / 2, 0)).normalize(), 64);
     }
 
     public static Entity getEntityRayTrace(Entity e, Vector3d vec, Vector3d diraction) {
@@ -366,21 +366,21 @@ public class MagickReleaseHelper {
         Vector3d positionVector = vec;
 
         if (pos != null) {
-            distance = pos.getHitVec().distanceTo(positionVector);
+            distance = pos.getLocation().distanceTo(positionVector);
         }
 
         Vector3d lookVector = diraction;
         Vector3d reachVector = positionVector.add(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD);
 
         Entity lookedEntity = null;
-        List<Entity> entitiesInBoundingBox = e.getEntityWorld().getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).grow(1F, 1F, 1F));
+        List<Entity> entitiesInBoundingBox = e.getCommandSenderWorld().getEntities(e, e.getBoundingBox().inflate(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).inflate(1F, 1F, 1F));
         double minDistance = distance;
 
         for (Entity entity : entitiesInBoundingBox) {
-            if (entity.isAlive() && entity.canBeCollidedWith()) {
-                float collisionBorderSize = entity.getCollisionBorderSize();
-                AxisAlignedBB hitbox = entity.getBoundingBox().grow(collisionBorderSize, collisionBorderSize, collisionBorderSize);
-                Optional<Vector3d> interceptPosition = hitbox.rayTrace(positionVector, reachVector);
+            if (entity.isAlive() && entity.isPickable()) {
+                float collisionBorderSize = entity.getPickRadius();
+                AxisAlignedBB hitbox = entity.getBoundingBox().inflate(collisionBorderSize, collisionBorderSize, collisionBorderSize);
+                Optional<Vector3d> interceptPosition = hitbox.clip(positionVector, reachVector);
 
                 if (hitbox.contains(positionVector)) {
                     if (0.0D < minDistance || minDistance == 0.0D) {
@@ -406,19 +406,19 @@ public class MagickReleaseHelper {
     }
 
     public static BlockRayTraceResult raycast(Entity e, double len) {
-        Vector3d vec = new Vector3d(e.getPosX(), e.getPosY() + e.getEyeHeight(), e.getPosZ());
-        return raycast(e, vec, e.getLookVec(), len);
+        Vector3d vec = new Vector3d(e.getX(), e.getY() + e.getEyeHeight(), e.getZ());
+        return raycast(e, vec, e.getLookAngle(), len);
     }
 
     public static BlockRayTraceResult raycast(Entity entity, Vector3d origin, Vector3d ray, double len) {
         Vector3d ori = new Vector3d(origin.x, origin.y, origin.z);
         Vector3d end = origin.add(ray.normalize().scale(len));
-        return entity.world.rayTraceBlocks(new RayTraceContext(ori, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, entity));
+        return entity.level.clip(new RayTraceContext(ori, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, entity));
     }
 
     public static boolean sameLikeOwner(Entity owner, Entity other) {
         if(owner instanceof LivingEntity) {
-            if(((LivingEntity)owner).getActivePotionMap().containsKey(ModEffects.CHAOS_THEOREM.orElse(null))) {
+            if(((LivingEntity)owner).getActiveEffectsMap().containsKey(ModEffects.CHAOS_THEOREM.orElse(null))) {
                 return false;
             }
         }
@@ -436,14 +436,14 @@ public class MagickReleaseHelper {
         if (other instanceof IOwnerEntity && ownerFunction(owner, ((IOwnerEntity) other)::getOwner))
             return true;
 
-        if (other instanceof ProjectileEntity && ownerFunction(owner, ((ProjectileEntity) other)::func_234616_v_))
+        if (other instanceof ProjectileEntity && ownerFunction(owner, ((ProjectileEntity) other)::getOwner))
             return true;
 
         if (other instanceof TameableEntity && ownerFunction(owner, ((TameableEntity) other)::getOwner))
             return true;
 
         AtomicBoolean flag = new AtomicBoolean(false);
-        ExtraDataUtil.entityData(other).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, data -> flag.set(data.getOwnerUUID().equals(owner.getUniqueID())));
+        ExtraDataUtil.entityData(other).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, data -> flag.set(data.getOwnerUUID().equals(owner.getUUID())));
 
         if (flag.get())
             return true;

@@ -27,7 +27,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
     @Override
     public void tick() {
         super.tick();
-        double length = getMotion().length() * 3;
+        double length = getDeltaMovement().length() * 3;
         if(length > maxMotion)
             maxMotion = length;
     }
@@ -48,7 +48,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         float range = spellContext().range;
         if(range > 10)
             range = 10;
@@ -62,20 +62,20 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosY() + this.getHeight() / 2
-                , MagickCore.getNegativeToOne() * this.getWidth() + this.getPosZ())
-                , 0.15f * getWidth(), 0.15f * getWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
+        LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
+                , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
+                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
         par.setGlow();
         MagickCore.addMagickParticle(par);
     }
 
     public void addParticle(Vector3d pos, Vector3d direction, int count, float baseScale, float scale) {
         for (int i = 0; i < count; ++i) {
-            LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getLaserTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getLaserTexture()
                     , new Vector3d(pos.x - i * direction.x
-                    , pos.y - i * direction.y + this.getHeight() / 2
+                    , pos.y - i * direction.y + this.getBbHeight() / 2
                     , pos.z - i * direction.z)
                     , (float) (baseScale * Math.pow(scale, i)), (float) (baseScale * Math.pow(scale, i)), 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
@@ -90,6 +90,6 @@ public class ManaArrowEntity extends ManaProjectileEntity {
         float range = spellContext().range;
         if(range > 10)
             range = 10;
-        return ManaFactor.create(Math.min(1.5f, (float) (Math.pow(this.getMotion().length() * range, 1.8) * 0.2 + 0.05)), 1.0f, 1.0f);
+        return ManaFactor.create(Math.min(1.5f, (float) (Math.pow(this.getDeltaMovement().length() * range, 1.8) * 0.2 + 0.05)), 1.0f, 1.0f);
     }
 }

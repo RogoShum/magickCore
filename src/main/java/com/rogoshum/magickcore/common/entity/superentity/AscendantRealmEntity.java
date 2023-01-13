@@ -45,12 +45,12 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
 
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1) {
-            this.playSound(SoundEvents.ENTITY_BLAZE_DEATH, 2.0F, 1.0F - this.rand.nextFloat());
+        if(this.tickCount == 1) {
+            this.playSound(SoundEvents.BLAZE_DEATH, 2.0F, 1.0F - this.random.nextFloat());
         }
 
-        if(this.rand.nextInt(200) == 0) {
-            this.playSound(SoundEvents.ENTITY_BLAZE_AMBIENT, 2.0F, 1.0F - this.rand.nextFloat());
+        if(this.random.nextInt(200) == 0) {
+            this.playSound(SoundEvents.BLAZE_AMBIENT, 2.0F, 1.0F - this.random.nextFloat());
         }
     }
 
@@ -59,13 +59,13 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
         return ManaFactor.DEFAULT;
     }
     protected void applyParticle() {
-        double width = this.getWidth() * 0.5;
-        double height = this.getHeight() * 0.5;
+        double width = this.getBbWidth() * 0.5;
+        double height = this.getBbHeight() * 0.5;
         for(int i = 0; i < 1; ++i) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getPosX()
-                    , MagickCore.getNegativeToOne() * height + this.getPosY() + this.getHeight() * 0.5
-                    , MagickCore.getNegativeToOne() * width + this.getPosZ())
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getX()
+                    , MagickCore.getNegativeToOne() * height + this.getY() + this.getBbHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * width + this.getZ())
                     , 0.15f, 0.15f, 1.0f, 60, this.spellContext().element.getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
@@ -73,11 +73,11 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
             MagickCore.addMagickParticle(par);
         }
         for(int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getPosX()
-                    , MagickCore.getNegativeToOne() * height + this.getPosY() + this.getHeight() * 0.5
-                    , MagickCore.getNegativeToOne() * width + this.getPosZ())
-                    , this.rand.nextFloat(), this.rand.nextFloat(), 0.7f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getX()
+                    , MagickCore.getNegativeToOne() * height + this.getY() + this.getBbHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * width + this.getZ())
+                    , this.random.nextFloat(), this.random.nextFloat(), 0.7f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(15.0f);
@@ -95,9 +95,9 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
                 continue;
             TakenEntityData state = ExtraDataUtil.takenEntityData(living);
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
-                MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
+                MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(7.5f).applyType(ApplyType.ATTACK);
+                context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(7.5f).applyType(ApplyType.ATTACK);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }
@@ -112,7 +112,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
 
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(1), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(1), predicate);
     }
 
     @Override

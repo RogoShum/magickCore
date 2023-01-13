@@ -24,31 +24,31 @@ import java.util.List;
 public class ElementItem extends BaseItem implements IManaMaterial {
     private final String element;
     public ElementItem(String element) {
-        super(properties().maxStackSize(16));
+        super(properties().stacksTo(16));
         this.element = element;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if(!worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if(!worldIn.isClientSide) {
             ExtraDataUtil.entityData(playerIn).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
                 if(!state.getElement().type().equals(element)) {
                     state.setElement(MagickRegistry.getElement(element));
-                    playerIn.getHeldItem(handIn).shrink(1);
-                    playerIn.world.playSound(null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, playerIn.getSoundCategory(), 1.5f, 1.0f);
+                    playerIn.getItemInHand(handIn).shrink(1);
+                    playerIn.level.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, playerIn.getSoundSource(), 1.5f, 1.0f);
                 }
             });
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return false;
     }
 

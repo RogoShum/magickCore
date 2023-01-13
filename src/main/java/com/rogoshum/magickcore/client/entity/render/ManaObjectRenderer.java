@@ -27,7 +27,7 @@ public class ManaObjectRenderer extends EntityRenderer<ManaProjectileEntity> {
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(ManaProjectileEntity entity) {
+	public ResourceLocation getTextureLocation(ManaProjectileEntity entity) {
 		return blankTex;
 	}
 }

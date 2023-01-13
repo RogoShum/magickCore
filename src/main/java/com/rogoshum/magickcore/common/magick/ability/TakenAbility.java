@@ -37,7 +37,7 @@ import java.util.Optional;
 public class TakenAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(!context.victim.isNonBoss())
+        if(!context.victim.canChangeDimensions())
             return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick / 2, context.force, false);
         return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick, context.force, true);
     }
@@ -49,22 +49,22 @@ public class TakenAbility{
 
         boolean flag;
         if(context.caster != null && context.projectile instanceof ProjectileEntity)
-            flag = context.victim.attackEntityFrom(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityTakenDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.caster), context.force);
         else if(context.projectile != null)
-            flag = context.victim.attackEntityFrom(ModDamages.applyEntityTakenDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.projectile), context.force);
         else
-            flag = context.victim.attackEntityFrom(ModDamages.getTakenDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getTakenDamage(), context.force);
 
         if(flag && context.force >= 9 && context.caster != null && context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
-            state.setOwner(context.caster.getUniqueID());
+            state.setOwner(context.caster.getUUID());
             state.setTime(context.tick);
             Networking.INSTANCE.send(
                     PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
-                    new TakenStatePack(context.victim.getEntityId(), context.tick, context.victim.getUniqueID()));
-            context.victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
+                    new TakenStatePack(context.victim.getId(), context.tick, context.victim.getUUID()));
+            context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
         }
 
         return flag;
@@ -81,15 +81,15 @@ public class TakenAbility{
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
-            if(!context.victim.isNonBoss()) return false;
+            if(!context.victim.canChangeDimensions()) return false;
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
-            state.setOwner(context.caster.getUniqueID());
+            state.setOwner(context.caster.getUUID());
             int time = (int) (context.tick * context.force);
             state.setTime(time);
-            context.victim.playSound(SoundEvents.ENTITY_BLAZE_HURT, 2.0F, 0.0f);
+            context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
                     PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
-                    new TakenStatePack(context.victim.getEntityId(), time, context.victim.getUniqueID()));
+                    new TakenStatePack(context.victim.getId(), time, context.victim.getUUID()));
             return true;
         }
         return false;
@@ -107,8 +107,8 @@ public class TakenAbility{
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof PlayerEntity)) return false;
         if(context.victim instanceof TameableEntity) {
-            ((TameableEntity) context.victim).setTamedBy((PlayerEntity) context.caster);
-            context.world.setEntityState(context.victim, (byte)7);
+            ((TameableEntity) context.victim).tame((PlayerEntity) context.caster);
+            context.world.broadcastEntityEvent(context.victim, (byte)7);
             return true;
         }
         return false;
@@ -118,15 +118,15 @@ public class TakenAbility{
         if(context.doBlock && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
-            if (context.world.getTileEntity(pos) != null) {
-                TileEntity tile = context.world.getTileEntity(pos);
+            if (context.world.getBlockEntity(pos) != null) {
+                TileEntity tile = context.world.getBlockEntity(pos);
                 if (tile instanceof MobSpawnerTileEntity) {
-                    CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawnerBaseLogic().write(new CompoundNBT());
+                    CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawner().save(new CompoundNBT());
                     if(nbt.contains("SpawnData")) {
                         CompoundNBT entityTag = nbt.getCompound("SpawnData");
                         boolean success = false;
                         for(int i = 0; i < context.force; i++) {
-                            Optional<Entity> optional =  EntityType.loadEntityUnchecked(entityTag, context.world);
+                            Optional<Entity> optional =  EntityType.create(entityTag, context.world);
                             if(optional.isPresent()) {
                                 Entity entity = optional.get();
                                 double randX = MagickCore.getNegativeToOne();
@@ -135,8 +135,8 @@ public class TakenAbility{
                                 randX *= 1 + context.range;
                                 randY *= 1 + context.range;
                                 randZ *= 1 + context.range;
-                                entity.setPosition(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
-                                entity.world.addEntity(entity);
+                                entity.setPos(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
+                                entity.level.addFreshEntity(entity);
                                 success = true;
                             }
                         }
@@ -152,7 +152,7 @@ public class TakenAbility{
                 animal.setInLove((PlayerEntity) context.caster);
             else
                 animal.setInLove(null);
-            animal.setInLove(context.tick);
+            animal.setInLoveTime(context.tick);
             return true;
         }
 

@@ -27,29 +27,29 @@ import java.util.List;
 
 public class ElementWoolItem extends BlockItem{
     public ElementWoolItem() {
-        super(ModBlocks.ELEMENT_WOOL.get(), BaseItem.properties().maxStackSize(64).setISTER(() -> ElementWoolRenderer::new));
+        super(ModBlocks.ELEMENT_WOOL.get(), BaseItem.properties().stacksTo(64).setISTER(() -> ElementWoolRenderer::new));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if(stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
             if(tag.contains("ELEMENT"))
-                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).append(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
         }
     }
 
     @Override
-    protected boolean onBlockPlaced(BlockPos pos, World worldIn, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+    protected boolean updateCustomBlockEntityTag(BlockPos pos, World worldIn, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
         if(stack.hasTag() && stack.getTag().contains("ELEMENT")) {
-            ElementWoolTileEntity crystal = (ElementWoolTileEntity) worldIn.getTileEntity(pos);
+            ElementWoolTileEntity crystal = (ElementWoolTileEntity) worldIn.getBlockEntity(pos);
             crystal.eType = stack.getTag().getString("ELEMENT");
         }
-        return super.onBlockPlaced(pos, worldIn, player, stack, state);
+        return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))

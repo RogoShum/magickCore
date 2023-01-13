@@ -12,6 +12,8 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class MagickCraftingBlock extends BaseBlock{
     public MagickCraftingBlock(Properties properties) {
         super(properties);
@@ -27,8 +29,8 @@ public class MagickCraftingBlock extends BaseBlock{
     }
 
     @Override
-    public boolean isReplaceable(BlockState state, BlockItemUseContext useContext) {
-        return super.isReplaceable(state, useContext);
+    public boolean canBeReplaced(BlockState state, BlockItemUseContext useContext) {
+        return super.canBeReplaced(state, useContext);
     }
 
     @Nullable

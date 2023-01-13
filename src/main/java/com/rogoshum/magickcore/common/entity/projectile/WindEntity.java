@@ -44,8 +44,8 @@ public class WindEntity extends ManaProjectileEntity {
     public void tick() {
         super.tick();
         //this.setNoGravity(true);
-        this.noClip = true;
-        List<Entity> entityList = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range), null);
+        this.noPhysics = true;
+        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), null);
         for(int i = 0; i < entityList.size(); ++i) {
             Entity entity = entityList.get(i);
             if(!suitableEntity(entity)) continue;
@@ -56,15 +56,15 @@ public class WindEntity extends ManaProjectileEntity {
                     pass.set(false);
             }
             if(pass.get()) {
-                Vector3d motion = this.getPositionVec().add(0, getHeight() / 2, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() / 2, 0)).normalize();
-                motion = motion.scale(0.08 * getWidth());
-                entity.addVelocity(motion.x, motion.y, motion.z);
+                Vector3d motion = this.position().add(0, getBbHeight() / 2, 0).subtract(entity.position().add(0, entity.getBbHeight() / 2, 0)).normalize();
+                motion = motion.scale(0.08 * getBbWidth());
+                entity.push(motion.x, motion.y, motion.z);
             }
         }
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0.001f;
     }
 
@@ -80,11 +80,11 @@ public class WindEntity extends ManaProjectileEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.wind_fx.get(), 0.5f, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.wind_fx.get(), 0.5f, 1.0F + this.random.nextFloat());
         }
-        if(this.ticksExisted % 20 == 0)
-            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F + this.rand.nextFloat());
+        if(this.tickCount % 20 == 0)
+            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F + this.random.nextFloat());
     }
 
     @Override
@@ -99,15 +99,15 @@ public class WindEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        float partial = Minecraft.getInstance().getRenderPartialTicks();
-        double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
-        double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
-        double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-        float times = Math.max(getWidth(), 2) * 5;
+        float partial = Minecraft.getInstance().getFrameTime();
+        double x = MathHelper.lerp(partial, this.xOld, this.getX());
+        double y = MathHelper.lerp(partial, this.yOld, this.getY());
+        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        float times = Math.max(getBbWidth(), 2) * 5;
         int age = Math.max((int) (2 * spellContext().range), 10);
         for (int i = 0; i < times; ++i) {
-            LitParticle par = new LitParticle(this.world, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(x , y + getHeight() / 2 , z)
+            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(x , y + getBbHeight() / 2 , z)
                     , 0.1f, 0.1f, 1.0f, age, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);

@@ -19,26 +19,26 @@ public class OriginAbility {
         if(!attribute.victim.isOnGround())
             attribute.force *= 2;
         if(attribute.caster != null && attribute.projectile instanceof ProjectileEntity)
-            return attribute.victim.attackEntityFrom(new IndirectEntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.projectile, attribute.caster), attribute.force);
+            return attribute.victim.hurt(new IndirectEntityDamageSource(DamageSource.MAGIC.getMsgId(), attribute.projectile, attribute.caster), attribute.force);
         else if(attribute.caster != null)
-            return attribute.victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.caster), attribute.force);
+            return attribute.victim.hurt(new EntityDamageSource(DamageSource.MAGIC.getMsgId(), attribute.caster), attribute.force);
         else if(attribute.projectile != null)
-            return attribute.victim.attackEntityFrom(new EntityDamageSource(DamageSource.MAGIC.getDamageType(), attribute.projectile), attribute.force);
+            return attribute.victim.hurt(new EntityDamageSource(DamageSource.MAGIC.getMsgId(), attribute.projectile), attribute.force);
         else
-            return attribute.victim.attackEntityFrom(DamageSource.MAGIC, attribute.force);
+            return attribute.victim.hurt(DamageSource.MAGIC, attribute.force);
     }
 
     public static boolean potion(MagickContext context) {
         if(!context.containChild(LibContext.POTION) || !(context.victim instanceof LivingEntity)) return false;
         PotionContext potionContext = context.getChild(LibContext.POTION);
         for(EffectInstance effectInstance : potionContext.effectInstances) {
-            CompoundNBT tag = effectInstance.write(new CompoundNBT());
+            CompoundNBT tag = effectInstance.save(new CompoundNBT());
             tag.putInt("Duration", (int) (effectInstance.getDuration() * context.force));
-            EffectInstance effect = EffectInstance.read(tag);
-            if (effect.getPotion().isInstant()) {
-                effect.getPotion().affectEntity(context.caster, context.projectile, (LivingEntity) context.victim, (int) Math.min(effect.getAmplifier(), context.force), 1.0D);
+            EffectInstance effect = EffectInstance.load(tag);
+            if (effect.getEffect().isInstantenous()) {
+                effect.getEffect().applyInstantenousEffect(context.caster, context.projectile, (LivingEntity) context.victim, (int) Math.min(effect.getAmplifier(), context.force), 1.0D);
             } else {
-                ((LivingEntity) context.victim).addPotionEffect(new EffectInstance(effect));
+                ((LivingEntity) context.victim).addEffect(new EffectInstance(effect));
             }
         }
         return !potionContext.effectInstances.isEmpty();

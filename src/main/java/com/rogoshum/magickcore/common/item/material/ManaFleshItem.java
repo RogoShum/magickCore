@@ -36,7 +36,7 @@ public class ManaFleshItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
          tooltip.add(new TranslationTextComponent(LibItem.MANA_FLESH));
     }

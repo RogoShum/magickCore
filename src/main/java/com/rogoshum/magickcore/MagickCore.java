@@ -128,7 +128,7 @@ public class MagickCore {
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             ModBrews.registryBrewing();
-            EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::canSpawnOn);
+            EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
             RecipeCollector.init();
             modLoader.values().forEach(additionLoader -> additionLoader.setup(event));
         });

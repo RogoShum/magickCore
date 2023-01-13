@@ -31,20 +31,20 @@ public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
     @Override
     public void baseOffset(MatrixStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
-        Vector3d dir = entity.getMotion().scale(-1).normalize();
+        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
         Vector2f rota = getRotationFromVector(dir);
-        float scale = 0.5f * entity.getWidth();
+        float scale = 0.5f * entity.getBbWidth();
         double length = this.length * scale;
-        matrixStackIn.translate(dir.x * length - dir.x * entity.getWidth(), dir.y * length - dir.y * entity.getWidth(), dir.z * length - dir.z * entity.getWidth());
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+        matrixStackIn.translate(dir.x * length - dir.x * entity.getBbWidth(), dir.y * length - dir.y * entity.getBbWidth(), dir.z * length - dir.z * entity.getBbWidth());
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         matrixStackIn.scale(scale, scale, scale);
     }
 
     @Override
     public void update() {
         super.update();
-        length = (float) Math.max(entity.getMotion().length() * 30 + 1, 1);
+        length = (float) Math.max(entity.getDeltaMovement().length() * 30 + 1, 1);
     }
 
     public void renderTop(RenderParams params) {

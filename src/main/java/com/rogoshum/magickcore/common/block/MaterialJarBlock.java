@@ -17,8 +17,10 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class MaterialJarBlock extends BaseBlock{
-    protected static final VoxelShape SHAPE = Block.makeCuboidShape(3.0D, 0.0D, 3.0D, 13.0D, 16.0D, 13.0D);
+    protected static final VoxelShape SHAPE = Block.box(3.0D, 0.0D, 3.0D, 13.0D, 16.0D, 13.0D);
     public MaterialJarBlock(Properties properties) {
         super(properties);
     }
@@ -35,22 +37,22 @@ public class MaterialJarBlock extends BaseBlock{
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if(worldIn.isRemote) return ActionResultType.SUCCESS;
-        MaterialJarTileEntity jar = (MaterialJarTileEntity) worldIn.getTileEntity(pos);
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+        if(worldIn.isClientSide) return ActionResultType.SUCCESS;
+        MaterialJarTileEntity jar = (MaterialJarTileEntity) worldIn.getBlockEntity(pos);
 
-        if (player.getHeldItemMainhand().isEmpty()) {
-            if(player.isSneaking())
-                player.entityDropItem(jar.takeStack(Math.min(jar.getCount(), player.getHeldItemMainhand().getMaxStackSize())));
+        if (player.getMainHandItem().isEmpty()) {
+            if(player.isShiftKeyDown())
+                player.spawnAtLocation(jar.takeStack(Math.min(jar.getCount(), player.getMainHandItem().getMaxStackSize())));
             else
-                player.entityDropItem(jar.takeStack(1));
+                player.spawnAtLocation(jar.takeStack(1));
             return ActionResultType.SUCCESS;
         }
 
         if (handIn == Hand.MAIN_HAND) {
 
-            if(player.getHeldItemMainhand().getItem() instanceof IManaMaterial) {
-                jar.putStack(player.getHeldItemMainhand());
+            if(player.getMainHandItem().getItem() instanceof IManaMaterial) {
+                jar.putStack(player.getMainHandItem());
             }
         }
         return ActionResultType.PASS;
@@ -61,13 +63,13 @@ public class MaterialJarBlock extends BaseBlock{
         return SHAPE;
     }
 
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        TileEntity tileentity = worldIn.getBlockEntity(pos);
         if (!player.isCreative() && tileentity instanceof MaterialJarTileEntity) {
             MaterialJarTileEntity tile = (MaterialJarTileEntity)tileentity;
             tile.dropItem();
         }
 
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.playerWillDestroy(worldIn, pos, state, player);
     }
 }

@@ -20,7 +20,7 @@ public class SSpellSwapPack extends EntityPack {
 
     public SSpellSwapPack(PacketBuffer buffer) {
         super(buffer);
-        tag = buffer.readCompoundTag();
+        tag = buffer.readNbt();
     }
 
     public SSpellSwapPack(int id, PlayerEntity player) {
@@ -36,7 +36,7 @@ public class SSpellSwapPack extends EntityPack {
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeCompoundTag(this.tag);
+        buf.writeNbt(this.tag);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SSpellSwapPack extends EntityPack {
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
         if(tag == null) return;
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(!(entity instanceof PlayerEntity) || entity.removed)
             return;
         PlayerEntity player = (PlayerEntity) entity;
@@ -54,6 +54,6 @@ public class SSpellSwapPack extends EntityPack {
         tag = tag.getCompound(PlayerEntity.PERSISTED_NBT_TAG);
         tag.put("MagickCore", this.tag);
 
-        Minecraft.getInstance().displayGuiScreen(new SpellSwapBoxGUI(new TranslationTextComponent(MagickCore.MOD_ID + ".test")));
+        Minecraft.getInstance().setScreen(new SpellSwapBoxGUI(new TranslationTextComponent(MagickCore.MOD_ID + ".test")));
     }
 }

@@ -29,12 +29,12 @@ public class ModBuffs {
     public static void initBuff() {
         putBuff(LibBuff.PARALYSIS, LibElements.ARC, false, (e, force) -> {
             force = Math.max(force, 1);
-            e.setMotion(e.getMotion().scale(1d/(force + 1d)*2d));
+            e.setDeltaMovement(e.getDeltaMovement().scale(1d/(force + 1d)*2d));
         } , true);
 
         putBuff(LibBuff.SLOW, LibElements.STASIS, false, (e, force) -> {
             force = Math.max(force, 1);
-            e.setMotion(e.getMotion().scale(1d/(force + 0.5d)));
+            e.setDeltaMovement(e.getDeltaMovement().scale(1d/(force + 0.5d)));
         } , true);
 
         putBuff(LibBuff.WITHER, LibElements.WITHER, false, (e, force) -> {
@@ -43,7 +43,7 @@ public class ModBuffs {
         } , false);
 
         putBuff(LibBuff.FRAGILE, LibElements.VOID, false, (e, force) -> {
-            e.hurtResistantTime -= force;
+            e.invulnerableTime -= force;
         } , false);
 
         putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e, force) ->{
@@ -51,7 +51,7 @@ public class ModBuffs {
                 LivingEntity living = (LivingEntity) e;
                 living.setHealth(living.getMaxHealth());
                 living.setAbsorptionAmount(20f);
-                living.hurtResistantTime = 200;
+                living.invulnerableTime = 200;
                 living.hurtTime = 0;
             }
         }, true);
@@ -69,7 +69,7 @@ public class ModBuffs {
 
         putBuff(LibBuff.DECAY, LibElements.WITHER, true, (e, force) ->{
             if(e instanceof LivingEntity) {
-                ((LivingEntity) e).getActivePotionMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActivePotionMap().get(effect).getAmplifier() <= force);
+                ((LivingEntity) e).getActiveEffectsMap().keySet().removeIf(effect -> !effect.isBeneficial() && ((LivingEntity) e).getActiveEffectsMap().get(effect).getAmplifier() <= force);
             }
         }, true);
 
@@ -80,7 +80,7 @@ public class ModBuffs {
         putBuff(LibBuff.FREEZE, LibElements.STASIS, false, (e, force) ->{}, false);
         putBuff(LibBuff.STASIS, LibElements.STASIS, true, (e, force) ->{
             force *=2;
-            List<Entity> entityList = e.world.getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(force, force, force));
+            List<Entity> entityList = e.level.getEntities(e, e.getBoundingBox().inflate(force, force, force));
 
             for(int i = 0; i< entityList.size(); ++i) {
                 Entity entity = entityList.get(i);
@@ -93,15 +93,15 @@ public class ModBuffs {
         putBuff(LibBuff.INVISIBILITY, LibElements.VOID, true, (e, force) ->{}, true);
         putBuff(LibBuff.PURE, LibElements.STASIS, true, (e, force) ->{
             force *=2;
-            List<Entity> entityList = e.world.getEntitiesWithinAABBExcludingEntity(e, e.getBoundingBox().grow(force, force, force));
+            List<Entity> entityList = e.level.getEntities(e, e.getBoundingBox().inflate(force, force, force));
 
             for(int i = 0; i< entityList.size(); ++i) {
                 Entity entity = entityList.get(i);
                 if(!MagickReleaseHelper.sameLikeOwner(e, entity) && !(entity instanceof LivingEntity)) {
-                    double factor = entity.getMotion().normalize().dotProduct(e.getPositionVec().add(0, e.getHeight() * 0.5, 0).subtract(entity.getPositionVec().add(0, entity.getHeight() * 0.5, 0)).normalize());
+                    double factor = entity.getDeltaMovement().normalize().dot(e.position().add(0, e.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize());
                     if(factor > 0.8) {
-                        Vector3d motion = entity.getMotion();
-                        entity.addVelocity(-motion.x, -motion.y, -motion.z);
+                        Vector3d motion = entity.getDeltaMovement();
+                        entity.push(-motion.x, -motion.y, -motion.z);
                     }
                 }
             }
@@ -166,12 +166,12 @@ public class ModBuffs {
         EntityStateData state = ExtraDataUtil.entityStateData(entity);
         if(state != null) {
             applied = (state.applyBuff(getBuff(type).setTick(tick).setForce(force)));
-            if(applied && !entity.world.isRemote) {
+            if(applied && !entity.level.isClientSide) {
                 CompoundNBT tag = new CompoundNBT();
                 state.write(tag);
                 Networking.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-                        new EntityStatePack(event.getEntity().getEntityId(), tag));
+                        new EntityStatePack(event.getEntity().getId(), tag));
             }
         }
         return applied;

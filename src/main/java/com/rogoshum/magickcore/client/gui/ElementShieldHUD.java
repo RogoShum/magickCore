@@ -19,8 +19,8 @@ public class ElementShieldHUD extends AbstractGui {
     private final EntityStateData state;
 
     public ElementShieldHUD(EntityStateData state) {
-        this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
-        this.height = Minecraft.getInstance().getMainWindow().getScaledHeight();
+        this.width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        this.height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         this.minecraft = Minecraft.getInstance();
         this.state = state;
     }
@@ -34,15 +34,15 @@ public class ElementShieldHUD extends AbstractGui {
         RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(color.r(), color.g(), color.b(), alpha);
         RenderSystem.disableAlphaTest();
-        minecraft.getTextureManager().bindTexture(TEXTURE);
+        minecraft.getTextureManager().bind(TEXTURE);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(0.0D, (double)this.height, -90.0D).tex(0.0F, 1.0F).endVertex();
-        bufferbuilder.pos((double)this.width, (double)this.height, -90.0D).tex(1.0F, 1.0F).endVertex();
-        bufferbuilder.pos((double)this.width, 0.0D, -90.0D).tex(1.0F, 0.0F).endVertex();
-        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0F, 0.0F).endVertex();
-        tessellator.draw();
+        bufferbuilder.vertex(0.0D, (double)this.height, -90.0D).uv(0.0F, 1.0F).endVertex();
+        bufferbuilder.vertex((double)this.width, (double)this.height, -90.0D).uv(1.0F, 1.0F).endVertex();
+        bufferbuilder.vertex((double)this.width, 0.0D, -90.0D).uv(1.0F, 0.0F).endVertex();
+        bufferbuilder.vertex(0.0D, 0.0D, -90.0D).uv(0.0F, 0.0F).endVertex();
+        tessellator.end();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.enableAlphaTest();

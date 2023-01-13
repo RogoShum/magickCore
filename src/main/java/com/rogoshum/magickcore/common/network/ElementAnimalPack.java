@@ -16,7 +16,7 @@ public class ElementAnimalPack extends EntityPack{
 
     public ElementAnimalPack(PacketBuffer buffer) {
         super(buffer);
-        element = buffer.readString();
+        element = buffer.readUtf();
     }
 
     public ElementAnimalPack(int id, String element) {
@@ -26,13 +26,13 @@ public class ElementAnimalPack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(this.element);
+        buf.writeUtf(this.element);
     }
 
     @Override
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed)
             return;
         EntityStateData state = ExtraDataUtil.entityStateData(entity);

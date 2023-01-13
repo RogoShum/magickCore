@@ -40,11 +40,11 @@ public class ManaStarEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
-                , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
-                , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
-                , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.2f * getWidth(), 0.2f * getWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
+                , new Vector3d(this.xOld + (this.getX() - this.xOld) * partialTicks
+                , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
+                , this.zOld + (this.getZ() - this.zOld) * partialTicks)
+                , 0.2f * getBbWidth(), 0.2f * getBbWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();
@@ -53,8 +53,8 @@ public class ManaStarEntity extends ManaProjectileEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        if(world.getDayTime() > 13800 && world.getDayTime() <= 22200)
-            return ManaFactor.create(0.5f + (world.getDayTime() / 8400f), 1.0f, 1.0f);
+        if(level.getDayTime() > 13800 && level.getDayTime() <= 22200)
+            return ManaFactor.create(0.5f + (level.getDayTime() / 8400f), 1.0f, 1.0f);
         return ManaFactor.create(0.5f, 1.0f, 1.0f);
     }
 }

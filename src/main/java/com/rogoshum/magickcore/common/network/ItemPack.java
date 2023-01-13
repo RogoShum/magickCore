@@ -9,7 +9,7 @@ public abstract class ItemPack {
     protected final String id;
 
     public ItemPack(PacketBuffer buffer) {
-        id = buffer.readString();
+        id = buffer.readUtf();
     }
 
     public ItemPack(String id) {
@@ -17,7 +17,7 @@ public abstract class ItemPack {
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeString(this.id);
+        buf.writeUtf(this.id);
     }
 
     public void handler(Supplier<NetworkEvent.Context> ctx) {

@@ -43,9 +43,9 @@ public class ElementToolRecipe extends SpecialRecipe {
         String element = null;
         int count = 0;
 
-        for (int i = 0; i < inv.getSizeInventory(); ++i) {
-            ItemStack itemStack = inv.getStackInSlot(i);
-            if(itemStack.isDamageable() || itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getSlotForItemStack(itemStack).getSlotType().equals(EquipmentSlotType.Group.ARMOR))
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack itemStack = inv.getItem(i);
+            if(itemStack.isDamageableItem() || itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getEquipmentSlotForItem(itemStack).getType().equals(EquipmentSlotType.Group.ARMOR))
                 stack = itemStack.copy();
             else if(itemStack.getItem() instanceof ElementStringItem && NBTTagHelper.hasElement(itemStack)) {
                 String e = NBTTagHelper.getElement(itemStack);
@@ -58,7 +58,7 @@ public class ElementToolRecipe extends SpecialRecipe {
                     return false;
             }
 
-            if(NBTTagHelper.getToolElementTable(stack).keySet().size() >= 2)
+            if(NBTTagHelper.getToolElementTable(stack).getAllKeys().size() >= 2)
                 return false;
         }
 
@@ -67,19 +67,19 @@ public class ElementToolRecipe extends SpecialRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack stack = ItemStack.EMPTY;
         String element = LibElements.ORIGIN;
 
-        for (int i = 0; i < inv.getSizeInventory(); ++i) {
-            ItemStack itemStack = inv.getStackInSlot(i);
-            if(itemStack.isDamageable() || itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getSlotForItemStack(itemStack).getSlotType().equals(EquipmentSlotType.Group.ARMOR))
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack itemStack = inv.getItem(i);
+            if(itemStack.isDamageableItem() || itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || MobEntity.getEquipmentSlotForItem(itemStack).getType().equals(EquipmentSlotType.Group.ARMOR))
                 stack = itemStack.copy();
             else if(itemStack.getItem() instanceof ElementStringItem && NBTTagHelper.hasElement(itemStack)) {
                 element = NBTTagHelper.getElement(itemStack);
             }
 
-            if(NBTTagHelper.getToolElementTable(stack).keySet().size() >= 2)
+            if(NBTTagHelper.getToolElementTable(stack).getAllKeys().size() >= 2)
                 return ItemStack.EMPTY;
         }
 
@@ -88,7 +88,7 @@ public class ElementToolRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height)  {
+    public boolean canCraftInDimensions(int width, int height)  {
         return width * height >= 4;
     }
 

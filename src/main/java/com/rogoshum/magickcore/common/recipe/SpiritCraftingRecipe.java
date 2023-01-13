@@ -105,17 +105,17 @@ public class SpiritCraftingRecipe implements IRecipe<MatrixInventory> {
     }
 
     @Override
-    public ItemStack getCraftingResult(MatrixInventory inv) {
-        return getRecipeOutput().copy();
+    public ItemStack assemble(MatrixInventory inv) {
+        return getResultItem().copy();
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return false;
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return output;
     }
 
@@ -155,10 +155,10 @@ public class SpiritCraftingRecipe implements IRecipe<MatrixInventory> {
     public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<SpiritCraftingRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "spirit_crafting");
         public static final IRecipeSerializer<?> INSTANCE = new SpiritCraftingRecipe.Serializer().setRegistryName(NAME);
-        public SpiritCraftingRecipe read(ResourceLocation recipeId, JsonObject json) {
-            String s = JSONUtils.getString(json, "group", "");
-            Map<String, Ingredient> map = NBTRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-            JsonArray patternArray = JSONUtils.getJsonArray(json, "pattern");
+        public SpiritCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            String s = JSONUtils.getAsString(json, "group", "");
+            Map<String, Ingredient> map = NBTRecipe.deserializeKey(JSONUtils.getAsJsonObject(json, "key"));
+            JsonArray patternArray = JSONUtils.getAsJsonArray(json, "pattern");
             List<NonNullList<Ingredient>> ingredientList = new ArrayList<>();
             int x = 0;
             int z = 0;
@@ -178,7 +178,7 @@ public class SpiritCraftingRecipe implements IRecipe<MatrixInventory> {
                 ingredientList.add(nonnulllist);
             }
 
-            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getAsJsonObject(json, "result"));
             NonNullList<Ingredient>[] nonNullLists = new NonNullList[ingredientList.size()];
             for (int i = 0; i < ingredientList.size(); ++i) {
                 nonNullLists[i] = ingredientList.get(i);
@@ -186,37 +186,37 @@ public class SpiritCraftingRecipe implements IRecipe<MatrixInventory> {
             return new SpiritCraftingRecipe(recipeId, s, x, z, nonNullLists, itemstack);
         }
 
-        public SpiritCraftingRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public SpiritCraftingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             int y = buffer.readVarInt();
             int x = buffer.readVarInt();
             int z = buffer.readVarInt();
-            String s = buffer.readString(32767);
+            String s = buffer.readUtf(32767);
             NonNullList<Ingredient>[] recipeList = new NonNullList[y];
             for(int i = 0; i < y; ++i) {
                 NonNullList<Ingredient> nonnulllist = NonNullList.withSize(x * z, Ingredient.EMPTY);
 
                 for(int k = 0; k < nonnulllist.size(); ++k) {
-                    nonnulllist.set(k, Ingredient.read(buffer));
+                    nonnulllist.set(k, Ingredient.fromNetwork(buffer));
                 }
                 recipeList[i] = nonnulllist;
             }
 
-            return new SpiritCraftingRecipe(recipeId, s, x, z, recipeList, buffer.readItemStack());
+            return new SpiritCraftingRecipe(recipeId, s, x, z, recipeList, buffer.readItem());
         }
 
-        public void write(PacketBuffer buffer, SpiritCraftingRecipe recipe) {
+        public void toNetwork(PacketBuffer buffer, SpiritCraftingRecipe recipe) {
             buffer.writeVarInt(recipe.recipeY);
             buffer.writeVarInt(recipe.recipeX);
             buffer.writeVarInt(recipe.recipeZ);
-            buffer.writeString(recipe.group);
+            buffer.writeUtf(recipe.group);
 
             for(NonNullList<Ingredient> ingredients : recipe.ingredientList) {
                 for(Ingredient ingredient : ingredients) {
-                    ingredient.write(buffer);
+                    ingredient.toNetwork(buffer);
                 }
             }
 
-            buffer.writeItemStack(recipe.output);
+            buffer.writeItem(recipe.output);
         }
     }
 }

@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class ElementCrystalBlock extends CropsBlock{
     public ElementCrystalBlock(Properties properties) {
         super(properties);
@@ -33,8 +35,8 @@ public class ElementCrystalBlock extends CropsBlock{
     }
 
     @Override
-    public BlockState withAge(int age) {
-        return super.withAge(age);
+    public BlockState getStateForAge(int age) {
+        return super.getStateForAge(age);
     }
 
     @Nullable
@@ -44,7 +46,7 @@ public class ElementCrystalBlock extends CropsBlock{
     }
 
     @Override
-    protected IItemProvider getSeedsItem() {
+    protected IItemProvider getBaseSeedId() {
         return ModItems.ELEMENT_CRYSTAL_SEEDS.get();
     }
 
@@ -55,9 +57,9 @@ public class ElementCrystalBlock extends CropsBlock{
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-        Vector3d pos = builder.get(LootParameters.field_237457_g_);
+        Vector3d pos = builder.getOptionalParameter(LootParameters.ORIGIN);
         if(pos == null) return super.getDrops(state, builder);
-        TileEntity tileentity = builder.getWorld().getTileEntity(new BlockPos(pos));
+        TileEntity tileentity = builder.getLevel().getBlockEntity(new BlockPos(pos));
         if (tileentity instanceof ElementCrystalTileEntity) {
             ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
             return tile.getDrops();
@@ -66,25 +68,25 @@ public class ElementCrystalBlock extends CropsBlock{
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+        TileEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof ElementCrystalTileEntity) {
             ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
             tile.dropItem();
         }
-        super.onBlockHarvested(worldIn, pos, state, player);
+        super.playerWillDestroy(worldIn, pos, state, player);
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if(this.isMaxAge(state)) {
-            TileEntity tileentity = worldIn.getTileEntity(pos);
+            TileEntity tileentity = worldIn.getBlockEntity(pos);
             if (tileentity instanceof ElementCrystalTileEntity) {
                 ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
                 tile.dropItem();
             }
-            worldIn.setBlockState(pos, getDefaultState());
+            worldIn.setBlockAndUpdate(pos, defaultBlockState());
         }
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        return super.use(state, worldIn, pos, player, handIn, hit);
     }
 }

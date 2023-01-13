@@ -43,9 +43,9 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
     @Override
     public void update() {
         super.update();
-        preRotate = entity.ticksExisted % 5;
-        postRotate = (entity.ticksExisted + 1) % 5;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getRenderPartialTicks(), preRotate, postRotate);
+        preRotate = entity.tickCount % 5;
+        postRotate = (entity.tickCount + 1) % 5;
+        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         renderer = entity.spellContext().element.getRenderer();
         length = entity.spellContext().range * 5.5f;
     }
@@ -54,8 +54,8 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
         MatrixStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YN.rotationDegrees(360f * (rotate / 4)));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(360f * (rotate / 4)));
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.25f, 2
                 , 0.5f, 6
@@ -63,7 +63,7 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
 
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getLineStripGlow(5.0f))
                 , context);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     public void offsetLaser(RenderParams params) {
@@ -74,16 +74,16 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
 
         Vector2f rota = getRotationFromVector(dir);
         float scale = 0.1f;
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.scale(scale, scale, scale);
     }
 
     public void renderTop(RenderParams params) {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         Vector3d pos = entity.getHitPoint();
-        params.matrixStack.translate(pos.x - camX, pos.y - camY + entity.getHeight() * 0.5, pos.z - camZ);
+        params.matrixStack.translate(pos.x - camX, pos.y - camY + entity.getBbHeight() * 0.5, pos.z - camZ);
         RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getLineStripGlow(2.0)), new RenderHelper.RenderContext(1.0f, renderer.getColor(), RenderHelper.renderLight));
     }
 

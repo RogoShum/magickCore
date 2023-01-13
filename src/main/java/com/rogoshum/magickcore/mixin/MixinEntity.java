@@ -36,7 +36,7 @@ public class MixinEntity implements IEntityData {
         });
     }
 
-    @Inject(method = "read", at = @At("HEAD"))
+    @Inject(method = "load", at = @At("HEAD"))
     public void onRead(CompoundNBT compound, CallbackInfo info) {
         Entity thisEntity = (Entity)(Object)this;
         if(!compound.contains(EntityExtraData.ENTITY_DATA)) return;
@@ -48,7 +48,7 @@ public class MixinEntity implements IEntityData {
         });
     }
 
-    @Inject(method = "writeWithoutTypeId", at = @At("HEAD"))
+    @Inject(method = "saveWithoutId", at = @At("HEAD"))
     public void onWriteWithoutTypeId(CompoundNBT compound, CallbackInfoReturnable<Boolean> info) {
         Entity thisEntity = (Entity)(Object)this;
         CompoundNBT entityData = new CompoundNBT();

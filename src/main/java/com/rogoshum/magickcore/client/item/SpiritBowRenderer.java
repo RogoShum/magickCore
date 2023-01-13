@@ -21,55 +21,55 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class SpiritBowRenderer extends ItemStackTileEntityRenderer {
-    private static final RenderType RENDER_TYPE_0 = RenderType.getEntityTranslucent(new ResourceLocation( "minecraft:textures/block/oak_log.png"));
-    private static final RenderType RENDER_TYPE_1 = RenderType.getEntityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
+    private static final RenderType RENDER_TYPE_0 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/oak_log.png"));
+    private static final RenderType RENDER_TYPE_1 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
-        matrixStack.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+        matrixStack.pushPose();
         matrixStack.translate(0.4, 0.6, 0.5);
         matrixStack.scale(0.65f, 0.65f, 0.65f);
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(135));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(135));
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(-0.15, 0.9, 0);
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getLines());
-        builder.pos(matrixStack.getLast().getMatrix(), 0, 0, 0).color(1, 1, 1, 0.5f).endVertex();
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.lines());
+        builder.vertex(matrixStack.last().pose(), 0, 0, 0).color(1, 1, 1, 0.5f).endVertex();
         matrixStack.translate(0, -1.8, 0);
-        builder.pos(matrixStack.getLast().getMatrix(), 0, 0, 0).color(1, 1, 1, 0.5f).endVertex();
-        matrixStack.pop();
+        builder.vertex(matrixStack.last().pose(), 0, 0, 0).color(1, 1, 1, 0.5f).endVertex();
+        matrixStack.popPose();
 
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         if(data.contextCore().haveMagickContext()) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0.15, 0, 0);
             matrixStack.scale(0.3f, 0.3f, 0.3f);
             ItemStack core = new ItemStack(ModItems.MAGICK_CORE.get());
             ExtraDataUtil.itemManaData(core).spellContext().copy(data.spellContext());
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(core, null, null);
-            Minecraft.getInstance().getItemRenderer().renderItem(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-            matrixStack.pop();
+            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
+            Minecraft.getInstance().getItemRenderer().render(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            matrixStack.popPose();
         }
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, -0.6, 0);
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(-25));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-25));
         matrixStack.scale(0.1f, 0.6f, 0.1f);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR,  combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, 0.6, 0);
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(25));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(25));
         matrixStack.scale(0.1f, 0.6f, 0.1f);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

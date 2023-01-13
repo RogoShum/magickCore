@@ -27,7 +27,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(scale, scale, scale);
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         if(!RenderHelper.isRenderingShader() && SPHERE_DISTORTION != null)
             RenderHelper.renderSphere(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.DISTORTION_MID_SHADER)
@@ -42,19 +42,19 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.getWidth() * 1.2f;
-        if(entity.ticksExisted < 9)
-            scale *= 1 - 1f / ((float)entity.ticksExisted + 1f);
+        scale = entity.getBbWidth() * 1.2f;
+        if(entity.tickCount < 9)
+            scale *= 1 - 1f / ((float)entity.tickCount + 1f);
 
-        if(entity.spellContext().tick - entity.ticksExisted <= 9)
-            scale *= 1 - 1f / (float)(entity.spellContext().tick - entity.ticksExisted);
-        if(entity.spellContext().tick <= entity.ticksExisted)
+        if(entity.spellContext().tick - entity.tickCount <= 9)
+            scale *= 1 - 1f / (float)(entity.spellContext().tick - entity.tickCount);
+        if(entity.spellContext().tick <= entity.tickCount)
             scale = 0;
 
         SPHERE = RenderHelper.drawSphere(12, new RenderHelper.RenderContext(0.5f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getEntityId(), 2.10f));
+                , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getId(), 2.10f));
         SPHERE_DISTORTION = RenderHelper.drawSphere(12, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getEntityId(), 2.10f));
+                , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getId(), 2.10f));
     }
 
     @Override

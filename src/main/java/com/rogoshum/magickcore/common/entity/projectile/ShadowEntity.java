@@ -34,8 +34,8 @@ public class ShadowEntity extends ManaProjectileEntity {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.magical_focus_energy.get(), 1.5F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.magical_focus_energy.get(), 1.5F, 1.0F + this.random.nextFloat());
         }
     }
 
@@ -46,15 +46,15 @@ public class ShadowEntity extends ManaProjectileEntity {
 
     @Override
     protected void traceTarget() {
-        if (!this.spellContext().containChild(LibContext.TRACE) || this.world.isRemote) return;
+        if (!this.spellContext().containChild(LibContext.TRACE) || this.level.isClientSide) return;
         TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
         Entity entity = traceContext.entity;
         if(entity == null && traceContext.uuid != MagickCore.emptyUUID) {
-            entity = ((ServerWorld) this.world).getEntityByUuid(traceContext.uuid);
+            entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
             traceContext.entity = entity;
         } else if(entity != null && entity.isAlive()) {
-            Vector3d vec = entity.getPositionVec().subtract(this.getPositionVec()).scale(0.5);
-            this.setPosition(vec.x + this.getPositionVec().getX(), vec.y + this.getPositionVec().getY(), vec.z + this.getPositionVec().getZ());
+            Vector3d vec = entity.position().subtract(this.position()).scale(0.5);
+            this.setPos(vec.x + this.position().x(), vec.y + this.position().y(), vec.z + this.position().z());
         }
     }
 
@@ -69,22 +69,22 @@ public class ShadowEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0;
     }
 
     @Override
     protected void applyParticle() {
-        float partial = Minecraft.getInstance().getRenderPartialTicks();
-        double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
-        double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
-        double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.4f;
+        float partial = Minecraft.getInstance().getFrameTime();
+        double x = MathHelper.lerp(partial, this.xOld, this.getX());
+        double y = MathHelper.lerp(partial, this.yOld, this.getY());
+        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 5; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + x
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + y + this.getHeight() * 0.5
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + z)
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + x
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + y + this.getBbHeight() * 0.5
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + z)
                     , scale, scale, 0.35f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setParticleGravity(0f);
             par.setShakeLimit(15f);
@@ -95,21 +95,21 @@ public class ShadowEntity extends ManaProjectileEntity {
 
     @Override
     public void removeEffect() {
-        if (!this.world.isRemote) {
-            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.5F, 1.0F + this.rand.nextFloat());
+        if (!this.level.isClientSide) {
+            this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.5F, 1.0F + this.random.nextFloat());
         } else {
-            float partial = Minecraft.getInstance().getRenderPartialTicks();
-            double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
-            double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
-            double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-            float scale = Math.max(this.getWidth(), 0.5f) * 2;
+            float partial = Minecraft.getInstance().getFrameTime();
+            double x = MathHelper.lerp(partial, this.xOld, this.getX());
+            double y = MathHelper.lerp(partial, this.yOld, this.getY());
+            double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+            float scale = Math.max(this.getBbWidth(), 0.5f) * 2;
             for (int i = 0; i < 20; ++i) {
-                double motionX = MagickCore.getNegativeToOne() * this.getWidth() * 0.5;
-                double motionY = MagickCore.getNegativeToOne() * this.getWidth() * 0.5;
-                double motionZ = MagickCore.getNegativeToOne() * this.getWidth() * 0.5;
-                LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                double motionX = MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5;
+                double motionY = MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5;
+                double motionZ = MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5;
+                LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
                         , new Vector3d(motionX + x
-                        , motionY + y + this.getHeight() * 0.5
+                        , motionY + y + this.getBbHeight() * 0.5
                         , motionZ + z)
                         , scale, scale, 0.35f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setParticleGravity(0f);

@@ -20,19 +20,19 @@ public class ArtificialLifeItem extends EntityItem {
 
     @Override
     public void placeEntity(BlockItemUseContext context) {
-        BlockPos blockpos = context.getPos();
-        World world = context.getWorld();
+        BlockPos blockpos = context.getClickedPos();
+        World world = context.getLevel();
         PlayerEntity playerentity = context.getPlayer();
-        ItemStack itemstack = context.getItem();
-        Entity createEntity = NBTTagHelper.createEntityByItem(context.getItem(), world);
+        ItemStack itemstack = context.getItemInHand();
+        Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ArtificialLifeEntity artificialLifeEntity = ModEntities.ARTIFICIAL_LIFE.get().create(world);
         if(createEntity instanceof ArtificialLifeEntity)
             artificialLifeEntity = (ArtificialLifeEntity) createEntity;
-        Vector3d pos = Vector3d.copyCentered(blockpos);
-        artificialLifeEntity.setPosition(pos.x, pos.y - 0.5, pos.z);
-        if (playerentity == null || !playerentity.abilities.isCreativeMode) {
+        Vector3d pos = Vector3d.atCenterOf(blockpos);
+        artificialLifeEntity.setPos(pos.x, pos.y - 0.5, pos.z);
+        if (playerentity == null || !playerentity.abilities.instabuild) {
             itemstack.shrink(1);
         }
-        world.addEntity(artificialLifeEntity);
+        world.addFreshEntity(artificialLifeEntity);
     }
 }

@@ -24,8 +24,8 @@ public class SquareRadiateRenderer extends EasyRenderer<SquareEntity> {
 
     public void render(RenderParams params) {
         Color color = entity.spellContext().element.color();
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        WorldRenderer.drawBoundingBox(params.matrixStack, params.buffer, entity.getBoundingBox().grow(scale * 0.5).offset(-cam.x, -cam.y, -cam.z), color.r(), color.g(), color.b(), 1.0F);
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        WorldRenderer.renderLineBox(params.matrixStack, params.buffer, entity.getBoundingBox().inflate(scale * 0.5).move(-cam.x, -cam.y, -cam.z), color.r(), color.g(), color.b(), 1.0F);
     }
 
     @Override

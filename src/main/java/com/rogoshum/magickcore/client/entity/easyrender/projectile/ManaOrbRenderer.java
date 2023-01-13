@@ -24,7 +24,7 @@ public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity> {
     @Override
     public void update() {
         super.update();
-        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
+        entity.renderFrame(Minecraft.getInstance().getFrameTime());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(TYPE), (renderParams) -> {
             baseOffset(renderParams.matrixStack);
-            renderParams.matrixStack.scale(entity.getWidth() * 0.6f, entity.getWidth() * 0.6f, entity.getWidth() * 0.6f);
+            renderParams.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
             RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));

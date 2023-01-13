@@ -27,7 +27,7 @@ public class ModVillager {
     public static final DeferredRegister<PointOfInterestType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, MagickCore.MOD_ID);
     public static final DeferredRegister<SensorType<?>> SENSOR_TYPES = DeferredRegister.create(ForgeRegistries.SENSOR_TYPES, MagickCore.MOD_ID);
     public static final RegistryObject<PointOfInterestType> MAGE_POI = POI_TYPES.register("mage",
-            () -> new PointOfInterestType("mage", ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateContainer().getValidStates()), 1, 1));
+            () -> new PointOfInterestType("mage", ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1));
     public static final RegistryObject<VillagerProfession> MAGE = VILLAGER_PROFESSIONS.register("mage",
             () -> new VillagerProfession("mage", MAGE_POI.get(), ImmutableSet.of(), ImmutableSet.of(), (SoundEvent)null));
 

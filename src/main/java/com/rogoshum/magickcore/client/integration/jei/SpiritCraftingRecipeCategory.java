@@ -74,19 +74,19 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
         for (int i = 0; i < ingredientList.length; ++i) {
             NonNullList<Ingredient> ingredients = ingredientList[i];
             ingredients.forEach(ingredient -> {
-                if(!ingredient.hasNoMatchingItems())
-                    stacks.addAll(Arrays.asList(ingredient.getMatchingStacks()));
+                if(!ingredient.isEmpty())
+                    stacks.addAll(Arrays.asList(ingredient.getItems()));
             });
         }
         iIngredients.setInputs(VanillaTypes.ITEM, stacks);
-        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getRecipeOutput());
+        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getResultItem());
     }
 
     @Override
     public void draw(SpiritCraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         NonNullList<Ingredient>[] ingredientList = recipe.getIngredientList();
         RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
+        RenderSystem.multMatrix(matrixStack.last().pose());
         RenderSystem.translatef(50, 40, 150);
         RenderSystem.rotatef((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f, 0, 1, 0);
         RenderSystem.rotatef(-20f, 1, 0, 0);
@@ -97,8 +97,8 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
             for (int x = 0; x < recipe.getRecipeX(); ++x){
                 for (int z = 0; z < recipe.getRecipeZ(); ++z){
                     Ingredient ingredient = ingredientList[y].get(z + x * recipe.getRecipeZ());
-                    if(!ingredient.hasNoMatchingItems())
-                        renderItem(ingredient.getMatchingStacks()[0].getItem(), scale1, x, y, z, width);
+                    if(!ingredient.isEmpty())
+                        renderItem(ingredient.getItems()[0].getItem(), scale1, x, y, z, width);
                 }
             }
         }
@@ -112,15 +112,15 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.translatef((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
         RenderSystem.scalef(scale1, scale1, scale1);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        Minecraft.getInstance().getItemRenderer().renderItem(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
-        renderTypeBuffer.finish();
+        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
+        renderTypeBuffer.endBatch();
         RenderSystem.popMatrix();
     }
 
     @Override
     public void setRecipe(IRecipeLayout iRecipeLayout, SpiritCraftingRecipe inbtRecipe, IIngredients iIngredients) {
         iRecipeLayout.getItemStacks().init(0, false, 41, 98);
-        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getRecipeOutput());
+        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getResultItem());
     }
 }

@@ -54,20 +54,20 @@ import java.util.function.Supplier;
 
 public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction, IRedStoneEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
-    private static final DataParameter<Boolean> TRANS = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> MODE = EntityDataManager.createKey(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> TRANS = EntityDataManager.defineId(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> MODE = EntityDataManager.defineId(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
     private final ManaCapacity manaCapacity = ManaCapacity.create(20000);
     private boolean dead = false;
     private BlockPos blockPos;
     public ManaCapacityEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
-        this.dataManager.register(MODE, false);
-        this.dataManager.register(TRANS, false);
+        this.entityData.define(MODE, false);
+        this.entityData.define(TRANS, false);
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
     @OnlyIn(Dist.CLIENT)
@@ -77,32 +77,32 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
     }
 
     public void setTrans(boolean trans) {
-        this.dataManager.set(TRANS, trans);
+        this.entityData.set(TRANS, trans);
     }
 
     public void switchTrans() {
-        this.dataManager.set(TRANS, !this.dataManager.get(TRANS));
+        this.entityData.set(TRANS, !this.entityData.get(TRANS));
     }
 
     public boolean getTrans() {
-        return this.dataManager.get(TRANS);
+        return this.entityData.get(TRANS);
     }
 
     public void setMode(boolean mode) {
-        this.dataManager.set(MODE, mode);
+        this.entityData.set(MODE, mode);
     }
 
     public void switchMode() {
-        this.dataManager.set(MODE, !this.dataManager.get(MODE));
+        this.entityData.set(MODE, !this.entityData.get(MODE));
     }
 
     public boolean getMode() {
-        return this.dataManager.get(MODE);
+        return this.entityData.get(MODE);
     }
 
     @Override
@@ -110,22 +110,22 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
         if(!dead) {
             dead = true;
             ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.MAGICK_CONTAINER.get(), 1);
-            ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
-            if (!this.world.isRemote)
-                world.addEntity(entity);
-            onRemoveRedStone(blockPos, world);
+            ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + 0.5f, this.getZ(), stack);
+            if (!this.level.isClientSide)
+                level.addFreshEntity(entity);
+            onRemoveRedStone(blockPos, level);
         }
         super.remove();
     }
 
     @Override
-    public boolean canBeAttackedWithItem() {
+    public boolean isAttackable() {
         return true;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if(!world.isRemote && source.getTrueSource() instanceof LivingEntity) {
+    public boolean hurt(DamageSource source, float amount) {
+        if(!level.isClientSide && source.getEntity() instanceof LivingEntity) {
             damageEntity();
             return true;
         }
@@ -136,14 +136,14 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     public void tick() {
         super.tick();
-        if (this.ticksExisted == 1) {
-            this.playSound(SoundEvents.BLOCK_STONE_PLACE, 1F, 1.0F + MagickCore.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(SoundEvents.STONE_PLACE, 1F, 1.0F + MagickCore.rand.nextFloat());
         }
     }
 
     @Override
     public float eyeHeight() {
-        return this.getHeight() + 0.5f;
+        return this.getBbHeight() + 0.5f;
     }
 
     @Override
@@ -153,17 +153,17 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     public boolean releaseMagick() {
-        blockPos = onTickRedStone(getPositionVec(), blockPos, world);
+        blockPos = onTickRedStone(position(), blockPos, level);
         List<Entity> list = this.findEntity((entity) -> entity instanceof ItemEntity);
         int size = list.size();
         list.removeIf( entity -> {
             boolean remove = !(((ItemEntity) entity).getItem().getItem() instanceof IManaData);
             if(manaCapacity().getMana() < manaCapacity().getMaxMana() && remove) {
                 ItemEntity item = (ItemEntity)entity;
-                if(item.getItem().isFood()) {
-                    int healing = item.getItem().getItem().getFood().getHealing();
-                    float saturation = item.getItem().getItem().getFood().getSaturation();
-                    boolean meat = item.getItem().getItem().getFood().isMeat();
+                if(item.getItem().isEdible()) {
+                    int healing = item.getItem().getItem().getFoodProperties().getNutrition();
+                    float saturation = item.getItem().getItem().getFoodProperties().getSaturationModifier();
+                    boolean meat = item.getItem().getItem().getFoodProperties().isMeat();
 
                     float mana = meat ? (healing * 20 + saturation * 10) * 1.5f : healing * 10 + saturation * 5;
                     if(manaCapacity().getMana() + mana <= manaCapacity().getMaxMana()) {
@@ -175,9 +175,9 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             return remove;
         });
         if(list.size() < size)
-            world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
-        else if(ticksExisted % 10 == 0)
-                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+            level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
+        else if(tickCount % 10 == 0)
+                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
         for (Entity entity : list) {
             ItemEntity item = (ItemEntity)entity;
             float manaTrans = this.manaCapacity().extractMana(5);
@@ -193,7 +193,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             });
 
             if(getTrans()) {
-                double dis = player.getDistanceSq(this.getPositionVec().getX(), this.getPositionVec().getY(), this.getPositionVec().getZ());
+                double dis = player.distanceToSqr(this.position().x(), this.position().y(), this.position().z());
                 if(state.get() == null)
                     return false;
 
@@ -208,27 +208,27 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                         state.get().setManaValue(state.get().getManaValue() - manaTrans + manaCapacity().receiveMana(manaTrans));
                     else
                         setTrans(false);
-                } else if(!this.world.isRemote && ticksExisted % 20 == 0){
+                } else if(!this.level.isClientSide && tickCount % 20 == 0){
                     float needed = state.get().getMaxManaValue() - state.get().getManaValue();
                     if(needed > manaTrans) {
-                        ManaElementOrbEntity elementOrb = ModEntities.ELEMENT_ORB.get().create(world);
-                        elementOrb.setPosition(this.getPosX(), this.getPosY() + this.getHeight() * 0.5, this.getPosZ());
+                        ManaElementOrbEntity elementOrb = ModEntities.ELEMENT_ORB.get().create(level);
+                        elementOrb.setPos(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ());
                         elementOrb.spellContext().element(spellContext().element);
                         elementOrb.spellContext().tick(200);
                         elementOrb.spellContext().addChild(TraceContext.create(getOwner()));
                         elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
-                        elementOrb.setMotion(getOwner().getPositionVec().subtract(elementOrb.getPositionVec()).normalize());
-                        world.addEntity(elementOrb);
+                        elementOrb.setDeltaMovement(getOwner().position().subtract(elementOrb.position()).normalize());
+                        level.addFreshEntity(elementOrb);
                     }
                 }
-                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
-                if(world.isRemote && !getMode()){
+                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
+                if(level.isClientSide && !getMode()){
                     int distance = Math.max((int) (10 * dis), 1);
-                    float directionPoint = (float) (player.ticksExisted % distance) / distance;
+                    float directionPoint = (float) (player.tickCount % distance) / distance;
                     int c = (int) (directionPoint * distance);
 
-                    Vector3d end = this.getPositionVec().add(0, this.getHeight() / 2, 0);
-                    Vector3d start = player.getPositionVec().add(0, player.getHeight() / 2, 0);
+                    Vector3d end = this.position().add(0, this.getBbHeight() / 2, 0);
+                    Vector3d start = player.position().add(0, player.getBbHeight() / 2, 0);
                     float scale;
                     for (int i = 0; i < distance; i++) {
                         if(i == c)
@@ -237,7 +237,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                             scale = 0.10f;
                         double trailFactor = i / (distance - 1.0D);
                         Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
-                        LitParticle par = new LitParticle(this.world, state.get().getElement().getRenderer().getParticleTexture()
+                        LitParticle par = new LitParticle(this.level, state.get().getElement().getRenderer().getParticleTexture()
                                 , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, state.get().getElement().getRenderer());
                         par.setParticleGravity(0);
                         par.setLimitScale();
@@ -267,10 +267,10 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosX()
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosY() + this.getHeight() * 0.5
-                , MagickCore.getNegativeToOne() * this.getWidth() * 0.5 + this.getPosZ())
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                 , 0.1f, 0.1f, 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
@@ -283,36 +283,36 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.processInitialInteract(player, hand);
-        if (ret.isSuccessOrConsume()) return ret;
-        ItemStack heldItem = player.getHeldItem(hand);
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        ActionResultType ret = super.interact(player, hand);
+        if (ret.consumesAction()) return ret;
+        ItemStack heldItem = player.getItemInHand(hand);
         if(heldItem.getItem() instanceof BlockItem || heldItem.getItem() instanceof EntityItem) {
             return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
         }
-        if (!player.world.isRemote && hand == Hand.MAIN_HAND) {
+        if (!player.level.isClientSide && hand == Hand.MAIN_HAND) {
             this.setOwner(player);
             if (this.getOwner() == player) {
-                if(player.getHeldItemMainhand().getItem() == ModItems.WAND.get())
+                if(player.getMainHandItem().getItem() == ModItems.WAND.get())
                     this.switchMode();
                 else
                     this.switchTrans();
             }
             return ActionResultType.CONSUME;
         }
-        playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
+        playSound(SoundEvents.BEACON_ACTIVATE, 0.5f, 2.0f);
         return ActionResultType.PASS;
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
         manaCapacity().deserialize(compound);
         setMode(compound.getBoolean("MODE"));
         setTrans(compound.getBoolean("TRANS"));
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         manaCapacity().serialize(compound);
         compound.putBoolean("MODE", getMode());
         compound.putBoolean("TRANS", getTrans());
@@ -326,7 +326,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), predicate);
+        return this.level.getEntities(this, this.getBoundingBox(), predicate);
     }
 
     @Override

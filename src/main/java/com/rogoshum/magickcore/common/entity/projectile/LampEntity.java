@@ -39,11 +39,11 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.flame.get(), 0.25F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.flame.get(), 0.25F, 1.0F + this.random.nextFloat());
         }
-        if(this.ticksExisted % 20 == 0)
-            this.playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 0.5F, 1.0F + this.rand.nextFloat());
+        if(this.tickCount % 20 == 0)
+            this.playSound(SoundEvents.FIRE_AMBIENT, 0.5F, 1.0F + this.random.nextFloat());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         if(spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
             if(traceContext.entity == null) {
-                List<Entity> entityList = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(spellContext().range), null);
+                List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), null);
                 for(int i = 0; i < entityList.size(); ++i) {
                     Entity entity = entityList.get(i);
                     if(!suitableEntity(entity)) continue;
@@ -89,26 +89,26 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     }
 
     @Override
-    protected float getGravityVelocity() {
+    protected float getGravity() {
         return 0;
     }
 
     @Override
     protected void applyParticle() {
-        float partial = Minecraft.getInstance().getRenderPartialTicks();
-        double x = MathHelper.lerp(partial, this.lastTickPosX, this.getPosX());
-        double y = MathHelper.lerp(partial, this.lastTickPosY, this.getPosY());
-        double z = MathHelper.lerp(partial, this.lastTickPosZ, this.getPosZ());
-        float scale = Math.max(this.getWidth(), 0.5f) * 0.5f;
+        float partial = Minecraft.getInstance().getFrameTime();
+        double x = MathHelper.lerp(partial, this.xOld, this.getX());
+        double y = MathHelper.lerp(partial, this.yOld, this.getY());
+        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.5f;
         for (int i = 0; i < 2; ++i) {
-            LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + x
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + y
-                    , MagickCore.getNegativeToOne() * this.getWidth() * 0.3 + z)
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
+                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
                     , scale, scale * 1.2f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);
-            par.addMotion(0, 0.1 * getWidth(), 0);
+            par.addMotion(0, 0.1 * getBbWidth(), 0);
             par.setLimitScale();
             par.setShakeLimit(15f);
             MagickCore.addMagickParticle(par);
@@ -116,23 +116,23 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult p_230299_1_) {
-        Vector3d pos = Vector3d.copyCentered(p_230299_1_.getPos());
-        Vector3d vec = this.positionVec().add(0, this.getHeight() / 2, 0);
-        this.setMotion(vec.subtract(pos).normalize().scale(this.getMotion().length()));
+    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
+        Vector3d pos = Vector3d.atCenterOf(p_230299_1_.getBlockPos());
+        Vector3d vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
+        this.setDeltaMovement(vec.subtract(pos).normalize().scale(this.getDeltaMovement().length()));
         if(spellContext().containChild(LibContext.CONDITION)) {
             ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
-            if(!condition.test(null, world.getBlockState(p_230299_1_.getPos()).getBlock()))
+            if(!condition.test(null, level.getBlockState(p_230299_1_.getBlockPos()).getBlock()))
                 return;
         }
-        BlockState blockstate = this.world.getBlockState(p_230299_1_.getPos());
-        blockstate.onProjectileCollision(this.world, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(world, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.func_234616_v_()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.copy(p_230299_1_.getPos()));
+        BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
+        blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(world, spellContext().postContext).doBlock().noCost().caster(this.func_234616_v_()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }

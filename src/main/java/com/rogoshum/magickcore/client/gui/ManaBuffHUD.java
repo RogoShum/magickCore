@@ -25,7 +25,7 @@ public class ManaBuffHUD extends AbstractGui {
     private final EntityStateData state;
 
     public ManaBuffHUD(MatrixStack matrixStack, EntityStateData state) {
-        this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
+        this.width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         this.minecraft = Minecraft.getInstance();
         this.matrixStack = matrixStack;
         this.state = state;
@@ -53,14 +53,14 @@ public class ManaBuffHUD extends AbstractGui {
         }
         if(buffHashMap == null) return;
 
-        Collection<EffectInstance> collection = minecraft.player.getActivePotionEffects();
+        Collection<EffectInstance> collection = minecraft.player.getActiveEffects();
         int i = 0;
         int j = 0;
         if (!collection.isEmpty()) {
             for(EffectInstance effectinstance : Ordering.natural().reverse().sortedCopy(collection)) {
-                Effect effect = effectinstance.getPotion();
+                Effect effect = effectinstance.getEffect();
                 if (!effectinstance.shouldRenderHUD()) continue;
-                if (effectinstance.isShowIcon()) {
+                if (effectinstance.showIcon()) {
                     if (effect.isBeneficial()) {
                         ++i;
                     } else {
@@ -78,7 +78,7 @@ public class ManaBuffHUD extends AbstractGui {
         for(String key : buffHashMap.keySet()) {
             if(!buffTexture.containsKey(key)) continue;
             ManaBuff manaBuff = buffHashMap.get(key);
-            minecraft.getTextureManager().bindTexture(ContainerScreen.INVENTORY_BACKGROUND);
+            minecraft.getTextureManager().bind(ContainerScreen.INVENTORY_LOCATION);
             int k = this.width;
             int l = 52;
             if (minecraft.isDemo()) {
@@ -108,7 +108,7 @@ public class ManaBuffHUD extends AbstractGui {
             int j1 = k;
             int k1 = l;
             float f1 = f;
-            minecraft.getTextureManager().bindTexture(buffTexture.get(key));
+            minecraft.getTextureManager().bind(buffTexture.get(key));
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
             blit(matrixStack, j1 + 2, k1 + 2, this.getBlitOffset(), 0, 0, 8, 8, 9, 9);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);

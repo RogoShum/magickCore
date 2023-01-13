@@ -63,7 +63,7 @@ public class ConditionContext extends ChildContext{
     public void deserialize(CompoundNBT tag) {
         if(!tag.contains("Conditions")) return;
         CompoundNBT compoundNBT = tag.getCompound("Conditions");
-        compoundNBT.keySet().forEach((key) -> {
+        compoundNBT.getAllKeys().forEach((key) -> {
             Condition<?> condition = MagickRegistry.getCondition(key);
             if(condition != null) {
                 condition.read(compoundNBT.getCompound(key));

@@ -42,11 +42,11 @@ import java.util.List;
 public class OrbBottleItem extends BaseItem{
 
     public OrbBottleItem() {
-        super(properties().maxStackSize(64).setISTER(() -> OrbBottleRenderer::new));
+        super(properties().stacksTo(64).setISTER(() -> OrbBottleRenderer::new));
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")){
             MagickElement element = MagickRegistry.getElement(tag.getString("ELEMENT"));
@@ -54,11 +54,11 @@ public class OrbBottleItem extends BaseItem{
             MagickReleaseHelper.releaseMagick(attribute.noCost());
             return ItemStack.EMPTY;
         }
-        return super.onItemUseFinish(stack, worldIn, entityLiving);
+        return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.DRINK;
     }
 
@@ -68,8 +68,8 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
-        if(!playerIn.world.isRemote) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
+        if(!playerIn.level.isClientSide) {
             CompoundNBT tag = NBTTagHelper.getStackTag(stack);
             if (tag.contains("ELEMENT") && (RegisterEvent.containAnimalType(target.getType()) || target instanceof AnimalEntity)) {
                 EntityStateData state = ExtraDataUtil.entityStateData(target);
@@ -77,44 +77,44 @@ public class OrbBottleItem extends BaseItem{
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
                 NBTTagHelper.getStackTag(copy).remove("ELEMENT");
-                if(!playerIn.addItemStackToInventory(copy))
-                    playerIn.dropItem(copy, false, true);
+                if(!playerIn.addItem(copy))
+                    playerIn.drop(copy, false, true);
                 stack.shrink(1);
-                playerIn.setHeldItem(hand, stack);
+                playerIn.setItemInHand(hand, stack);
             }
         }
-        return super.itemInteractionForEntity(stack, playerIn, target, hand);
+        return super.interactLivingEntity(stack, playerIn, target, hand);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        List<Entity> list = worldIn.getEntitiesWithinAABBExcludingEntity(playerIn, playerIn.getBoundingBox().grow(2));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        List<Entity> list = worldIn.getEntities(playerIn, playerIn.getBoundingBox().inflate(2));
         for (Entity entity : list) {
             boolean flag = false;
             if(entity instanceof ManaElementOrbEntity) {
                 ManaElementOrbEntity orb = (ManaElementOrbEntity) entity;
-                ItemStack stack = playerIn.getHeldItem(handIn);
+                ItemStack stack = playerIn.getItemInHand(handIn);
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
                 CompoundNBT tag = NBTTagHelper.getStackTag(copy);
                 tag.putString("ELEMENT", orb.spellContext().element.type());
-                if(!playerIn.addItemStackToInventory(copy))
-                    playerIn.dropItem(copy, false, true);
+                if(!playerIn.addItem(copy))
+                    playerIn.drop(copy, false, true);
                 stack.shrink(1);
                 entity.remove();
                 flag = true;
             }
             if(flag)
-                return ActionResult.resultConsume(playerIn.getHeldItem(handIn));
+                return ActionResult.consume(playerIn.getItemInHand(handIn));
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         CompoundNBT tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")) {
-            tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+            tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).append(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
         }
     }
 
@@ -129,7 +129,7 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))

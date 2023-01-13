@@ -38,11 +38,11 @@ public class NBTTagHelper {
     public static Entity createEntityByItem(ItemStack stack, World world) {
         if(!stack.hasTag() || !stack.getTag().contains("Magick_Store_Entity")) return null;
         CompoundNBT tag = stack.getTag().getCompound("Magick_Store_Entity");
-        Optional<EntityType<?>> type = EntityType.readEntityType(tag);
+        Optional<EntityType<?>> type = EntityType.by(tag);
         if(type.isPresent()) {
             Entity entity = type.get().create(world);
             tag.remove("UUID");
-            entity.read(tag);
+            entity.load(tag);
             return entity;
         } else
             return null;
@@ -50,7 +50,7 @@ public class NBTTagHelper {
 
     public static HashSet<String> getNBTKeySet(CompoundNBT tag) {
         HashSet<String> keys = new HashSet<>();
-        for (String key : tag.keySet()) {
+        for (String key : tag.getAllKeys()) {
             keys.add(key);
             INBT inbt = tag.get(key);
             if(inbt instanceof CompoundNBT)
@@ -61,14 +61,14 @@ public class NBTTagHelper {
 
     public static HashMap<String, INBT> getNBTKeyMap(CompoundNBT tag) {
         HashMap<String, INBT> keys = new HashMap<>();
-        for (String key : tag.keySet()) {
+        for (String key : tag.getAllKeys()) {
             INBT inbt = tag.get(key);
             if(inbt instanceof CompoundNBT)
                 keys.putAll(getNBTKeyMap((CompoundNBT) inbt));
             else {
                 if(inbt instanceof StringNBT) {
                     StringNBT string = (StringNBT) inbt;
-                    if(!string.getString().isEmpty())
+                    if(!string.getAsString().isEmpty())
                         keys.put(key, tag.get(key));
                 } else
                     keys.put(key, tag.get(key));
@@ -85,7 +85,7 @@ public class NBTTagHelper {
 
     public static void storeEntityToItem(Entity entity, ItemStack item) {
         CompoundNBT tag = new CompoundNBT();
-        entity.writeUnlessRemoved(tag);
+        entity.saveAsPassenger(tag);
         item.getOrCreateTag().put("Magick_Store_Entity", tag);
     }
 
@@ -126,7 +126,7 @@ public class NBTTagHelper {
 
     public void ifContainUUID(String s, Consumer<UUID> consumer) {
         if(tag.contains(s))
-            consumer.accept(tag.getUniqueId(s));
+            consumer.accept(tag.getUUID(s));
     }
 
     public static CompoundNBT getBlockTag(CompoundNBT tag) {
@@ -135,7 +135,7 @@ public class NBTTagHelper {
 
     public static CompoundNBT getEntityTag(Entity entity) {
         CompoundNBT nbt = new CompoundNBT();
-        entity.writeUnlessRemoved(nbt);
+        entity.saveAsPassenger(nbt);
         return nbt;
     }
 
@@ -232,10 +232,14 @@ public class NBTTagHelper {
     }
 
     public static void addOrDeleteVector(CompoundNBT tag, Vector3d vec) {
+        addOrDeleteVector(tag, vec, false);
+    }
+
+    public static void addOrDeleteVector(CompoundNBT tag, Vector3d vec, boolean deleteOnly) {
         String key = vec.x+"_"+ vec.y+"_"+ vec.z;
         if(tag.contains(key))
             tag.remove(key);
-        else {
+        else if(!deleteOnly) {
             CompoundNBT vectorTag = new CompoundNBT();
             putVectorDouble(vectorTag, "", vec);
             tag.put(key, vectorTag);
@@ -244,7 +248,7 @@ public class NBTTagHelper {
 
     public static HashSet<Vector3d> getVectorSet(CompoundNBT tag) {
         HashSet<Vector3d> set = new HashSet<>();
-        for(String key : tag.keySet()) {
+        for(String key : tag.getAllKeys()) {
             CompoundNBT vectorTag = tag.getCompound(key);
             if(hasVectorDouble(vectorTag, "")) {
                 Vector3d vec = getVectorFromNBT(vectorTag, "");
@@ -256,7 +260,7 @@ public class NBTTagHelper {
 
     public static void setEntityTag(Entity entity, CompoundNBT tag)
     {
-        entity.read(tag);
+        entity.load(tag);
     }
 
     public static void putVectorDouble(CompoundNBT nbt, String name, Vector3d vec){
@@ -280,26 +284,26 @@ public class NBTTagHelper {
     }
     //法杖改名：合成时法杖NBT记录原名，核心名字赋予法杖，复原时法杖名字跟随核心，NBT变回原名
     public static void contextItemWithCore(ItemStack contextTool, ItemStack coreItem) {
-        if(coreItem.hasDisplayName()) {
-            if(contextTool.hasDisplayName()) {
-                contextTool.getOrCreateTag().putString("manaItemName", ITextComponent.Serializer.toJson(contextTool.getDisplayName()));
+        if(coreItem.hasCustomHoverName()) {
+            if(contextTool.hasCustomHoverName()) {
+                contextTool.getOrCreateTag().putString("manaItemName", ITextComponent.Serializer.toJson(contextTool.getHoverName()));
             }
-            contextTool.setDisplayName(coreItem.getDisplayName());
+            contextTool.setHoverName(coreItem.getHoverName());
         }
     }
 
     public static void coreItemFromContext(ItemStack contextTool, ItemStack coreItem) {
-        if(contextTool.hasDisplayName()) {
-            coreItem.setDisplayName(contextTool.getDisplayName());
-            contextTool.setDisplayName(null);
+        if(contextTool.hasCustomHoverName()) {
+            coreItem.setHoverName(contextTool.getHoverName());
+            contextTool.setHoverName(null);
         }
         if(contextTool.hasTag()) {
-            if(contextTool.hasDisplayName())
-                contextTool.setDisplayName(null);
+            if(contextTool.hasCustomHoverName())
+                contextTool.setHoverName(null);
             if(contextTool.getTag().contains("manaItemName")) {
-                ITextComponent itextcomponent = ITextComponent.Serializer.getComponentFromJson(contextTool.getTag().getString("manaItemName"));
+                ITextComponent itextcomponent = ITextComponent.Serializer.fromJson(contextTool.getTag().getString("manaItemName"));
                 if (itextcomponent != null) {
-                    contextTool.setDisplayName(itextcomponent);
+                    contextTool.setHoverName(itextcomponent);
                     contextTool.getTag().remove("manaItemName");
                 }
             }
@@ -322,8 +326,8 @@ public class NBTTagHelper {
             int l = magickcore.getInt("Limit");
             limit = Math.max(l, 3);
             magickcore.putInt("Limit", limit);
-            temp.keySet().forEach(index -> {
-                spells.put(index, ItemStack.read(temp.getCompound(index)));
+            temp.getAllKeys().forEach(index -> {
+                spells.put(index, ItemStack.of(temp.getCompound(index)));
             });
             for (Iterator<Map.Entry<String, ItemStack>> it = spells.entrySet().iterator(); it.hasNext();){
                 Map.Entry<String, ItemStack> item = it.next();
@@ -404,7 +408,7 @@ public class NBTTagHelper {
         public void save() {
             CompoundNBT newSpells = new CompoundNBT();
             for (Map.Entry<String, ItemStack> item : spells.entrySet()) {
-                newSpells.put(item.getKey(), item.getValue().write(new CompoundNBT()));
+                newSpells.put(item.getKey(), item.getValue().save(new CompoundNBT()));
             }
             tag.put("PersistentSpells", newSpells);
         }

@@ -11,17 +11,17 @@ public class TimeManagerEntity extends RelicEntity{
 	}
 
 	@Override
-	public boolean canCollide(Entity entity) {
+	public boolean canCollideWith(Entity entity) {
 		return false;
 	}
 
 	@Override
-	public void onCollideWithPlayer(PlayerEntity entityIn) {
+	public void playerTouch(PlayerEntity entityIn) {
 
 	}
 
 	@Override
-	public void applyEntityCollision(Entity entityIn) {}
+	public void push(Entity entityIn) {}
 
 	@Override
 	public void tick() {

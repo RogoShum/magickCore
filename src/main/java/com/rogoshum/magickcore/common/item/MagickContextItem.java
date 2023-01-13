@@ -26,7 +26,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagickContextItem extends ManaItem {
     public MagickContextItem() {
-        super(properties().maxStackSize(16).setISTER(() -> ManaEnergyRenderer::new));
+        super(properties().stacksTo(16).setISTER(() -> ManaEnergyRenderer::new));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MagickContextItem extends ManaItem {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         if(group == ModGroups.MAGICK_CONTEXT_GROUP) {
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
@@ -57,7 +57,7 @@ public class MagickContextItem extends ManaItem {
                 items.add(itemStack);
             }
             ForgeRegistries.ENTITIES.getEntries().forEach(entityType -> {
-                if(entityType.getValue().create(RenderHelper.getPlayer().world) instanceof IManaEntity)
+                if(entityType.getValue().create(RenderHelper.getPlayer().level) instanceof IManaEntity)
                     fillEntity(items, sample, entityType.getValue());
             });
         }

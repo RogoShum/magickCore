@@ -92,8 +92,8 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(group)) {
             ItemStack condition = new ItemStack(this);
             ExtraDataUtil.itemManaData(condition, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(this.condition))));
             items.add(condition);
@@ -101,9 +101,9 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -112,18 +112,18 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if(playerIn.isSneaking()) {
-            ItemStack stack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if(playerIn.isShiftKeyDown()) {
+            ItemStack stack = playerIn.getItemInHand(handIn);
             ItemManaData thisData = ExtraDataUtil.itemManaData(stack);
             if(!thisData.spellContext().containChild(LibContext.CONDITION))
                 thisData.spellContext().addChild(ConditionContext.create());
             ConditionContext conditionContext = thisData.spellContext().getChild(LibContext.CONDITION);
             conditionContext.conditions.forEach(Condition::setNegate);
             thisData.spellContext().addChild(conditionContext);
-            return ActionResult.resultSuccess(stack);
+            return ActionResult.success(stack);
         }
-        MagickCore.LOGGER.info(playerIn.getHeldItemMainhand().getTag());
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        MagickCore.LOGGER.info(playerIn.getMainHandItem().getTag());
+        return super.use(worldIn, playerIn, handIn);
     }
 }

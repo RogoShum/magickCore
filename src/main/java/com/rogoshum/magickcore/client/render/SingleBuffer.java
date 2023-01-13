@@ -30,13 +30,13 @@ public class SingleBuffer implements IRenderTypeBuffer {
 
     @Nonnull
     public IVertexBuilder getBuffer(@Nonnull RenderType p_getBuffer_1_) {
-        if(p_getBuffer_1_ == RenderType.getGlintDirect()
-                || p_getBuffer_1_ == RenderType.getGlint()
-                || p_getBuffer_1_ == RenderType.getArmorGlint()
-                || p_getBuffer_1_ == RenderType.getArmorEntityGlint()
-                || p_getBuffer_1_ == RenderType.getEntityGlintDirect()) {
-            if(!GlintBuffer.isDrawing())
-                GlintBuffer.begin(p_getBuffer_1_.getDrawMode(), p_getBuffer_1_.getVertexFormat());
+        if(p_getBuffer_1_ == RenderType.glintDirect()
+                || p_getBuffer_1_ == RenderType.glint()
+                || p_getBuffer_1_ == RenderType.armorGlint()
+                || p_getBuffer_1_ == RenderType.armorEntityGlint()
+                || p_getBuffer_1_ == RenderType.entityGlintDirect()) {
+            if(!GlintBuffer.building())
+                GlintBuffer.begin(p_getBuffer_1_.mode(), p_getBuffer_1_.format());
             return GlintBuffer;
         }
 
@@ -48,11 +48,11 @@ public class SingleBuffer implements IRenderTypeBuffer {
             try {
                 clazz = (Class<RenderType>) Class.forName("net.minecraft.client.renderer.RenderType$Type");
                 if(p_getBuffer_1_.getClass().equals(clazz)) {
-                    Object o = ObfuscationReflectionHelper.getPrivateValue(clazz, p_getBuffer_1_, "field_228668_S_");
+                    Object o = ObfuscationReflectionHelper.getPrivateValue(clazz, p_getBuffer_1_, "state");
                     if(o instanceof RenderType.State) {
                         RenderType.State state = (RenderType.State) o;
-                        RenderState.TextureState textureState = ObfuscationReflectionHelper.getPrivateValue(RenderType.State.class, state, "field_228677_a_");
-                        Optional<ResourceLocation> texture = ObfuscationReflectionHelper.getPrivateValue(RenderState.TextureState.class, textureState, "field_228602_Q_");
+                        RenderState.TextureState textureState = ObfuscationReflectionHelper.getPrivateValue(RenderType.State.class, state, "textureState");
+                        Optional<ResourceLocation> texture = ObfuscationReflectionHelper.getPrivateValue(RenderState.TextureState.class, textureState, "texture");
                         if(texture.isPresent()) {
                             temp = type.apply(texture.get());
                         } else
@@ -65,32 +65,32 @@ public class SingleBuffer implements IRenderTypeBuffer {
         }
 
         if(temp != null)
-            begin(temp.getDrawMode() == p_getBuffer_1_.getDrawMode() && temp.getVertexFormat().equals(p_getBuffer_1_.getVertexFormat()) ? temp : p_getBuffer_1_);
+            begin(temp.mode() == p_getBuffer_1_.mode() && temp.format().equals(p_getBuffer_1_.format()) ? temp : p_getBuffer_1_);
         else
             begin(p_getBuffer_1_);
-        return Tessellator.getInstance().getBuffer();
+        return Tessellator.getInstance().getBuilder();
     }
 
     public void begin(RenderType renderType) {
         if(this.lastRenderType != null) {
             finishTessellator();
-        } else if(Tessellator.getInstance().getBuffer().isDrawing())
-            Tessellator.getInstance().getBuffer().finishDrawing();
+        } else if(Tessellator.getInstance().getBuilder().building())
+            Tessellator.getInstance().getBuilder().end();
         this.lastRenderType = renderType;
-        if(!Tessellator.getInstance().getBuffer().isDrawing())
-            Tessellator.getInstance().getBuffer().begin(renderType.getDrawMode(), renderType.getVertexFormat());
+        if(!Tessellator.getInstance().getBuilder().building())
+            Tessellator.getInstance().getBuilder().begin(renderType.mode(), renderType.format());
     }
 
     public void finish() {
         if(lastRenderType != null)
-            lastRenderType.finish(Tessellator.getInstance().getBuffer(), 0, 0, 0);
-        if(GlintBuffer.isDrawing()) {
-            RenderType.getGlintDirect().finish(GlintBuffer, 0, 0, 0);
+            lastRenderType.end(Tessellator.getInstance().getBuilder(), 0, 0, 0);
+        if(GlintBuffer.building()) {
+            RenderType.glintDirect().end(GlintBuffer, 0, 0, 0);
         }
     }
 
     public void finishTessellator() {
         if(lastRenderType != null)
-            lastRenderType.finish(Tessellator.getInstance().getBuffer(), 0, 0, 0);
+            lastRenderType.end(Tessellator.getInstance().getBuilder(), 0, 0, 0);
     }
 }

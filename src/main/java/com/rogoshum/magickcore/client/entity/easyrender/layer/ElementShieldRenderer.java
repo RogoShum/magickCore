@@ -36,17 +36,17 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     @Override
     public void baseOffset(MatrixStack matrixStackIn) {
         Entity player = Minecraft.getInstance().player;
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = entity == player ? Vector3d.ZERO : player.getEyePosition(Minecraft.getInstance().getRenderPartialTicks())
-                .subtract(new Vector3d(x, y, z)).normalize().mul(entity.getWidth() * 1.3d, entity.getHeight() * 0.5, entity.getWidth() * 1.3d);
-        matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getHeight() * 0.5f + offset.y, z - camZ + offset.z);
+        Vector3d offset = entity == player ? Vector3d.ZERO : player.getEyePosition(Minecraft.getInstance().getFrameTime())
+                .subtract(new Vector3d(x, y, z)).normalize().multiply(entity.getBbWidth() * 1.3d, entity.getBbHeight() * 0.5, entity.getBbWidth() * 1.3d);
+        matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getBbHeight() * 0.5f + offset.y, z - camZ + offset.z);
     }
 
     @Override
     public void update() {
         super.update();
-        if(entity == Minecraft.getInstance().player && !Minecraft.getInstance().gameRenderer.getActiveRenderInfo().isThirdPerson()) {
+        if(entity == Minecraft.getInstance().player && !Minecraft.getInstance().gameRenderer.getMainCamera().isDetached()) {
             render = false;
             return;
         }
@@ -63,14 +63,14 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
             } else
                 render = false;
         });
-        BLOOM_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.ticksExisted % 10) + ".png"));
-        CIRCLE_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.ticksExisted % 10) + ".png"));
+        BLOOM_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.tickCount % 10) + ".png"));
+        CIRCLE_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
     }
 
     public void renderCircle(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.scale(entity.getWidth() * 1.68f, entity.getHeight() * 0.89f, entity.getWidth() * 1.68f);
+        matrixStackIn.scale(entity.getBbWidth() * 1.68f, entity.getBbHeight() * 0.89f, entity.getBbWidth() * 1.68f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, CIRCLE_TYPE)
                 , new RenderHelper.RenderContext(alpha, color, RenderHelper.renderLight));
@@ -79,7 +79,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     public void renderBloom(RenderParams params) {
         MatrixStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.scale(entity.getWidth() * 1.7f, entity.getHeight() * 0.9f, entity.getWidth() * 1.7f);
+        matrixStackIn.scale(entity.getBbWidth() * 1.7f, entity.getBbHeight() * 0.9f, entity.getBbWidth() * 1.7f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, BLOOM_TYPE)
                 , new RenderHelper.RenderContext(alpha * 0.8f, color, RenderHelper.renderLight));

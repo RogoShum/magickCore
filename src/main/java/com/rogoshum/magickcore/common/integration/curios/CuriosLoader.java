@@ -58,16 +58,16 @@ public class CuriosLoader extends AdditionLoader {
         if(Minecraft.getInstance().player == null) return;
 
         ItemStack ring = CuriosHelper.getSpiritRing(Minecraft.getInstance().player);
-        if (CuriosKeyBind.TAKE_OFF_KEY.isPressed() && ring != null) {
+        if (CuriosKeyBind.TAKE_OFF_KEY.consumeClick() && ring != null) {
             ring.shrink(1);
             Networking.INSTANCE.send(
-                    PacketDistributor.SERVER.noArg(), CCastSpellPack.take(Minecraft.getInstance().player.getEntityId()));
+                    PacketDistributor.SERVER.noArg(), CCastSpellPack.take(Minecraft.getInstance().player.getId()));
         }
 
-        if (CuriosKeyBind.CAST_KEY.isPressed()) {
+        if (CuriosKeyBind.CAST_KEY.consumeClick()) {
             if(!press)
                 Networking.INSTANCE.send(
-                    PacketDistributor.SERVER.noArg(), CCastSpellPack.cast(Minecraft.getInstance().player.getEntityId()));
+                    PacketDistributor.SERVER.noArg(), CCastSpellPack.cast(Minecraft.getInstance().player.getId()));
             press = true;
         } else
             press = false;

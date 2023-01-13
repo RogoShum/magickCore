@@ -22,53 +22,53 @@ public class SpiritCrystalRenderer extends TileEntityRenderer<SpiritCrystalTileE
 
     @Override
     public void render(SpiritCrystalTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.03, 0.5);
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.2f, 0.07f, 0.2f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
         matrixStackIn.translate(0.0, 0.15, 0.0);
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.05, 0.0, 0.0);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-20));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-20));
-        matrixStackIn.push();
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-20));
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.1f, 0.25f, 0.1f);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(45));
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.pop();
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(-0.05, 0.00, -0.05);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-20));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(20));
-        matrixStackIn.push();
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.1f, 0.3f, 0.1f);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.pop();
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(-0.05, 0.00, 0.05);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(20));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(20));
-        matrixStackIn.push();
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(20));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
+        matrixStackIn.pushPose();
         matrixStackIn.scale(0.1f, 0.2f, 0.1f);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-45));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-45));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.pop();
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

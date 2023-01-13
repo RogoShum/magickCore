@@ -16,7 +16,7 @@ public class EntityStatePack extends EntityPack{
 
     public EntityStatePack(PacketBuffer buffer) {
         super(buffer);
-        tag = buffer.readCompoundTag();
+        tag = buffer.readNbt();
     }
 
     public EntityStatePack(int id, CompoundNBT tag) {
@@ -26,14 +26,14 @@ public class EntityStatePack extends EntityPack{
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeCompoundTag(this.tag);
+        buf.writeNbt(this.tag);
     }
 
     @Override
     public void doWork(Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
         if(tag == null) return;
-        Entity entity = Minecraft.getInstance().world.getEntityByID(this.id);
+        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
         if(entity == null || entity.removed)
             return;
         EntityStateData state = ExtraDataUtil.entityStateData(entity);

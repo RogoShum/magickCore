@@ -16,7 +16,7 @@ public class TraceContext extends ChildContext {
     public static TraceContext create(@Nonnull Entity entity) {
         TraceContext traceContext = new TraceContext();
         traceContext.entity = entity;
-        traceContext.uuid = entity.getUniqueID();
+        traceContext.uuid = entity.getUUID();
         return traceContext;
     }
 
@@ -29,9 +29,9 @@ public class TraceContext extends ChildContext {
     @Override
     public void serialize(CompoundNBT tag) {
         if(entity != null) {
-            tag.putUniqueId("UUID", entity.getUniqueID());
+            tag.putUUID("UUID", entity.getUUID());
         } else if(uuid != null && !uuid.equals(MagickCore.emptyUUID))
-            tag.putUniqueId("UUID", uuid);
+            tag.putUUID("UUID", uuid);
     }
 
     @Override

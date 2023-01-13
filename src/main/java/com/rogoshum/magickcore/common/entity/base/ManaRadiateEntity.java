@@ -47,7 +47,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     @Override
     public boolean releaseMagick() {
-        if(!spellContext().valid() || world.isRemote) return false;
+        if(!spellContext().valid() || level.isClientSide) return false;
         AtomicBoolean entityOnly = new AtomicBoolean(false);
         AtomicBoolean blockOnly = new AtomicBoolean(false);
         boolean released = false;
@@ -73,9 +73,9 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                      pass = false;
              }
             if(pass) {
-                MagickContext context = MagickContext.create(this.world, spellContext().postContext)
-                        .replenishChild(DirectionContext.create(living.getPositionVec().add(0, living.getHeight() * 0.5, 0).subtract(this.getPositionVec())))
-                        .<MagickContext>replenishChild(PositionContext.create(this.getPositionVec()))
+                MagickContext context = MagickContext.create(this.level, spellContext().postContext)
+                        .replenishChild(DirectionContext.create(living.position().add(0, living.getBbHeight() * 0.5, 0).subtract(this.position())))
+                        .<MagickContext>replenishChild(PositionContext.create(this.position()))
                         .caster(getOwner()).projectile(this)
                         .victim(living).noCost();
                 boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
@@ -88,16 +88,16 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             cast = true;
 
 
-        if(!entityOnly.get() && !released && this.ticksExisted == 1) {
+        if(!entityOnly.get() && !released && this.tickCount == 1) {
             Iterable<BlockPos> blocks = findBlocks();
             Predicate<BlockPos> posPredicate = blockPosPredicate();
             for (BlockPos pos : blocks) {
                 if(!posPredicate.test(pos)) continue;
-                if(condition != null && !condition.test(null, world.getBlockState(pos).getBlock()))
+                if(condition != null && !condition.test(null, level.getBlockState(pos).getBlock()))
                     continue;
-                MagickContext context = MagickContext.create(this.world, spellContext().postContext).doBlock()
-                        .replenishChild(DirectionContext.create(this.getPositionVec().subtract(Vector3d.copyCentered(pos))))
-                        .<MagickContext>replenishChild(PositionContext.create(Vector3d.copy(pos)))
+                MagickContext context = MagickContext.create(this.level, spellContext().postContext).doBlock()
+                        .replenishChild(DirectionContext.create(this.position().subtract(Vector3d.atCenterOf(pos))))
+                        .<MagickContext>replenishChild(PositionContext.create(Vector3d.atLowerCornerOf(pos)))
                         .caster(getOwner()).projectile(this).noCost();
                 if (spellContext().postContext != null)
                     context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
@@ -108,8 +108,8 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
         }
 
         if(released) {
-            if(!world.isRemote)
-                world.setEntityState(this, (byte)14);
+            if(!level.isClientSide)
+                level.broadcastEntityEvent(this, (byte)14);
             else
                 successFX();
             this.remove();
@@ -139,8 +139,8 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     @Override
     protected void makeSound() {
-        if (this.ticksExisted == 1) {
-            this.playSound(ModSounds.soft_sweep.get(), 0.15F, 1.0F + this.rand.nextFloat());
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.soft_sweep.get(), 0.15F, 1.0F + this.random.nextFloat());
         }
     }
 
@@ -155,11 +155,11 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         if(id == 14)
             successFX();
         else
-            super.handleStatusUpdate(id);
+            super.handleEntityEvent(id);
     }
 
     abstract public void successFX();

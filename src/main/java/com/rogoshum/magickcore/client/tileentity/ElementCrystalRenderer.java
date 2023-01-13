@@ -29,43 +29,43 @@ public class ElementCrystalRenderer extends TileEntityRenderer<ElementCrystalTil
 
     @Override
     public void render(ElementCrystalTileEntity tile, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        BlockState state = tile.getWorld().getBlockState(tile.getPos());
+        BlockState state = tile.getLevel().getBlockState(tile.getBlockPos());
         if(!(state.getBlock() instanceof ElementCrystalBlock)) return;
-        int age = state.get(CropsBlock.AGE);
+        int age = state.getValue(CropsBlock.AGE);
         ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + Integer.toString(age) + ".png");
         RenderType TYPE = RenderHelper.getTexedOrbGlow(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);
         if(element != null)
             color = element.getRenderer().getColor();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        BufferBuilder buffer = Tessellator.getInstance().getBuilder();
         RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight);
         matrixStackIn.translate(0, -0.1, 0);
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.0, 0.0, 0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.0, 0.0, -0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, -0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         matrixStackIn.translate(0.0, 0.0, 0.5);
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, TYPE), renderContext);
-        matrixStackIn.pop();
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
     }
 }

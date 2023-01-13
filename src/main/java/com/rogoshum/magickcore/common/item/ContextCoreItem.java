@@ -33,25 +33,25 @@ import java.util.Objects;
 
 public class ContextCoreItem extends BaseItem{
     public ContextCoreItem() {
-        super(properties().maxStackSize(8).setISTER(() -> ManaEnergyRenderer::new));
+        super(properties().stacksTo(8).setISTER(() -> ManaEnergyRenderer::new));
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(entity.ticksExisted > 20) {
+        if(entity.tickCount > 20) {
             boolean upGround = true;
             for (int i = 0; i < 2; ++i) {
-                if(!entity.world.isAirBlock(entity.getPosition().add(0, -i, 0)))
+                if(!entity.level.isEmptyBlock(entity.blockPosition().offset(0, -i, 0)))
                     upGround = false;
             }
             double speed = 0.043;
             if(!upGround)
-                entity.addVelocity(0, speed, 0);
+                entity.push(0, speed, 0);
             else {
                 entity.remove();
-                if(!entity.world.isRemote) {
-                    ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.world);
-                    contextCreator.setPosition(entity.getPosX(), entity.getPosY() - 0.5, entity.getPosZ());
+                if(!entity.level.isClientSide) {
+                    ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.level);
+                    contextCreator.setPos(entity.getX(), entity.getY() - 0.5, entity.getZ());
                     if(stack.hasTag() && stack.getTag().contains("mana_material")) {
                         String material = stack.getTag().getString("mana_material");
                         Material manaMaterial = ManaMaterials.getMaterial(material);
@@ -59,8 +59,8 @@ public class ContextCoreItem extends BaseItem{
                             contextCreator.getInnerManaData().setMaterial(manaMaterial);
                         }
                     }
-                    entity.world.addEntity(contextCreator);
-                    entity.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.5f, 2.0f);
+                    entity.level.addFreshEntity(contextCreator);
+                    entity.playSound(SoundEvents.BEACON_ACTIVATE, 0.5f, 2.0f);
                 }
             }
         }
@@ -69,8 +69,8 @@ public class ContextCoreItem extends BaseItem{
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(group)) {
             ItemStack sample = new ItemStack(this);
             ManaMaterials.getMaterials().keySet().forEach((key) -> {
                 if(!Objects.equals(key, "origin")) {
@@ -83,7 +83,7 @@ public class ContextCoreItem extends BaseItem{
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
         if(stack.hasTag() && stack.getTag().contains("mana_material")) {
             Material manaMaterial = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
@@ -91,10 +91,10 @@ public class ContextCoreItem extends BaseItem{
                 material = manaMaterial;
             }
         }
-        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName()).mergeStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.FORCE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getForce())).mergeStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.RANGE).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getRange())).mergeStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.TICK).mergeStyle(TextFormatting.BLUE)).appendString(" ").append(new StringTextComponent(String.valueOf(material.getTick() / 20)).mergeStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL).withStyle(TextFormatting.BLUE)).append(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName()).withStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.FORCE).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getForce())).withStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.RANGE).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getRange())).withStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslationTextComponent(LibItem.TICK).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getTick() / 20)).withStyle(TextFormatting.GRAY)));
     }
 
     @Override

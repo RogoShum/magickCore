@@ -24,7 +24,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public class GenerationUtil {
-    public static final File dir = new File(Minecraft.getInstance().gameDir, "generation");
+    public static final File dir = new File(Minecraft.getInstance().gameDirectory, "generation");
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
     public static void generateElementFuncFile(String element, String applyType) {
@@ -56,7 +56,7 @@ public class GenerationUtil {
         text.addProperty("type", "text");
         text.addProperty("text", "");
         pages.add(text);
-        json.addProperty("name", new TranslationTextComponent(entityType.getTranslationKey()).getString());
+        json.addProperty("name", new TranslationTextComponent(entityType.getDescriptionId()).getString());
         json.addProperty("advancement", "magickcore:learn/" + trigger);
         ItemStack type = new ItemStack(ModItems.ENTITY_TYPE.get());
         ExtraDataUtil.itemManaData(type, data -> data.spellContext().addChild(SpawnContext.create(entityType)));
@@ -110,7 +110,7 @@ public class GenerationUtil {
                 json.append(line);
             }
 
-            return JSONUtils.fromJson(json.toString());
+            return JSONUtils.parse(json.toString());
         } catch (NoSuchFileException ignored) {
             System.out.println("File not found.");
         } catch (Exception ex) {

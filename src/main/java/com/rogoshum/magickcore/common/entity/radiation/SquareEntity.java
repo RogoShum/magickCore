@@ -44,7 +44,7 @@ public class SquareEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(getRange()), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()), predicate);
     }
 
     public float getRange() {
@@ -67,11 +67,11 @@ public class SquareEntity extends ManaRadiateEntity {
 
     protected void applyParticle(int particleAge) {
         float scale = 0.5f;
-        double width = this.getBoundingBox().grow(getRange()).getXSize();
-        List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getHeight() * 0.5, 0), scale, width, width, width);
+        double width = this.getBoundingBox().inflate(getRange()).getXsize();
+        List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getBbHeight() * 0.5, 0), scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vector3d pos = list.get(i);
-            LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , pos
                     , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
@@ -85,6 +85,6 @@ public class SquareEntity extends ManaRadiateEntity {
     @Override
     public Iterable<BlockPos> findBlocks() {
         int range = (int) getRange();
-        return BlockPos.getAllInBoxMutable(new BlockPos(this.getPositionVec()).up(range).east(range).south(range), new BlockPos(this.getPositionVec()).down(range).west(range).north(range));
+        return BlockPos.betweenClosed(new BlockPos(this.position()).above(range).east(range).south(range), new BlockPos(this.position()).below(range).west(range).north(range));
     }
 }

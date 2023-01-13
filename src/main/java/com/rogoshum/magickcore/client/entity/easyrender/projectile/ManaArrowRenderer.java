@@ -36,12 +36,12 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = entity.getMotion().scale(-1).normalize();
+        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
         Vector2f rota = getRotationFromVector(dir);
-        float scale = 0.75f * entity.getWidth();
-        params.matrixStack.translate(dir.x * entity.getWidth() * 2, dir.y * entity.getWidth() * 2, dir.z * entity.getWidth() * 2);
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+        float scale = 0.75f * entity.getBbWidth();
+        params.matrixStack.translate(dir.x * entity.getBbWidth() * 2, dir.y * entity.getBbWidth() * 2, dir.z * entity.getBbWidth() * 2);
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderLaserMid(BufferContext.create(params.matrixStack, params.buffer, TYPE)
         , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
@@ -50,26 +50,26 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
 
     public void renderPart(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = entity.getMotion().scale(-1).normalize();
+        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
         Vector2f rota = getRotationFromVector(dir);
-        float scale = 0.5f * entity.getWidth();
-        params.matrixStack.push();
-        params.matrixStack.translate(-dir.x * entity.getWidth() * 0.3, -dir.y * entity.getWidth() * 0.3, -dir.z * entity.getWidth() * 0.3);
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y));
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(45));
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        float scale = 0.5f * entity.getBbWidth();
+        params.matrixStack.pushPose();
+        params.matrixStack.translate(-dir.x * entity.getBbWidth() * 0.3, -dir.y * entity.getBbWidth() * 0.3, -dir.z * entity.getBbWidth() * 0.3);
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(45));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
                 , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
-        params.matrixStack.pop();
+        params.matrixStack.popPose();
 
-        scale = 0.3f * entity.getWidth();
-        params.matrixStack.translate(dir.x * entity.getWidth(), dir.y * entity.getWidth(), dir.z * entity.getWidth());
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y));
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(45));
-        params.matrixStack.rotate(Vector3f.XP.rotationDegrees(90));
+        scale = 0.3f * entity.getBbWidth();
+        params.matrixStack.translate(dir.x * entity.getBbWidth(), dir.y * entity.getBbWidth(), dir.z * entity.getBbWidth());
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(45));
+        params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
                 , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));

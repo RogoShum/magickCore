@@ -23,10 +23,10 @@ public class GlowAirTileEntity extends TileEntity implements ITickableTileEntity
 
     @Override
     public void tick() {
-        if(world.isRemote) return;
+        if(level.isClientSide) return;
         if(light != null && light.alive()) {
             BlockPos lightPos = EntityLightSourceManager.entityPos(light);
-            if(!lightPos.equals(pos)) {
+            if(!lightPos.equals(worldPosition)) {
                 awayTick++;
                 //EntityLightSourceHandler.tryAddLightSource(light, lightPos);
                 //if(awayTick > 20)
@@ -39,15 +39,15 @@ public class GlowAirTileEntity extends TileEntity implements ITickableTileEntity
 
     private void convertToDefault() {
         if(state != null)
-            this.world.setBlockState(pos, state);
+            this.level.setBlockAndUpdate(worldPosition, state);
         else {
-            BlockState posState = world.getBlockState(pos);
+            BlockState posState = level.getBlockState(worldPosition);
             if(posState.getBlock() instanceof FakeAirBlock) {
-                this.world.setBlockState(pos, ((FakeAirBlock) posState.getBlock()).getDefault());
+                this.level.setBlockAndUpdate(worldPosition, ((FakeAirBlock) posState.getBlock()).getDefault());
             } else if (posState.getBlock() instanceof FakeFluidBlock){
-                this.world.setBlockState(pos, Blocks.WATER.getDefaultState().with(FlowingFluidBlock.LEVEL, world.getBlockState(pos).get(FlowingFluidBlock.LEVEL)));
+                this.level.setBlockAndUpdate(worldPosition, Blocks.WATER.defaultBlockState().setValue(FlowingFluidBlock.LEVEL, level.getBlockState(worldPosition).getValue(FlowingFluidBlock.LEVEL)));
             } else
-                this.world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                this.level.setBlockAndUpdate(worldPosition, Blocks.AIR.defaultBlockState());
         }
     }
 

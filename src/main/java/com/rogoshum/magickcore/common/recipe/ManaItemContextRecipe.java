@@ -33,8 +33,8 @@ public class ManaItemContextRecipe extends SpecialRecipe {
     public boolean matches(CraftingInventory inv, World worldIn) {
         ItemStack tool = null;
         ItemStack magickContext = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() instanceof IManaContextItem) {
                 if(tool != null)
                     return false;
@@ -58,11 +58,11 @@ public class ManaItemContextRecipe extends SpecialRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack tool = null;
         ItemStack magickContext = null;
-        for(int j = 0; j < inv.getSizeInventory(); ++j) {
-            ItemStack itemstack = inv.getStackInSlot(j);
+        for(int j = 0; j < inv.getContainerSize(); ++j) {
+            ItemStack itemstack = inv.getItem(j);
             if(itemstack.getItem() instanceof IManaContextItem) {
                 if(tool != null)
                     return ItemStack.EMPTY;
@@ -108,28 +108,28 @@ public class ManaItemContextRecipe extends SpecialRecipe {
 
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
-            ItemStack item = inv.getStackInSlot(i);
+            ItemStack item = inv.getItem(i);
             if(item.getItem() instanceof IManaContextItem) {
                 ItemManaData manaData = ExtraDataUtil.itemManaData(item);
                 if(manaData.contextCore().haveMagickContext()) {
                     manaData.contextCore().setHave(false);
                     manaData.spellContext().clear();
                     if(item.hasTag()) {
-                        if(item.hasDisplayName())
-                            item.setDisplayName(null);
+                        if(item.hasCustomHoverName())
+                            item.setHoverName(null);
                         if(item.getTag().contains("manaItemName")) {
-                            ITextComponent itextcomponent = ITextComponent.Serializer.getComponentFromJson(item.getTag().getString("manaItemName"));
+                            ITextComponent itextcomponent = ITextComponent.Serializer.fromJson(item.getTag().getString("manaItemName"));
                             if (itextcomponent != null) {
-                                item.setDisplayName(itextcomponent);
+                                item.setHoverName(itextcomponent);
                                 item.getTag().remove("manaItemName");
                             }
                         }
                     }
                     nonnulllist.set(i, item);
-                    inv.setInventorySlotContents(i, ItemStack.EMPTY);
+                    inv.setItem(i, ItemStack.EMPTY);
                 }
             }
         }
@@ -138,7 +138,7 @@ public class ManaItemContextRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height)  {
+    public boolean canCraftInDimensions(int width, int height)  {
         return width * height >= 2;
     }
 

@@ -43,38 +43,23 @@ public class WandSelectionRenderer extends EasyRenderer<PlayerEntity> {
     @Override
     public void update() {
         super.update();
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         shapes.clear();
         posSet.clear();
-        if(entity.getHeldItemMainhand().getItem() instanceof WandItem) {
-            HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(entity.getHeldItemMainhand().getOrCreateChildTag(WandItem.SET_KEY));
+        if(entity.getMainHandItem().getItem() instanceof WandItem) {
+            HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(entity.getMainHandItem().getOrCreateTagElement(WandItem.SET_KEY));
             for(Vector3d vec : vector3ds) {
                 addPos(vec, cam);
             }
         }
-        int rLimit = 120;
-        int rHalf = rLimit / 2;
-        int gLimit = 240;
-        int gHalf = gLimit / 2;
-        int bLimit = 360;
-        int bHalf = bLimit / 2;
-        int r = MagickCore.proxy.getRunTick() % rLimit;
-        int g = MagickCore.proxy.getRunTick() % gLimit;
-        int b = MagickCore.proxy.getRunTick() % bLimit;
-        if(r > rHalf)
-            r = rHalf - (r-rHalf);
-        if(g > gHalf)
-            g = gHalf - (g-gHalf);
-        if(b > bHalf)
-            b = bHalf - (b-bHalf);
-        color = Color.create(r/(float)(rLimit-1), g/(float)(gLimit-1), b/(float)(bLimit-1));
+        color = RenderHelper.getRGB();
     }
 
     public void addPos(Vector3d vec, Vector3d cam) {
         BlockPos pos = new BlockPos(vec);
-        BlockState state = entity.world.getBlockState(pos);
-        VoxelShape blockShape = state.getShape(entity.world, pos);
-        VoxelShape shape = VoxelShapes.fullCube();
+        BlockState state = entity.level.getBlockState(pos);
+        VoxelShape blockShape = state.getShape(entity.level, pos);
+        VoxelShape shape = VoxelShapes.block();
         if(!blockShape.isEmpty())
             shape = blockShape;
         Vector3d offsetPos = new Vector3d(pos.getX() - cam.x, pos.getY() - cam.y, pos.getZ() - cam.z);
@@ -86,19 +71,21 @@ public class WandSelectionRenderer extends EasyRenderer<PlayerEntity> {
         for (Vector3d pos : posSet) {
             if(shapes.containsKey(pos)) {
                 VoxelShape shape = shapes.get(pos);
+                params.matrixStack.pushPose();
                 RenderHelper.drawShape(params.matrixStack, params.buffer, shape, pos.x, pos.y, pos.z, color.r(), color.g(), color.b(), 1.0F);
+                params.matrixStack.popPose();
             }
         }
     }
 
     @Override
     public boolean forceRender() {
-        return entity.getHeldItemMainhand().getItem() instanceof WandItem;
+        return entity.getMainHandItem().getItem() instanceof WandItem;
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
-        if(!(entity.getHeldItemMainhand().getItem() instanceof WandItem) || posSet.isEmpty() || shapes.isEmpty()) return null;
+        if(!(entity.getMainHandItem().getItem() instanceof WandItem) || posSet.isEmpty() || shapes.isEmpty()) return null;
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(BLOCK_TYPE), this::renderBlock);
         return map;

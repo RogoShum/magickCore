@@ -42,31 +42,31 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     }
     @Override
     protected void makeSound() {
-        if(this.ticksExisted == 1)
+        if(this.tickCount == 1)
         {
-            this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.rand.nextFloat() / 3);
+            this.playSound(ModSounds.squal_spawn.get(), 1.0F, 1.0F + this.random.nextFloat() / 3);
         }
 
-        if(this.ticksExisted % 8 == 0)
+        if(this.tickCount % 8 == 0)
         {
-            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.wind.get(), 0.5F, 1.0F - this.random.nextFloat());
         }
-        if(this.ticksExisted % 100 == 0)
+        if(this.tickCount % 100 == 0)
         {
-            this.playSound(ModSounds.wind_fx.get(), 0.5F, 1.0F - this.rand.nextFloat());
+            this.playSound(ModSounds.wind_fx.get(), 0.5F, 1.0F - this.random.nextFloat());
         }
-        if(this.ticksExisted % 12 == 0)
+        if(this.tickCount % 12 == 0)
         {
-            this.playSound(ModSounds.squal_ambience.get(), 1.0F, 1.3F - this.rand.nextFloat() / 3);
+            this.playSound(ModSounds.squal_ambience.get(), 1.0F, 1.3F - this.random.nextFloat() / 3);
         }
     }
 
     protected void applyParticle() {
         for(int i = 0; i < 3; ++i) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getX()
+                    , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * 18 + this.getZ())
                     , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f, 50, this.spellContext().element.getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
@@ -76,10 +76,10 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         for(int i = 0; i < 3; ++i) {
-            LitParticle par = new LitParticle(this.world, this.spellContext().element.getRenderer().getTrailTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * 18 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * 18 + this.getPosZ())
+            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getTrailTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getX()
+                    , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * 18 + this.getZ())
                     , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 100, this.spellContext().element.getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
@@ -89,11 +89,11 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         for(int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.world, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 8 + this.getPosX()
-                    , MagickCore.getNegativeToOne() * 6 + this.getPosY() + this.getHeight() / 2
-                    , MagickCore.getNegativeToOne() * 8 + this.getPosZ())
-                    , this.rand.nextFloat() * this.getWidth() * 1.5f, this.rand.nextFloat() * this.getWidth() * 1.5f, 0.3f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+                    , new Vector3d(MagickCore.getNegativeToOne() * 8 + this.getX()
+                    , MagickCore.getNegativeToOne() * 6 + this.getY() + this.getBbHeight() / 2
+                    , MagickCore.getNegativeToOne() * 8 + this.getZ())
+                    , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.3f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(15.0f);
@@ -116,19 +116,19 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
             if(entity == null)
                 continue;
             if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
-                if(cloest == null || this.getDistance(entity) < this.getDistance(cloest))
+                if(cloest == null || this.distanceTo(entity) < this.distanceTo(cloest))
                     cloest = entity;
-                if(this.getDistance(entity) <= 9.5) {
-                    MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(4f).applyType(ApplyType.HIT_ENTITY);
+                if(this.distanceTo(entity) <= 9.5) {
+                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(4f).applyType(ApplyType.HIT_ENTITY);
                     MagickReleaseHelper.releaseMagick(context);
                 }
-                if(this.getDistance(entity) <= 3) {
-                    MagickContext context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(1f).applyType(ApplyType.DE_BUFF);
+                if(this.distanceTo(entity) <= 3) {
+                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(1f).applyType(ApplyType.DE_BUFF);
                     MagickReleaseHelper.releaseMagick(context);
-                    if(this.ticksExisted % 20 == 0) {
-                        context = new MagickContext(this.world).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(20).force(1f).applyType(ApplyType.ATTACK);
+                    if(this.tickCount % 20 == 0) {
+                        context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(20).force(1f).applyType(ApplyType.ATTACK);
                         MagickReleaseHelper.releaseMagick(context);
-                        entity.hurtResistantTime = 0;
+                        entity.invulnerableTime = 0;
                     }
                 }
             }
@@ -136,19 +136,19 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         if(cloest != null && cloest.isAlive()) {
-            Vector3d vec = cloest.getPositionVec().add(0, 2, 0).subtract(this.getPositionVec());
-            this.setMotion(vec.normalize().scale(0.1));
+            Vector3d vec = cloest.position().add(0, 2, 0).subtract(this.position());
+            this.setDeltaMovement(vec.normalize().scale(0.1));
         }
         else if(this.getOwner() != null)
         {
-            Vector3d vec = this.getOwner().getPositionVec().add(0, 2, 0).subtract(this.getPositionVec());
-            this.setMotion(vec.normalize().scale(0.1));
+            Vector3d vec = this.getOwner().position().add(0, 2, 0).subtract(this.position());
+            this.setDeltaMovement(vec.normalize().scale(0.1));
         }
-        this.prevPosX = this.getPosX();
-        this.prevPosY = this.getPosY();
-        this.prevPosZ = this.getPosZ();
-        this.setPosition(this.getPosX() + this.getMotion().x, this.getPosY() + this.getMotion().y, this.getPosZ() + this.getMotion().z);
-        this.setMotion(this.getMotion().scale(0.9));
+        this.xo = this.getX();
+        this.yo = this.getY();
+        this.zo = this.getZ();
+        this.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
+        this.setDeltaMovement(this.getDeltaMovement().scale(0.9));
         return true;
     }
 
@@ -160,6 +160,6 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow(16), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(16), predicate);
     }
 }

@@ -33,12 +33,12 @@ import java.util.function.Supplier;
 
 public class BloodBubbleEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/blood_bubble.png");
-    private static final DataParameter<Float> HEALTH = EntityDataManager.createKey(BloodBubbleEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Boolean> BACK = EntityDataManager.createKey(BloodBubbleEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Float> HEALTH = EntityDataManager.defineId(BloodBubbleEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Boolean> BACK = EntityDataManager.defineId(BloodBubbleEntity.class, DataSerializers.BOOLEAN);
     public BloodBubbleEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
         super(type, worldIn);
-        this.dataManager.register(HEALTH, this.getType().getWidth());
-        this.dataManager.register(BACK, false);
+        this.entityData.define(HEALTH, this.getType().getWidth());
+        this.entityData.define(BACK, false);
     }
 
     @Override
@@ -47,23 +47,23 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     public void setHealth(float health) {
-        this.getDataManager().set(HEALTH, health);
+        this.getEntityData().set(HEALTH, health);
     }
 
     public float getHealth() {
-        return this.getDataManager().get(HEALTH);
+        return this.getEntityData().get(HEALTH);
     }
 
     public void setBack(boolean back) {
-        this.getDataManager().set(BACK, back);
+        this.getEntityData().set(BACK, back);
     }
 
     public boolean getBack() {
-        return this.getDataManager().get(BACK);
+        return this.getEntityData().get(BACK);
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
+    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
         boolean isLiving = p_213868_1_.getEntity() instanceof LivingEntity;
         boolean suitable = suitableEntity(p_213868_1_.getEntity());
         if(isLiving) {
@@ -77,12 +77,12 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
             }
         }
 
-        super.onEntityHit(p_213868_1_);
+        super.onHitEntity(p_213868_1_);
     }
 
     protected void backToOwner() {
-        MagickContext context = MagickContext.create(this.world)
-                .replenishChild(DirectionContext.create(this.getPositionVec().subtract(getOwner().getPositionVec())))
+        MagickContext context = MagickContext.create(this.level)
+                .replenishChild(DirectionContext.create(this.position().subtract(getOwner().position())))
                 .replenishChild(SpawnContext.create(getType()))
                 .force(getHealth())
                 .applyType(ApplyType.SPAWN_ENTITY)
@@ -99,8 +99,8 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
         releaseMagick();
         if(getBack())
             backToOwner();
-        if (!this.world.isRemote) {
-            this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.5F, 1.0F + this.rand.nextFloat());
+        if (!this.level.isClientSide) {
+            this.playSound(SoundEvents.ENDER_EYE_DEATH, 1.5F, 1.0F + this.random.nextFloat());
         }
         super.remove();
     }
@@ -113,10 +113,10 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     @Override
     public void reSize() {
         float height = getType().getHeight() + getHealth() * 0.1f;
-        if(getHeight() != height)
+        if(getBbHeight() != height)
             this.setHeight(height);
         float width = getType().getWidth() + getHealth() * 0.1f;
-        if(getWidth() != width)
+        if(getBbWidth() != width)
             this.setWidth(width);
     }
 
@@ -137,11 +137,11 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.world, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                , new Vector3d(this.lastTickPosX + (this.getPosX() - this.lastTickPosX) * partialTicks
-                , this.lastTickPosY + (this.getPosY() - this.lastTickPosY) * partialTicks + this.getHeight() / 2
-                , this.lastTickPosZ + (this.getPosZ() - this.lastTickPosZ) * partialTicks)
-                , 0.1f * this.getWidth(), 0.1f * this.getWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+        LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                , new Vector3d(this.xOld + (this.getX() - this.xOld) * partialTicks
+                , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
+                , this.zOld + (this.getZ() - this.zOld) * partialTicks)
+                , 0.1f * this.getBbWidth(), 0.1f * this.getBbWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setColor(Color.RED_COLOR);

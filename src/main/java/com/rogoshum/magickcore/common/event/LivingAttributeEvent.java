@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 public class LivingAttributeEvent {
     @SubscribeEvent
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.MAGE.get(), VillagerEntity.registerAttributes().create());
-        event.put(ModEntities.ARTIFICIAL_LIFE.get(), LivingEntity.registerAttributes().create());
+        event.put(ModEntities.MAGE.get(), VillagerEntity.createAttributes().build());
+        event.put(ModEntities.ARTIFICIAL_LIFE.get(), LivingEntity.createLivingAttributes().build());
     }
 }

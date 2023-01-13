@@ -23,69 +23,69 @@ import net.minecraft.util.math.vector.Vector3f;
 public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation QUARTZ = new ResourceLocation( "minecraft:textures/block/quartz_block_top.png");
-    private static final RenderType RENDER_TYPE_0 = RenderType.getEntityTranslucent(new ResourceLocation( "minecraft:textures/block/oak_log.png"));
-    private static final RenderType RENDER_TYPE_1 = RenderType.getEntityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
+    private static final RenderType RENDER_TYPE_0 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/oak_log.png"));
+    private static final RenderType RENDER_TYPE_1 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
-        matrixStack.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+        matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.65f, 0.65f, 0.65f);
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(135));
-        matrixStack.push();
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(135));
+        matrixStack.pushPose();
         matrixStack.translate(0, 0.7, 0);
         matrixStack.scale(0.08f, 0.6f, 0.08f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, 0.3, 0);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
         matrixStack.scale(0.25f, 0.25f, 0.25f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedEntity(QUARTZ))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntity(QUARTZ))
                 , new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0.3, 0.3, 0);
         matrixStack.scale(0.3f, 0.15f, 0.1f);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(-0.3, 0.3, 0);
         matrixStack.scale(0.3f, 0.15f, 0.1f);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, -0.2, 0);
         matrixStack.scale(0.15f, 1.0f, 0.1f);
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(45));
-        matrixStack.rotate(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuffer(), RENDER_TYPE_1)
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.pop();
+        matrixStack.popPose();
 
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         if(data.contextCore().haveMagickContext()) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0, 0.3, 0);
             matrixStack.scale(0.35f, 0.35f, 0.35f);
             ItemStack core = new ItemStack(ModItems.MAGICK_CORE.get());
             ExtraDataUtil.itemManaData(core).spellContext().copy(data.spellContext());
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(core, null, null);
-            Minecraft.getInstance().getItemRenderer().renderItem(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-            matrixStack.pop();
+            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
+            Minecraft.getInstance().getItemRenderer().render(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            matrixStack.popPose();
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

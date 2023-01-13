@@ -35,15 +35,17 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.minecraft.item.Item.Properties;
+
 public abstract class ManaItem extends BaseItem implements IManaData {
     public ManaItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
         EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
         boolean success = false;
         if(state != null) {
@@ -52,7 +54,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
                 spawnParticle(playerIn, state);
             }
         }
-        return ActionResult.resultConsume(itemstack);
+        return ActionResult.consume(itemstack);
     }
 
     @Override
@@ -83,11 +85,11 @@ public abstract class ManaItem extends BaseItem implements IManaData {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         ExtraDataUtil.itemManaData(stack, data -> {
             String information = "";
-            KeyBinding key = Minecraft.getInstance().gameSettings.keyBindSneak;
-            boolean isKeyDown = InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), key.getKey().getKeyCode());
+            KeyBinding key = Minecraft.getInstance().options.keyShift;
+            boolean isKeyDown = InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue());
             if(isKeyDown)
                 information = data.spellContext().toString();
             else
@@ -113,18 +115,18 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        return super.onItemUseFinish(stack, worldIn, entityLiving);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 
     public void spawnParticle(LivingEntity playerIn, EntityStateData state) {
         if(state != null)
-            ParticleUtil.spawnBlastParticle(playerIn.world, playerIn.getPositionVec().add(0, playerIn.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
+            ParticleUtil.spawnBlastParticle(playerIn.level, playerIn.position().add(0, playerIn.getBbHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
     }
 
     public abstract boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack);

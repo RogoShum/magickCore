@@ -35,11 +35,11 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
         else if (entity.getOwner() != null)
-            dir = entity.getOwner().getLookVec().normalize();
+            dir = entity.getOwner().getLookAngle().normalize();
         Vector2f rota = getRotationFromVector(dir);
         float scale = 0.25f;
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         matrixStackIn.scale(scale, scale, scale);
     }
 

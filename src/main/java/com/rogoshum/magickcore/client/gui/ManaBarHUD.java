@@ -27,8 +27,8 @@ public class ManaBarHUD extends AbstractGui {
     private EntityStateData state;
 
     public ManaBarHUD(MatrixStack matrixStack, EntityStateData state) {
-        this.width = Minecraft.getInstance().getMainWindow().getScaledWidth();
-        this.height = Minecraft.getInstance().getMainWindow().getScaledHeight();
+        this.width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        this.height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         this.minecraft = Minecraft.getInstance();
         this.matrixStack = matrixStack;
         this.state = state;
@@ -44,24 +44,24 @@ public class ManaBarHUD extends AbstractGui {
         int x = (int) (width * 0.75);
         int bar_width = (int) (leng * (state.getManaValue() / state.getMaxManaValue()));
         Color bar_color = state.getElement().getRenderer().getColor();
-        long i = Util.milliTime() * 8L;
+        long i = Util.getMillis() * 8L;
         float f = (float)(i % 110000L) / 110000.0F;
         float f1 = (float)(i % 30000L) / 30000.0F;
 
-        if(RenderHelper.showDebug() || state.getManaValue() < state.getMaxManaValue() || Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof IManaData || Minecraft.getInstance().player.getHeldItemOffhand().getItem() instanceof IManaData) {
-            matrixStack.push();
+        if(RenderHelper.showDebug() || state.getManaValue() < state.getMaxManaValue() || Minecraft.getInstance().player.getMainHandItem().getItem() instanceof IManaData || Minecraft.getInstance().player.getOffhandItem().getItem() instanceof IManaData) {
+            matrixStack.pushPose();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.minecraft.getTextureManager().bindTexture(mana_bar_bg);
+            this.minecraft.getTextureManager().bind(mana_bar_bg);
             blit(matrixStack, x, y, 0, 0, leng, 5, leng, 5);
-            matrixStack.pop();
+            matrixStack.popPose();
 
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 1.0F);
-            this.minecraft.getTextureManager().bindTexture(mana_element);
+            this.minecraft.getTextureManager().bind(mana_element);
             blit(matrixStack, x, y, 0, 0, bar_width, 5, bar_width, 5);
-            matrixStack.pop();
+            matrixStack.popPose();
 
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 1.0F);
             RenderSystem.matrixMode(5890);
             RenderSystem.pushMatrix();
@@ -71,7 +71,7 @@ public class ManaBarHUD extends AbstractGui {
             //RenderSystem.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
             RenderSystem.scalef(0.25f, 0.25f, 0.25f);
             RenderSystem.matrixMode(5888);
-            this.minecraft.getTextureManager().bindTexture(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png"));
+            this.minecraft.getTextureManager().bind(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png"));
 
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
@@ -86,46 +86,46 @@ public class ManaBarHUD extends AbstractGui {
             RenderSystem.matrixMode(5890);
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(5888);
-            matrixStack.pop();
+            matrixStack.popPose();
 
 
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.minecraft.getTextureManager().bindTexture(mana_bar);
+            this.minecraft.getTextureManager().bind(mana_bar);
             blit(matrixStack, x, y, 0, 0, leng, 5, leng, 5);
-            matrixStack.pop();
+            matrixStack.popPose();
 
             if(RenderHelper.showDebug()) {
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.scale(0.5f, 0.5f, 1);
                 String mana = Float.toString(state.getManaValue());
-                Minecraft.getInstance().fontRenderer.drawString(matrixStack, mana + " / " + Float.toString(state.getMaxManaValue()), x*2 + 96 - mana.length()*7, y*2+1, 0);
-                matrixStack.pop();
+                Minecraft.getInstance().font.draw(matrixStack, mana + " / " + Float.toString(state.getMaxManaValue()), x*2 + 96 - mana.length()*7, y*2+1, 0);
+                matrixStack.popPose();
             }
         }
 
         if(RenderHelper.showDebug() || state.getElementShieldMana() > 0) {
             y -= 6;
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.minecraft.getTextureManager().bindTexture(mana_bar_bg);
+            this.minecraft.getTextureManager().bind(mana_bar_bg);
             blit(matrixStack, x, y, 0, 0, leng, 5, leng, 5);
-            matrixStack.pop();
+            matrixStack.popPose();
 
             bar_width = (int) (leng * (state.getElementShieldMana() / Math.max(state.getMaxElementShieldMana(), 0.01)));
             if(bar_width > leng)
                 bar_width = leng;
 
-            matrixStack.push();
+            matrixStack.pushPose();
             bar_color = state.getElement().getRenderer().getColor();
             RenderSystem.enableBlend();
             RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 0.5F);
-            this.minecraft.getTextureManager().bindTexture(mana_element);
+            this.minecraft.getTextureManager().bind(mana_element);
             blit(matrixStack, x, y, 0, 0, bar_width, 5, bar_width, 5);
             RenderSystem.disableBlend();
-            matrixStack.pop();
+            matrixStack.popPose();
 
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(bar_color.r(), bar_color.g(), bar_color.b(), 1.0F);
             RenderSystem.matrixMode(5890);
             RenderSystem.pushMatrix();
@@ -138,9 +138,9 @@ public class ManaBarHUD extends AbstractGui {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
             RenderSystem.enableAlphaTest();
             RenderSystem.alphaFunc(516, 0.003921569F);
-            this.minecraft.getTextureManager().bindTexture(RenderHelper.ripple_4);
+            this.minecraft.getTextureManager().bind(RenderHelper.ripple_4);
             blit(matrixStack, x, y + 1, 0, 0, bar_width, 3, bar_width, 3);
-            this.minecraft.getTextureManager().bindTexture(RenderHelper.ripple_2);
+            this.minecraft.getTextureManager().bind(RenderHelper.ripple_2);
             blit(matrixStack, x, y + 1, 0, 0, bar_width, 3, bar_width, 3);
             RenderSystem.defaultAlphaFunc();
             RenderSystem.disableAlphaTest();
@@ -150,20 +150,20 @@ public class ManaBarHUD extends AbstractGui {
             RenderSystem.matrixMode(5890);
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(5888);
-            matrixStack.pop();
+            matrixStack.popPose();
 
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            this.minecraft.getTextureManager().bindTexture(mana_bar);
+            this.minecraft.getTextureManager().bind(mana_bar);
             blit(matrixStack, x, y, 0, 0, leng, 5, leng, 5);
-            matrixStack.pop();
+            matrixStack.popPose();
 
             if(RenderHelper.showDebug()) {
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.scale(0.5f, 0.5f, 1);
                 String mana = Float.toString(state.getElementShieldMana());
-                Minecraft.getInstance().fontRenderer.drawString(matrixStack, mana + " / " + Float.toString(state.getMaxElementShieldMana()), x*2 + 96 - mana.length()*7, y*2+1, 0);
-                matrixStack.pop();
+                Minecraft.getInstance().font.draw(matrixStack, mana + " / " + Float.toString(state.getMaxElementShieldMana()), x*2 + 96 - mana.length()*7, y*2+1, 0);
+                matrixStack.popPose();
             }
         }
     }

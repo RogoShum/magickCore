@@ -14,12 +14,12 @@ public class StringTrigger extends AbstractCriterionTrigger<StringTrigger.Instan
         return ID;
     }
 
-    public StringTrigger.Instance deserializeTrigger(JsonObject json, EntityPredicate.AndPredicate entityPredicate, ConditionArrayParser conditionsParser) {
+    public StringTrigger.Instance createInstance(JsonObject json, EntityPredicate.AndPredicate entityPredicate, ConditionArrayParser conditionsParser) {
         return new StringTrigger.Instance(entityPredicate, json.get("string").getAsString());
     }
 
     public void trigger(ServerPlayerEntity player, String string) {
-        this.triggerListeners(player, (instance) -> {
+        this.trigger(player, (instance) -> {
             return instance.test(string);
         });
     }
@@ -33,15 +33,15 @@ public class StringTrigger extends AbstractCriterionTrigger<StringTrigger.Instan
         }
 
         public static StringTrigger.Instance forString(String string) {
-            return new StringTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, string);
+            return new StringTrigger.Instance(EntityPredicate.AndPredicate.ANY, string);
         }
 
         public boolean test(String string) {
             return this.string.equals(string);
         }
 
-        public JsonObject serialize(ConditionArraySerializer conditions) {
-            JsonObject jsonobject = super.serialize(conditions);
+        public JsonObject serializeToJson(ConditionArraySerializer conditions) {
+            JsonObject jsonobject = super.serializeToJson(conditions);
             jsonobject.addProperty("string", string);
             return jsonobject;
         }

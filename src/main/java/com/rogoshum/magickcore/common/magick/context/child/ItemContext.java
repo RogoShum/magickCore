@@ -16,12 +16,12 @@ public class ItemContext extends ChildContext{
 
     @Override
     public void serialize(CompoundNBT tag) {
-        itemStack.write(tag);
+        itemStack.save(tag);
     }
 
     @Override
     public void deserialize(CompoundNBT tag) {
-        itemStack = ItemStack.read(tag);
+        itemStack = ItemStack.of(tag);
     }
 
     @Override
@@ -36,6 +36,6 @@ public class ItemContext extends ChildContext{
 
     @Override
     public String getString(int tab) {
-        return new TranslationTextComponent(itemStack.getTranslationKey()).getString();
+        return new TranslationTextComponent(itemStack.getDescriptionId()).getString();
     }
 }

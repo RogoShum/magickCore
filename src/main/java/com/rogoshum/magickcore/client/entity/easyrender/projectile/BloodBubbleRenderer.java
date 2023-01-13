@@ -17,7 +17,7 @@ public class BloodBubbleRenderer extends EasyRenderer<BloodBubbleEntity> {
     @Override
     public void update() {
         super.update();
-        entity.renderFrame(Minecraft.getInstance().getRenderPartialTicks());
+        entity.renderFrame(Minecraft.getInstance().getFrameTime());
     }
 
     @Override

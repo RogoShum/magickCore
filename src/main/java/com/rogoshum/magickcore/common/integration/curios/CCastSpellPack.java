@@ -67,7 +67,7 @@ public class CCastSpellPack extends EntityPack {
         if(operate == 0) {
             ItemManaData data = ExtraDataUtil.itemManaData(ring);
             EntityStateData state = ExtraDataUtil.entityStateData(player);
-            MagickContext magickContext = MagickContext.create(player.world, data.spellContext());
+            MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
             MagickElement element = data.spellContext().element;
             MagickContext context = magickContext.caster(player).victim(player).element(element);
             if(context.containChild(LibContext.TRACE)) {
@@ -75,12 +75,12 @@ public class CCastSpellPack extends EntityPack {
                 traceContext.entity = MagickReleaseHelper.getEntityLookedAt(player);
             }
             if(MagickReleaseHelper.releaseMagick(context))
-                ParticleUtil.spawnBlastParticle(player.world, player.getPositionVec().add(0, player.getHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
+                ParticleUtil.spawnBlastParticle(player.level, player.position().add(0, player.getBbHeight() * 0.5, 0), 3, state.getElement(), ParticleType.PARTICLE);
         } else {
             ItemStack copy = ring.copy();
             ring.shrink(1);
-            if(!player.addItemStackToInventory(copy))
-                player.dropItem(copy, false, true);
+            if(!player.addItem(copy))
+                player.drop(copy, false, true);
         }
     }
 }

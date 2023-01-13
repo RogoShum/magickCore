@@ -55,7 +55,7 @@ public class RenderThread extends Thread {
     @Override
     public void run() {
         while (!isInterrupted()) {
-            if(Minecraft.getInstance().world == null) {
+            if(Minecraft.getInstance().level == null) {
                 renderer.clear();
             }
             if(needUpdate && clippinghelper != null) {
@@ -71,11 +71,11 @@ public class RenderThread extends Thread {
                             continue;
                         }
                         if(!renderer.forceRender()) {
-                            if(!clippinghelper.isBoundingBoxInFrustum(renderer.boundingBox())) {
+                            if(!clippinghelper.isVisible(renderer.boundingBox())) {
                                 renderer.setShouldRender(false);
                                 continue;
                             }
-                            Vector3d vec = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+                            Vector3d vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                             if(!RenderHelper.isInRangeToRender3d(renderer, vec.x, vec.y, vec.z, scale)) {
                                 renderer.setShouldRender(false);
                                 continue;

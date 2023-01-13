@@ -28,36 +28,38 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class ElementSeedsItem extends BlockItem{
     public ElementSeedsItem(Block blockIn, Properties builder) {
         super(blockIn, builder);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if(stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
             if(tag.contains("ELEMENT"))
-                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).appendString(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+                tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).append(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
         }
     }
 
     @Override
-    public String getTranslationKey() {
-        return this.getDefaultTranslationKey();
+    public String getDescriptionId() {
+        return this.getOrCreateDescriptionId();
     }
 
     @Override
-    protected boolean onBlockPlaced(BlockPos pos, World worldIn, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+    protected boolean updateCustomBlockEntityTag(BlockPos pos, World worldIn, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
         if(stack.hasTag() && stack.getTag().contains("ELEMENT")) {
-            ElementCrystalTileEntity crystal = (ElementCrystalTileEntity) worldIn.getTileEntity(pos);
+            ElementCrystalTileEntity crystal = (ElementCrystalTileEntity) worldIn.getBlockEntity(pos);
             crystal.eType = stack.getTag().getString("ELEMENT");
         }
-        return super.onBlockPlaced(pos, worldIn, player, stack, state);
+        return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))

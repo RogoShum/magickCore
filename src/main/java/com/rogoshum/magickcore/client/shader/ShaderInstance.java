@@ -31,23 +31,23 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
         this.fragment = createLoader(ShaderLoader.ShaderType.FRAGMENT, fragment);
         this.program = ShaderLinkHelper.createProgram();
         ShaderLinkHelper.linkProgram(this);
-        int i = GlStateManager.getProgram(program, 35714);
+        int i = GlStateManager.glGetProgrami(program, 35714);
         if (i == 0) {
-            MagickCore.LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", this.vertex.getShaderFilename(), this.fragment.getShaderFilename());
-            MagickCore.LOGGER.warn(GlStateManager.getProgramInfoLog(program, 32768));
+            MagickCore.LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", this.vertex.getName(), this.fragment.getName());
+            MagickCore.LOGGER.warn(GlStateManager.glGetProgramInfoLog(program, 32768));
             throw new IOException("Link Shader Error.");
         }
     }
 
     public static ShaderLoader createLoader(ShaderLoader.ShaderType shaderType, String path) throws IOException {
-        ShaderLoader shaderloader = shaderType.getLoadedShaders().get(path);
+        ShaderLoader shaderloader = shaderType.getPrograms().get(path);
         if (shaderloader == null) {
-            ResourceLocation rl = ResourceLocation.tryCreate(path);
-            ResourceLocation resourcelocation = new ResourceLocation(rl.getNamespace(), "shaders/program/" + rl.getPath() + shaderType.getShaderExtension());
+            ResourceLocation rl = ResourceLocation.tryParse(path);
+            ResourceLocation resourcelocation = new ResourceLocation(rl.getNamespace(), "shaders/program/" + rl.getPath() + shaderType.getExtension());
             IResource iresource = Minecraft.getInstance().getResourceManager().getResource(resourcelocation);
 
             try {
-                shaderloader = ShaderLoader.func_216534_a(shaderType, path, iresource.getInputStream(), iresource.getPackName());
+                shaderloader = ShaderLoader.compileShader(shaderType, path, iresource.getInputStream(), iresource.getSourceName());
             } finally {
                 IOUtils.closeQuietly((Closeable)iresource);
             }
@@ -76,7 +76,7 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
     }
 
     @Override
-    public int getProgram() {
+    public int getId() {
         return program;
     }
 
@@ -86,12 +86,12 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
     }
 
     @Override
-    public ShaderLoader getVertexShaderLoader() {
+    public ShaderLoader getVertexProgram() {
         return vertex;
     }
 
     @Override
-    public ShaderLoader getFragmentShaderLoader() {
+    public ShaderLoader getFragmentProgram() {
         return fragment;
     }
 

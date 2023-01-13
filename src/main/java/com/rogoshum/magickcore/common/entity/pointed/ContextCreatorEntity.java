@@ -78,15 +78,15 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     @Override
     public void readSpawnData(PacketBuffer additionalData) {
         super.readSpawnData(additionalData);
-        readAdditional(additionalData.readCompoundTag());
+        readAdditionalSaveData(additionalData.readNbt());
     }
 
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
         super.writeSpawnData(buffer);
         CompoundNBT addition = new CompoundNBT();
-        writeAdditional(addition);
-        buffer.writeCompoundTag(addition);
+        addAdditionalSaveData(addition);
+        buffer.writeNbt(addition);
     }
 
     @Override
@@ -95,23 +95,23 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             coolDown-=1;
             return false;
         }
-        List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, this.getBoundingBox().grow(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
+        List<ItemEntity> items = this.level.getEntities(EntityType.ITEM, this.getBoundingBox().inflate(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && item.ticksExisted > 10 && item.getPositionVec().squareDistanceTo(this.getPositionVec()) <= 2.5) {
+            if(item.isAlive() && item.tickCount > 10 && item.position().distanceToSqr(this.position()) <= 2.5) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 if(material.upgradeManaItem(item.getItem(), innerManaData)) {
                     Vector3d relativeVec = relativeVec(item);
                     ItemStack stack = item.getItem().copy();
                     stack.setCount(1);
                     PosItem posItem = new PosItem(relativeVec, stack, new Random(itemCount++));
-                    posItem.motion = item.getMotion();
-                    posItem.hoverStart = item.hoverStart;
-                    posItem.age = item.ticksExisted;
+                    posItem.motion = item.getDeltaMovement();
+                    posItem.hoverStart = item.bobOffs;
+                    posItem.age = item.tickCount;
                     if(!material.disappearAfterRead())
                         stacks.add(posItem);
-                    Vector3d vec = new Vector3d(item.getPosX() - this.getPosX(), (item.getPosY() + item.getHeight() / 2) - (this.getPosY() + this.getHeight() / 2), item.getPosZ() - this.getPosZ());
-                    hitReactions.put(item.getEntityId(), new VectorHitReaction(vec.normalize(), 0.2f, 0.02f));
+                    Vector3d vec = new Vector3d(item.getX() - this.getX(), (item.getY() + item.getBbHeight() / 2) - (this.getY() + this.getBbHeight() / 2), item.getZ() - this.getZ());
+                    hitReactions.put(item.getId(), new VectorHitReaction(vec.normalize(), 0.2f, 0.02f));
                     item.getItem().shrink(1);
                 }
             }
@@ -136,13 +136,13 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public boolean canBeAttackedWithItem() {
+    public boolean isAttackable() {
         return true;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if(!world.isRemote && source.getTrueSource() instanceof LivingEntity) {
+    public boolean hurt(DamageSource source, float amount) {
+        if(!level.isClientSide && source.getEntity() instanceof LivingEntity) {
             damageEntity();
             return true;
         }
@@ -158,8 +158,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         AtomicBoolean hasEnergy = new AtomicBoolean(false);
 
         if(hasEnergy.get()) {
-            LitParticle par = new LitParticle(this.world, innerManaData.spellContext().element.getRenderer().getParticleTexture()
-                    , this.getPositionVec().add(0, this.getHeight() / 2, 0), 0.8f, 0.8f, 1.0f, 5, innerManaData.spellContext().element.getRenderer());
+            LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element.getRenderer().getParticleTexture()
+                    , this.position().add(0, this.getBbHeight() / 2, 0), 0.8f, 0.8f, 1.0f, 5, innerManaData.spellContext().element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -174,14 +174,14 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public void spawnSupplierParticle(Entity supplier) {
-        Vector3d center = new Vector3d(0, this.getHeight() / 2, 0);
-        Vector3d end = this.getPositionVec().add(center);
-        Vector3d start = supplier.getPositionVec().add(0, supplier.getHeight() / 2, 0);
+        Vector3d center = new Vector3d(0, this.getBbHeight() / 2, 0);
+        Vector3d end = this.position().add(center);
+        Vector3d start = supplier.position().add(0, supplier.getBbHeight() / 2, 0);
         double dis = start.subtract(end).length();
         if(dis < 0.2)
             dis = 0.2;
         int distance = (int) (8 * dis);
-        float directionPoint = (float) (supplier.ticksExisted % distance) / distance;
+        float directionPoint = (float) (supplier.tickCount % distance) / distance;
         int c = (int) (directionPoint * distance);
 
         Vector3d direction = Vector3d.ZERO;
@@ -208,7 +208,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
 
             double trailFactor = i / (distance - 1.0D);
             Vector3d pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
-            LitParticle par = new LitParticle(this.world, element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, element.getRenderer().getParticleTexture()
                     , new Vector3d(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -218,13 +218,13 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         //super.handleStatusUpdate(id);
         switch(id) {
             case 10:
@@ -236,25 +236,25 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 innerManaData.spellContext().clear();
                 break;
             default:
-                super.handleStatusUpdate(id);
+                super.handleEntityEvent(id);
         }
     }
 
     @Override
-    public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.processInitialInteract(player, hand);
-        if (ret.isSuccessOrConsume()) return ret;
+    public ActionResultType interact(PlayerEntity player, Hand hand) {
+        ActionResultType ret = super.interact(player, hand);
+        if (ret.consumesAction()) return ret;
 
         if (hand == Hand.MAIN_HAND) {
-            if(player.getHeldItemMainhand().getItem() instanceof WandItem) {
+            if(player.getMainHandItem().getItem() instanceof WandItem) {
                 ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
                 ExtraDataUtil.itemManaData(stack).spellContext().copy(innerManaData.spellContext());
                 getStacks().clear();
-                ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + (this.getWidth() / 2), this.getPosZ(), stack);
-                world.addEntity(entity);
+                ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + (this.getBbWidth() / 2), this.getZ(), stack);
+                level.addFreshEntity(entity);
                 remove(false);
-                playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 0.5f, 2.0f);
-                if(world.isRemote)
+                playSound(SoundEvents.BEACON_DEACTIVATE, 0.5f, 2.0f);
+                if(level.isClientSide)
                     spawnParticle();
             } else
                 dropItem();
@@ -264,12 +264,12 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 
     public void spawnParticle() {
-        float radius = getWidth() * 0.25f;
+        float radius = getBbWidth() * 0.25f;
         float rho, drho, theta, dtheta;
         float x, y, z;
         int stacks = 12;
@@ -283,8 +283,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 y = (float) (Math.cos(theta) * Math.sin(rho));
                 z = (float) Math.cos(rho);
                 Vector3d pos = new Vector3d(x * radius, y * radius, z * radius);
-                LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                        , pos.add(this.getPositionVec().add(0, getHeight() * 0.5, 0))
+                LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                        , pos.add(this.position().add(0, getBbHeight() * 0.5, 0))
                         , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setGlow();
                 par.setParticleGravity(0);
@@ -296,13 +296,13 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
         this.innerManaData.spellContext.deserialize(compound);
         if(compound.contains("MATERIAL"))
             this.innerManaData.setMaterial(ManaMaterials.getMaterial(compound.getString("MATERIAL")));
         if(compound.contains("STACKS")) {
             CompoundNBT tag = compound.getCompound("STACKS");
-            tag.keySet().forEach(key -> {
+            tag.getAllKeys().forEach(key -> {
                 CompoundNBT stack = tag.getCompound(key);
                 PosItem posItem = new PosItem(Vector3d.ZERO, ItemStack.EMPTY, new Random(itemCount++));
                 posItem.deserialize(stack);
@@ -313,7 +313,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         this.innerManaData.spellContext.serialize(compound);
         compound.putString("MATERIAL", this.innerManaData.material.getName());
         CompoundNBT tag = new CompoundNBT();
@@ -327,14 +327,14 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public void dropItem() {
-        if(!world.isRemote) {
+        if(!level.isClientSide) {
             getStacks().forEach((posItem) -> {
-                Vector3d pos = posItem.pos.add(this.getPositionVec().add(0, this.getHeight() / 2, 0));
-                ItemEntity entity = new ItemEntity(world, pos.x, pos.y, pos.z, posItem.itemStack);
-                world.addEntity(entity);
+                Vector3d pos = posItem.pos.add(this.position().add(0, this.getBbHeight() / 2, 0));
+                ItemEntity entity = new ItemEntity(level, pos.x, pos.y, pos.z, posItem.itemStack);
+                level.addFreshEntity(entity);
             });
         }
-        playSound(SoundEvents.BLOCK_BEACON_AMBIENT, 0.5f, 2.0f);
+        playSound(SoundEvents.BEACON_AMBIENT, 0.5f, 2.0f);
         getInnerManaData().spellContext().clear();
         coolDown = 40;
         getStacks().clear();
@@ -346,15 +346,15 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         if(!dead) {
             dead = true;
             ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_CORE.get(), 1);
-            ItemEntity entity = new ItemEntity(world, this.getPosX(), this.getPosY() + 0.5f, this.getPosZ(), stack);
-            if(!this.world.isRemote)
-                world.addEntity(entity);
+            ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + 0.5f, this.getZ(), stack);
+            if(!this.level.isClientSide)
+                level.addFreshEntity(entity);
         }
         super.remove();
     }
 
     private Vector3d relativeVec(ItemEntity entity) {
-        return new Vector3d(entity.getPosX() - this.getPosX(), (entity.getPosY()) - (this.getPosY() + this.getHeight() / 2), entity.getPosZ() - this.getPosZ());
+        return new Vector3d(entity.getX() - this.getX(), (entity.getY()) - (this.getY() + this.getBbHeight() / 2), entity.getZ() - this.getZ());
     }
 
     @Override
@@ -363,7 +363,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -378,7 +378,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
 
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox(), (entity -> this.getPositionVec().squareDistanceTo(entity.getPositionVec()) <= 2.25 && (predicate == null || predicate.test(entity))));
+        return this.level.getEntities(this, this.getBoundingBox(), (entity -> this.position().distanceToSqr(entity.position()) <= 2.25 && (predicate == null || predicate.test(entity))));
     }
 
     public static class InnerManaData implements ISpellContext, IMaterialLimit {
@@ -424,7 +424,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         public void tick() {
             this.motion = this.motion.scale(0.995);
 
-            if(this.motion.lengthSquared() < 0.01) {
+            if(this.motion.lengthSqr() < 0.01) {
                 double motionX = 0.1 - rand.nextDouble() * 0.2;
                 double motionY = 0.1 - rand.nextDouble() * 0.2;
                 double motionZ = 0.1 - rand.nextDouble() * 0.2;
@@ -432,9 +432,9 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             }
             this.prePos = pos;
             this.pos = this.pos.add(this.motion);
-            if(this.pos.lengthSquared() > 2.25)
+            if(this.pos.lengthSqr() > 2.25)
                 this.pos = this.pos.normalize().scale(1.5);
-            if(this.pos.lengthSquared() < 1)
+            if(this.pos.lengthSqr() < 1)
                 this.pos = this.pos.normalize().scale(1);
             age++;
         }
@@ -447,7 +447,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             CompoundNBT posItem = new CompoundNBT();
             NBTTagHelper.putVectorDouble(posItem, "POS", pos);
             NBTTagHelper.putVectorDouble(posItem, "MOTION", motion);
-            posItem.put("ITEM", itemStack.write(new CompoundNBT()));
+            posItem.put("ITEM", itemStack.save(new CompoundNBT()));
             posItem.putInt("AGE", age);
             posItem.putFloat("HOVER", hoverStart);
             tag.put("PosItem", posItem);
@@ -463,7 +463,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 this.prePos = pos;
             }
             if(tag.contains("ITEM"))
-                this.itemStack = ItemStack.read(tag.getCompound("ITEM"));
+                this.itemStack = ItemStack.of(tag.getCompound("ITEM"));
             if(tag.contains("AGE"))
                 this.age = tag.getInt("AGE");
             if(tag.contains("HOVER"))

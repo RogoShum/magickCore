@@ -53,7 +53,7 @@ public class BlockOnlyCondition extends BlockCondition {
     protected void deserialize(CompoundNBT tag) {
         if(tag.contains("blocks")) {
             CompoundNBT blocks = tag.getCompound("blocks");
-            blocks.keySet().forEach(registryName -> {
+            blocks.getAllKeys().forEach(registryName -> {
                 Block forgeBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(registryName));
                 if(forgeBlock != null && !(forgeBlock instanceof AirBlock))
                     this.blocks.add(forgeBlock);
@@ -67,7 +67,7 @@ public class BlockOnlyCondition extends BlockCondition {
             return "";
         StringBuilder s = new StringBuilder();
         for (Block block : blocks) {
-            s.append("§9").append(new TranslationTextComponent(block.getTranslationKey()).getString()).append("\n");
+            s.append("§9").append(new TranslationTextComponent(block.getDescriptionId()).getString()).append("\n");
         }
         return s.toString();
     }

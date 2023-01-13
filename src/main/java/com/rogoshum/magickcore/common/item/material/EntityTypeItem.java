@@ -79,9 +79,9 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         if(data.spellContext().containChild(LibContext.SPAWN)) {
             EntityType<?> type = data.spellContext().<SpawnContext>getChild(LibContext.SPAWN).entityType;
@@ -99,7 +99,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
         ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.SPAWN_ENTITY));
         if (group == ModGroups.ENTITY_TYPE_GROUP) {
@@ -109,7 +109,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
             ForgeRegistries.ENTITIES.getEntries().forEach(type -> {
                 if(!ERROR_TYPE.contains(type.getValue())) {
                     try {
-                        Entity entity = type.getValue().create(RenderHelper.getPlayer().world);
+                        Entity entity = type.getValue().create(RenderHelper.getPlayer().level);
                         if(entity instanceof LivingEntity)
                             livings.add((EntityType<? extends LivingEntity>) type.getValue());
                         else if(entity instanceof IManaEntity)
@@ -148,10 +148,10 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
-        if(playerIn.world.isRemote) return false;
+        if(playerIn.level.isClientSide) return false;
         if(playerIn instanceof PlayerEntity && !((PlayerEntity) playerIn).isCreative()) return false;
         SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
-        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.world, item).caster(playerIn).tick(200).force(10.0f).range(10f).addChild(new TraceContext()));
+        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.level, item).caster(playerIn).tick(200).force(10.0f).range(10f).addChild(new TraceContext()));
         return false;
     }
 

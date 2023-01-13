@@ -21,14 +21,14 @@ import net.minecraft.world.World;
 
 public class LaserStaffItem extends ManaItem {
     public LaserStaffItem() {
-        super(properties().maxStackSize(1));
+        super(properties().stacksTo(1));
     }
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ExtraDataUtil.itemManaData(stack, data -> {
             MagickElement element = data.spellContext().element;
-            MagickContext context = MagickContext.create(playerIn.world, data.spellContext()).<MagickContext>applyType(ApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
+            MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).<MagickContext>applyType(ApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
             SpawnContext spawnContext = SpawnContext.create(ModEntities.MANA_LASER.get());
             context.addChild(spawnContext);
             context.tick(Math.max(context.tick, 100));

@@ -43,9 +43,9 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
     @Override
     public void update() {
         super.update();
-        if(Minecraft.getInstance().pointedEntity != entity) return;
+        if(Minecraft.getInstance().crosshairPickEntity != entity) return;
         color = entity.spellContext().element.color();
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         shapes.clear();
         posSet.clear();
         if(entity.getVectorSet().isEmpty()) {
@@ -59,9 +59,9 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
 
     public void addPos(Vector3d vec, Vector3d cam) {
         BlockPos pos = new BlockPos(vec);
-        BlockState state = entity.world.getBlockState(pos);
-        VoxelShape blockShape = state.getShape(entity.world, pos);
-        VoxelShape shape = VoxelShapes.fullCube();
+        BlockState state = entity.level.getBlockState(pos);
+        VoxelShape blockShape = state.getShape(entity.level, pos);
+        VoxelShape shape = VoxelShapes.block();
         if(!blockShape.isEmpty())
             shape = blockShape;
         Vector3d offsetPos = new Vector3d(pos.getX() - cam.x, pos.getY() - cam.y, pos.getZ() - cam.z);
@@ -71,16 +71,16 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
 
     @Override
     public boolean forceRender() {
-        return Minecraft.getInstance().pointedEntity == entity && entity.isFocus();
+        return Minecraft.getInstance().crosshairPickEntity == entity && entity.isFocus();
     }
 
     public void renderLaser(RenderParams params) {
         baseOffset(params.matrixStack);
         float scale = 0.25f;
-        Vector3d direction = Vector3d.copy(entity.getDirection().getOpposite().getDirectionVec());
+        Vector3d direction = Vector3d.atLowerCornerOf(entity.getDirection().getOpposite().getNormal());
         Vector2f rota = EasyRenderer.getRotationFromVector(direction);
-        params.matrixStack.rotate(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.rotate(Vector3f.ZP.rotationDegrees(rota.y));
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.translate(0, 0.4, 0);
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderLaserBottom(
@@ -101,7 +101,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
-        if(Minecraft.getInstance().pointedEntity != entity || !entity.isFocus() || posSet.isEmpty() || shapes.isEmpty())
+        if(Minecraft.getInstance().crosshairPickEntity != entity || !entity.isFocus() || posSet.isEmpty() || shapes.isEmpty())
             return null;
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(BLOCK_TYPE), this::renderBlock);
