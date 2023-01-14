@@ -1,0 +1,12 @@
+{
+  "name": "Change of World",
+  "icon": "minecraft:grass",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+	  "title": "Change of World",
+      "text": "At the moment when the first player enters this world, some possibly different energy is brought in and attached to the life in this world.$(br2)We may call these energies supracausal power, or mana.$(br)Mana has a different elemental, and the living can lead these mana to generate magic."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "§6Solar §7Buff",
+  "advancement": "magickcore:learn/trigger_element_func_solar_buff",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Solar of the Buff can give the caster the effect of continuously recovery health. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

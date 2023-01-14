@@ -1,0 +1,12 @@
+{
+  "name": "§8Taken §7Attack",
+  "advancement": "magickcore:learn/trigger_element_func_taken_attack",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Taken of the Attack can attack targets with taken magic damage, more effective against bewitched entities. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

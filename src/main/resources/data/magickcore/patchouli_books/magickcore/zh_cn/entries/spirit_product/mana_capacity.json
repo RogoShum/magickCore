@@ -1,0 +1,21 @@
+{
+  "name": "魔力容器",
+  "advancement": "magickcore:learn/wand",
+  "icon": "magickcore:magick_container",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "魔力容器可以放置到地面上，与容器交互可以连接或断开容器，普通模式下与其交互可以存入魔力，用魔棒右键容器可以改变其模式，让容器为连接者提供魔力流，以此补充魔力。"
+    },
+    {
+      "type": "text",
+      "text": "魔力容器还可以为沉浸在自身的灵魂制品掉落物补充魔力，容器的模式改变不会影响对道具的魔力补充。如果掉落物是食物，魔力容器会吸收食物储存为魔力。$(br2)魔力容器会根据魔力大小来释放红石信号，魔力越多红石信号越弱，越少红石信号越强。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:mana_capacity",
+      "text": "在魔力工作台处合成。"
+    }
+  ]
+}

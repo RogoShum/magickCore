@@ -1,0 +1,13 @@
+{
+  "name": "Inferior Gold",
+  "advancement": "magickcore:learn/reverse",
+  "icon": "magickcore:reverse",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:reverse",
+	  "text": "Converted at a magick workbench using Gold Nugget. Inferior gold cannot be used to make anything related to gold nugget, but they can convert the direction of the spell to the opposite direction."
+    }
+  ]
+}

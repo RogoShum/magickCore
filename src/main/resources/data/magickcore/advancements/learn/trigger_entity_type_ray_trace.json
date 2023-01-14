@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "entity_type_ray_trace"
+      }
+    }
+  }
+}

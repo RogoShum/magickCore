@@ -1,0 +1,12 @@
+{
+  "name": "§6Solar §7Hit Entity",
+  "advancement": "magickcore:learn/trigger_element_func_solar_hit_entity",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Solar of the Hit can ignite target, mana duration makes it more useful. Hit can also smelting items, the attribute of having mana gain is force."
+    }
+  ]
+}

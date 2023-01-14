@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:stick"
+  },
+  "result":{
+    "item":"magickcore:spirit_wood_stick",
+    "count":1
+  }
+}

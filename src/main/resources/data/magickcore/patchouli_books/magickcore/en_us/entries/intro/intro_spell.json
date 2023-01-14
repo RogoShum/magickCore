@@ -1,0 +1,31 @@
+{
+  "name": "Spell",
+  "advancement": "magickcore:learn/root",
+  "icon": "magickcore:magick_context",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The essence of the spell is to use the item to lead the mana in the body, different elements will also show different function. The key to lead one's mana is the Spirit Crystal."
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_crystal",
+      "text": "Spirit Crystal are dropped from Spirit Ore."
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_ore"
+    },
+    {
+      "type": "text",
+      "text": "Spirit crystals can be placed in a special way, to spawn a Magick Workbench, Magick Workbench is the start for us to learn magick."
+    },
+    {
+      "type": "image",
+      "title": "How to place",
+      "images": ["magickcore:textures/book_image/magick_crafting.png"],
+      "border": "true"
+    }
+  ]
+}

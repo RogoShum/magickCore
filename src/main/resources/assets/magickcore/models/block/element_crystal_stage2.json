@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "magickcore:block/element_crystal_stage2"
+  }
+}

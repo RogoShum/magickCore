@@ -1,0 +1,13 @@
+{
+  "name": "魔力恢复药水",
+  "advancement": "magickcore:learn/mana_nautilus",
+  "icon": "minecraft:potion{Potion:\"magickcore:mana_regen\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:mana_regen\"}",
+	  "text": "由含有“nautilus(鹦鹉螺)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：提升自己的元素能量回复速度。"
+    }
+  ]
+}

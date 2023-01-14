@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:diamond"
+  },
+  "result":{
+    "item":"magickcore:completely_self",
+    "count":1
+  }
+}

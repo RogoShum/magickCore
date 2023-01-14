@@ -1,0 +1,13 @@
+{
+  "name": "Inferior Flint",
+  "advancement": "magickcore:learn/form_separator",
+  "icon": "magickcore:form_separator",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:form_separator",
+	  "text": "Converted at a magick workbench using Flint. Inferior flint cannot be used to make anything related to Flint. If a spell form carries a inferior flint, it will retain subsequent functional apply types until the next spell form, and then it will separate the next spell form from itself and release it synchronously."
+    }
+  ]
+}

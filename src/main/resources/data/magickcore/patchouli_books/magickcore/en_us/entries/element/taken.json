@@ -1,0 +1,14 @@
+{
+  "name": "Taken",
+  "advancement": "magickcore:learn/taken",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:taken",
+      "text": "The taken element is a mana element that is biased towards dark, is an element with deprivation and assimilation. $(br2)The life of a Taken element will receive soul protection, reducing damage from other creatures."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "§8Taken §7Agglomerate",
+  "advancement": "magickcore:learn/trigger_element_func_taken_agglomerate",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Taken of the Diffusion can force the caster to be the master of tameable creatures."
+    }
+  ]
+}

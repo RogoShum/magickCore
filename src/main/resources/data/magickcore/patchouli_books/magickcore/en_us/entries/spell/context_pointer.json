@@ -1,0 +1,53 @@
+{
+  "name": "Context Pointer I Context Pointer",
+  "advancement": "magickcore:learn/magick_core",
+  "icon": "magickcore:context_pointer",
+  "category": "spell",
+  "pages": [
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:context_pointer",
+      "text": "A one-way street that lead mana."
+    },
+    {
+      "type": "text",
+      "text": "Generally, a Magick Context can only complete one casting, but the context pointer allows us to achieve multiple castings. The pointer can be placed on the ground, just drop the Magick Context on the pointer, and the Magick Context will be arranged in order."
+    },
+    {
+      "type": "image",
+      "images": ["magickcore:textures/book_image/context_pointer.png"],
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "text": "As long as we right-click the context pointer with the wand, the Magick Context inside will be combined into one, and the Magick Contexts inside will be executed in order when the magic is released. If the Type carried by the Magick Context is Spell Form, then the subsequent spell will be executed after the form triggers the target.$(br2)Spell form plays a crucial role in compound spells: it is used to indicate targets, locations, directions, and other key information, which is helpful for the transmission of subsequent spells."
+    },
+    {
+      "type": "spotlight",
+      "title": "Magick Context",
+      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"solar\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"solar\",FORCE:1.0f,POST:{ELEMENT:\"arc\",FORCE:1.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
+      "text": "The compound spells for solar attack, solar de-buff, and arc de-buff are in a parallel state. If there is only one compound spell in the spell pointer, then using a wand to right-click the pointer can decompose the compound spell."
+    },
+    {
+      "type": "text",
+      "text": "Typically, the spirit product used for casting will have default targets for casting. For example, spirit wood staff and spirit crystal staff usually target the caster themselves, while spirit swords target the entity that was hit.$(br2)If a compound spell carries three types of casting in sequence: solar attack, solar de-buff, arc de-buff, then for spirit wood staff and spirit crystal staff, the target is the caster themselves, while for spirit swords, only the hit entity will be granted de-buff effects."
+    },
+    {
+      "type": "text",
+      "text": "However, the spirit bow itself carries the mana arrow spell form. If the compound spell described above is installed, then the target of the spell will be the entity or block hit by the mana arrow.$(br2)The entire process of the spell's operation is as follows: the caster casts and releases a mana arrow, which carries the compound spell installed on it. This compound spell becomes the post spell, and when the arrow touches the target, it releases the post spell, completing the entire process of casting."
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"solar\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"solar\",FORCE:1.0f,POST:{ELEMENT:\"arc\",FORCE:1.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
+      "text": "Spirit bow carrying the compound spell of solar attack, solar de-buff, arc de-buff."
+    },
+    {
+      "type": "text",
+      "text": "This means that spell form is a special type of apply because it can carry post spells and transmit targets upon triggering, thereby completing the effect of subsequent triggers.$(br2)If the spirit bow is not equipped with a magick context but is used as a normal bow, then the mana arrow will not carry any post spells and will disappear upon touching an entity or block.$(br2)The flow of mana only completes the process of generating the mana arrow to the disappearance of the mana arrow, and it is lost without guidance."
+    },
+    {
+      "type": "text",
+      "text": "So far, not many people have been able to make their own spell form, only wandering mages sell some spell forms, which can be purchased with spirit crystals. The spell form of mana arrow can also be bought from wandering mages. If we use mana arrow as the starting point, we can directly use the wand to generate mana arrow. Wait a minute, what would happen if we use mana arrow as the starting point on a spirit bow?"
+    }
+  ]
+}

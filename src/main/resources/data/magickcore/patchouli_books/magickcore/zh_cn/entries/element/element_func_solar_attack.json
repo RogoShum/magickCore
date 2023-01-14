@@ -1,0 +1,12 @@
+{
+  "name": "§6烈焰§7攻击",
+  "advancement": "magickcore:learn/trigger_element_func_solar_attack",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "攻击状态的烈焰能量可以对目标造成烈焰魔法伤害，目标在着火时伤害更高。收益魔力能量为强度。"
+    }
+  ]
+}

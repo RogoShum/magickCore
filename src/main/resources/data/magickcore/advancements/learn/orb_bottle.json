@@ -1,0 +1,11 @@
+{
+  "parent": "magickcore:learn/element_crystal",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "orb_bottle"
+		}
+	}
+  }
+}

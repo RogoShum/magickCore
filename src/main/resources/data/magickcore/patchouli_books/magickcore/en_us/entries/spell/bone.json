@@ -1,0 +1,13 @@
+{
+  "name": "Mana Bone",
+  "advancement": "magickcore:learn/mana_bone",
+  "icon": "magickcore:mana_bone",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_bone",
+	  "text": "Converted using bones at a magick workbench."
+    }
+  ]
+}

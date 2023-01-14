@@ -1,0 +1,12 @@
+{
+  "name": "§bArc §7Buff",
+  "advancement": "magickcore:learn/trigger_element_func_arc_buff",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Arc of the Buff can give the target a speed effect. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

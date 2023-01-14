@@ -1,0 +1,14 @@
+{
+  "name": "夺魂元素",
+  "advancement": "magickcore:learn/taken",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:taken",
+      "text": "夺魂元素是一种偏向暗影的魔力元素，是一种具有剥夺和同化性质的元素。$(br2)夺魂元素的生命会获得夺魂庇护，减免生物对自己造成的伤害。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "劣质金粒",
+  "advancement": "magickcore:learn/reverse",
+  "icon": "magickcore:reverse",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:reverse",
+	  "text": "使用金粒在魔法工作台转换而成。劣质金粒不能用来制作任何跟金粒相关的东西，但是它可以将施法的方向转化为相反的方向。"
+    }
+  ]
+}

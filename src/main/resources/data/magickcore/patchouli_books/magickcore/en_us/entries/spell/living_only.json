@@ -1,0 +1,13 @@
+{
+  "name": "Miniature Living",
+  "advancement": "magickcore:learn/condition_living",
+  "icon": "magickcore:condition_living",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:condition_living",
+	  "text": "Converted at a magick workbench using a feather. Miniature living makes spells only apply to living entity."
+    }
+  ]
+}

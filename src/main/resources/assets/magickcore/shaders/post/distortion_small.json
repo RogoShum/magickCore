@@ -1,0 +1,28 @@
+{
+    "targets": [
+        "magickcore:distortion_swap",
+        "magickcore:distortion_final"
+    ],
+    "passes": [{
+        "name": "magickcore:copy",
+        "intarget": "minecraft:main",
+        "outtarget": "magickcore:distortion_swap",
+        "auxtargets": [
+            {
+                "name": "CopySampler",
+                "id": "magickcore:distortion_final"
+            }
+        ]
+    },{
+        "name": "magickcore:distortion",
+        "intarget": "magickcore:distortion_swap",
+        "outtarget": "magickcore:distortion_final",
+        "uniforms": [{
+            "name": "BlurScale",
+            "values": [7.0]
+        }, {
+            "name": "Radius",
+            "values": [1.0]
+        }]
+    }]
+}

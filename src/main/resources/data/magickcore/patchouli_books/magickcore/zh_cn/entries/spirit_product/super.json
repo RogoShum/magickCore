@@ -1,0 +1,17 @@
+{
+  "name": "超能发生器",
+  "advancement": "magickcore:learn/ender_dragon_material",
+  "icon": "magickcore:super_spawner",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "超能发生器可以引出当前魔力属性的超级力量，蓄力后会直接释放，需要消耗当前所有魔力。无法安装完备法术。并且超能法术形态是元素属性的最终形态，无法携带后续法术。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:super_spawner",
+      "text": "在魔力工作台处合成。"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+	"type":"minecraft:crafting_shaped",
+	"group":"magickcore",
+	"pattern":[
+		"111",
+		"454",
+		"111"
+	],
+	"key":{
+		"1":{
+			"item":"magickcore:mana_flesh"
+		},
+		"4":{
+			"item":"magickcore:spirit_crystal"
+		},
+		"5":{
+			"item":"minecraft:ender_pearl"
+		}
+	},
+	"result":{
+		"item":"magickcore:artificial_life",
+		"count":1
+	}
+}

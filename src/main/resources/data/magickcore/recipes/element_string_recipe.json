@@ -1,0 +1,19 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "WW",
+    "WW"
+  ],
+  "key":{
+    "W":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_string",
+      "nbt": "{ELEMENT:\"\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:element_wool",
+    "nbt": "{ELEMENT:\"\"}"
+  }
+}

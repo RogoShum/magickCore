@@ -1,0 +1,12 @@
+{
+  "name": "§6Solar §7Attack",
+  "advancement": "magickcore:learn/trigger_element_func_solar_attack",
+  "icon": "magickcore:solar",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Solar of the Attack can cause solar magic damage to the target, and the damage is higher when the target is on fire. The attribute of having mana gain is force."
+    }
+  ]
+}

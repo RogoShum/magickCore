@@ -1,0 +1,13 @@
+{
+  "name": "Inferior Diamond",
+  "advancement": "magickcore:learn/self",
+  "icon": "magickcore:completely_self",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:completely_self",
+	  "text": "Converted at a magick workbench using Diamond. Inferior diamond cannot be used to make anything related to Diamond. However, it can convert the target of the spell to the caster themselves. Note that this only converts the target of the spell and does not change any other attributes of the spell."
+    }
+  ]
+}

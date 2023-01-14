@@ -1,0 +1,14 @@
+{
+  "name": "冰影元素",
+  "advancement": "magickcore:learn/stasis",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:stasis",
+      "text": "冰影元素是一种偏向暗影的魔力元素，能够让事物趋近停滞。$(br2)冰影元素的生命会获得冰影庇护，减免来自于非生命、受冻生命的伤害。"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:redstone"
+  },
+  "result":{
+    "item":"magickcore:mana_energy",
+    "nbt": "{item_extra_data:{TICK:10}}",
+    "count":1
+  }
+}

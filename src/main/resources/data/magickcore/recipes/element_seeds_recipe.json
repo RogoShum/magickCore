@@ -1,0 +1,22 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SO"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "name":"seed"
+    },"O":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:orb_bottle",
+      "nbt": "{ELEMENT:\"\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:element_crystal_seeds",
+    "nbt": "{ELEMENT:\"\"}",
+    "count":1
+  }
+}

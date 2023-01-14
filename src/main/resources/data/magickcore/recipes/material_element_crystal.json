@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"magickcore:spirit_crystal"
+  },
+  "result":{
+    "item":"magickcore:element_crystal",
+    "nbt": "{ELEMENT:\"origin\"}",
+    "count":1
+  }
+}

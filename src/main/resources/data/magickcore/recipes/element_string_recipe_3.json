@@ -1,0 +1,21 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SO"
+  ],
+  "key":{
+    "S":{
+      "tag":"forge:string"
+    },"O":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_crystal",
+      "nbt": "{ELEMENT:\"\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:element_string",
+    "nbt": "{ELEMENT:\"\"}",
+    "count":1
+  }
+}

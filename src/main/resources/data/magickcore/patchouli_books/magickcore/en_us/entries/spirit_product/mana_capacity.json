@@ -1,0 +1,21 @@
+{
+  "name": "Mana Capacity",
+  "advancement": "magickcore:learn/wand",
+  "icon": "magickcore:magick_container",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The mana capacity can be placed on the ground, and the capacity can be connected or disconnected by interacting with it. In the normal mode, the interaction with it can store the mana. Right-click the container with the wand to change its mode, and let the container provide the mana flow for the connecter to replenish the mana."
+    },
+    {
+      "type": "text",
+      "text": "The mana capacity can also replenish the mana of the spirit product drops immersed in itself, and the change of the mode of the capacity will not affect the mana replenishment of the spirit products."
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:mana_capacity",
+      "text": "Crafted at the Magick Workbench。"
+    }
+  ]
+}

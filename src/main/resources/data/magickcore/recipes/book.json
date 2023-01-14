@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:book"
+  },
+  "result":{
+    "item":"patchouli:guide_book",
+    "nbt": "{\"patchouli:book\":\"magickcore:magickcore\"}",
+    "count":1
+  }
+}

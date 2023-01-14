@@ -1,0 +1,14 @@
+{
+  "name": "Stasis",
+  "advancement": "magickcore:learn/stasis",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "spotlight",
+	  "item": "magickcore:stasis",
+      "text": "The stasis element is a mana element that is biased towards dark, can bring something to a standstill. $(br2)Stasis element life will receive ice shadow shelter, reducing damage from non-life and chilly life."
+    }
+  ]
+}

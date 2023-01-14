@@ -1,0 +1,11 @@
+{
+  "parent": "magickcore:learn/orb_bottle",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "taken"
+		}
+	}
+  }
+}

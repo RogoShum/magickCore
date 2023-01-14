@@ -1,0 +1,12 @@
+{
+  "name": "§5Void §7Buff",
+  "advancement": "magickcore:learn/trigger_element_func_void_buff",
+  "icon": "magickcore:void",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Void of the Buff can increase the attack damage of the caster. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

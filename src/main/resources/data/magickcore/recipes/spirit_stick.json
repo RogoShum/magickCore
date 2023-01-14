@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S",
+    "S "
+  ],
+  "key": {
+    "S": {
+      "item": "magickcore:spirit_wood_stick"
+    }
+  },
+  "result": {
+    "item": "magickcore:wand",
+    "count": 1
+  }
+}
