@@ -4,26 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.common.crafting.StackList;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.item.crafting.Ingredient;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class NBTIngredient extends Ingredient {
+public class NBTIngredient {
+    /*
+    extends Ingredient
     private final HashSet<String> keySet;
     private final HashMap<String, INBT> keyMap;
     private final CompoundNBT tag;
@@ -239,4 +229,6 @@ public class NBTIngredient extends Ingredient {
             }
         }
     }
+
+     */
 }

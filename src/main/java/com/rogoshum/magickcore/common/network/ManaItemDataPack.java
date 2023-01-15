@@ -1,25 +1,23 @@
 package com.rogoshum.magickcore.common.network;
 
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Supplier;
-
-public class ManaItemDataPack extends EntityPack{
-    private final CompoundNBT nbt;
+public class ManaItemDataPack extends EntityPack<ClientNetworkContext<?>>{
+    private final CompoundTag nbt;
     private final int slot;
 
-    public ManaItemDataPack(PacketBuffer buffer) {
+    public ManaItemDataPack(FriendlyByteBuf buffer) {
         super(buffer);
         nbt = buffer.readNbt();
         slot = buffer.readInt();
@@ -27,29 +25,27 @@ public class ManaItemDataPack extends EntityPack{
 
     public ManaItemDataPack(int id, int slot, SpellContext spellContext) {
         super(id);
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         spellContext.serialize(nbt);
         this.nbt = nbt;
         this.slot = slot;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeNbt(nbt);
         buf.writeInt(this.slot);
     }
 
-    @Override
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-
-        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
+    public static void handler(ClientNetworkContext<ManaItemDataPack> context) {
+        ManaItemDataPack pack = context.packet();
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
         if(entity == null || entity.removed)
             return;
         ItemStack stack = ItemStack.EMPTY;
 
-        if(entity instanceof PlayerEntity)
-            stack = ((PlayerEntity)entity).inventory.getItem(this.slot);
+        if(entity instanceof Player)
+            stack = ((Player)entity).inventory.getItem(pack.slot);
 
         if(entity instanceof ItemEntity)
             stack = ((ItemEntity)entity).getItem();
@@ -58,8 +54,6 @@ public class ManaItemDataPack extends EntityPack{
             return;
 
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        if(data != null) {
-            data.spellContext().deserialize(nbt);
-        }
+        data.spellContext().deserialize(pack.nbt);
     }
 }

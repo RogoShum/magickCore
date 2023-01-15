@@ -9,22 +9,15 @@ import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -69,7 +62,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
     }
 
     @Override
-    public boolean matches(MatrixInventory inv, World worldIn) {
+    public boolean matches(MatrixInventory inv, Level worldIn) {
         Optional<PlaceableItemEntity>[][][] structure = inv.getMatrix();
         if(inv.getY() < 1 || inv.getX() < 1 || inv.getZ() < 1) return false;
         if(inv.getY()!= ingredientList.length) return false;
@@ -132,12 +125,12 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return SPIRIT_CRAFTING;
     }
 
@@ -159,13 +152,13 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
         return nonnulllist;
     }
 
-    public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<SpiritCraftingRecipe> {
+    public static class Serializer implements RecipeSerializer<SpiritCraftingRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "spirit_crafting");
-        public static final IRecipeSerializer<?> INSTANCE = new SpiritCraftingRecipe.Serializer().setRegistryName(NAME);
+        public static final RecipeSerializer<?> INSTANCE = new SpiritCraftingRecipe.Serializer();
         public SpiritCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String s = JSONUtils.getAsString(json, "group", "");
-            Map<String, Ingredient> map = NBTRecipe.deserializeKey(JSONUtils.getAsJsonObject(json, "key"));
-            JsonArray patternArray = JSONUtils.getAsJsonArray(json, "pattern");
+            String s = GsonHelper.getAsString(json, "group", "");
+            Map<String, Ingredient> map = NBTRecipe.deserializeKey(GsonHelper.getAsJsonObject(json, "key"));
+            JsonArray patternArray = GsonHelper.getAsJsonArray(json, "pattern");
             List<NonNullList<Ingredient>> ingredientList = new ArrayList<>();
             int x = 0;
             int z = 0;
@@ -185,7 +178,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
                 ingredientList.add(nonnulllist);
             }
 
-            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getAsJsonObject(json, "result"));
+            ItemStack itemstack = NBTRecipe.deserializeItem(GsonHelper.getAsJsonObject(json, "result"));
             NonNullList<Ingredient>[] nonNullLists = new NonNullList[ingredientList.size()];
             for (int i = 0; i < ingredientList.size(); ++i) {
                 nonNullLists[i] = ingredientList.get(i);
@@ -193,7 +186,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
             return new SpiritCraftingRecipe(recipeId, s, x, z, nonNullLists, itemstack);
         }
 
-        public SpiritCraftingRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public SpiritCraftingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int y = buffer.readVarInt();
             int x = buffer.readVarInt();
             int z = buffer.readVarInt();
@@ -211,7 +204,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
             return new SpiritCraftingRecipe(recipeId, s, x, z, recipeList, buffer.readItem());
         }
 
-        public void toNetwork(PacketBuffer buffer, SpiritCraftingRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, SpiritCraftingRecipe recipe) {
             buffer.writeVarInt(recipe.recipeY);
             buffer.writeVarInt(recipe.recipeX);
             buffer.writeVarInt(recipe.recipeZ);

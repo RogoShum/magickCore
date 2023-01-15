@@ -1,18 +1,16 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public class EntityTypeCondition extends EntityCondition{
+public class EntityTypeCondition extends EntityCondition {
     private EntityType<? extends Entity> entityType;
 
     public void setEntityType(EntityType<? extends Entity> entityType) {
@@ -35,13 +33,13 @@ public class EntityTypeCondition extends EntityCondition{
     }
 
     @Override
-    protected void serialize(CompoundNBT tag) {
+    protected void serialize(CompoundTag tag) {
         if(entityType != null)
             tag.putString("ENTITY_TYPE", EntityType.getKey(entityType).toString());
     }
 
     @Override
-    protected void deserialize(CompoundNBT tag) {
+    protected void deserialize(CompoundTag tag) {
         Optional<EntityType<?>> entityType = EntityType.byString(tag.getString("ENTITY_TYPE"));
         entityType.ifPresent(type -> this.entityType = type);
     }
@@ -50,7 +48,7 @@ public class EntityTypeCondition extends EntityCondition{
     public String toString() {
         if(entityType == null)
             return "";
-        return new TranslationTextComponent(entityType.getDescriptionId()).getString();
+        return new TranslatableComponent(entityType.getDescriptionId()).getString();
     }
 
     @Override

@@ -1,50 +1,32 @@
 package com.rogoshum.magickcore.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.rogoshum.magickcore.MagickCore;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.SliderPercentageOption;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
 import java.util.Map;
 
 public class SpellSwapBoxGUI extends Screen {
     ItemStack heldItem = ItemStack.EMPTY;
     ItemStack hoverItem = ItemStack.EMPTY;
 
-    public SpellSwapBoxGUI(ITextComponent titleIn) {
+    public SpellSwapBoxGUI(Component titleIn) {
         super(titleIn);
     }
 
     @Override
     protected void init() {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(player == null) {
             onClose();
             return;
@@ -91,7 +73,7 @@ public class SpellSwapBoxGUI extends Screen {
                 y = (int) (this.height * 0.10);
             }
             int finalC = i;
-            this.addButton(new ItemStackButton(x, y, 21, 21, new StringTextComponent(""), (button) -> {
+            this.addButton(new ItemStackButton(x, y, 21, 21, new TextComponent(""), (button) -> {
                 Networking.INSTANCE.send(
                         PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getId(), finalC));
                 onClose();
@@ -103,7 +85,7 @@ public class SpellSwapBoxGUI extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.pushMatrix();
@@ -127,7 +109,7 @@ public class SpellSwapBoxGUI extends Screen {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
-    protected void renderHoveredTooltip(MatrixStack matrixStack, int x, int y) {
+    protected void renderHoveredTooltip(PoseStack matrixStack, int x, int y) {
         if (this.minecraft.player.inventory.getCarried().isEmpty() && this.hoverItem != null && !this.hoverItem.isEmpty()) {
             this.renderTooltip(matrixStack, hoverItem, x, y);
         }

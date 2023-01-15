@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public enum ParticleType {
     PARTICLE("particle"),

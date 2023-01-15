@@ -17,20 +17,21 @@ import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.EnergyUtil;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class ArcAbility{
+public class ArcAbility {
     public static boolean hitEntity(MagickContext context) {
         if(context.doBlock)
             return charge(context);
@@ -46,7 +47,7 @@ public class ArcAbility{
             context.force *= 1.25f;
 
         boolean flag;
-        if(context.caster != null && context.projectile instanceof ProjectileEntity)
+        if(context.caster != null && context.projectile instanceof Projectile)
             flag = context.victim.hurt(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.caster), context.force);
@@ -56,7 +57,7 @@ public class ArcAbility{
             flag = context.victim.hurt(ModDamages.getArcDamage(), context.force);
 
         //if(flag && !victim.world.isRemote)
-        //victim.thunderHit((ServerWorld) victim.world, null);
+        //victim.thunderHit((ServerLevel) victim.world, null);
 
         if(flag) {
             List<Entity> list = context.victim.level.getEntities(context.victim, context.victim.getBoundingBox().inflate(context.range));
@@ -69,7 +70,7 @@ public class ArcAbility{
 
                         starEntity.setOwner(context.caster);
                         starEntity.setPos(context.victim.getX(), context.victim.getY() + context.victim.getBbHeight() / 2, context.victim.getZ());
-                        Vector3d motion = entity1.position().add(0, entity1.getBbHeight() / 2, 0).subtract(starEntity.position()).normalize();
+                        Vec3 motion = entity1.position().add(0, entity1.getBbHeight() / 2, 0).subtract(starEntity.position()).normalize();
                         starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
                         starEntity.spellContext().element(MagickRegistry.getElement(LibElements.ARC));
                         starEntity.spellContext().force(context.force * 0.5f);
@@ -86,7 +87,7 @@ public class ArcAbility{
         return flag;
     }
 
-    public static void makeParticle(World world, Vector3d pos, Vector3d pos1, String type, float scaleP) {
+    public static void makeParticle(Level world, Vec3 pos, Vec3 pos1, String type, float scaleP) {
         if(!world.isClientSide) return;
         ElementRenderer renderer = MagickCore.proxy.getElementRender(type);
         double dis = pos.subtract(pos1).length();
@@ -97,7 +98,7 @@ public class ArcAbility{
             double ty = pos.y() + (pos1.y() - pos.y()) * trailFactor + world.random.nextGaussian() * 0.5;
             double tz = pos.z() + (pos1.z() - pos.z()) * trailFactor + world.random.nextGaussian() * 0.5;
             LitParticle par = new LitParticle(world, renderer.getParticleTexture()
-                    , new Vector3d(tx, ty, tz), scaleP, scaleP, 1.0f, 15, renderer);
+                    , new Vec3(tx, ty, tz), scaleP, scaleP, 1.0f, 15, renderer);
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -110,7 +111,7 @@ public class ArcAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
             if(context.world.getBlockEntity(pos) != null) {
-                TileEntity tile = context.world.getBlockEntity(pos);
+                BlockEntity tile = context.world.getBlockEntity(pos);
                 boolean extract = false;
 
                 if(context.containChild(LibContext.APPLY_TYPE)) {
@@ -137,7 +138,7 @@ public class ArcAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
             if(context.world.getBlockEntity(pos) != null) {
-                TileEntity tile = context.world.getBlockEntity(pos);
+                BlockEntity tile = context.world.getBlockEntity(pos);
                 int mana = (int) MagickReleaseHelper.singleContextMana(context) * 5;
                 EnergyUtil.receiveEnergy(tile, mana);
                 return true;
@@ -150,8 +151,8 @@ public class ArcAbility{
         if(context.doBlock)
             return charge(context);
         if(context.force >= 1 && context.victim instanceof LivingEntity) {
-            boolean flag = ((LivingEntity)context.victim).addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, context.tick * 2, (int) (context.force - 1)));
-            if(((LivingEntity)context.victim).addEffect(new EffectInstance(Effects.DIG_SPEED, context.tick * 2, (int) (context.force - 1))))
+            boolean flag = ((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, context.tick * 2, (int) (context.force - 1)));
+            if(((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, context.tick * 2, (int) (context.force - 1))))
                 flag = true;
             return flag;
         }
@@ -180,7 +181,7 @@ public class ArcAbility{
                 PositionContext positionContext = context.getChild(LibContext.POSITION);
                 BlockPos pos = new BlockPos(positionContext.pos);
                 if(context.world.getBlockEntity(pos) != null) {
-                    TileEntity tile = context.world.getBlockEntity(pos);
+                    BlockEntity tile = context.world.getBlockEntity(pos);
                     int mana = (int) MagickReleaseHelper.singleContextMana(context) * 50;
                     int get = (int) (EnergyUtil.extractEnergy(tile, mana) * 0.03);
                     if(get > 0 && context.caster != null)
@@ -204,20 +205,20 @@ public class ArcAbility{
         if(context.doBlock)
             return charge(context);
         if(!context.world.isClientSide) {
-            Vector3d pos = Vector3d.ZERO;
+            Vec3 pos = Vec3.ZERO;
             if(context.victim != null)
                 pos = context.victim.position();
             if(context.containChild(LibContext.POSITION))
                 pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
 
             if(pos.y > 192) {
-                ((ServerWorld)context.world).setWeatherParameters(0, 6000, true, true);
+                ((ServerLevel)context.world).setWeatherParameters(0, 6000, true, true);
             }
         }
         if(context.victim == null) {
             return false;
         }
-        Vector3d motion = Vector3d.ZERO;
+        Vec3 motion = Vec3.ZERO;
         if(context.containChild(LibContext.DIRECTION)) {
             motion = context.<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if(context.projectile != null) {
@@ -228,11 +229,11 @@ public class ArcAbility{
             motion = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0).subtract(context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0)).normalize();
 
         motion = motion.scale(context.force * 0.2);
-        Vector3d originMotion = context.victim.getDeltaMovement();
+        Vec3 originMotion = context.victim.getDeltaMovement();
         context.victim.setDeltaMovement(motion.scale(0.8).add(originMotion.scale(0.2)));
         context.victim.setOnGround(true);
         if(context.victim instanceof LivingEntity) {
-            ((LivingEntity) context.victim).addEffect(new EffectInstance(Effects.SLOW_FALLING, 60));
+            ((LivingEntity) context.victim).addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60));
         }
         return true;
     }

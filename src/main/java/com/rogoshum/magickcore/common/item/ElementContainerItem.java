@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.ItemStack;
 
 public class ElementContainerItem extends BaseItem{
     public ElementContainerItem(Properties properties) {

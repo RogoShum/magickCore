@@ -8,29 +8,27 @@ import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-
-public class ManaItemContextRecipe extends SpecialRecipe {
-    private final IRecipeSerializer<?> SERIALIZER;
+public class ManaItemContextRecipe extends CustomRecipe {
+    private final RecipeSerializer<?> SERIALIZER;
     public ManaItemContextRecipe(ResourceLocation idIn) {
         super(new ResourceLocation(MagickCore.MOD_ID, idIn.getPath()));
-        SERIALIZER = new SpecialRecipeSerializer<>(res -> this);
-        SERIALIZER.setRegistryName(new ResourceLocation(MagickCore.MOD_ID, idIn.getPath()));
+        SERIALIZER = new SimpleRecipeSerializer<>(res -> this);
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         ItemStack tool = null;
         ItemStack magickContext = null;
         for(int j = 0; j < inv.getContainerSize(); ++j) {
@@ -56,9 +54,8 @@ public class ManaItemContextRecipe extends SpecialRecipe {
         return !contextCore.isDisable() && (!contextCore.haveMagickContext() && magickContext != null) || (contextCore.haveMagickContext() && magickContext == null);
     }
 
-    @Nonnull
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack tool = null;
         ItemStack magickContext = null;
         for(int j = 0; j < inv.getContainerSize(); ++j) {
@@ -107,7 +104,7 @@ public class ManaItemContextRecipe extends SpecialRecipe {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
@@ -121,7 +118,7 @@ public class ManaItemContextRecipe extends SpecialRecipe {
                         if(item.hasCustomHoverName())
                             item.setHoverName(null);
                         if(item.getTag().contains("manaItemName")) {
-                            ITextComponent itextcomponent = ITextComponent.Serializer.fromJson(item.getTag().getString("manaItemName"));
+                            Component itextcomponent = Component.Serializer.fromJson(item.getTag().getString("manaItemName"));
                             if (itextcomponent != null) {
                                 item.setHoverName(itextcomponent);
                                 item.getTag().remove("manaItemName");
@@ -143,11 +140,11 @@ public class ManaItemContextRecipe extends SpecialRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
     @Override
-    public IRecipeType<?> getType() {
-        return IRecipeType.CRAFTING;
+    public RecipeType<?> getType() {
+        return RecipeType.CRAFTING;
     }
 }

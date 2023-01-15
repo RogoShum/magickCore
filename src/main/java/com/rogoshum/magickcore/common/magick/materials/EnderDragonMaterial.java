@@ -3,8 +3,8 @@ package com.rogoshum.magickcore.common.magick.materials;
 import com.rogoshum.magickcore.common.init.ModConfig;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 public class EnderDragonMaterial extends Material {
     @Override

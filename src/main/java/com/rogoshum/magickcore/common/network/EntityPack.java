@@ -1,16 +1,12 @@
 package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.MagickCore;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.function.Supplier;
-import java.util.logging.Logger;
-
-public abstract class EntityPack {
+public abstract class EntityPack<T extends NetworkContext<?>> extends NetworkPack<T>{
     protected final int id;
 
-    public EntityPack(PacketBuffer buffer) {
+    public EntityPack(FriendlyByteBuf buffer) {
         id = buffer.readInt();
     }
 
@@ -18,14 +14,7 @@ public abstract class EntityPack {
         this.id = id;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(this.id);
     }
-
-    public void handler(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> doWork(ctx));
-        ctx.get().setPacketHandled(true);
-    }
-
-    public abstract void doWork(Supplier<NetworkEvent.Context> ctx);
 }

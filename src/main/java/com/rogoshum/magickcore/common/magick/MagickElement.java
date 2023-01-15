@@ -2,9 +2,9 @@ package com.rogoshum.magickcore.common.magick;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class MagickElement {
     private final String type;
@@ -41,7 +41,7 @@ public class MagickElement {
         return cardinality;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public ElementRenderer getRenderer() {
         return MagickCore.proxy.getElementRender(type);
     }

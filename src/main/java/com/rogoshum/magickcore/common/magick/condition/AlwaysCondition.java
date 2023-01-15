@@ -2,11 +2,11 @@ package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.Objects;
 
-public class AlwaysCondition extends Condition<Object>{
+public class AlwaysCondition extends Condition<Object> {
     public static final Condition<Object> ALWAYS = new AlwaysCondition();
 
     @Override
@@ -25,12 +25,12 @@ public class AlwaysCondition extends Condition<Object>{
     }
 
     @Override
-    protected void serialize(CompoundNBT tag) {
+    protected void serialize(CompoundTag tag) {
 
     }
 
     @Override
-    protected void deserialize(CompoundNBT tag) {
+    protected void deserialize(CompoundTag tag) {
 
     }
 

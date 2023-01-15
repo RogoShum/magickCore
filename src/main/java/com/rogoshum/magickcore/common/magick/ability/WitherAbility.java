@@ -19,32 +19,34 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.block.*;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.state.Property;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.world.entity.AgableMob;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Collection;
 import java.util.List;
@@ -56,8 +58,8 @@ public class WitherAbility{
         if(context.victim == null) return false;
         if(context.victim instanceof ItemEntity) {
             ItemEntity itemEntity = ((ItemEntity) context.victim);
-            ITagCollection<Item> itagcollection = ItemTags.getAllTags();
-            AtomicReference<ITag<Item>> iTag = new AtomicReference<>();
+            TagCollection<Item> itagcollection = ItemTags.getAllTags();
+            AtomicReference<Tag<Item>> iTag = new AtomicReference<>();
             AtomicBoolean ores = new AtomicBoolean(false);
             itagcollection.getAllTags().forEach((key, itemITag) -> {
                 if((key.getPath().contains("ores/") || key.getPath().contains("ingots/")) && itemEntity.getItem().getItem().is(itemITag)) {
@@ -77,7 +79,7 @@ public class WitherAbility{
             });
             if(iTag.get() == null)
                 return false;
-            ITag<Item> itemITag = iTag.get();
+            Tag<Item> itemITag = iTag.get();
             Item item = itemEntity.getItem().getItem();
             for (Item tagItem : itemITag.getValues()) {
                 if(tagItem.getRegistryName().getNamespace().equals(itemEntity.getItem().getItem().getRegistryName().getNamespace()))
@@ -86,8 +88,8 @@ public class WitherAbility{
                     item = tagItem;
             }
             if(item == itemEntity.getItem().getItem()) return false;
-            CompoundNBT nbt = itemEntity.getItem().save(new CompoundNBT());
-            ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(item);
+            CompoundTag nbt = itemEntity.getItem().save(new CompoundTag());
+            ResourceLocation resourcelocation = Registry.ITEM.getKey(item);
             nbt.putString("id", resourcelocation.toString());
             ItemStack dustItem = ItemStack.of(nbt);
             if(dustItem.isEmpty()) return false;
@@ -123,7 +125,7 @@ public class WitherAbility{
             context.force *= 1.25;
 
         boolean flag = false;
-        if(context.caster != null && context.projectile instanceof ProjectileEntity)
+        if(context.caster != null && context.projectile instanceof Projectile)
             flag = context.victim.hurt(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.caster), context.force);
@@ -140,12 +142,12 @@ public class WitherAbility{
     }
 
     public static boolean growBlock(MagickContext context, Block block, BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof IGrowable) {
-            IGrowable igrowable = (IGrowable)state.getBlock();
+        if (state.getBlock() instanceof BonemealableBlock) {
+            BonemealableBlock igrowable = (BonemealableBlock)state.getBlock();
             for (int i = 0; i < context.force; i++) {
-                if(igrowable.isValidBonemealTarget((ServerWorld)context.world, pos, state, false))
-                    igrowable.performBonemeal((ServerWorld)context.world, context.world.random, pos, context.world.getBlockState(pos));
-                spawnLoot(context, block,  pos, context.world.getBlockState(pos), CropsBlock.AGE);
+                if(igrowable.isValidBonemealTarget((ServerLevel)context.world, pos, state, false))
+                    igrowable.performBonemeal((ServerLevel)context.world, context.world.random, pos, context.world.getBlockState(pos));
+                spawnLoot(context, block,  pos, context.world.getBlockState(pos), CropBlock.AGE);
             }
             return true;
         } else {
@@ -180,7 +182,7 @@ public class WitherAbility{
         }
     }
 
-    public static boolean containProperty(World world, BlockPos pos, IntegerProperty integerProperty, int force) {
+    public static boolean containProperty(Level world, BlockPos pos, IntegerProperty integerProperty, int force) {
         BlockState state = world.getBlockState(pos);
         if (state.getProperties().stream().anyMatch(p -> p.equals(integerProperty))) {
             int age = (force + state.getValue(integerProperty));
@@ -203,11 +205,11 @@ public class WitherAbility{
         }
          else
              return;
-        LootContext.Builder lootContext = new LootContext.Builder((ServerWorld) context.world)
-                .withParameter(LootParameters.ORIGIN, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
-                .withParameter(LootParameters.BLOCK_STATE, state)
-                .withOptionalParameter(LootParameters.THIS_ENTITY, context.caster);
-        lootContext.withParameter(LootParameters.TOOL, ItemStack.EMPTY);
+        LootContext.Builder lootContext = new LootContext.Builder((ServerLevel) context.world)
+                .withParameter(LootContextParams.ORIGIN, new Vec3(pos.getX(), pos.getY(), pos.getZ()))
+                .withParameter(LootContextParams.BLOCK_STATE, state)
+                .withOptionalParameter(LootContextParams.THIS_ENTITY, context.caster);
+        lootContext.withParameter(LootContextParams.TOOL, ItemStack.EMPTY);
         List<ItemStack> drops = state.getDrops(lootContext);
 
         context.world.setBlockAndUpdate(pos, state.setValue(property, 0));
@@ -259,12 +261,12 @@ public class WitherAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(context.doBlock) {
-            if(context.world instanceof ServerWorld && context.containChild(LibContext.POSITION)) {
+            if(context.world instanceof ServerLevel && context.containChild(LibContext.POSITION)) {
                 PositionContext positionContext = context.getChild(LibContext.POSITION);
                 BlockPos pos = new BlockPos(positionContext.pos);
-                TileEntity tile = context.world.getBlockEntity(pos);
-                if(tile instanceof ITickableTileEntity) {
-                    ITickableTileEntity tickable = (ITickableTileEntity) tile;
+                BlockEntity tile = context.world.getBlockEntity(pos);
+                if(tile instanceof TickableBlockEntity) {
+                    TickableBlockEntity tickable = (TickableBlockEntity) tile;
                     float force = context.force*20;
                     for (int i = 0; i < force; ++i) {
                         tickable.tick();
@@ -290,7 +292,7 @@ public class WitherAbility{
         }
 
         if(pos != null && context.doBlock) {
-            if(context.world instanceof ServerWorld) {
+            if(context.world instanceof ServerLevel) {
                 BlockState blockstate = context.world.getBlockState(pos);
                 if(growBlock(context, blockstate.getBlock(), pos, blockstate)) {
                     context.world.levelEvent(2005, pos, 0);
@@ -302,8 +304,8 @@ public class WitherAbility{
                     return true;
                 }
             }
-        } else if (!context.world.isClientSide && context.victim instanceof AgeableEntity) {
-            AgeableEntity ageable = (AgeableEntity) context.victim;
+        } else if (!context.world.isClientSide && context.victim instanceof AgableMob) {
+            AgableMob ageable = (AgableMob) context.victim;
             int i = ageable.getAge();
             if (i < 0) {
                 i += context.force * 400;
@@ -311,8 +313,8 @@ public class WitherAbility{
             }
             return true;
         }
-        if(context.world.isClientSide && context.victim instanceof AgeableEntity) {
-            Vector3d vector3d = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0);
+        if(context.world.isClientSide && context.victim instanceof AgableMob) {
+            Vec3 vector3d = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0);
             for(int i = 0; i < 15; ++i) {
                 double d2 = MagickCore.rand.nextGaussian() * 0.5D;
                 double d3 = MagickCore.rand.nextGaussian() * 0.5D;

@@ -1,47 +1,48 @@
 package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ManaCapacityPack extends EntityPack{
-    private final CompoundNBT nbt;
+public class ManaCapacityPack extends EntityPack<ClientNetworkContext<?>>{
+    private final CompoundTag nbt;
 
-    public ManaCapacityPack(PacketBuffer buffer) {
+    public ManaCapacityPack(FriendlyByteBuf buffer) {
         super(buffer);
         nbt = buffer.readNbt();
     }
 
     public ManaCapacityPack(int id, ManaCapacity manaCapacity) {
         super(id);
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         manaCapacity.serialize(nbt);
         this.nbt = nbt;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeNbt(nbt);
     }
 
-    @Override
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-
-        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
+    public static void handler(ClientNetworkContext<ManaCapacityPack> context) {
+        ManaCapacityPack pack = context.packet();
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
         if(entity == null || entity.removed || !(entity instanceof IManaCapacity))
             return;
 
         ManaCapacity data = ((IManaCapacity) entity).manaCapacity();
         if(data != null) {
-            data.deserialize(nbt);
+            data.deserialize(pack.nbt);
         }
     }
 }

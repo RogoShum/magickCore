@@ -17,20 +17,16 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.TakenStatePack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
 import java.util.Optional;
 
@@ -48,7 +44,7 @@ public class TakenAbility{
             context.force *= 1.25;
 
         boolean flag;
-        if(context.caster != null && context.projectile instanceof ProjectileEntity)
+        if(context.caster != null && context.projectile instanceof Projectile)
             flag = context.victim.hurt(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.caster), context.force);
@@ -57,7 +53,7 @@ public class TakenAbility{
         else
             flag = context.victim.hurt(ModDamages.getTakenDamage(), context.force);
 
-        if(flag && context.force >= 9 && context.caster != null && context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(flag && context.force >= 9 && context.caster != null && context.victim instanceof Mob && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUUID());
             state.setTime(context.tick);
@@ -80,7 +76,7 @@ public class TakenAbility{
     }
 
     public static boolean applyDebuff(MagickContext context) {
-        if(context.victim instanceof MobEntity && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(context.victim instanceof Mob && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             if(!context.victim.canChangeDimensions()) return false;
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUUID());
@@ -105,9 +101,9 @@ public class TakenAbility{
     }
 
     public static boolean agglomerate(MagickContext context) {
-        if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof PlayerEntity)) return false;
-        if(context.victim instanceof TameableEntity) {
-            ((TameableEntity) context.victim).tame((PlayerEntity) context.caster);
+        if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof Player)) return false;
+        if(context.victim instanceof TamableAnimal) {
+            ((TamableAnimal) context.victim).tame((Player) context.caster);
             context.world.broadcastEntityEvent(context.victim, (byte)7);
             return true;
         }
@@ -119,11 +115,11 @@ public class TakenAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
             if (context.world.getBlockEntity(pos) != null) {
-                TileEntity tile = context.world.getBlockEntity(pos);
-                if (tile instanceof MobSpawnerTileEntity) {
-                    CompoundNBT nbt = ((MobSpawnerTileEntity) tile).getSpawner().save(new CompoundNBT());
+                BlockEntity tile = context.world.getBlockEntity(pos);
+                if (tile instanceof SpawnerBlockEntity) {
+                    CompoundTag nbt = ((SpawnerBlockEntity) tile).getSpawner().save(new CompoundTag());
                     if(nbt.contains("SpawnData")) {
-                        CompoundNBT entityTag = nbt.getCompound("SpawnData");
+                        CompoundTag entityTag = nbt.getCompound("SpawnData");
                         boolean success = false;
                         for(int i = 0; i < context.force; i++) {
                             Optional<Entity> optional =  EntityType.create(entityTag, context.world);
@@ -146,10 +142,10 @@ public class TakenAbility{
             }
         }
 
-        if(context.victim instanceof AnimalEntity) {
-            AnimalEntity animal = (AnimalEntity) context.victim;
-            if(context.caster instanceof PlayerEntity)
-                animal.setInLove((PlayerEntity) context.caster);
+        if(context.victim instanceof Animal) {
+            Animal animal = (Animal) context.victim;
+            if(context.caster instanceof Player)
+                animal.setInLove((Player) context.caster);
             else
                 animal.setInLove(null);
             animal.setInLoveTime(context.tick);

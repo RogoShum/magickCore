@@ -1,18 +1,18 @@
 package com.rogoshum.magickcore.common.recipe;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.LivingEntity;
 
 public class SpawnContext {
     public final LivingEntity living;
-    public final Vector3d vec;
+    public final Vec3 vec;
 
-    private SpawnContext(LivingEntity living, Vector3d vec) {
+    private SpawnContext(LivingEntity living, Vec3 vec) {
         this.living = living;
         this.vec = vec;
     }
 
-    public static SpawnContext create(LivingEntity living, Vector3d vec) {
+    public static SpawnContext create(LivingEntity living, Vec3 vec) {
          return new SpawnContext(living, vec);
     }
 }

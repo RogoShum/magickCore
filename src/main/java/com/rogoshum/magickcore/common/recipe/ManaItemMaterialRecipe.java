@@ -11,31 +11,27 @@ import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
 
-public class ManaItemMaterialRecipe extends SpecialRecipe {
-    private final IRecipeSerializer<?> SERIALIZER;
+public class ManaItemMaterialRecipe extends CustomRecipe {
+    private final RecipeSerializer<?> SERIALIZER;
 
     public ManaItemMaterialRecipe(ResourceLocation idIn) {
         super(new ResourceLocation(MagickCore.MOD_ID, idIn.getPath()));
-        SERIALIZER = new SpecialRecipeSerializer<>(res -> this);
-        SERIALIZER.setRegistryName(new ResourceLocation(MagickCore.MOD_ID, idIn.getPath()));
+        SERIALIZER = new SimpleRecipeSerializer<>(res -> this);
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         ItemStack tool = null;
         ItemStack contextCore = null;
         for(int j = 0; j < inv.getContainerSize(); ++j) {
@@ -64,9 +60,8 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
         return !preMaterial.equals(tempMaterial.getMaterial().getName());
     }
 
-    @Nonnull
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack tool = null;
         ItemStack contextCore = null;
         for(int j = 0; j < inv.getContainerSize(); ++j) {
@@ -113,7 +108,7 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(inv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {
@@ -133,12 +128,12 @@ public class ManaItemMaterialRecipe extends SpecialRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
 
     @Override
-    public IRecipeType<?> getType() {
-        return IRecipeType.CRAFTING;
+    public RecipeType<?> getType() {
+        return RecipeType.CRAFTING;
     }
 }

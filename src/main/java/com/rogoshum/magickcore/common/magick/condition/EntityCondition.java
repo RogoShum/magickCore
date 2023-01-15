@@ -1,8 +1,7 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.api.IConditionOnlyEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.Entity;
 
 public abstract class EntityCondition extends Condition<Entity> implements IConditionOnlyEntity {
     @Override

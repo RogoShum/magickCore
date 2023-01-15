@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.api.IItemContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public class MagickCraftingTransformRecipe {
     private final String id;

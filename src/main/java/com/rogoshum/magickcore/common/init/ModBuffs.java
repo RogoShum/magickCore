@@ -10,13 +10,9 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.network.EntityStatePack;
 import com.rogoshum.magickcore.common.network.Networking;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.PacketDistributor;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -167,7 +163,7 @@ public class ModBuffs {
         if(state != null) {
             applied = (state.applyBuff(getBuff(type).setTick(tick).setForce(force)));
             if(applied && !entity.level.isClientSide) {
-                CompoundNBT tag = new CompoundNBT();
+                CompoundTag tag = new CompoundTag();
                 state.write(tag);
                 Networking.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),

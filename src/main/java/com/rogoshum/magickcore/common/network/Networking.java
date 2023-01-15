@@ -1,90 +1,75 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.MagickCore;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-
 public class Networking {
     public static SimpleChannel INSTANCE;
-    public static final String VERSION = "1.0";
-    private static int ID = 0;
-
-    public static int nextID() {
-        return ID++;
-    }
 
     public static void registerMessage() {
-        INSTANCE = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(MagickCore.MOD_ID, "network"),
-                () -> VERSION,
-                (version) -> version.equals(VERSION),
-                (version) -> version.equals(VERSION)
-        );
 
-        INSTANCE.messageBuilder(EntityStatePack.class, nextID())
+        INSTANCE = new SimpleChannel();
+
+        INSTANCE.messageBuilder(EntityStatePack.class)
                 .encoder(EntityStatePack::toBytes)
                 .decoder(EntityStatePack::new)
-                .consumer(EntityStatePack::handler)
+                .client(EntityStatePack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(EntityCompoundTagPack.class, nextID())
+        INSTANCE.messageBuilder(EntityCompoundTagPack.class)
                 .encoder(EntityCompoundTagPack::toBytes)
                 .decoder(EntityCompoundTagPack::new)
-                .consumer(EntityCompoundTagPack::handler)
+                .client(EntityCompoundTagPack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(ManaCapacityPack.class, nextID())
+        INSTANCE.messageBuilder(ManaCapacityPack.class)
                 .encoder(ManaCapacityPack::toBytes)
                 .decoder(ManaCapacityPack::new)
-                .consumer(ManaCapacityPack::handler)
+                .client(ManaCapacityPack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(ManaItemDataPack.class, nextID())
+        INSTANCE.messageBuilder(ManaItemDataPack.class)
                 .encoder(ManaItemDataPack::toBytes)
                 .decoder(ManaItemDataPack::new)
-                .consumer(ManaItemDataPack::handler)
+                .client(ManaItemDataPack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(ElementAnimalPack.class, nextID())
+        INSTANCE.messageBuilder(ElementAnimalPack.class)
                 .encoder(ElementAnimalPack::toBytes)
                 .decoder(ElementAnimalPack::new)
-                .consumer(ElementAnimalPack::handler)
+                .client(ElementAnimalPack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(TakenStatePack.class, nextID())
+        INSTANCE.messageBuilder(TakenStatePack.class)
                 .encoder(TakenStatePack::toBytes)
                 .decoder(TakenStatePack::new)
-                .consumer(TakenStatePack::handler)
+                .client(TakenStatePack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(ParticlePack.class, nextID())
+        INSTANCE.messageBuilder(ParticlePack.class)
                 .encoder(ParticlePack::toBytes)
                 .decoder(ParticlePack::new)
-                .consumer(ParticlePack::handler)
+                .client(ParticlePack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(OwnerStatePack.class, nextID())
+        INSTANCE.messageBuilder(OwnerStatePack.class)
                 .encoder(OwnerStatePack::toBytes)
                 .decoder(OwnerStatePack::new)
-                .consumer(OwnerStatePack::handler)
+                .client(OwnerStatePack::handler)
                 .add();
-        INSTANCE.messageBuilder(ParticleSamplePack.class, nextID())
+        INSTANCE.messageBuilder(ParticleSamplePack.class)
                 .encoder(ParticleSamplePack::toBytes)
                 .decoder(ParticleSamplePack::new)
-                .consumer(ParticleSamplePack::handler)
+                .client(ParticleSamplePack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(SSpellSwapPack.class, nextID())
+        INSTANCE.messageBuilder(SSpellSwapPack.class)
                 .encoder(SSpellSwapPack::toBytes)
                 .decoder(SSpellSwapPack::new)
-                .consumer(SSpellSwapPack::handler)
+                .client(SSpellSwapPack::handler)
                 .add();
 
-        INSTANCE.messageBuilder(CSpellSwapPack.class, nextID())
+        INSTANCE.messageBuilder(CSpellSwapPack.class)
                 .encoder(CSpellSwapPack::toBytes)
                 .decoder(CSpellSwapPack::new)
-                .consumer(CSpellSwapPack::handler)
+                .server(CSpellSwapPack::handler)
                 .add();
     }
 }

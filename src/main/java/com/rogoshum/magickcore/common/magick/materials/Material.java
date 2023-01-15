@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.magick.materials;
 
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 public class Material {
     public String getName() {

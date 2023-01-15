@@ -16,27 +16,21 @@ import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.*;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class VoidAbility{
     public static boolean hitEntity(MagickContext context) {
@@ -50,7 +44,7 @@ public class VoidAbility{
             context.force *= 1.2;
 
         boolean flag;
-        if(context.caster != null && context.projectile instanceof ProjectileEntity)
+        if(context.caster != null && context.projectile instanceof Projectile)
             flag = context.victim.hurt(ModDamages.applyProjectileVoidDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.hurt(ModDamages.applyEntityVoidDamage(context.caster), context.force);
@@ -68,10 +62,10 @@ public class VoidAbility{
         return false;
     }
 
-    public static void storeTEInStack(ItemStack stack, TileEntity te) {
-        CompoundNBT compoundnbt = te.save(new CompoundNBT());
+    public static void storeTEInStack(ItemStack stack, BlockEntity te) {
+        CompoundTag compoundnbt = te.save(new CompoundTag());
         if (stack.getItem() instanceof SkullItem && compoundnbt.contains("SkullOwner")) {
-            CompoundNBT compoundnbt2 = compoundnbt.getCompound("SkullOwner");
+            CompoundTag compoundnbt2 = compoundnbt.getCompound("SkullOwner");
             stack.getOrCreateTag().put("SkullOwner", compoundnbt2);
         } else {
             stack.addTagElement("BlockEntityTag", compoundnbt);
@@ -94,7 +88,7 @@ public class VoidAbility{
         LivingEntity entity = (LivingEntity) context.caster;
         ItemStack stack = entity.getMainHandItem();
         if(stack.hasTag() && NBTTagHelper.hasElementOnTool(stack, LibElements.VOID)) {
-            CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+            CompoundTag tag = NBTTagHelper.getStackTag(stack);
             tag.putInt("VOID_LEVEL", level);
             stack.setTag(tag);
         }
@@ -133,26 +127,26 @@ public class VoidAbility{
         if(context.doBlock && context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             BlockPos pos = new BlockPos(positionContext.pos);
-            World world = context.world;
+            Level world = context.world;
 
             if (!world.isAreaLoaded(pos, 1)) return false;
-            if(context.caster instanceof PlayerEntity) {
-                if(!world.mayInteract((PlayerEntity) context.caster, pos)) return false;
+            if(context.caster instanceof Player) {
+                if(!world.mayInteract((Player) context.caster, pos)) return false;
             } else if(!world.getGameRules().getRule(GameRules.RULE_MOBGRIEFING).get()) return false;
 
             BlockState state = world.getBlockState(pos);
             if(state.getHarvestLevel() > context.force) return false;
             Block block = state.getBlock();
-            if (!block.isAir(state, world, pos) && !(block instanceof IFluidBlock) && state.getDestroySpeed(world, pos) != -1) {
+            if (!block.isAir(state, world, pos) && !(block instanceof LiquidBlock) && state.getDestroySpeed(world, pos) != -1) {
                 int exp = state.getExpDrop((IWorldReader) world, pos, (int) context.force, 1);
-                if(context.caster instanceof PlayerEntity) {
+                if(context.caster instanceof Player) {
                     /*
-                    if (!state.canHarvestBlock(world, pos, (PlayerEntity) context.caster)) {
+                    if (!state.canHarvestBlock(world, pos, (Player) context.caster)) {
                         return false;
                     }
 
                      */
-                    BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (PlayerEntity) context.caster);
+                    BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (Player) context.caster);
                     event.setExpToDrop(exp);
                     MinecraftForge.EVENT_BUS.post(event);
                     if(event.isCanceled()) return false;
@@ -160,7 +154,7 @@ public class VoidAbility{
                 }
 
                 ItemStack result = ItemStack.EMPTY;
-                TileEntity te = null;
+                BlockEntity te = null;
                 if (state.hasTileEntity())
                     te = world.getBlockEntity(pos);
 
@@ -177,8 +171,8 @@ public class VoidAbility{
                 } //else
                 //result.setCount((int) context.range);
 
-                if (world instanceof ServerWorld) {
-                    block.popExperience((ServerWorld) world, pos, exp);
+                if (world instanceof ServerLevel) {
+                    block.popExperience((ServerLevel) world, pos, exp);
                 }
                 world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                 world.levelEvent(2001, pos, Block.getId(state));

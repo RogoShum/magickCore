@@ -7,31 +7,24 @@ import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
-import net.minecraft.world.World;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class MagickWorkbenchRecipe implements Recipe<Container> {
-    public static final IRecipeType<MagickWorkbenchRecipe> MAGICK_WORKBENCH = Registry.register(Registry.RECIPE_TYPE, MagickCore.MOD_ID, new IRecipeType<MagickWorkbenchRecipe>() {
+    public static final RecipeType<MagickWorkbenchRecipe> MAGICK_WORKBENCH = Registry.register(Registry.RECIPE_TYPE, MagickCore.MOD_ID, new RecipeType<MagickWorkbenchRecipe>() {
         public String toString() {
             return "magick_workbench";
         }
@@ -49,14 +42,14 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
         this.recipeOutput = recipeOutputIn;
         HashSet<String> keys = new HashSet<>();
         if(recipeOutput.hasTag()) {
-            CompoundNBT tag = recipeOutput.getTag();
+            CompoundTag tag = recipeOutput.getTag();
             keys = NBTTagHelper.getNBTKeySet(tag);
         }
         keySet = keys;
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return MAGICK_WORKBENCH;
     }
 
@@ -64,12 +57,10 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
         return this.recipeOutput;
     }
 
-    @Nonnull
     public NonNullList<Ingredient> getIngredients() {
         return NonNullList.of(ingredient);
     }
 
-    @Nonnull
     public Ingredient getIngredient() {
         return ingredient;
     }
@@ -84,7 +75,7 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
@@ -98,7 +89,7 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
     /**
      * Used to check if a recipe matches current crafting inventory
      */
-    public boolean matches(Container inv, World worldIn) {
+    public boolean matches(Container inv, Level worldIn) {
         if(inv.getContainerSize() < 1)
             return false;
         ItemStack stack = inv.getItem(0);
@@ -114,7 +105,7 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
         ItemStack stack = inv.getItem(0);
         HashSet<String> keys = new HashSet<>();
         if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundTag tag = stack.getTag();
             keys = NBTTagHelper.getNBTKeySet(tag);
         }
         if(keys.containsAll(this.keySet)) {
@@ -126,22 +117,22 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
         return this.getResultItem().copy();
     }
 
-    public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<MagickWorkbenchRecipe> {
+    public static class Serializer implements RecipeSerializer<MagickWorkbenchRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "magick_workbench");
-        public static final IRecipeSerializer<?> INSTANCE = new Serializer().setRegistryName(NAME);
+        public static final RecipeSerializer<?> INSTANCE = new Serializer();
         public MagickWorkbenchRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String s = JSONUtils.getAsString(json, "group", "");
-            Ingredient ingredient = Ingredient.fromJson(JSONUtils.getAsJsonObject(json, "input"));
-            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getAsJsonObject(json, "result"));
+            String s = GsonHelper.getAsString(json, "group", "");
+            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "input"));
+            ItemStack itemstack = NBTRecipe.deserializeItem(GsonHelper.getAsJsonObject(json, "result"));
             return new MagickWorkbenchRecipe(recipeId, s, ingredient, itemstack);
         }
 
-        public MagickWorkbenchRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public MagickWorkbenchRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             String s = buffer.readUtf(32767);
             return new MagickWorkbenchRecipe(recipeId, s, Ingredient.fromNetwork(buffer), buffer.readItem());
         }
 
-        public void toNetwork(PacketBuffer buffer, MagickWorkbenchRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, MagickWorkbenchRecipe recipe) {
             buffer.writeUtf(recipe.group);
             recipe.ingredient.toNetwork(buffer);
             buffer.writeItem(recipe.recipeOutput);

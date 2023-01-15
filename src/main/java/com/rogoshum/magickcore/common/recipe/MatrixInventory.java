@@ -1,15 +1,13 @@
 package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public class MatrixInventory implements IInventory {
+public class MatrixInventory implements Container {
     private final Optional<PlaceableItemEntity>[][][] matrix;
     private final int y;
     private final int x;
@@ -85,7 +83,7 @@ public class MatrixInventory implements IInventory {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return false;
     }
 

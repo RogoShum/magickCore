@@ -1,43 +1,32 @@
 package com.rogoshum.magickcore.common.network;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
 
-import java.util.function.Supplier;
-
-public class ParticleSamplePack extends EntityPack{
+public class ParticleSamplePack extends EntityPack<ClientNetworkContext<?>>{
     private final String element;
     private final ParticleType particle;
-    private final Vector3d position;
-    private final Vector3d motion;
+    private final Vec3 position;
+    private final Vec3 motion;
     private final byte type;
 
     private final float force;
-    public ParticleSamplePack(PacketBuffer buffer) {
+    public ParticleSamplePack(FriendlyByteBuf buffer) {
         super(buffer);
         element = buffer.readUtf();
         particle = buffer.readEnum(ParticleType.class);
-        position = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        position = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         type = buffer.readByte();
         force = buffer.readFloat();
-        motion = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        motion = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
-    public ParticleSamplePack(int id, ParticleType texture, Vector3d position, float force, byte type, String element, Vector3d motion) {
+    public ParticleSamplePack(int id, ParticleType texture, Vec3 position, float force, byte type, String element, Vec3 motion) {
         super(id);
         this.element = element;
         this.particle = texture;
@@ -47,7 +36,7 @@ public class ParticleSamplePack extends EntityPack{
         this.motion = motion;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeUtf(this.element);
         buf.writeEnum(particle);
@@ -61,18 +50,16 @@ public class ParticleSamplePack extends EntityPack{
         buf.writeDouble(motion.z);
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        MagickElement element1 = MagickRegistry.getElement(element);
+    public static void handler(ClientNetworkContext<ParticleSamplePack> context) {
+        ParticleSamplePack pack = context.packet();
+        MagickElement element1 = MagickRegistry.getElement(pack.element);
         if(Minecraft.getInstance().level != null) {
-            if(type == 0)
-                ParticleUtil.spawnBlastParticle(Minecraft.getInstance().level, position, force, element1, particle);
-            else if(type == 1)
-                ParticleUtil.spawnImpactParticle(Minecraft.getInstance().level, position, force, motion, element1, particle);
-            else if(type == 2)
-                ParticleUtil.spawnRaiseParticle(Minecraft.getInstance().level, position, force, element1, particle);
+            if(pack.type == 0)
+                ParticleUtil.spawnBlastParticle(Minecraft.getInstance().level, pack.position, pack.force, element1, pack.particle);
+            else if(pack.type == 1)
+                ParticleUtil.spawnImpactParticle(Minecraft.getInstance().level, pack.position, pack.force, pack.motion, element1, pack.particle);
+            else if(pack.type == 2)
+                ParticleUtil.spawnRaiseParticle(Minecraft.getInstance().level, pack.position, pack.force, element1, pack.particle);
         }
     }
 }

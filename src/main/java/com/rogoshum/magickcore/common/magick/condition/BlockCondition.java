@@ -1,8 +1,7 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.api.IConditionOnlyBlock;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.level.block.Block;
 
 public abstract class BlockCondition extends Condition<Block> implements IConditionOnlyBlock {
     @Override

@@ -4,7 +4,9 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.recipe.*;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import net.minecraft.item.crafting.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,9 +26,9 @@ public class ModRecipes {
     //Event registry MagickLogicEvent::onExplosion
 
     //////////////////////////////
-    public static final IRecipeSerializer<?> NBT_RECIPE = NBTRecipe.Serializer.INSTANCE;
-    public static final IRecipeSerializer<?> MAGICK_WORKBENCH_RECIPE = MagickWorkbenchRecipe.Serializer.INSTANCE;
-    public static final IRecipeSerializer<?> SPIRIT_CRAFTING_RECIPE = SpiritCraftingRecipe.Serializer.INSTANCE;
+    public static final RecipeSerializer<?> NBT_RECIPE = NBTRecipe.Serializer.INSTANCE;
+    public static final RecipeSerializer<?> MAGICK_WORKBENCH_RECIPE = MagickWorkbenchRecipe.Serializer.INSTANCE;
+    public static final RecipeSerializer<?> SPIRIT_CRAFTING_RECIPE = SpiritCraftingRecipe.Serializer.INSTANCE;
     public static final ManaItemContextRecipe MANA_ITEM_CONTEXT_RECIPE = new ManaItemContextRecipe(new ResourceLocation("context_tool_recipe"));
     public static final BlockConditionRecipe BLOCK_CONDITION_RECIPE = new BlockConditionRecipe(new ResourceLocation("block_condition_recipe"));
     public static final ManaItemMaterialRecipe MANA_ITEM_MATERIAL_RECIPE = new ManaItemMaterialRecipe(new ResourceLocation("mana_item_material_recipe"));
@@ -37,7 +39,7 @@ public class ModRecipes {
     }
 
     @SubscribeEvent
-    public static void registerRecipes(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
+    public static void registerRecipes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
         init();
         event.getRegistry().register(NBT_RECIPE);
         event.getRegistry().register(MAGICK_WORKBENCH_RECIPE);

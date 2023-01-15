@@ -3,42 +3,40 @@ package com.rogoshum.magickcore.common.network;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
 
 import java.util.function.Supplier;
 
-public class EntityStatePack extends EntityPack{
-    private final CompoundNBT tag;
+public class EntityStatePack extends EntityPack<ClientNetworkContext<?>>{
+    private final CompoundTag tag;
 
-    public EntityStatePack(PacketBuffer buffer) {
+    public EntityStatePack(FriendlyByteBuf buffer) {
         super(buffer);
         tag = buffer.readNbt();
     }
 
-    public EntityStatePack(int id, CompoundNBT tag) {
+    public EntityStatePack(int id, CompoundTag tag) {
         super(id);
         this.tag = tag;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeNbt(this.tag);
     }
 
-    @Override
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        if(tag == null) return;
-        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
+    public static void handler(ClientNetworkContext<EntityStatePack> context) {
+        EntityStatePack pack = context.packet();
+        if(pack.tag == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
         if(entity == null || entity.removed)
             return;
         EntityStateData state = ExtraDataUtil.entityStateData(entity);
         if(state != null) {
-            state.read(tag);
+            state.read(pack.tag);
         }
     }
 }

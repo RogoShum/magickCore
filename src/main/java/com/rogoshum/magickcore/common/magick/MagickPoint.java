@@ -1,17 +1,17 @@
 package com.rogoshum.magickcore.common.magick;
 
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
 
 public class MagickPoint<T> {
     public static final HashSet<MagickPoint<?>> points = new HashSet<>();
-    private final Vector3d pos;
+    private final Vec3 pos;
     private final String name;
     private final T type;
     private int life = 40;
 
-    public MagickPoint(T type, String name, Vector3d pos) {
+    public MagickPoint(T type, String name, Vec3 pos) {
         this.name = name;
         this.pos = pos;
         this.type = type;
@@ -25,7 +25,7 @@ public class MagickPoint<T> {
         return name;
     }
 
-    public Vector3d getPos() {
+    public Vec3 getPos() {
         return pos;
     }
 

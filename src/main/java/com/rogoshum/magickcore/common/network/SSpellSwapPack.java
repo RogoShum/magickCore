@@ -3,57 +3,48 @@ package com.rogoshum.magickcore.common.network;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.gui.SpellSwapBoxGUI;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+public class SSpellSwapPack extends EntityPack<ClientNetworkContext<?>> {
+    private final CompoundTag tag;
 
-import java.util.function.Supplier;
-
-public class SSpellSwapPack extends EntityPack {
-    private final CompoundNBT tag;
-
-    public SSpellSwapPack(PacketBuffer buffer) {
+    public SSpellSwapPack(FriendlyByteBuf buffer) {
         super(buffer);
         tag = buffer.readNbt();
     }
 
-    public SSpellSwapPack(int id, PlayerEntity player) {
+    public SSpellSwapPack(int id, Player player) {
         super(id);
-        CompoundNBT tag = player.getPersistentData();
-        if(!tag.contains(PlayerEntity.PERSISTED_NBT_TAG))
-            tag.put(PlayerEntity.PERSISTED_NBT_TAG, new CompoundNBT());
-        tag = tag.getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+        CompoundTag tag = player.getPersistentData();
+        if(!tag.contains(Player.PERSISTED_NBT_TAG))
+            tag.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
+        tag = tag.getCompound(Player.PERSISTED_NBT_TAG);
         if(!tag.contains("MagickCore"))
-            tag.put("MagickCore", new CompoundNBT());
+            tag.put("MagickCore", new CompoundTag());
         this.tag = tag.getCompound("MagickCore");
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeNbt(this.tag);
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        if(tag == null) return;
-        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
-        if(!(entity instanceof PlayerEntity) || entity.removed)
+    public static void handler(ClientNetworkContext<SSpellSwapPack> context) {
+        SSpellSwapPack pack = context.packet();
+        if(pack.tag == null) return;
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
+        if(!(entity instanceof Player) || entity.removed)
             return;
-        PlayerEntity player = (PlayerEntity) entity;
-        CompoundNBT tag = player.getPersistentData();
-        if(!tag.contains(PlayerEntity.PERSISTED_NBT_TAG))
-            tag.put(PlayerEntity.PERSISTED_NBT_TAG, new CompoundNBT());
-        tag = tag.getCompound(PlayerEntity.PERSISTED_NBT_TAG);
-        tag.put("MagickCore", this.tag);
+        Player player = (Player) entity;
+        CompoundTag tag = player.getPersistentData();
+        if(!tag.contains(Player.PERSISTED_NBT_TAG))
+            tag.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
+        tag = tag.getCompound(Player.PERSISTED_NBT_TAG);
+        tag.put("MagickCore", pack.tag);
 
-        Minecraft.getInstance().setScreen(new SpellSwapBoxGUI(new TranslationTextComponent(MagickCore.MOD_ID + ".test")));
+        Minecraft.getInstance().setScreen(new SpellSwapBoxGUI(new TranslatableComponent(MagickCore.MOD_ID + ".test")));
     }
 }

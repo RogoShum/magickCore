@@ -5,27 +5,22 @@ import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
-
-public class ParticlePack extends EntityPack{
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+public class ParticlePack extends EntityPack<ClientNetworkContext<?>>{
     private final String element;
     private final ParticleType texture;
-    private final Vector3d position;
-    private final Vector3d motion;
+    private final Vec3 position;
+    private final Vec3 motion;
     private final float scaleWidth;
     private final float scaleHeight;
     private final float alpha;
@@ -37,11 +32,11 @@ public class ParticlePack extends EntityPack{
     private final boolean canCollide;
     private final Color color;
     private final float shake;
-    public ParticlePack(PacketBuffer buffer) {
+    public ParticlePack(FriendlyByteBuf buffer) {
         super(buffer);
         element = buffer.readUtf();
         texture = buffer.readEnum(ParticleType.class);
-        position = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        position = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         scaleWidth = buffer.readFloat();
         scaleHeight = buffer.readFloat();
         alpha = buffer.readFloat();
@@ -50,14 +45,14 @@ public class ParticlePack extends EntityPack{
         trace = buffer.readInt();
         gravity = buffer.readFloat();
         limitSize = buffer.readBoolean();
-        motion = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        motion = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         canCollide = buffer.readBoolean();
         color = Color.create(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
         shake = buffer.readFloat();
     }
 
-    public ParticlePack(int id, ParticleType texture, Vector3d position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element,
-                        boolean glow, int trace, float gravity, boolean limitSize, Vector3d motion, boolean canCollide, Color color, float shake) {
+    public ParticlePack(int id, ParticleType texture, Vec3 position, float scaleWidth, float scaleHeight, float alpha, int maxAge, String element,
+                        boolean glow, int trace, float gravity, boolean limitSize, Vec3 motion, boolean canCollide, Color color, float shake) {
         super(id);
         this.element = element;
         this.texture = texture;
@@ -76,7 +71,7 @@ public class ParticlePack extends EntityPack{
         this.shake = shake;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeUtf(this.element);
         buf.writeEnum(texture);
@@ -101,29 +96,27 @@ public class ParticlePack extends EntityPack{
         buf.writeFloat(shake);
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        MagickElement element1 = MagickRegistry.getElement(element);
-        ElementRenderer renderer = MagickCore.proxy.getElementRender(element);
-        ResourceLocation res = ParticleType.getResourceLocation(texture, element1);
+    public static void handler(ClientNetworkContext<ParticlePack> context) {
+        ParticlePack pack = context.packet();
+        MagickElement element1 = MagickRegistry.getElement(pack.element);
+        ElementRenderer renderer = MagickCore.proxy.getElementRender(pack.element);
+        ResourceLocation res = ParticleType.getResourceLocation(pack.texture, element1);
 
-        LitParticle par = new LitParticle(Minecraft.getInstance().level, res, position, scaleWidth, scaleHeight, alpha, maxAge, renderer);
-        if(glow)
+        LitParticle par = new LitParticle(Minecraft.getInstance().level, res, pack.position, pack.scaleWidth, pack.scaleHeight, pack.alpha, pack.maxAge, renderer);
+        if(pack.glow)
             par.setGlow();
-        if(limitSize)
+        if(pack.limitSize)
             par.setLimitScale();
-        par.addMotion(motion.x, motion.y, motion.z);
-        Entity entity = Minecraft.getInstance().level.getEntity(trace);
+        par.addMotion(pack.motion.x, pack.motion.y, pack.motion.z);
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.trace);
 
         if(entity != null)
             par.setTraceTarget(entity);
-        par.setParticleGravity(gravity);
-        par.setCanCollide(canCollide);
-        par.setColor(color);
-        if(shake > 0)
-            par.setShakeLimit(shake);
+        par.setParticleGravity(pack.gravity);
+        par.setCanCollide(pack.canCollide);
+        par.setColor(pack.color);
+        if(pack.shake > 0)
+            par.setShakeLimit(pack.shake);
         MagickCore.addMagickParticle(par);
     }
 }

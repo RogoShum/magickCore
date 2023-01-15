@@ -5,26 +5,23 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.INBTRecipe;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import de.siphalor.nbtcrafting.api.RecipeUtil;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class NBTRecipe extends SpecialRecipe {
+public class NBTRecipe extends CustomRecipe {
     static int MAX_WIDTH = 3;
     static int MAX_HEIGHT = 3;
 
@@ -49,15 +46,15 @@ public class NBTRecipe extends SpecialRecipe {
         this.recipeOutput = recipeOutputIn;
         HashSet<String> keys = new HashSet<>();
         if(recipeOutput.hasTag()) {
-            CompoundNBT tag = recipeOutput.getTag();
+            CompoundTag tag = recipeOutput.getTag();
             keys = NBTTagHelper.getNBTKeySet(tag);
         }
         keySet = keys;
     }
 
     @Override
-    public IRecipeType<?> getType() {
-        return IRecipeType.CRAFTING;
+    public RecipeType<?> getType() {
+        return RecipeType.CRAFTING;
     }
 
     public ItemStack getResultItem() {
@@ -73,7 +70,7 @@ public class NBTRecipe extends SpecialRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Serializer.INSTANCE;
     }
 
@@ -87,7 +84,7 @@ public class NBTRecipe extends SpecialRecipe {
     /**
      * Used to check if a recipe matches current crafting inventory
      */
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         for(int i = 0; i <= inv.getWidth() - this.recipeWidth; ++i) {
             for(int j = 0; j <= inv.getHeight() - this.recipeHeight; ++j) {
                 if (this.checkMatch(inv, i, j, true)) {
@@ -106,7 +103,7 @@ public class NBTRecipe extends SpecialRecipe {
     /**
      * Checks if the region of a crafting inventory is match for the recipe.
      */
-    private boolean checkMatch(CraftingInventory craftingInventory, int width, int height, boolean p_77573_4_) {
+    private boolean checkMatch(CraftingContainer craftingInventory, int width, int height, boolean p_77573_4_) {
         for(int i = 0; i < craftingInventory.getWidth(); ++i) {
             for(int j = 0; j < craftingInventory.getHeight(); ++j) {
                 int k = i - width;
@@ -132,7 +129,7 @@ public class NBTRecipe extends SpecialRecipe {
     /**
      * Returns an Item that is the result of this recipe
      */
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         if(this.keySet.isEmpty())
             return this.getResultItem().copy();
         for(int i = 0; i <= inv.getWidth() - this.recipeWidth; ++i) {
@@ -140,7 +137,7 @@ public class NBTRecipe extends SpecialRecipe {
                 ItemStack stack = inv.getItem(i + j * inv.getWidth());
                 HashSet<String> keys = new HashSet<>();
                 if(stack.hasTag()) {
-                    CompoundNBT tag = stack.getTag();
+                    CompoundTag tag = stack.getTag();
                     keys = NBTTagHelper.getNBTKeySet(tag);
                 }
                 if(keys.containsAll(this.keySet)) {
@@ -247,7 +244,7 @@ public class NBTRecipe extends SpecialRecipe {
             throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
         } else {
             for(int i = 0; i < astring.length; ++i) {
-                String s = JSONUtils.convertToString(jsonArr.get(i), "pattern[" + i + "]");
+                String s = GsonHelper.convertToString(jsonArr.get(i), "pattern[" + i + "]");
                 if (s.length() > MAX_WIDTH) {
                     throw new JsonSyntaxException("Invalid pattern: too many columns, " + MAX_WIDTH + " is maximum");
                 }
@@ -286,33 +283,24 @@ public class NBTRecipe extends SpecialRecipe {
     }
 
     public static ItemStack deserializeItem(JsonObject object) {
-        String s = JSONUtils.getAsString(object, "item");
-        Item item = Registry.ITEM.getOptional(new ResourceLocation(s)).orElseThrow(() -> {
-            return new JsonSyntaxException("Unknown item '" + s + "'");
-        });
-        if (object.has("data")) {
-            throw new JsonParseException("Disallowed data tag found");
-        } else {
-            int i = JSONUtils.getAsInt(object, "count", 1);
-            return CraftingHelper.getItemStack(object, true);
-        }
+        return ShapedRecipe.itemFromJson(object);
     }
 
-    public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<NBTRecipe> {
+    public static class Serializer implements RecipeSerializer<NBTRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "nbt");
-        public static final IRecipeSerializer<?> INSTANCE = new Serializer().setRegistryName(NAME);
+        public static final RecipeSerializer<?> INSTANCE = new Serializer();
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String s = JSONUtils.getAsString(json, "group", "");
-            Map<String, Ingredient> map = NBTRecipe.deserializeKey(JSONUtils.getAsJsonObject(json, "key"));
-            String[] astring = NBTRecipe.shrink(NBTRecipe.patternFromJson(JSONUtils.getAsJsonArray(json, "pattern")));
+            String s = GsonHelper.getAsString(json, "group", "");
+            Map<String, Ingredient> map = NBTRecipe.deserializeKey(GsonHelper.getAsJsonObject(json, "key"));
+            String[] astring = NBTRecipe.shrink(NBTRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
             int i = astring[0].length();
             int j = astring.length;
             NonNullList<Ingredient> nonnulllist = NBTRecipe.deserializeIngredients(astring, map, i, j);
-            ItemStack itemstack = NBTRecipe.deserializeItem(JSONUtils.getAsJsonObject(json, "result"));
+            ItemStack itemstack = NBTRecipe.deserializeItem(GsonHelper.getAsJsonObject(json, "result"));
             return new NBTRecipe(recipeId, s, i, j, nonnulllist, itemstack);
         }
 
-        public NBTRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public NBTRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int i = buffer.readVarInt();
             int j = buffer.readVarInt();
             String s = buffer.readUtf(32767);
@@ -326,7 +314,7 @@ public class NBTRecipe extends SpecialRecipe {
             return new NBTRecipe(recipeId, s, i, j, nonnulllist, itemstack);
         }
 
-        public void toNetwork(PacketBuffer buffer, NBTRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, NBTRecipe recipe) {
             buffer.writeVarInt(recipe.recipeWidth);
             buffer.writeVarInt(recipe.recipeHeight);
             buffer.writeUtf(recipe.group);

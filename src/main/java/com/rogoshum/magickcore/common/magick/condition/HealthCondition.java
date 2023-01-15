@@ -1,15 +1,15 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.common.lib.LibConditions;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec2;
 
 import java.util.Objects;
 import java.util.function.Function;
 
-public class HealthCondition extends EntityCondition{
+public class HealthCondition extends EntityCondition {
     private float value;
     private Compare compare = Compare.LESS;
     private boolean percentage;
@@ -54,14 +54,14 @@ public class HealthCondition extends EntityCondition{
     }
 
     @Override
-    protected void serialize(CompoundNBT tag) {
+    protected void serialize(CompoundTag tag) {
         tag.putFloat("value", value);
         tag.putBoolean("percentage", percentage);
         tag.putString("compare", compare.name());
     }
 
     @Override
-    protected void deserialize(CompoundNBT tag) {
+    protected void deserialize(CompoundTag tag) {
         value = tag.getFloat("value");
         percentage = tag.getBoolean("percentage");
         try {
@@ -89,14 +89,14 @@ public class HealthCondition extends EntityCondition{
         LESS_EQUAL((vector2f -> vector2f.x <= vector2f.y)),
         MORE_EQUAL((vector2f -> vector2f.x >= vector2f.y));
 
-        private final Function<Vector2f, Boolean> compare;
+        private final Function<Vec2, Boolean> compare;
 
-        Compare(Function<Vector2f, Boolean> compare) {
+        Compare(Function<Vec2, Boolean> compare) {
             this.compare = compare;
         }
 
         public boolean compare(float self, float other) {
-            return compare.apply(new Vector2f(self, other));
+            return compare.apply(new Vec2(self, other));
         }
     }
 }

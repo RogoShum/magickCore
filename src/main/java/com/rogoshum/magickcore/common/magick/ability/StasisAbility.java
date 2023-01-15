@@ -14,13 +14,13 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class StasisAbility{
             context.force *= 1.25;
 
         boolean flag = false;
-        if(context.caster != null && context.projectile instanceof ProjectileEntity)
+        if(context.caster != null && context.projectile instanceof Projectile)
             flag = context.victim.hurt(ModDamages.applyProjectileStasisDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
             flag = context.victim.hurt(ModDamages.applyEntityStasisDamage(context.caster), context.force);
@@ -55,7 +55,7 @@ public class StasisAbility{
             PositionContext positionContext = context.getChild(LibContext.POSITION);
 
             BlockPos pos = new BlockPos(positionContext.pos);
-            if (context.world.getBlockState(pos).getBlock().equals(Blocks.WATER.getBlock())) {
+            if (context.world.getBlockState(pos).getBlock().equals(Blocks.WATER)) {
                 context.world.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
                 return true;
             }
@@ -88,7 +88,7 @@ public class StasisAbility{
         boolean worked = false;
         List<Entity> list = entity.level.getEntities(entity, entity.getBoundingBox().inflate(level * 2));
         for (Entity entity1 : list) {
-            Vector3d dir = entity1.position().add(0, entity1.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize();
+            Vec3 dir = entity1.position().add(0, entity1.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize();
 
             if(dir.dot(entity.getLookAngle()) > 0.3 && !MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
                 entity1.setDeltaMovement(entity1.getDeltaMovement().scale(Math.pow(0.7, level)));
@@ -116,14 +116,14 @@ public class StasisAbility{
 
     public static boolean agglomerate(MagickContext context) {
         if(!(context.victim instanceof LivingEntity) && !context.world.isClientSide) {
-            Vector3d pos = Vector3d.ZERO;
+            Vec3 pos = Vec3.ZERO;
             if(context.victim != null)
                 pos = context.victim.position();
             if(context.containChild(LibContext.POSITION))
                 pos = context.<PositionContext>getChild(LibContext.POSITION).pos;
 
             if(pos.y > 192) {
-                ((ServerWorld)context.world).setWeatherParameters(0, 6000, true, false);
+                ((ServerLevel)context.world).setWeatherParameters(0, 6000, true, false);
             }
         }
         if(!(context.victim instanceof LivingEntity) || context.world.isClientSide) return false;

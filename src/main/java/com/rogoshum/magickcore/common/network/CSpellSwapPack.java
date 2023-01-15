@@ -1,28 +1,31 @@
 package com.rogoshum.magickcore.common.network;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
+import com.rogoshum.magickcore.client.gui.SpellSwapBoxGUI;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Supplier;
 
-public class CSpellSwapPack extends EntityPack {
+public class CSpellSwapPack extends EntityPack<ServerNetworkContext<?>> {
     private final byte operate;
     private final int index;
 
-    public CSpellSwapPack(PacketBuffer buffer) {
+    public CSpellSwapPack(FriendlyByteBuf buffer) {
         super(buffer);
         operate = buffer.readByte();
         if(operate == 126)
@@ -52,58 +55,57 @@ public class CSpellSwapPack extends EntityPack {
         return new CSpellSwapPack(id, (byte) 124, 0);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(this.operate);
         if(operate == 126)
             buf.writeInt(this.index);
     }
 
-    @Override
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) return;
-        ServerPlayerEntity player = ctx.get().getSender();
+    public static void handler(ServerNetworkContext<CSpellSwapPack> context) {
+        CSpellSwapPack pack = context.packet();
+        ServerPlayer player = context.player();
         if(player == null || player.removed)
             return;
 
         NBTTagHelper.PlayerData data = NBTTagHelper.PlayerData.playerData(player);
-        if(operate == 125) {
+        if(pack.operate == 125) {
             ItemStack stack = data.popSpell();
             if(!player.addItem(stack))
                 player.drop(stack, false, true);
-            player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-        } else if(operate == 126) {
+            player.level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup.get(), SoundSource.PLAYERS, 0.25F, 2.0F);
+        } else if(pack.operate == 126) {
             if(player.getMainHandItem().getItem() instanceof IManaContextItem) {
-                swapSpell(data, player.getMainHandItem());
+                swapSpell(data, player.getMainHandItem(), pack.index);
             } else if(player.getOffhandItem().getItem() instanceof IManaContextItem) {
-                swapSpell(data, player.getOffhandItem());
+                swapSpell(data, player.getOffhandItem(), pack.index);
             }
-            player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_mid.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
-        } else if(operate == 127 && data.getSpells().size() < data.getLimit()) {
+            player.level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_mid.get(), SoundSource.PLAYERS, 0.25F, 2.0F);
+        } else if(pack.operate == 127 && data.getSpells().size() < data.getLimit()) {
             if(player.getMainHandItem().getItem() instanceof MagickContextItem) {
                 ItemStack mainHand = player.getMainHandItem();
                 ItemStack copy = mainHand.copy();
                 copy.setCount(1);
                 data.pushSpell(copy);
                 mainHand.shrink(1);
-                player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                player.level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundSource.PLAYERS, 0.25F, 2.0F);
             } else if(player.getOffhandItem().getItem() instanceof MagickContextItem) {
                 ItemStack offHand = player.getOffhandItem();
                 ItemStack copy = offHand.copy();
                 copy.setCount(1);
                 data.pushSpell(copy);
                 offHand.shrink(1);
-                player.level.playSound((PlayerEntity)null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundCategory.PLAYERS, 0.25F, 2.0F);
+                player.level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), ModSounds.soft_buildup_high.get(), SoundSource.PLAYERS, 0.25F, 2.0F);
             }
-        } else if(operate == 124) {
-            SSpellSwapPack sSpellSwapPack = new SSpellSwapPack(id, player);
+        } else if(pack.operate == 124) {
+            SSpellSwapPack sSpellSwapPack = new SSpellSwapPack(pack.id, player);
             Networking.INSTANCE.send(
                     PacketDistributor.PLAYER.with(() -> player), sSpellSwapPack);
         }
         data.save();
     }
 
-    public void swapSpell(NBTTagHelper.PlayerData data, ItemStack held) {
+    public static void swapSpell(NBTTagHelper.PlayerData data, ItemStack held, int index) {
         ItemManaData manaData = ExtraDataUtil.itemManaData(held);
         ItemStack newContext = new ItemStack(ModItems.MAGICK_CORE.get());
         NBTTagHelper.coreItemFromContext(held, newContext);

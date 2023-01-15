@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -20,6 +21,7 @@ import java.util.List;
 
 
 import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemStackButton extends Button {
     public final ItemStack stack;

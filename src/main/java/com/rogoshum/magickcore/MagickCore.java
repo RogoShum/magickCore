@@ -18,6 +18,7 @@ import com.rogoshum.magickcore.proxy.IProxy;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -140,5 +141,9 @@ public class MagickCore implements ModInitializer {
     @Override
     public void onInitialize() {
 
+    }
+
+    public static ResourceLocation fromId(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 }

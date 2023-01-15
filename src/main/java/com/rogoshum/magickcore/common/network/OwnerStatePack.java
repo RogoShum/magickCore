@@ -1,21 +1,19 @@
 package com.rogoshum.magickcore.common.network;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class OwnerStatePack extends EntityPack{
+public class OwnerStatePack extends EntityPack<ClientNetworkContext<?>>{
     private final UUID uuid;
 
-    public OwnerStatePack(PacketBuffer buffer) {
+    public OwnerStatePack(FriendlyByteBuf buffer) {
         super(buffer);
         uuid = buffer.readUUID();
     }
@@ -25,21 +23,19 @@ public class OwnerStatePack extends EntityPack{
         this.uuid = uuid;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeUUID(uuid);
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void doWork(Supplier<NetworkEvent.Context> ctx) {
-        if(ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER) return;
-        Entity entity = Minecraft.getInstance().level.getEntity(this.id);
+    public static void handler(ClientNetworkContext<OwnerStatePack> context) {
+        OwnerStatePack pack = context.packet();
+        Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
         if(entity == null || entity.removed)
             return;
         if(entity instanceof IOwnerEntity) {
             IOwnerEntity iOwnerEntity = (IOwnerEntity) entity;
-            iOwnerEntity.setOwnerUUID(uuid);
+            iOwnerEntity.setOwnerUUID(pack.uuid);
         }
     }
 }
