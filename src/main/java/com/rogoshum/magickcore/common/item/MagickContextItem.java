@@ -12,17 +12,14 @@ import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class MagickContextItem extends ManaItem {
     public MagickContextItem() {
@@ -45,7 +42,7 @@ public class MagickContextItem extends ManaItem {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if(group == ModGroups.MAGICK_CONTEXT_GROUP) {
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
@@ -56,9 +53,9 @@ public class MagickContextItem extends ManaItem {
                 ItemStack itemStack = sample.copy();
                 items.add(itemStack);
             }
-            ForgeRegistries.ENTITIES.getEntries().forEach(entityType -> {
-                if(entityType.getValue().create(RenderHelper.getPlayer().level) instanceof IManaEntity)
-                    fillEntity(items, sample, entityType.getValue());
+            Registry.ENTITY_TYPE.forEach(entityType -> {
+                if(entityType.create(RenderHelper.getPlayer().level) instanceof IManaEntity)
+                    fillEntity(items, sample, entityType);
             });
         }
     }
@@ -73,7 +70,7 @@ public class MagickContextItem extends ManaItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+    public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
         if(p_77663_3_ instanceof ServerPlayerEntity) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.MAGICK_CORE);

@@ -11,31 +11,22 @@ import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.UseAction;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import net.minecraft.item.Item.Properties;
 
 public abstract class ManaItem extends BaseItem implements IManaData {
     public ManaItem(Properties properties) {
@@ -43,7 +34,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
         playerIn.startUsingItem(handIn);
         EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
@@ -54,28 +45,12 @@ public abstract class ManaItem extends BaseItem implements IManaData {
                 spawnParticle(playerIn, state);
             }
         }
-        return ActionResult.consume(itemstack);
+        return InteractionResultHolder.consume(itemstack);
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public int getRGBDurabilityForDisplay(ItemStack stack) {
-        ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        Color color = data.spellContext().element.getRenderer().getColor();
-        if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
-            color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
-        }
-        return color.getDecimalColor();
-    }
-
-    @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
-        ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        return 1f - data.manaCapacity().getMana() / data.manaCapacity().getMaxMana();
+    public int getUseDuration(ItemStack itemStack) {
+        return super.getUseDuration(itemStack);
     }
 
     @Override
@@ -84,8 +59,8 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    @Environment(EnvType.CLIENT)
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         ExtraDataUtil.itemManaData(stack, data -> {
             String information = "";
             KeyBinding key = Minecraft.getInstance().options.keyShift;
@@ -97,30 +72,19 @@ public abstract class ManaItem extends BaseItem implements IManaData {
             if(!information.isEmpty()) {
                 String[] tips = information.split("\n");
                 for (String tip : tips) {
-                    tooltip.add(new StringTextComponent(tip));
+                    tooltip.add(new TextComponent(tip));
                 }
             }
         });
     }
 
-    @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack) {
-        return super.getShareTag(stack);
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        super.readShareTag(stack, nbt);
-    }
-
-    @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.BOW;
-    }
-
-    @Override
-    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 

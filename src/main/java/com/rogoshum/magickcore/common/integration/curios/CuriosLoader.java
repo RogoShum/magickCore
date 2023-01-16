@@ -5,9 +5,11 @@ import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.item.SpiritCrystalRingItem;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.registry.RegistryObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -29,11 +31,11 @@ public class CuriosLoader extends AdditionLoader {
 
 
     @Override
-    public void onLoad(IEventBus eventBus) {
-        Networking.INSTANCE.messageBuilder(CCastSpellPack.class, Networking.nextID())
+    public void onInitialize() {
+        Networking.INSTANCE.messageBuilder(CCastSpellPack.class)
                 .encoder(CCastSpellPack::toBytes)
                 .decoder(CCastSpellPack::new)
-                .consumer(CCastSpellPack::handler)
+                .server(CCastSpellPack::handler)
                 .add();
         MinecraftForge.EVENT_BUS.register(this);
     }

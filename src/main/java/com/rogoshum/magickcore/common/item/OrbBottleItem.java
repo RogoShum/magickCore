@@ -18,36 +18,33 @@ import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class OrbBottleItem extends BaseItem{
 
     public OrbBottleItem() {
-        super(properties().stacksTo(64).setISTER(() -> OrbBottleRenderer::new));
+        super(properties().stacksTo(64).craftRemainder(ModItems.ORB_BOTTLE.get()).setISTER(() -> OrbBottleRenderer::new));
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
+        CompoundTag tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")){
             MagickElement element = MagickRegistry.getElement(tag.getString("ELEMENT"));
             MagickContext attribute = new MagickContext(worldIn).tick(60).<MagickContext>force(2).victim(entityLiving).element(element).applyType(ApplyType.DE_BUFF);
@@ -58,8 +55,8 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.DRINK;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
 
     @Override
@@ -68,10 +65,10 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
+    public InteractionResult interactLivingEntity(ItemStack stack, Player playerIn, LivingEntity target, InteractionHand hand) {
         if(!playerIn.level.isClientSide) {
-            CompoundNBT tag = NBTTagHelper.getStackTag(stack);
-            if (tag.contains("ELEMENT") && (RegisterEvent.containAnimalType(target.getType()) || target instanceof AnimalEntity)) {
+            CompoundTag tag = NBTTagHelper.getStackTag(stack);
+            if (tag.contains("ELEMENT") && (RegisterEvent.containAnimalType(target.getType()) || target instanceof Animal)) {
                 EntityStateData state = ExtraDataUtil.entityStateData(target);
                 state.setElement(MagickRegistry.getElement(tag.getString("ELEMENT")));
                 ItemStack copy = stack.copy();
@@ -87,7 +84,7 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         List<Entity> list = worldIn.getEntities(playerIn, playerIn.getBoundingBox().inflate(2));
         for (Entity entity : list) {
             boolean flag = false;
@@ -96,7 +93,7 @@ public class OrbBottleItem extends BaseItem{
                 ItemStack stack = playerIn.getItemInHand(handIn);
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
-                CompoundNBT tag = NBTTagHelper.getStackTag(copy);
+                CompoundTag tag = NBTTagHelper.getStackTag(copy);
                 tag.putString("ELEMENT", orb.spellContext().element.type());
                 if(!playerIn.addItem(copy))
                     playerIn.drop(copy, false, true);
@@ -105,31 +102,21 @@ public class OrbBottleItem extends BaseItem{
                 flag = true;
             }
             if(flag)
-                return ActionResult.consume(playerIn.getItemInHand(handIn));
+                return InteractionResultHolder.consume(playerIn.getItemInHand(handIn));
         }
         return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        CompoundNBT tag = NBTTagHelper.getStackTag(stack);
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        CompoundTag tag = NBTTagHelper.getStackTag(stack);
         if(tag.contains("ELEMENT")) {
-            tooltip.add((new TranslationTextComponent(LibItem.ELEMENT)).append(" ").append((new TranslationTextComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+            tooltip.add((new TranslatableComponent(LibItem.ELEMENT)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
         }
     }
 
     @Override
-    public boolean hasContainerItem(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public ItemStack getContainerItem(ItemStack itemStack) {
-        return new ItemStack(ModItems.ORB_BOTTLE.get());
-    }
-
-    @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if(group == ModGroups.ELEMENT_ITEM_GROUP) {
             MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().forEach( (key, value) ->
                     items.add(NBTTagHelper.setElement(new ItemStack(this), key))
@@ -141,10 +128,10 @@ public class OrbBottleItem extends BaseItem{
     }
 
     @Override
-    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+    public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-        if(p_77663_3_ instanceof ServerPlayerEntity) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.ORB_BOTTLE);
+        if(p_77663_3_ instanceof ServerPlayer) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.ORB_BOTTLE);
         }
     }
 }

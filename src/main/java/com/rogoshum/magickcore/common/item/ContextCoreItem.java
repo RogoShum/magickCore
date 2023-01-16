@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
@@ -11,23 +10,21 @@ import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.materials.Material;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,7 +66,7 @@ public class ContextCoreItem extends BaseItem{
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             ItemStack sample = new ItemStack(this);
             ManaMaterials.getMaterials().keySet().forEach((key) -> {
@@ -83,7 +80,7 @@ public class ContextCoreItem extends BaseItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         Material material = ManaMaterials.getMaterial(LibMaterial.ORIGIN);
         if(stack.hasTag() && stack.getTag().contains("mana_material")) {
             Material manaMaterial = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
@@ -91,17 +88,17 @@ public class ContextCoreItem extends BaseItem{
                 material = manaMaterial;
             }
         }
-        tooltip.add((new TranslationTextComponent(LibItem.MATERIAL).withStyle(TextFormatting.BLUE)).append(" ").append(new TranslationTextComponent(MagickCore.MOD_ID + ".material." + material.getName()).withStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.FORCE).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getForce())).withStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.RANGE).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getRange())).withStyle(TextFormatting.GRAY)));
-        tooltip.add((new TranslationTextComponent(LibItem.TICK).withStyle(TextFormatting.BLUE)).append(" ").append(new StringTextComponent(String.valueOf(material.getTick() / 20)).withStyle(TextFormatting.GRAY)));
+        tooltip.add((new TranslatableComponent(LibItem.MATERIAL).withStyle(ChatFormatting.BLUE)).append(" ").append(new TranslatableComponent(MagickCore.MOD_ID + ".material." + material.getName()).withStyle(ChatFormatting.GRAY)));
+        tooltip.add((new TranslatableComponent(LibItem.FORCE).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(material.getForce())).withStyle(ChatFormatting.GRAY)));
+        tooltip.add((new TranslatableComponent(LibItem.RANGE).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(material.getRange())).withStyle(ChatFormatting.GRAY)));
+        tooltip.add((new TranslatableComponent(LibItem.TICK).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(material.getTick() / 20)).withStyle(ChatFormatting.GRAY)));
     }
 
     @Override
-    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+    public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-        if(p_77663_3_ instanceof ServerPlayerEntity) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.CONTEXT_CORE);
+        if(p_77663_3_ instanceof ServerPlayer) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.CONTEXT_CORE);
         }
     }
 }

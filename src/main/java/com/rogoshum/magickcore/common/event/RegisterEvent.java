@@ -14,32 +14,20 @@ import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.merchant.villager.VillagerTrades;
-import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnderPearlItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Dimension;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EnderpearlItem;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.*;
 
@@ -57,26 +45,26 @@ public class RegisterEvent {
     }
 
     public static void initElementMap() {
-        spawnElementMap.put(EndermanEntity.class, new LivingElementTable(1, 50, LibElements.VOID));
-        spawnElementMap.put(BlazeEntity.class, new LivingElementTable(2, 50, LibElements.SOLAR));
-        spawnElementMap.put(CaveSpiderEntity.class, new LivingElementTable(1, 5, LibElements.WITHER));
-        spawnElementMap.put(SpiderEntity.class, new LivingElementTable(15, 50, LibElements.WITHER));
-        spawnElementMap.put(ShulkerEntity.class, new LivingElementTable(2, 200, LibElements.VOID));
-        spawnElementMap.put(MagmaCubeEntity.class, new LivingElementTable(2, 7, LibElements.SOLAR));
-        spawnElementMap.put(EvokerEntity.class, new LivingElementTable(1, 10, LibElements.TAKEN));
-        spawnElementMap.put(VexEntity.class, new LivingElementTable(2, 10, LibElements.TAKEN));
-        spawnElementMap.put(CreeperEntity.class, new LivingElementTable(5, 50, LibElements.ARC));
-        spawnElementMap.put(PhantomEntity.class, new LivingElementTable(1, 50, LibElements.ARC));
-        spawnElementMap.put(SnowGolemEntity.class, new LivingElementTable(10, 20, LibElements.TAKEN));
-        spawnElementMap.put(IronGolemEntity.class, new LivingElementTable(1, 10, LibElements.TAKEN));
+        spawnElementMap.put(EnderMan.class, new LivingElementTable(1, 50, LibElements.VOID));
+        spawnElementMap.put(Blaze.class, new LivingElementTable(2, 50, LibElements.SOLAR));
+        spawnElementMap.put(CaveSpider.class, new LivingElementTable(1, 5, LibElements.WITHER));
+        spawnElementMap.put(Spider.class, new LivingElementTable(15, 50, LibElements.WITHER));
+        spawnElementMap.put(Shulker.class, new LivingElementTable(2, 200, LibElements.VOID));
+        spawnElementMap.put(MagmaCube.class, new LivingElementTable(2, 7, LibElements.SOLAR));
+        spawnElementMap.put(Evoker.class, new LivingElementTable(1, 10, LibElements.TAKEN));
+        spawnElementMap.put(Vex.class, new LivingElementTable(2, 10, LibElements.TAKEN));
+        spawnElementMap.put(Creeper.class, new LivingElementTable(5, 50, LibElements.ARC));
+        spawnElementMap.put(Phantom.class, new LivingElementTable(1, 50, LibElements.ARC));
+        spawnElementMap.put(SnowGolem.class, new LivingElementTable(10, 20, LibElements.TAKEN));
+        spawnElementMap.put(IronGolem.class, new LivingElementTable(1, 10, LibElements.TAKEN));
 
-        spawnElementMap_dimension.put(Dimension.END.location().toString(), new LivingElementTable(5, 70, LibElements.VOID));
-        spawnElementMap_dimension.put(Dimension.NETHER.location().toString(), new LivingElementTable(7, 70, LibElements.SOLAR));
+        spawnElementMap_dimension.put(DimensionType.END_LOCATION.location().toString(), new LivingElementTable(5, 70, LibElements.VOID));
+        spawnElementMap_dimension.put(DimensionType.NETHER_LOCATION.location().toString(), new LivingElementTable(7, 70, LibElements.SOLAR));
 
-        spawnElementMap_biome.put(Biome.Category.SWAMP.getSerializedName(), new LivingElementTable(4, 30, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.Category.ICY.getSerializedName(), new LivingElementTable(4, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.MESA.getSerializedName(), new LivingElementTable(6, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.Category.EXTREME_HILLS.getSerializedName(), new LivingElementTable(5, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.BiomeCategory.SWAMP.getSerializedName(), new LivingElementTable(4, 30, LibElements.WITHER));
+        spawnElementMap_biome.put(Biome.BiomeCategory.ICY.getSerializedName(), new LivingElementTable(4, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.BiomeCategory.MESA.getSerializedName(), new LivingElementTable(6, 30, LibElements.STASIS));
+        spawnElementMap_biome.put(Biome.BiomeCategory.EXTREME_HILLS.getSerializedName(), new LivingElementTable(5, 30, LibElements.STASIS));
 
         element_animal.add(EntityType.COW);
         element_animal.add(EntityType.SHEEP);
@@ -128,7 +116,7 @@ public class RegisterEvent {
                 /*
                 if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived()) {
                     ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
-                    Vector3d vec = event.getEntityLiving().getPositionVec();
+                    Vec3 vec = event.getEntityLiving().getPositionVec();
                     orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
                     orb.spellContext().element(state.getElement());
                     orb.spellContext().tick(200);
@@ -137,7 +125,7 @@ public class RegisterEvent {
                 }
                 else {
                     ManaPowerEntity orb = new ManaPowerEntity(ModEntities.mana_power.get(), event.getEntityLiving().world);
-                    Vector3d vec = event.getEntityLiving().getPositionVec();
+                    Vec3 vec = event.getEntityLiving().getPositionVec();
                     orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
                     orb.spellContext().tick(100);
                     orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
@@ -146,7 +134,7 @@ public class RegisterEvent {
 
                  */
                 ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
-                Vector3d vec = event.getEntityLiving().position();
+                Vec3 vec = event.getEntityLiving().position();
                 orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
                 orb.spellContext().element(state.getElement());
                 orb.setOrbType(true);
@@ -165,7 +153,7 @@ public class RegisterEvent {
                     if (e.getItem().isEdible()) {
                         int count = e.getItem().getCount();
                         ItemStack stack = new ItemStack(ModItems.ELEMENT_MEAT.get());
-                        CompoundNBT tag = new CompoundNBT();
+                        CompoundTag tag = new CompoundTag();
                         tag.putString("ELEMENT", state.getElement().type());
                         stack.setCount(count);
                         stack.setTag(tag);
@@ -175,7 +163,7 @@ public class RegisterEvent {
                     if (e.getItem().getItem().getRegistryName().toString().contains("wool")) {
                         int count = e.getItem().getCount();
                         ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
-                        CompoundNBT tag = new CompoundNBT();
+                        CompoundTag tag = new CompoundTag();
                         tag.putString("ELEMENT", state.getElement().type());
                         stack.setCount(count);
                         stack.setTag(tag);
@@ -185,7 +173,7 @@ public class RegisterEvent {
                     if (e.getItem().getItem().getRegistryName().toString().contains("string")) {
                         int count = e.getItem().getCount();
                         ItemStack stack = new ItemStack(ModItems.ELEMENT_STRING.get());
-                        CompoundNBT tag = new CompoundNBT();
+                        CompoundTag tag = new CompoundTag();
                         tag.putString("ELEMENT", state.getElement().type());
                         stack.setCount(count);
                         stack.setTag(tag);
@@ -215,8 +203,8 @@ public class RegisterEvent {
 
 
     public static boolean testIfGenerateShield(LivingEntity livingEntity) {
-        for(PlayerEntity playerEntity : livingEntity.level.players()) {
-            if(playerEntity.getOffhandItem().getItem() instanceof EnderPearlItem &&
+        for(Player playerEntity : livingEntity.level.players()) {
+            if(playerEntity.getOffhandItem().getItem() instanceof EnderpearlItem &&
                     playerEntity.getCommandSenderWorld() == livingEntity.getCommandSenderWorld() &&
                     playerEntity.distanceToSqr(livingEntity) <= 4096)
                 return true;

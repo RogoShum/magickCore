@@ -5,19 +5,19 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 
 public class ModGroups {
-	public static final ItemGroup ITEM_GROUP = new MagickCoreGroup();
-	public static final ItemGroup ELEMENT_ITEM_GROUP = new ElementItemGroup();
-	public static final ItemGroup ENTITY_TYPE_GROUP = new EntityTypeGroup();
-	public static final ItemGroup POTION_TYPE_GROUP = new PotionTypeGroup();
-	public static final ItemGroup MAGICK_CONTEXT_GROUP = new MagickContextGroup();
+	public static final CreativeModeTab ITEM_GROUP = new MagickCoreGroup();
+	public static final CreativeModeTab ELEMENT_ITEM_GROUP = new ElementItemGroup();
+	public static final CreativeModeTab ENTITY_TYPE_GROUP = new EntityTypeGroup();
+	public static final CreativeModeTab POTION_TYPE_GROUP = new PotionTypeGroup();
+	public static final CreativeModeTab MAGICK_CONTEXT_GROUP = new MagickContextGroup();
 	
-	static class MagickCoreGroup extends ItemGroup {
+	static class MagickCoreGroup extends CreativeModeTab {
 		public MagickCoreGroup() {
-	        super(MagickCore.MOD_ID + "_group");
+	        super(CreativeModeTab.TABS.length-1, MagickCore.MOD_ID + "_group");
 	    }
 
 	    @Override
@@ -26,9 +26,9 @@ public class ModGroups {
 	    }
 	}
 
-	static class EntityTypeGroup extends ItemGroup {
+	static class EntityTypeGroup extends CreativeModeTab {
 		public EntityTypeGroup() {
-			super(MagickCore.MOD_ID + "_entity_type_group");
+			super(CreativeModeTab.TABS.length-1, MagickCore.MOD_ID + "_entity_type_group");
 		}
 
 		@Override
@@ -39,9 +39,9 @@ public class ModGroups {
 		}
 	}
 
-	static class ElementItemGroup extends ItemGroup {
+	static class ElementItemGroup extends CreativeModeTab {
 		public ElementItemGroup() {
-			super(MagickCore.MOD_ID + "_element_item_group");
+			super(CreativeModeTab.TABS.length-1, MagickCore.MOD_ID + "_element_item_group");
 		}
 
 		@Override
@@ -50,9 +50,9 @@ public class ModGroups {
 		}
 	}
 
-	static class MagickContextGroup extends ItemGroup {
+	static class MagickContextGroup extends CreativeModeTab {
 		public MagickContextGroup() {
-			super(MagickCore.MOD_ID + "_magick_context_group");
+			super(CreativeModeTab.TABS.length-1, MagickCore.MOD_ID + "_magick_context_group");
 		}
 
 		@Override
@@ -61,9 +61,9 @@ public class ModGroups {
 		}
 	}
 
-	static class PotionTypeGroup extends ItemGroup {
+	static class PotionTypeGroup extends CreativeModeTab {
 		public PotionTypeGroup() {
-			super(MagickCore.MOD_ID + "_potion_type_group");
+			super(CreativeModeTab.TABS.length-1, MagickCore.MOD_ID + "_potion_type_group");
 		}
 
 		@Override
