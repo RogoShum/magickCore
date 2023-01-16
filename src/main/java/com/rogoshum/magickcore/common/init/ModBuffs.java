@@ -13,6 +13,8 @@ import com.rogoshum.magickcore.common.network.Networking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,7 +98,7 @@ public class ModBuffs {
                 if(!MagickReleaseHelper.sameLikeOwner(e, entity) && !(entity instanceof LivingEntity)) {
                     double factor = entity.getDeltaMovement().normalize().dot(e.position().add(0, e.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize());
                     if(factor > 0.8) {
-                        Vector3d motion = entity.getDeltaMovement();
+                        Vec3 motion = entity.getDeltaMovement();
                         entity.push(-motion.x, -motion.y, -motion.z);
                     }
                 }

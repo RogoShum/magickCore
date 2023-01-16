@@ -13,11 +13,10 @@ import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class SpiritBowItem extends ManaItem implements IManaContextItem {
     public SpiritBowItem(Properties properties) {
@@ -25,7 +24,7 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
+    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
         EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(entityLiving.level);

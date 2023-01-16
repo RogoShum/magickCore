@@ -7,21 +7,27 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.registry.DeferredRegister;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
+import net.minecraft.core.Registry;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.MerchantOffer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class ModVillager {
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, MagickCore.MOD_ID);
-    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, MagickCore.MOD_ID);
-    public static final DeferredRegister<SensorType<?>> SENSOR_TYPES = DeferredRegister.create(ForgeRegistries.SENSOR_TYPES, MagickCore.MOD_ID);
+    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(Registry.VILLAGER_PROFESSION, MagickCore.MOD_ID);
+    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(Registry.POINT_OF_INTEREST_TYPE, MagickCore.MOD_ID);
+    public static final DeferredRegister<SensorType<?>> SENSOR_TYPES = DeferredRegister.create(Registry.SENSOR_TYPE, MagickCore.MOD_ID);
     public static final RegistryObject<PoiType> MAGE_POI = POI_TYPES.register("mage",
             () -> new PoiType("mage", ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1));
     public static final RegistryObject<VillagerProfession> MAGE = VILLAGER_PROFESSIONS.register("mage",
@@ -58,7 +64,7 @@ public class ModVillager {
         TradList.add(ModEntities.CHARGE);
     }
 
-    public static class EntityTypeTrade implements VillagerTrades.ITrade {
+    public static class EntityTypeTrade implements VillagerTrades.ItemListing {
         @Override
         public MerchantOffer getOffer(Entity trader, Random rand) {
             int count = rand.nextInt(3) + 1;

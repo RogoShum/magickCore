@@ -1,11 +1,9 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.common.item.BaseItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 
 public abstract class EntityItem extends BaseItem {
     public EntityItem(Properties properties) {
@@ -13,23 +11,23 @@ public abstract class EntityItem extends BaseItem {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        ActionResultType actionresulttype = this.tryPlace(new BlockItemUseContext(context));
+    public InteractionResult useOn(UseOnContext context) {
+        InteractionResult actionresulttype = this.tryPlace(new BlockPlaceContext(context));
         return !actionresulttype.consumesAction() && this.isEdible() ? this.use(context.getLevel(), context.getPlayer(), context.getHand()).getResult() : actionresulttype;
     }
 
-    public ActionResultType tryPlace(BlockItemUseContext context) {
+    public InteractionResult tryPlace(BlockPlaceContext context) {
         if (!context.canPlace()) {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         } else {
             if (!context.getLevel().isEmptyBlock(context.getClickedPos())) {
-                return ActionResultType.FAIL;
+                return InteractionResult.FAIL;
             } else {
                 placeEntity(context);
-                return ActionResultType.sidedSuccess(context.getLevel().isClientSide());
+                return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
             }
         }
     }
 
-    public abstract void placeEntity(BlockItemUseContext context);
+    public abstract void placeEntity(BlockPlaceContext context);
 }

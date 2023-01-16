@@ -11,25 +11,23 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import java.util.List;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     public DirectionMemoryItem(Properties properties) {
@@ -53,7 +51,7 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         if(stack.hasTag() && NBTTagHelper.hasVectorDouble(stack.getTag(), "direction")) {
-            Vector3d vector3d = NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction");
+            Vec3 vector3d = NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction");
             data.spellContext().addChild(DirectionContext.create(vector3d));
             return true;
         }
@@ -61,33 +59,33 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position"))
-                tooltip.add(new StringTextComponent(
-                        new TranslationTextComponent(MagickCore.MOD_ID + ".description." + LibContext.POSITION).getString()
+                tooltip.add(new TextComponent(
+                        new TranslatableComponent(MagickCore.MOD_ID + ".description." + LibContext.POSITION).getString()
                                 + " " + NBTTagHelper.getVectorFromNBT(stack.getTag(), "position")
                 ));
             else if(NBTTagHelper.hasVectorDouble(stack.getTag(), "direction"))
-            tooltip.add(new StringTextComponent(
-                    new TranslationTextComponent(MagickCore.MOD_ID + ".description." + LibContext.DIRECTION).getString()
+            tooltip.add(new TextComponent(
+                    new TranslatableComponent(MagickCore.MOD_ID + ".description." + LibContext.DIRECTION).getString()
                             + " " + NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction")
             ));
         }
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        addPosition(context.getItemInHand(), Vector3d.atCenterOf(context.getClickedPos()));
-        context.getLevel().playSound(null, context.getClickedPos(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
-        return ActionResultType.SUCCESS;
+    public InteractionResult useOn(UseOnContext context) {
+        addPosition(context.getItemInHand(), Vec3.atCenterOf(context.getClickedPos()));
+        context.getLevel().playSound(null, context.getClickedPos(), ModSounds.soft_buildup.get(), SoundSource.NEUTRAL, 0.15f, 1.0f);
+        return InteractionResult.SUCCESS;
     }
 
-    public void addPosition(ItemStack stack, Vector3d vec) {
+    public void addPosition(ItemStack stack, Vec3 vec) {
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position")) {
-                Vector3d fir = NBTTagHelper.getVectorFromNBT(stack.getTag(), "position");
+                Vec3 fir = NBTTagHelper.getVectorFromNBT(stack.getTag(), "position");
                 NBTTagHelper.putVectorDouble(stack.getTag(), "direction", vec.subtract(fir).normalize());
                 NBTTagHelper.removeVectorDouble(stack.getTag(), "position");
             } else {
@@ -100,23 +98,23 @@ public class DirectionMemoryItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
         if(playerIn.isShiftKeyDown() && itemstack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "direction"))
                 NBTTagHelper.removeVectorDouble(itemstack.getTag(), "direction");
             if(NBTTagHelper.hasVectorDouble(itemstack.getTag(), "position"))
                 NBTTagHelper.removeVectorDouble(itemstack.getTag(), "position");
-            return ActionResult.success(itemstack);
+            return InteractionResultHolder.success(itemstack);
         }
-        Vector3d dir = playerIn.getLookAngle();
+        Vec3 dir = playerIn.getLookAngle();
         Entity entity = MagickReleaseHelper.getEntityLookedAt(playerIn, 4);
         if(entity != null) {
             dir = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
             addPosition(itemstack, dir);
         } else
             NBTTagHelper.putVectorDouble(itemstack.getOrCreateTag(), "direction", dir);
-        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.soft_buildup.get(), SoundCategory.NEUTRAL, 0.15f, 1.0f);
-        return ActionResult.success(itemstack);
+        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.soft_buildup.get(), SoundSource.NEUTRAL, 0.15f, 1.0f);
+        return InteractionResultHolder.success(itemstack);
     }
 }

@@ -19,9 +19,12 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -33,7 +36,7 @@ import java.util.function.Supplier;
 
 public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/radiance_well.png");
-    public RadianceWellEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public RadianceWellEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

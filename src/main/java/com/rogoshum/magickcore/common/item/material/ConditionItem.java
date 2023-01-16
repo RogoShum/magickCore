@@ -13,20 +13,20 @@ import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ConditionItem extends ManaItem implements IManaMaterial {
@@ -60,7 +60,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
         if(spellContext.containChild(LibContext.CONDITION)) {
             ConditionContext context = spellContext.getChild(LibContext.CONDITION);
             for(Condition<?> condition : conditionContext.conditions) {
-                CompoundNBT tag = new CompoundNBT();
+                CompoundTag tag = new CompoundTag();
                 condition.write(tag);
                 try {
                     Condition<?> condition1 = MagickRegistry.getCondition(condition.getName());
@@ -75,7 +75,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
         } else {
             ConditionContext context = ConditionContext.create();
             for(Condition<?> condition : conditionContext.conditions) {
-                CompoundNBT tag = new CompoundNBT();
+                CompoundTag tag = new CompoundTag();
                 condition.write(tag);
                 try {
                     Condition<?> condition1 = MagickRegistry.getCondition(condition.getName());
@@ -92,7 +92,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             ItemStack condition = new ItemStack(this);
             ExtraDataUtil.itemManaData(condition, (data) -> data.spellContext().addChild(ConditionContext.create(MagickRegistry.getCondition(this.condition))));
@@ -101,8 +101,8 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
@@ -112,7 +112,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if(playerIn.isShiftKeyDown()) {
             ItemStack stack = playerIn.getItemInHand(handIn);
             ItemManaData thisData = ExtraDataUtil.itemManaData(stack);
@@ -121,7 +121,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
             ConditionContext conditionContext = thisData.spellContext().getChild(LibContext.CONDITION);
             conditionContext.conditions.forEach(Condition::setNegate);
             thisData.spellContext().addChild(conditionContext);
-            return ActionResult.success(stack);
+            return InteractionResultHolder.success(stack);
         }
         MagickCore.LOGGER.info(playerIn.getMainHandItem().getTag());
         return super.use(worldIn, playerIn, handIn);

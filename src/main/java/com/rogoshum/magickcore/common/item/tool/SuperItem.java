@@ -11,18 +11,18 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class SuperItem extends BaseItem {
@@ -31,11 +31,11 @@ public class SuperItem extends BaseItem {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity playerIn) {
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity playerIn) {
         if(!worldIn.isClientSide) {
             EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
             float mana = state.getManaValue();
-            if(playerIn instanceof PlayerEntity && ((PlayerEntity) playerIn).isCreative())
+            if(playerIn instanceof Player && ((Player) playerIn).isCreative())
                 mana = ManaLimit.MAX_MANA.getValue();
             MagickElement element = ExtraDataUtil.entityStateData(playerIn).getElement();
             MagickContext context = MagickContext.create(worldIn).caster(playerIn).noCost().applyType(ApplyType.SUPER).tick((int) mana).element(element);
@@ -49,10 +49,10 @@ public class SuperItem extends BaseItem {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
         playerIn.startUsingItem(handIn);
-        return ActionResult.consume(itemstack);
+        return InteractionResultHolder.consume(itemstack);
     }
 
     @Override
@@ -61,12 +61,12 @@ public class SuperItem extends BaseItem {
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.SUPER_D));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(new TranslatableComponent(LibItem.SUPER_D));
     }
 }

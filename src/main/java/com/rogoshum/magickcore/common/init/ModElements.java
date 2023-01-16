@@ -6,7 +6,7 @@ import com.rogoshum.magickcore.common.registry.elementmap.ElementFunctions;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.Color;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.ArrayList;
 import java.util.List;

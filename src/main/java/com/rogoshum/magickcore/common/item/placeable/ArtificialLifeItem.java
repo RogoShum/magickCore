@@ -5,13 +5,13 @@ import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class ArtificialLifeItem extends EntityItem {
     public ArtificialLifeItem() {
@@ -19,16 +19,16 @@ public class ArtificialLifeItem extends EntityItem {
     }
 
     @Override
-    public void placeEntity(BlockItemUseContext context) {
+    public void placeEntity(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
-        World world = context.getLevel();
-        PlayerEntity playerentity = context.getPlayer();
+        Level world = context.getLevel();
+        Player playerentity = context.getPlayer();
         ItemStack itemstack = context.getItemInHand();
         Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ArtificialLifeEntity artificialLifeEntity = ModEntities.ARTIFICIAL_LIFE.get().create(world);
         if(createEntity instanceof ArtificialLifeEntity)
             artificialLifeEntity = (ArtificialLifeEntity) createEntity;
-        Vector3d pos = Vector3d.atCenterOf(blockpos);
+        Vec3 pos = Vec3.atCenterOf(blockpos);
         artificialLifeEntity.setPos(pos.x, pos.y - 0.5, pos.z);
         if (playerentity == null || !playerentity.abilities.instabuild) {
             itemstack.shrink(1);

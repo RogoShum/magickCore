@@ -9,22 +9,8 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.OffsetContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.ItemStack;
 
 public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMaterial {
     public OffsetMemoryItem() {
@@ -41,10 +27,10 @@ public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMateri
         return 0;
     }
 
-    public void addPosition(ItemStack stack, Vector3d vec) {
+    public void addPosition(ItemStack stack, Vec3 vec) {
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position")) {
-                Vector3d fir = NBTTagHelper.getVectorFromNBT(stack.getTag(), "position");
+                Vec3 fir = NBTTagHelper.getVectorFromNBT(stack.getTag(), "position");
                 NBTTagHelper.putVectorDouble(stack.getTag(), "direction", vec.subtract(fir));
                 NBTTagHelper.removeVectorDouble(stack.getTag(), "position");
             } else {
@@ -59,7 +45,7 @@ public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMateri
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         if(stack.hasTag() && NBTTagHelper.hasVectorDouble(stack.getTag(), "direction")) {
-            Vector3d vector3d = NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction");
+            Vec3 vector3d = NBTTagHelper.getVectorFromNBT(stack.getTag(), "direction");
             if(data.spellContext().containChild(LibContext.OFFSET)) {
                 OffsetContext offsetContext = data.spellContext().getChild(LibContext.OFFSET);
                 data.spellContext().addChild(offsetContext.add(vector3d));

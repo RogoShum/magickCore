@@ -14,20 +14,19 @@ import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ManaEnergyItem extends ManaItem implements IManaMaterial {
@@ -59,7 +58,7 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
         entities.forEach(entity1 -> {
             ItemStackUtil.setItemEntityAge((ItemEntity)entity1, -32768);
             double speed = entity1.getDeltaMovement().length();
-            Vector3d motion = entity.position().subtract(entity1.position()).normalize().scale(speed);
+            Vec3 motion = entity.position().subtract(entity1.position()).normalize().scale(speed);
             entity1.setDeltaMovement(entity1.getDeltaMovement().scale(0.4).add(motion.scale(0.6)));
 
             if(entity.distanceToSqr(entity1) <= 0.01) {
@@ -80,10 +79,10 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
 
     public void spawnParticle(ItemEntity entity) {
         if(!entity.level.isClientSide) return;
-        Vector3d vec = entity.position().add(0, entity.getBbHeight(), 0);
+        Vec3 vec = entity.position().add(0, entity.getBbHeight(), 0);
         for(int i = 0; i < 16; ++i) {
             LitParticle par = new LitParticle(entity.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.x
+                    , new Vec3(MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.x
                     , MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.y
                     , MagickCore.getNegativeToOne() * entity.getBbWidth() + vec.z)
                     , 0.05f, 0.05f, MagickCore.rand.nextFloat(), 20, ModElements.ORIGIN.getRenderer());
@@ -118,7 +117,7 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             ItemStack manaEnergy = new ItemStack(this);
             ItemStack rangeEnergy = manaEnergy.copy();
@@ -136,8 +135,8 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 

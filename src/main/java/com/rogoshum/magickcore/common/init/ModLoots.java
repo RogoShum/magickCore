@@ -6,7 +6,10 @@ import com.rogoshum.magickcore.common.util.LootUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.RegistryEvent;
@@ -40,11 +43,10 @@ public class ModLoots {
         }
     }
 
-    public static class RandomLootModifier implements IGlobalLootModifier {
-        public RandomLootModifier(ResourceLocation location, ILootCondition[] ailootcondition) {
+    public static class RandomLootModifier implements GlobalLootModifier {
+        public RandomLootModifier(ResourceLocation location, LootCondition[] ailootcondition) {
         }
 
-        @Nonnull
         @Override
         public List<ItemStack> apply(List<ItemStack> generatedLoot, LootContext context) {
            if(context.getQueriedLootTableId().toString().contains("chests")) {

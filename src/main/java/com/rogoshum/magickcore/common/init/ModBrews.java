@@ -1,5 +1,7 @@
 package com.rogoshum.magickcore.common.init;
 
+import de.siphalor.nbtcrafting.recipe.BrewingRecipe;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -21,8 +23,8 @@ public class ModBrews {
         ItemStack MANA_CHAOS = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.CHAOS_THEOREM_P.get());
         ItemStack MANA_CONVERT = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P.get());
 
-        ForgeRegistries.ITEMS.forEach(item -> {
-            String name = item.getRegistryName().toString();
+        Registry.ITEM.forEach(item -> {
+            String name = item.getDescriptionId();
             Ingredient ingredient = Ingredient.of(item);
             if(name.contains("spirit_crystal"))
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(Items.POTION), Ingredient.of(item), PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));

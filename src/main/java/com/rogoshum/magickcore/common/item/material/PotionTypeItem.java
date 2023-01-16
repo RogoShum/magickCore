@@ -15,38 +15,22 @@ import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.core.NonNullList;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class PotionTypeItem extends ManaItem implements IManaMaterial {
@@ -57,11 +41,6 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
 
     @Override
     public boolean disappearAfterRead() {
-        return false;
-    }
-
-    @Override
-    public boolean showDurabilityBar(ItemStack stack) {
         return false;
     }
 
@@ -95,17 +74,17 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         ItemStack sample = new ItemStack(this);
         ExtraDataUtil.itemManaData(sample, (data) -> data.spellContext().applyType(ApplyType.POTION));
         if (group == ModGroups.POTION_TYPE_GROUP) {
-            ForgeRegistries.POTION_TYPES.forEach(potion -> fillPotion(items, sample, potion));
+            Registry.POTION.forEach(potion -> fillPotion(items, sample, potion));
         }
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent(LibItem.CONTEXT_MATERIAL));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 

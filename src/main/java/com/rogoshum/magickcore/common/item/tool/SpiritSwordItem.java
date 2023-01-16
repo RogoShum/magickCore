@@ -9,16 +9,15 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     public SpiritSwordItem(Properties properties) {
@@ -31,13 +30,13 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        return ActionResult.pass(playerIn.getItemInHand(handIn));
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        return InteractionResultHolder.pass(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.NONE;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.NONE;
     }
 
     @Override
@@ -46,13 +45,13 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem {
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity player, LivingEntity entity) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(player).victim(entity).element(element);
         MagickReleaseHelper.releaseMagick(MagickContext.create(player.level, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
-        Hand hand = player.getMainHandItem() == stack ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        InteractionHand hand = player.getMainHandItem() == stack ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         player.startUsingItem(hand);
         boolean success = MagickReleaseHelper.releaseMagick(context);
         player.releaseUsingItem();

@@ -4,13 +4,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-
-import net.minecraft.item.Item.Properties;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class PlaceableEntityItem extends EntityItem {
     public final float WIDTH;
@@ -23,15 +21,15 @@ public class PlaceableEntityItem extends EntityItem {
     }
 
     @Override
-    public void placeEntity(BlockItemUseContext context) {
-        Vector3d pos = context.getClickLocation();
+    public void placeEntity(BlockPlaceContext context) {
+        Vec3 pos = context.getClickLocation();
         Direction direction = context.getClickedFace();
-        Vector3d offset = Vector3d.atLowerCornerOf(direction.getNormal()).scale(WIDTH);
+        Vec3 offset = Vec3.atLowerCornerOf(direction.getNormal()).scale(WIDTH);
         if(direction.getAxis().isVertical()) {
             if(direction.getAxisDirection().equals(Direction.AxisDirection.POSITIVE))
-                offset = Vector3d.ZERO;
+                offset = Vec3.ZERO;
             else
-                offset = Vector3d.atLowerCornerOf(direction.getNormal()).scale(HEIGHT);
+                offset = Vec3.atLowerCornerOf(direction.getNormal()).scale(HEIGHT);
         }
         pos.add(offset);
         PlaceableItemEntity entity = placeEntity(context.getLevel(), context.getItemInHand(), direction, pos);
@@ -40,7 +38,7 @@ public class PlaceableEntityItem extends EntityItem {
         }
     }
 
-    public static PlaceableItemEntity placeEntity(World world, ItemStack stack, Direction direction, Vector3d pos) {
+    public static PlaceableItemEntity placeEntity(Level world, ItemStack stack, Direction direction, Vec3 pos) {
         if(world.isClientSide) return null;
         if(!(stack.getItem() instanceof PlaceableEntityItem)) return null;
         PlaceableItemEntity itemEntity = ModEntities.PLACEABLE_ENTITY.get().create(world);
