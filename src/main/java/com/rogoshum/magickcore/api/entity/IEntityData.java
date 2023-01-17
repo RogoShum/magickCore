@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.api.entity;
 
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.function.Consumer;
 

@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -9,7 +9,7 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ChaoReachEntity;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
         float scale = Math.min(1f, (float) (entity.tickCount - 30) / 5f) * 0.75f;
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         matrixStackIn.scale(entity.getBbWidth() * scale, entity.getBbWidth() * scale, entity.getBbWidth() * scale);
         matrixStackIn.pushPose();
         matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());

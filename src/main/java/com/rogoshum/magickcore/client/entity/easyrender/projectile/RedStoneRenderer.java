@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender.projectile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -9,10 +11,8 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.RedStoneEntity;
 import com.rogoshum.magickcore.common.magick.Color;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
     }
 
     public void renderType0(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees((float) (entity.getDeltaMovement().x * 360) / entity.getBbWidth()));
@@ -49,7 +49,7 @@ public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
     }
 
     public void renderType1(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees((float) (entity.getDeltaMovement().x * 360) / entity.getBbWidth()));

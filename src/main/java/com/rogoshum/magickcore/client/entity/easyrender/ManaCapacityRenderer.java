@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -10,9 +12,7 @@ import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -40,7 +40,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
     }
 
     public void render(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(scale, scale, scale);
@@ -48,7 +48,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
     }
 
     public void renderCapacity(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));

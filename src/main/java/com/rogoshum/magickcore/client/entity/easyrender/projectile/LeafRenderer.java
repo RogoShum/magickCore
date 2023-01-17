@@ -8,8 +8,7 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.LeafEntity;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.resources.ResourceLocation;
 import java.util.HashMap;
 import java.util.function.Consumer;
 

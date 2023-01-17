@@ -34,13 +34,14 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -76,7 +77,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
         super.writeSpawnData(buffer);
-        CompoundNBT addition = new CompoundNBT();
+        CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
         buffer.writeNbt(addition);
     }
@@ -95,7 +96,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         items.forEach(entity -> {
             if(entity.isAlive() && entity.tickCount > 20) {
                 ItemEntity item = (ItemEntity) entity;
-                Vector3d relativeVec = relativeVec(item);
+                Vec3 relativeVec = relativeVec(item);
                 ItemStack stack = item.getItem().copy();
                 stack.setCount(1);
                 PosItem posItem = new PosItem(relativeVec, stack, getStacks().size());
@@ -133,7 +134,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     protected void applyParticle() {
         for (int i = 0; i < 1; ++i) {
             LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getX() + (0.5 - random.nextFloat()), this.getY(), this.getZ() + (0.5 - random.nextFloat())), 0.03f, 0.03f, random.nextFloat(), (int)(20f * getBbHeight()), spellContext().element.getRenderer());
+                    , new Vec3(this.getX() + (0.5 - random.nextFloat()), this.getY(), this.getZ() + (0.5 - random.nextFloat())), 0.03f, 0.03f, random.nextFloat(), (int)(20f * getBbHeight()), spellContext().element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -171,9 +172,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public void spawnSupplierParticle(Entity supplier) {
-        Vector3d center = new Vector3d(0, this.getBbHeight() / 2, 0);
-        Vector3d end = this.position().add(center);
-        Vector3d start = supplier.position().add(0, supplier.getBbHeight() / 2, 0);
+        Vec3 center = new Vec3(0, this.getBbHeight() / 2, 0);
+        Vec3 end = this.position().add(center);
+        Vec3 start = supplier.position().add(0, supplier.getBbHeight() / 2, 0);
         double dis = start.subtract(end).length();
         if(dis < 0.2)
             dis = 0.2;
@@ -181,15 +182,15 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         float directionPoint = (float) (supplier.tickCount % distance) / distance;
         int c = (int) (directionPoint * distance);
 
-        Vector3d direction = Vector3d.ZERO;
-        Vector3d origin = start.subtract(end);
+        Vec3 direction = Vec3.ZERO;
+        Vec3 origin = start.subtract(end);
         double y = -origin.y;
         double x = Math.abs(origin.x);
         double z = Math.abs(origin.z);
         if(x > z)
-            direction = new Vector3d(x, y, 0);
+            direction = new Vec3(x, y, 0);
         else if(z > x)
-            direction = new Vector3d(0, y, z);
+            direction = new Vec3(0, y, z);
         float scale;
         float alpha = 0.5f;
 
@@ -205,9 +206,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                 scale = 0.15f;
 
             double trailFactor = i / (distance - 1.0D);
-            Vector3d pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
+            Vec3 pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
             LitParticle par = new LitParticle(this.level, element.getRenderer().getParticleTexture()
-                    , new Vector3d(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
+                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -283,10 +284,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                                 ItemManaData coreData = ExtraDataUtil.itemManaData(newCore);
                                 post.postContext = null;
                                 coreData.spellContext().copy(post);
-                                CompoundNBT tag = item.serialize(new CompoundNBT());
-                                PosItem posItem = new PosItem(Vector3d.ZERO, ItemStack.EMPTY, getStacks().size());
-                                CompoundNBT posTag = tag.getCompound("PosItem");
-                                posTag.put("ITEM", newCore.save(new CompoundNBT()));
+                                CompoundTag tag = item.serialize(new CompoundTag());
+                                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size());
+                                CompoundTag posTag = tag.getCompound("PosItem");
+                                posTag.put("ITEM", newCore.save(new CompoundTag()));
                                 posItem.deserialize(tag);
                                 stacks.add(posItem);
                             }
@@ -313,7 +314,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         float scale = 1f;
         for (int i = 0; i < 20; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
+                    , new Vec3(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
                     , position().y + 0.2
                     , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().z)
                     , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (80 * MagickCore.rand.nextFloat()), 20), ModElements.ORIGIN.getRenderer());
@@ -330,12 +331,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         if(compound.contains("STACKS")) {
-            CompoundNBT tag = compound.getCompound("STACKS");
+            CompoundTag tag = compound.getCompound("STACKS");
             tag.getAllKeys().forEach(key -> {
-                CompoundNBT stack = tag.getCompound(key);
-                PosItem posItem = new PosItem(Vector3d.ZERO, ItemStack.EMPTY, getStacks().size());
+                CompoundTag stack = tag.getCompound(key);
+                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size());
                 posItem.deserialize(stack);
                 if(!posItem.itemStack.isEmpty())
                     this.stacks.add(posItem);
@@ -344,11 +345,11 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
-        CompoundNBT tag = new CompoundNBT();
+    protected void addAdditionalSaveData(CompoundTag compound) {
+        CompoundTag tag = new CompoundTag();
         for(int i = 0; i < stacks.size(); ++i) {
             PosItem posItem = stacks.get(i);
-            CompoundNBT stack = new CompoundNBT();
+            CompoundTag stack = new CompoundTag();
             posItem.serialize(stack);
             tag.put(String.valueOf(i), stack);
         }
@@ -358,7 +359,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     public void dropItem() {
         if(!level.isClientSide) {
             getStacks().forEach((posItem) -> {
-                Vector3d pos = posItem.pos.add(this.position());
+                Vec3 pos = posItem.pos.add(this.position());
                 ItemEntity entity = new ItemEntity(level, pos.x, pos.y, pos.z, posItem.itemStack);
                 level.addFreshEntity(entity);
             });
@@ -381,8 +382,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         super.remove();
     }
 
-    private Vector3d relativeVec(ItemEntity entity) {
-        return new Vector3d(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ());
+    private Vec3 relativeVec(ItemEntity entity) {
+        return new Vec3(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ());
     }
 
     @Override
@@ -410,15 +411,15 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     public static class PosItem {
-        public Vector3d pos;
-        public Vector3d prePos;
-        public Vector3d motion = Vector3d.ZERO;
+        public Vec3 pos;
+        public Vec3 prePos;
+        public Vec3 motion = Vec3.ZERO;
         private ItemStack itemStack;
         private final int sequence;
         public int age;
         public float hoverStart;
 
-        public PosItem(Vector3d pos, ItemStack stack, int sequence) {
+        public PosItem(Vec3 pos, ItemStack stack, int sequence) {
             this.pos = pos;
             this.prePos = pos;
             this.itemStack = stack;
@@ -439,22 +440,22 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
             return itemStack;
         }
 
-        public CompoundNBT serialize(CompoundNBT tag) {
-            CompoundNBT posItem = new CompoundNBT();
+        public CompoundTag serialize(CompoundTag tag) {
+            CompoundTag posItem = new CompoundTag();
             NBTTagHelper.putVectorDouble(posItem, "POS", pos);
             NBTTagHelper.putVectorDouble(posItem, "MOTION", motion);
-            posItem.put("ITEM", itemStack.save(new CompoundNBT()));
+            posItem.put("ITEM", itemStack.save(new CompoundTag()));
             posItem.putInt("AGE", age);
             posItem.putFloat("HOVER", hoverStart);
             tag.put("PosItem", posItem);
             return tag;
         }
 
-        public void deserialize(CompoundNBT tag) {
+        public void deserialize(CompoundTag tag) {
             if(!tag.contains("PosItem")) return;
             tag = tag.getCompound("PosItem");
             if(NBTTagHelper.hasVectorDouble(tag, "POS")) {
-                Vector3d pos = NBTTagHelper.getVectorFromNBT(tag, "POS");
+                Vec3 pos = NBTTagHelper.getVectorFromNBT(tag, "POS");
                 this.pos = pos;
                 this.prePos = pos;
             }

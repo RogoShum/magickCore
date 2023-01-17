@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModElements;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class SolarRenderer extends ElementRenderer {
     private ResourceLocation fire_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/solar/mist/fire_0.png");

@@ -8,8 +8,7 @@ import com.rogoshum.magickcore.client.render.SingleBuffer;
 import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -23,7 +22,7 @@ public class PhantomRenderer extends EasyRenderer<PhantomEntity> {
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
         params.matrixStack.translate(0, -entity.getBbHeight() * 0.5, 0);
-        float f = MathHelper.lerp(params.partialTicks, entity.getEntity().yRotO, entity.getEntity().yRot);
+        float f = Mth.lerp(params.partialTicks, entity.getEntity().yRotO, entity.getEntity().yRot);
         Minecraft.getInstance().getEntityRenderDispatcher().render(entity.getEntity(), 0, 0, 0
                 , f, params.partialTicks, params.matrixStack, renderTypeBuffer, RenderHelper.halfLight);
         renderTypeBuffer.finish();

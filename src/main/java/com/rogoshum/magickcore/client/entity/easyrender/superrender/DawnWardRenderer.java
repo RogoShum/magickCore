@@ -1,15 +1,14 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.common.entity.superentity.DawnWardEntity;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -24,7 +23,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
     }
 
     public void renderOuter(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.scale(scale, scale, scale);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
@@ -42,7 +41,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
     }
 
     public void renderInner(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         matrixStackIn.scale(scale, scale, scale);

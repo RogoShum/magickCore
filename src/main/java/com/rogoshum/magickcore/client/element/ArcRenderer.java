@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModElements;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ArcRenderer extends ElementRenderer {
     private ResourceLocation sprite = new ResourceLocation(MagickCore.MOD_ID +":element/base/trail.png");

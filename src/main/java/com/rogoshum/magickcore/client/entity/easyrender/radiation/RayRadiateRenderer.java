@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -10,10 +11,9 @@ import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.radiation.RayTraceEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -29,14 +29,14 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
-        Vector3d dir = Vector3d.ZERO;
+        Vec3 dir = Vec3.ZERO;
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
         else if (entity.getOwner() != null)
             dir = entity.getOwner().getLookAngle().normalize();
-        Vector2f rota = getRotationFromVector(dir);
+        Vec2 rota = getRotationFromVector(dir);
         float scale = 0.25f;
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));

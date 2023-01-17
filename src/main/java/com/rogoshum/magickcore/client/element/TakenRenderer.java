@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModElements;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class TakenRenderer extends ElementRenderer {
     private ResourceLocation mist_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/element/taken/mist/taken_0.png");

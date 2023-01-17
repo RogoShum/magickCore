@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.mana;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.function.Consumer;
 

@@ -6,13 +6,14 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class ManaPointEntity extends ManaEntity {
-    protected Vector3d point;
+    protected Vec3 point;
     public ManaPointEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
-    public ManaPointEntity(EntityType<?> entityTypeIn, World worldIn, MagickElement element) {
+    public ManaPointEntity(EntityType<?> entityTypeIn, Level worldIn, MagickElement element) {
         super(entityTypeIn, worldIn, element);
     }
     @Override

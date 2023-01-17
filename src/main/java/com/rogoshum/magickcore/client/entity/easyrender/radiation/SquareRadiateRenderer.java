@@ -7,9 +7,9 @@ import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.radiation.SquareEntity;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -24,8 +24,8 @@ public class SquareRadiateRenderer extends EasyRenderer<SquareEntity> {
 
     public void render(RenderParams params) {
         Color color = entity.spellContext().element.color();
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        WorldRenderer.renderLineBox(params.matrixStack, params.buffer, entity.getBoundingBox().inflate(scale * 0.5).move(-cam.x, -cam.y, -cam.z), color.r(), color.g(), color.b(), 1.0F);
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        LevelRenderer.renderLineBox(params.matrixStack, params.buffer, entity.getBoundingBox().inflate(scale * 0.5).move(-cam.x, -cam.y, -cam.z), color.r(), color.g(), color.b(), 1.0F);
     }
 
     @Override

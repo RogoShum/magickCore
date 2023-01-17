@@ -1,21 +1,21 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRender {
+public abstract class EasyTileRenderer<T extends BlockEntity>implements IEasyRender {
     protected static final ResourceLocation sphereOrb = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png");
     protected static final ResourceLocation cylinder_bloom = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
     protected static final ResourceLocation sphere_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_rotate.png");
@@ -32,7 +32,7 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
         this.tile = tile;
     }
 
-    public static Vector2f getRotationFromVector(Vector3d dirc) {
+    public static Vec2 getRotationFromVector(Vec3 dirc) {
         float yaw = (float) (Math.atan2(dirc.x, dirc.z) * 180 / Math.PI);
         if (yaw < 0)
             yaw += 360;
@@ -41,27 +41,27 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
         float pitch = (float) (Math.atan2(-dirc.y, tmp) * 180 / Math.PI);
         if (pitch < 0)
             pitch += 360;
-        return new Vector2f(yaw + 90, pitch - 90);
+        return new Vec2(yaw + 90, pitch - 90);
     }
 
     public boolean isRemote() {
         return tile.getLevel().isClientSide();
     }
 
-    public Vector3d getEntityRenderVector(float partialTicks) {
+    public Vec3 getEntityRenderVector(float partialTicks) {
         return positionVec();
     }
 
     @Override
     public void update() {
-        Vector3d vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
+        Vec3 vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
         x = vec.x;
         y = vec.y;
         z = vec.z;
     }
 
-    public void baseOffset(MatrixStack matrixStackIn) {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+    public void baseOffset(PoseStack matrixStackIn) {
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         matrixStackIn.translate(x - camX, y - camY, z - camZ);
     }
@@ -72,13 +72,13 @@ public abstract class EasyTileRenderer<T extends TileEntity>implements IEasyRend
     }
 
     @Override
-    public AxisAlignedBB boundingBox() {
-        return new AxisAlignedBB(tile.getBlockPos());
+    public AABB boundingBox() {
+        return new AABB(tile.getBlockPos());
     }
 
     @Override
-    public Vector3d positionVec() {
-        return Vector3d.atCenterOf(tile.getBlockPos());
+    public Vec3 positionVec() {
+        return Vec3.atCenterOf(tile.getBlockPos());
     }
 
     @Override

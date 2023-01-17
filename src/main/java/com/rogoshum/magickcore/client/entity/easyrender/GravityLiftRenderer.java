@@ -1,7 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -12,9 +13,8 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Queue;
@@ -49,11 +49,11 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
         if(entity.spellContext().containChild(LibContext.DIRECTION)) {
-            Vector3d dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.scale(-1);
-            Vector2f rota = getRotationFromVector(dir);
+            Vec3 dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.scale(-1);
+            Vec2 rota = getRotationFromVector(dir);
             matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
             matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         }
@@ -90,7 +90,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     }
 
     private void renderLaser(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.translate(0,  -1, 0);
         matrixStackIn.scale(0.25f, 0.25f, 0.25f);
@@ -102,7 +102,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     }
 
     private void renderInner(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.translate(0,  height * 0.5-1, 0);
 
@@ -115,7 +115,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     }
 
     private void renderOuter(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.translate(0,  height * 0.5-1, 0);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
@@ -128,7 +128,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
 
     private void renderBase(RenderParams renderParams) {
         baseOffset(renderParams.matrixStack);
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         RenderType renderType = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
@@ -8,14 +9,10 @@ import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.Mth;
 
 import java.util.HashMap;
 import java.util.Queue;
@@ -38,18 +35,18 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         super.update();
         preRotate = entity.tickCount % 11;
         postRotate = (entity.tickCount + 1) % 11;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
+        rotate = Mth.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         degrees = 360f * (rotate / 10);
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
     }
 
     public void renderSphereSlime(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);
@@ -57,7 +54,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     }
 
     public void renderSphereOpacity(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
@@ -65,7 +62,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     }
 
     public void renderSphereDistortion(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);

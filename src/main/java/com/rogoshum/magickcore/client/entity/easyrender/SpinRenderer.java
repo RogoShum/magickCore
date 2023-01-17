@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
@@ -14,13 +16,11 @@ import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -45,13 +45,13 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
         super.update();
         preRotate = entity.tickCount % 5;
         postRotate = (entity.tickCount + 1) % 5;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
+        rotate = Mth.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         renderer = entity.spellContext().element.getRenderer();
         length = entity.spellContext().range * 5.5f;
     }
 
     public void render(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
         matrixStackIn.pushPose();
@@ -68,11 +68,11 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
 
     public void offsetLaser(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = Vector3d.ZERO;
+        Vec3 dir = Vec3.ZERO;
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
 
-        Vector2f rota = getRotationFromVector(dir);
+        Vec2 rota = getRotationFromVector(dir);
         float scale = 0.1f;
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
@@ -80,9 +80,9 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
     }
 
     public void renderTop(RenderParams params) {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d pos = entity.getHitPoint();
+        Vec3 pos = entity.getHitPoint();
         params.matrixStack.translate(pos.x - camX, pos.y - camY + entity.getBbHeight() * 0.5, pos.z - camZ);
         RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getLineStripGlow(2.0)), new RenderHelper.RenderContext(1.0f, renderer.getColor(), RenderHelper.renderLight));
     }

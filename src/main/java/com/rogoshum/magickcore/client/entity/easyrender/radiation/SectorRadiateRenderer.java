@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -10,11 +11,9 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.function.Consumer;
 public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
     float scale;
     private static final RenderType TYPE = RenderHelper.getLineStripGlow(3);
-    private List<Vector3d> vector3dList = new ArrayList<>();
+    private List<Vec3> vector3dList = new ArrayList<>();
 
     public SectorRadiateRenderer(SectorEntity entity) {
         super(entity);
@@ -31,10 +30,10 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = Vector3d.ZERO;
+        Vec3 dir = Vec3.ZERO;
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
-        Vector2f rota = getRotationFromVector(dir);
+        Vec2 rota = getRotationFromVector(dir);
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y + 90));
         if(!vector3dList.isEmpty())
@@ -54,11 +53,11 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
         super.update();
         if(this.vector3dList.isEmpty()) {
             scale = entity.getRange();
-            List<Vector3d> vector3dList = new ArrayList<>();
-            Vector3d[] vectors = ParticleUtil.drawCone(Vector3d.ZERO, new Vector3d(Direction.UP.step()).scale(scale), 90.0, (int) Math.max(3, scale) * 2);
-            for (Vector3d vec : vectors) {
+            List<Vec3> vector3dList = new ArrayList<>();
+            Vec3[] vectors = ParticleUtil.drawCone(Vec3.ZERO, new Vec3(Direction.UP.step()).scale(scale), 90.0, (int) Math.max(3, scale) * 2);
+            for (Vec3 vec : vectors) {
                 vector3dList.add(vec);
-                vector3dList.add(Vector3d.ZERO);
+                vector3dList.add(Vec3.ZERO);
                 vector3dList.add(vec);
             }
             vector3dList.add(vectors[0]);

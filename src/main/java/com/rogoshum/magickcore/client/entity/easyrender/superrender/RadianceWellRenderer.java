@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -11,16 +13,14 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.HashMap;
 import java.util.Queue;
@@ -43,8 +43,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     }
 
     public void renderSword(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        PoseStack matrixStackIn = params.matrixStack;
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         matrixStackIn.translate(x - camX, y - camY + entity.getBbHeight() / 2, z - camZ);
         BufferBuilder bufferIn = params.buffer;
@@ -52,15 +52,15 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         matrixStackIn.translate(0.4, 0.1, 0);
         matrixStackIn.scale(2.5f, 2.5f, 2.5f);
         ItemStack stack = new ItemStack(Items.GOLDEN_SWORD);
-        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(bufferIn);
-        Minecraft.getInstance().getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+        BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
+        MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(bufferIn);
+        Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
         renderTypeBuffer.endBatch();
     }
 
     public void renderSphere(RenderParams params) {
         baseOffset(params.matrixStack);
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         BufferContext context = BufferContext.create(matrixStackIn, bufferIn, TYPE);
         float scale = 1.4f;
@@ -75,7 +75,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
     public void renderInnerLight(RenderParams params) {
         baseOffset(params.matrixStack);
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2f);
@@ -85,7 +85,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
 
     public void renderOuterLight(RenderParams params) {
         baseOffset(params.matrixStack);
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2.001f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2.001f);
@@ -94,7 +94,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
         matrixStackIn.translate(0, entity.getBbHeight() * 0.5, 0);
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);

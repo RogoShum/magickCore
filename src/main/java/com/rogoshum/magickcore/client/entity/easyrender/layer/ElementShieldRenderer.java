@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -14,10 +15,10 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -34,12 +35,12 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         Entity player = Minecraft.getInstance().player;
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = entity == player ? Vector3d.ZERO : player.getEyePosition(Minecraft.getInstance().getFrameTime())
-                .subtract(new Vector3d(x, y, z)).normalize().multiply(entity.getBbWidth() * 1.3d, entity.getBbHeight() * 0.5, entity.getBbWidth() * 1.3d);
+        Vec3 offset = entity == player ? Vec3.ZERO : player.getEyePosition(Minecraft.getInstance().getFrameTime())
+                .subtract(new Vec3(x, y, z)).normalize().multiply(entity.getBbWidth() * 1.3d, entity.getBbHeight() * 0.5, entity.getBbWidth() * 1.3d);
         matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getBbHeight() * 0.5f + offset.y, z - camZ + offset.z);
     }
 
@@ -68,7 +69,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     }
 
     public void renderCircle(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.scale(entity.getBbWidth() * 1.68f, entity.getBbHeight() * 0.89f, entity.getBbWidth() * 1.68f);
         RenderHelper.renderParticle(
@@ -77,7 +78,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     }
 
     public void renderBloom(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.scale(entity.getBbWidth() * 1.7f, entity.getBbHeight() * 0.9f, entity.getBbWidth() * 1.7f);
         RenderHelper.renderParticle(

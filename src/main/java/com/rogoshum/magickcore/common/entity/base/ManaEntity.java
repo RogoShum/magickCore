@@ -12,30 +12,23 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -55,7 +48,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(ManaEntity.class, DataSerializers.FLOAT);
     private int lastDamageTick;
 
-    public ManaEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ManaEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.entityData.define(dataUUID, Optional.of(MagickCore.emptyUUID));
         this.entityData.define(DAMAGE, 3);
@@ -85,7 +78,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AxisAlignedBB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
+        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
     }
 
     @Override
@@ -106,13 +99,13 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
-        CompoundNBT addition = new CompoundNBT();
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
         buffer.writeNbt(addition);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void handleEntityEvent(byte id) {
         if(id == 3)
@@ -127,7 +120,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         readAdditionalSaveData(additionalData.readNbt());
     }
 
@@ -157,14 +150,14 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     @Override
     @Nullable
     public Entity getOwner() {
-        if (this.owner_uuid != null && this.level instanceof ServerWorld) {
-            return ((ServerWorld)this.level).getEntity(this.owner_uuid);
-        } else if(this.level instanceof ServerWorld){
+        if (this.owner_uuid != null && this.level instanceof ServerLevel) {
+            return ((ServerLevel)this.level).getEntity(this.owner_uuid);
+        } else if(this.level instanceof ServerLevel){
             return this.owner_id != 0 ? this.level.getEntity(this.owner_id) : null;
         }
         else{
             ArrayList<Entity> list = new ArrayList<>();
-            ((ClientWorld)this.level).entitiesForRendering().forEach((list::add));
+            ((ClientLevel)this.level).entitiesForRendering().forEach((list::add));
 
             for (Entity entity : list)
             {
@@ -252,7 +245,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     @Override
     public void tick() {
         super.tick();
-        Vector3d vector3d = this.getDeltaMovement();
+        Vec3 vector3d = this.getDeltaMovement();
         double d2 = this.getX() + vector3d.x;
         double d0 = this.getY() + vector3d.y;
         double d1 = this.getZ() + vector3d.z;
@@ -321,7 +314,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     }
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         if (compound.hasUUID("Owner")) {
             this.owner_uuid = compound.getUUID("Owner");
             this.setOwnerUUID(this.owner_uuid);
@@ -330,7 +323,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         if (this.owner_uuid != null) {
             compound.putUUID("Owner", this.owner_uuid);
         }
@@ -366,12 +359,12 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public Vector3d positionVec() {
+    public Vec3 positionVec() {
         return position();
     }
 
     @Override
-    public World world() {
+    public Level world() {
         return getCommandSenderWorld();
     }
 
@@ -391,7 +384,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public AxisAlignedBB boundingBox() {
+    public AABB boundingBox() {
         return getBoundingBox();
     }
 }

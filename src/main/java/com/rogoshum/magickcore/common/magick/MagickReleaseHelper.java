@@ -25,6 +25,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
@@ -372,7 +375,7 @@ public class MagickReleaseHelper {
         for (Entity entity : entitiesInBoundingBox) {
             if (entity.isAlive() && entity.isPickable()) {
                 float collisionBorderSize = entity.getPickRadius();
-                AxisAlignedBB hitbox = entity.getBoundingBox().inflate(collisionBorderSize, collisionBorderSize, collisionBorderSize);
+                AABB hitbox = entity.getBoundingBox().inflate(collisionBorderSize, collisionBorderSize, collisionBorderSize);
                 Optional<Vec3> interceptPosition = hitbox.clip(positionVector, reachVector);
 
                 if (hitbox.contains(positionVector)) {
@@ -406,7 +409,7 @@ public class MagickReleaseHelper {
     public static BlockHitResult raycast(Entity entity, Vec3 origin, Vec3 ray, double len) {
         Vec3 ori = new Vec3(origin.x, origin.y, origin.z);
         Vec3 end = origin.add(ray.normalize().scale(len));
-        return entity.level.clip(new RayTraceContext(ori, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, entity));
+        return entity.level.clip(new ClipContext(ori, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, entity));
     }
 
     public static boolean sameLikeOwner(Entity owner, Entity other) {
@@ -432,7 +435,7 @@ public class MagickReleaseHelper {
         if (other instanceof Projectile && ownerFunction(owner, ((Projectile) other)::getOwner))
             return true;
 
-        if (other instanceof TameableEntity && ownerFunction(owner, ((Tameable) other)::getOwner))
+        if (other instanceof TamableAnimal && ownerFunction(owner, ((TamableAnimal) other)::getOwner))
             return true;
 
         AtomicBoolean flag = new AtomicBoolean(false);

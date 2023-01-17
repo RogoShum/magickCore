@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender.projectile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -11,10 +12,9 @@ import com.rogoshum.magickcore.common.entity.projectile.ManaArrowEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -30,14 +30,14 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
     }
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
-        Vector2f rota = getRotationFromVector(dir);
+        Vec3 dir = entity.getDeltaMovement().scale(-1).normalize();
+        Vec2 rota = getRotationFromVector(dir);
         float scale = 0.75f * entity.getBbWidth();
         params.matrixStack.translate(dir.x * entity.getBbWidth() * 2, dir.y * entity.getBbWidth() * 2, dir.z * entity.getBbWidth() * 2);
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
@@ -50,8 +50,8 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
 
     public void renderPart(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
-        Vector2f rota = getRotationFromVector(dir);
+        Vec3 dir = entity.getDeltaMovement().scale(-1).normalize();
+        Vec2 rota = getRotationFromVector(dir);
         float scale = 0.5f * entity.getBbWidth();
         params.matrixStack.pushPose();
         params.matrixStack.translate(-dir.x * entity.getBbWidth() * 0.3, -dir.y * entity.getBbWidth() * 0.3, -dir.z * entity.getBbWidth() * 0.3);

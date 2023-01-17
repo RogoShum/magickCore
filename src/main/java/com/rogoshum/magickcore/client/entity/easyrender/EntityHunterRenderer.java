@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.EntityHunterEntity;
-import net.minecraft.client.renderer.BufferBuilder;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ public class EntityHunterRenderer extends EasyRenderer<EntityHunterEntity> {
         super(entity);
     }
 
-    public void render(EntityHunterEntity entityIn, MatrixStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
+    public void render(EntityHunterEntity entityIn, PoseStack matrixStackIn, BufferBuilder bufferIn, float partialTicks) {
 
     }
 

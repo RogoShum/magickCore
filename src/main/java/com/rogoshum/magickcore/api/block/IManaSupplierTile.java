@@ -1,13 +1,13 @@
 package com.rogoshum.magickcore.api.block;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface IManaSupplierTile {
     public float supplyMana(float mana);
 
     public BlockPos pos();
-    public World world();
+    public Level world();
     public boolean removed();
     public void spawnLifeState();
     public boolean shouldSpawn(boolean powered);

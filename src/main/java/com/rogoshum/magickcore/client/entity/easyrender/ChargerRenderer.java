@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -10,10 +11,9 @@ import com.rogoshum.magickcore.common.entity.pointed.ChargeEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -29,14 +29,14 @@ public class ChargerRenderer extends EasyRenderer<ChargeEntity> {
 
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
-        Vector3d dir = entity.getLookAngle();
+        Vec3 dir = entity.getLookAngle();
 
         if(entity.getTarget() != null) {
             dir = getEntityRenderVector(entity.getTarget(), params.partialTicks).add(0, entity.getTarget().getBbHeight() * 0.5, 0)
                     .subtract(getEntityRenderVector(params.partialTicks).add(0, entity.getBbHeight() * 0.5, 0));
         } else if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
-        Vector2f rota = getRotationFromVector(dir);
+        Vec2 rota = getRotationFromVector(dir);
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.pushPose();

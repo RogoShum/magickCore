@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.api;
 
 import com.google.gson.JsonObject;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public interface IItemContainer {
     String getItemName();
@@ -17,7 +17,7 @@ public interface IItemContainer {
 
     IItemContainer read(JsonObject json);
 
-    IItemContainer read(PacketBuffer buffer);
+    IItemContainer read(FriendlyByteBuf buffer);
 
-    void write(PacketBuffer buffer, IItemContainer recipe);
+    void write(FriendlyByteBuf buffer, IItemContainer recipe);
 }

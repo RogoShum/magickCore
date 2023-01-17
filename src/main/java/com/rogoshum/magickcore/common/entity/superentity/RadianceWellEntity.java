@@ -16,20 +16,16 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -53,13 +49,12 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new RadianceWellLaserRenderer(this));
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new RadianceWellRenderer(this);
     }
 
-    @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox().inflate(0, getBbHeight(), 0), predicate);
@@ -85,7 +80,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     protected void doClientTask() {
         super.doClientTask();
         if(this.tickCount % 2 == 0) {
-            Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
+            Vec3 rand = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
             this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.06F, 0.01F));
         }
     }
@@ -116,7 +111,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     {
         if(this.tickCount % 5 ==0) {
             LitParticle cc = new LitParticle(this.level, this.spellContext().element.getRenderer().getRingTexture()
-                    , new Vector3d(this.getX()
+                    , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight()
                     , this.getZ())
                     , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
@@ -126,7 +121,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         }
         for(int i = 0; i < 5; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , this.getY() + this.getBbHeight() / 5
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                     , 0.1f, 0.1f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
@@ -139,7 +134,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 3; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getX()
+                    , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight()
                     , this.getZ())
                     , 0.2f, 0.2f, 1.0f, 18, MagickCore.proxy.getElementRender(spellContext().element.type()));

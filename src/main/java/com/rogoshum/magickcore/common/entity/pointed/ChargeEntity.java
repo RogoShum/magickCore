@@ -27,6 +27,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -46,7 +49,7 @@ public class ChargeEntity extends ManaEntity {
     protected Entity target;
     private ManaFactor former;
 
-    public ChargeEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ChargeEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         entityData.define(TARGET, -1);
         entityData.define(FORMER, new Vector3d(1, 1, 1));

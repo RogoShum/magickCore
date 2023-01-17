@@ -1,7 +1,11 @@
 package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -11,12 +15,8 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.item.ItemEntity;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
     }
 
@@ -51,7 +51,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     }
 
     public void render(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
         matrixStackIn.pushPose();
@@ -59,7 +59,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         RenderSystem.disableTexture();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
-        Tessellator tessellator = Tessellator.getInstance();
+        Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
         matrixStackIn.translate(0, 0.5f, 0);
         this.draw(bufferbuilder, matrixStackIn.last().pose(), 1.05f, 0.02f, 0, 0, 0);
@@ -75,12 +75,12 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         width *= 0.25f;
         height += 0.03f;
         height *= 0.5;
-        renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        renderer.begin(7, DefaultVertexFormat.POSITION_COLOR);
         renderer.vertex(matrix, -width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
         renderer.vertex(matrix, -width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
         renderer.vertex(matrix, width, height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
         renderer.vertex(matrix, width, -height, 0.0f).color(red, green, blue, (float) 1.0).endVertex();
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
     }
 
     @Override
@@ -92,9 +92,9 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
 
     @Override
     protected void updateSpellContext() {
-        Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vector3d offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
+        Vec3 offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
         debugX = x - camX + offset.x;
         debugY = y - camY + entity.getBbHeight() + offset.y;
         debugZ = z - camZ + offset.z;

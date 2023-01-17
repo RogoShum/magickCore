@@ -18,24 +18,23 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/chaos_reach.png");
-    public ChaoReachEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ChaoReachEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -49,7 +48,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new ChaosReachLaserRenderer(this));
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ChaosReachRenderer(this);
@@ -65,7 +64,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     protected void doClientTask() {
-        Vector3d rand = new Vector3d(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
+        Vec3 rand = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
         this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.005F));
         super.doClientTask();
     }
@@ -115,7 +114,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     {
         for(int i = 0; i < 1; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
                     , 0.15f, 0.15f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
@@ -126,7 +125,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         }
         for(int i = 0; i < 1; ++i) {
             LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
                     , this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), 0.8f + 0.2f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
@@ -140,7 +139,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
         float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
         for (int i = 0; i < 3; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                     , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));

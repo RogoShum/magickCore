@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -10,13 +12,10 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.SilenceSquallEntity;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -42,12 +41,12 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
         alpha = Math.min(1.0f, (float)entity.tickCount / 100f);
         preRotate = entity.tickCount % 5;
         postRotate = (entity.tickCount + 1) % 5;
-        rotate = MathHelper.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
+        rotate = Mth.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
         renderer = entity.spellContext().element.getRenderer();
     }
 
     public void renderCore(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
 
@@ -60,7 +59,7 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
     }
 
     public void render(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (rotate / 4)));

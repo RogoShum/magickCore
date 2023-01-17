@@ -1,14 +1,13 @@
 package com.rogoshum.magickcore.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 public class RenderParams {
-    public MatrixStack matrixStack;
+    public PoseStack matrixStack;
     public BufferBuilder buffer;
     public float partialTicks;
-    public RenderParams matrixStack(MatrixStack matrixStack) {
+    public RenderParams matrixStack(PoseStack matrixStack) {
         this.matrixStack = matrixStack;
         return this;
     }

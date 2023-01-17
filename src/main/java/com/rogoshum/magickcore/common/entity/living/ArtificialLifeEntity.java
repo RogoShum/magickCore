@@ -23,35 +23,22 @@ import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.entity.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.world.World;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,11 +48,11 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public static final NonNullList<ItemStack> ARMOR_ITEMS = NonNullList.withSize(1, ItemStack.EMPTY);
     private static final DataParameter<Direction> DIRECTION = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.DIRECTION);
     private static final DataParameter<Boolean> FOCUS = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.BOOLEAN);
-    private Vector3d originPos;
+    private Vec3 originPos;
     private BlockPos originBlockPos;
     private boolean power = false;
     private int powerCount;
-    private final HashSet<Vector3d> vectorSet = new HashSet<>();
+    private final HashSet<Vec3> vectorSet = new HashSet<>();
     public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, World worldIn) {
         super(type, worldIn);
         this.entityData.define(DIRECTION, Direction.UP);
@@ -78,7 +65,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         MagickCore.proxy.addRenderer(() -> new ArtificialLifeEntityRenderer(this));
     }
 
-    public HashSet<Vector3d> getVectorSet() {
+    public HashSet<Vec3> getVectorSet() {
         return vectorSet;
     }
 
@@ -130,10 +117,10 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     public boolean release(Direction direction) {
         PositionContext position;
         DirectionContext directionContext;
-        Vector3d self = this.position().add(0, 0.5 * getBbHeight(), 0);
+        Vec3 self = this.position().add(0, 0.5 * getBbHeight(), 0);
         boolean focus = isFocus();
         if(focus && !this.getVectorSet().isEmpty()) {
-            for(Vector3d vec : this.getVectorSet()) {
+            for(Vec3 vec : this.getVectorSet()) {
                 position = PositionContext.create(vec);
                 MagickContext context = MagickContext.create(this.level, spellContext())
                         .replenishChild(DirectionContext.create(position.pos.subtract(self)))
@@ -148,7 +135,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             position = PositionContext.create(getTracePos());
             directionContext = DirectionContext.create(position.pos.subtract(self));
         } else {
-            directionContext = DirectionContext.create(Vector3d.atLowerCornerOf(direction.getOpposite().getNormal()));
+            directionContext = DirectionContext.create(Vec3.atLowerCornerOf(direction.getOpposite().getNormal()));
             position = PositionContext.create(self);
         }
 
@@ -162,16 +149,16 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         return MagickReleaseHelper.releaseMagick(context);
     }
 
-    public Vector3d getTracePos() {
-        Vector3d vec = this.position().add(0, this.getEyeHeight(), 0);
+    public Vec3 getTracePos() {
+        Vec3 vec = this.position().add(0, this.getEyeHeight(), 0);
         for(int i = 1; i<=8; ++i) {
-            Vector3d end = vec.add(Vector3d.atLowerCornerOf(getDirection().getNormal()).scale(i));
+            Vec3 end = vec.add(Vec3.atLowerCornerOf(getDirection().getNormal()).scale(i));
             BlockPos pos = new BlockPos(end);
             if(!level.isEmptyBlock(pos))
                 return end;
         }
 
-        return vec.add(Vector3d.atLowerCornerOf(getDirection().getNormal()).scale(8));
+        return vec.add(Vec3.atLowerCornerOf(getDirection().getNormal()).scale(8));
     }
 
     @Override
@@ -185,8 +172,8 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
         this.playSound(SoundEvents.SLIME_BLOCK_PLACE, 0.5F, MagickCore.rand.nextFloat() * 2);
         ItemStack stack = player.getItemInHand(hand);
@@ -195,26 +182,26 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         } else if(stack.getItem() instanceof WandItem) {
             if(!isFocus()) {
                 setFocus(true);
-                HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateTagElement(WandItem.SET_KEY));
+                HashSet<Vec3> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateTagElement(WandItem.SET_KEY));
                 if(!vector3ds.isEmpty()) {
                     this.getVectorSet().clear();
                     this.getVectorSet().addAll(vector3ds);
                 } else {
-                    Vector3d vector3d = player.getLookAngle();
+                    Vec3 vector3d = player.getLookAngle();
                     setDirection(Direction.getNearest(vector3d.x, vector3d.y, vector3d.z).getOpposite());
                 }
             } else {
                 setFocus(false);
                 this.getVectorSet().clear();
             }
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         } else if(stack.getItem() instanceof MagickContextItem) {
             spellContext().copy(ExtraDataUtil.itemManaData(stack).spellContext());
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         } else if(player.isShiftKeyDown())
             spellContext().clear();
 
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -226,7 +213,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         }
         if(originPos == null) {
             originBlockPos = new BlockPos(this.position());
-            originPos = Vector3d.atCenterOf(originBlockPos).subtract(0, getBbHeight() * 0.5, 0);
+            originPos = Vec3.atCenterOf(originBlockPos).subtract(0, getBbHeight() * 0.5, 0);
         } else
             this.setPos(originPos.x, originPos.y, originPos.z);
 
@@ -252,7 +239,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         }
 
         if(isFocus() && this.getVectorSet().isEmpty() && level.isClientSide()) {
-            Vector3i vector3i = getDirection().getNormal();
+            Vec3i vector3i = getDirection().getNormal();
             double scale = (0.5+random.nextFloat());
             LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , this.position().add(0, getEyeHeight(), 0).add(vector3i.getX()*scale, vector3i.getY()*scale, vector3i.getZ()*scale)
@@ -277,9 +264,9 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     public void spawnSupplierParticle(Entity supplier) {
-        Vector3d center = new Vector3d(0, this.getBbHeight() * 0.5, 0);
-        Vector3d end = this.position().add(center);
-        Vector3d start = supplier.position().add(0, supplier.getBbHeight() * 0.5, 0);
+        Vec3 center = new Vec3(0, this.getBbHeight() * 0.5, 0);
+        Vec3 end = this.position().add(center);
+        Vec3 start = supplier.position().add(0, supplier.getBbHeight() * 0.5, 0);
         double dis = start.subtract(end).length();
         if(dis < 0.2)
             dis = 0.2;
@@ -289,15 +276,15 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         float directionPoint = (float) (supplier.tickCount % distance) / distance;
         int c = (int) (directionPoint * distance);
 
-        Vector3d direction = Vector3d.ZERO;
-        Vector3d origin = start.subtract(end);
+        Vec3 direction = Vec3.ZERO;
+        Vec3 origin = start.subtract(end);
         double y = -origin.y;
         double x = Math.abs(origin.x);
         double z = Math.abs(origin.z);
         if(x > z)
-            direction = new Vector3d(x, y, 0);
+            direction = new Vec3(x, y, 0);
         else if(z > x)
-            direction = new Vector3d(0, y, z);
+            direction = new Vec3(0, y, z);
         float scale;
         float alpha = 1.0f;
 
@@ -312,9 +299,9 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
                 scale = 0.05f;
 
             double trailFactor = i / (distance - 1.0D);
-            Vector3d pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
+            Vec3 pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
             LitParticle par = new LitParticle(this.level, element.getRenderer().getParticleTexture()
-                    , new Vector3d(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
+                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -330,17 +317,16 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
     @Nonnull
     @Override
-    public ItemStack getItemBySlot(EquipmentSlotType slotIn) {
+    public ItemStack getItemBySlot(EquipmentSlot slotIn) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setItemSlot(EquipmentSlotType slotIn, ItemStack stack) {}
+    public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {}
 
-    @Nonnull
     @Override
-    public HandSide getMainArm() {
-        return HandSide.LEFT;
+    public HumanoidArm getMainArm() {
+        return HumanoidArm.LEFT;
     }
 
     @Override
@@ -349,7 +335,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         spellContext().deserialize(compound);
         if(compound.contains("focus"))
@@ -360,7 +346,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         spellContext().serialize(compound);
         compound.putBoolean("focus", isFocus());
@@ -374,31 +360,31 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
-        CompoundNBT tag = new CompoundNBT();
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        CompoundTag tag = new CompoundTag();
         spellContext().serialize(tag);
         buffer.writeNbt(tag);
-        tag = new CompoundNBT();
+        tag = new CompoundTag();
         serializeBlockSet(tag);
         buffer.writeNbt(tag);
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         spellContext().deserialize(additionalData.readNbt());
         deserializeBlockSet(additionalData.readNbt());
     }
 
-    public void serializeBlockSet(CompoundNBT compoundNBT) {
-        CompoundNBT tag = new CompoundNBT();
+    public void serializeBlockSet(CompoundTag compoundNBT) {
+        CompoundTag tag = new CompoundTag();
         NBTTagHelper.saveVectorSet(tag, this.vectorSet);
         compoundNBT.put("blockVec", tag);
     }
 
-    public void deserializeBlockSet(CompoundNBT compoundNBT) {
+    public void deserializeBlockSet(CompoundTag compoundNBT) {
         if(compoundNBT.contains("blockVec")) {
-            CompoundNBT tag = compoundNBT.getCompound("blockVec");
-            HashSet<Vector3d> vector3ds = NBTTagHelper.getVectorSet(tag);
+            CompoundTag tag = compoundNBT.getCompound("blockVec");
+            HashSet<Vec3> vector3ds = NBTTagHelper.getVectorSet(tag);
             if(!vector3ds.isEmpty()) {
                 this.vectorSet.clear();
                 this.vectorSet.addAll(vector3ds);

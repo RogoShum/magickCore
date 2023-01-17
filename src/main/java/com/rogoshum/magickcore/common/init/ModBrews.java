@@ -4,6 +4,7 @@ import de.siphalor.nbtcrafting.recipe.BrewingRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +28,7 @@ public class ModBrews {
             String name = item.getDescriptionId();
             Ingredient ingredient = Ingredient.of(item);
             if(name.contains("spirit_crystal"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(Items.POTION), Ingredient.of(item), PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
+                PotionBrewing.(new BrewingRecipe(PotionIngredient.of(Items.POTION), Ingredient.of(item), PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
             else if(name.contains("dragon_breath"))
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
             else if(name.contains("shulker"))

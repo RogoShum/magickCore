@@ -15,17 +15,16 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
 
 public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/thorns_caress.png");
-    public ThornsCaressEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ThornsCaressEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -42,7 +41,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         super.onAddedToWorld();
         MagickCore.proxy.addRenderer(() -> new ThornsCaressLaserRenderer(this));
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ThornsCaressRenderer(this);
@@ -90,7 +89,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     protected void applyParticle() {
         if(this.tickCount % 2 == 0){
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(this.getX()
+                    , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight() / 2
                     , this.getZ())
                     , 0.45f, 0.45f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
@@ -101,7 +100,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         }
         if(this.tickCount % 5 == 0){
             LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                     , this.random.nextFloat() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth(), 0.6f + 0.4f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
@@ -118,7 +117,6 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         return 15;
     }
 
-    @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox().inflate(16), predicate);

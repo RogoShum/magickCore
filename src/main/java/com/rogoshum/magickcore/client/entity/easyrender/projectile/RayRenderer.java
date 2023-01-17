@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.entity.easyrender.projectile;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -9,13 +10,9 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaLaserEntity;
 import com.rogoshum.magickcore.common.entity.projectile.RayEntity;
-import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -32,10 +29,10 @@ public class RayRenderer extends EasyRenderer<RayEntity> {
     }
 
     @Override
-    public void baseOffset(MatrixStack matrixStackIn) {
+    public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
-        Vector3d dir = entity.getDeltaMovement().scale(-1).normalize();
-        Vector2f rota = getRotationFromVector(dir);
+        Vec3 dir = entity.getDeltaMovement().scale(-1).normalize();
+        Vec2 rota = getRotationFromVector(dir);
         float scale = 0.15f * entity.getBbWidth();
         double length = this.length * scale;
         matrixStackIn.translate(dir.x * length - dir.x * entity.getBbWidth(), dir.y * length - dir.y * entity.getBbWidth(), dir.z * length - dir.z * entity.getBbWidth());

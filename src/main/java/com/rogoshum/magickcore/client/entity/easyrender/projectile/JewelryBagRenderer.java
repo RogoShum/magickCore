@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.entity.easyrender.projectile;
 
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -10,12 +11,10 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -35,8 +34,8 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
                 float f3 = ((float)entity.tickCount + params.partialTicks) / 20.0F;
                 params.matrixStack.mulPose(Vector3f.YP.rotation(f3));
                 params.matrixStack.pushPose();
-                IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(params.buffer);
-                Minecraft.getInstance().getItemRenderer().renderStatic(context.itemStack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, params.matrixStack, renderTypeBuffer);
+                MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(params.buffer);
+                Minecraft.getInstance().getItemRenderer().renderStatic(context.itemStack, ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, params.matrixStack, renderTypeBuffer);
                 renderTypeBuffer.endBatch();
                 params.matrixStack.popPose();
             }
