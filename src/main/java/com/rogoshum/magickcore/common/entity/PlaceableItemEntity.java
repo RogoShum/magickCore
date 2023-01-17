@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -9,6 +10,7 @@ import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import com.rogoshum.magickcore.common.recipe.MatrixInventory;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
@@ -17,6 +19,11 @@ import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -24,6 +31,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -31,13 +39,13 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 
 public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpawnData, IManaRefraction {
-    private static final DataParameter<ItemStack> ITEM_STACK = EntityDataManager.defineId(PlaceableItemEntity.class, DataSerializers.ITEM_STACK);
-    private static final DataParameter<Direction> DIRECTION = EntityDataManager.defineId(PlaceableItemEntity.class, DataSerializers.DIRECTION);
-    private static final DataParameter<Float> HEIGHT = EntityDataManager.defineId(PlaceableItemEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(PlaceableItemEntity.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<ItemStack> ITEM_STACK = SynchedEntityData.defineId(PlaceableItemEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Direction> DIRECTION = SynchedEntityData.defineId(PlaceableItemEntity.class, EntityDataSerializers.DIRECTION);
+    private static final EntityDataAccessor<Float> HEIGHT = SynchedEntityData.defineId(PlaceableItemEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> WIDTH = SynchedEntityData.defineId(PlaceableItemEntity.class, EntityDataSerializers.FLOAT);
     private boolean noDrops = false;
 
-    public PlaceableItemEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public PlaceableItemEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.entityData.define(ITEM_STACK, ItemStack.EMPTY);
         this.entityData.define(DIRECTION, Direction.DOWN);
@@ -211,14 +219,14 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
+    public void writeSpawnData(FriendlyByteBuf buffer) {
         CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
         buffer.writeNbt(addition);
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         readAdditionalSaveData(additionalData.readNbt());
     }
 
@@ -243,7 +251,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

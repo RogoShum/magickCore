@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.living;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
@@ -20,6 +21,7 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
@@ -28,6 +30,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -393,7 +396,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }
