@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.client.event;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
@@ -26,34 +29,23 @@ import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.culling.ClippingHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vec3();
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class RenderEvent {
     private static final HashMap<RenderMode, Queue<LitParticle>> particles = new HashMap<>();
 
@@ -89,8 +81,8 @@ public class RenderEvent {
 
     @SubscribeEvent
     public void renderEntity(RenderWorldEvent.RenderMagickEvent event) {
-        MatrixStack matrixStackIn = event.getMatrixStack();
-        BufferBuilder builder = Tessellator.getInstance().getBuilder();
+        PoseStack matrixStackIn = event.getMatrixStack();
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
         HashMap<RenderMode, Queue<Consumer<RenderParams>>> renderer = MagickCore.proxy.getGlFunction();
         RenderParams renderParams = new RenderParams();
@@ -155,13 +147,13 @@ public class RenderEvent {
             RenderHelper.end(context);
         }
 
-        Vec3() vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double d0 = vec.x();
         double d1 = vec.y();
         double d2 = vec.z();
         Matrix4f matrix4f = event.getMatrixStack().last().pose();
 
-        ClippingHelper clippinghelper = new ClippingHelper(matrix4f, event.getProjectionMatrix());
+        Frustum clippinghelper = new Frustum(matrix4f, event.getProjectionMatrix());
         clippinghelper.prepare(d0, d1, d2);
         MagickCore.proxy.setClippingHelper(clippinghelper);
         MagickCore.proxy.updateRenderer();
@@ -180,7 +172,7 @@ public class RenderEvent {
     @SubscribeEvent
     public void onItemDescription(ItemTooltipEvent event) {
         if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(LibElementTool.TOOL_ELEMENT)) {
-            CompoundNBT tag = NBTTagHelper.getToolElementTable(event.getItemStack());
+            CompoundTag tag = NBTTagHelper.getToolElementTable(event.getItemStack());
             if(tag.getAllKeys().size() > 0) {
                 event.getToolTip().add((new StringTextComponent("")));
                 event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_DESCRIPTION)));
@@ -196,7 +188,7 @@ public class RenderEvent {
     }
 
     public static void tickParticle() {
-        Vec3() vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         for (RenderMode res : particles.keySet()) {
             Queue<LitParticle> litParticles = particles.get(res);
             double scale = Math.max((litParticles.size() * 0.003d), 1d);
@@ -230,7 +222,7 @@ public class RenderEvent {
             else
                 applyDeBuffParticle(entity, MagickCore.proxy.getElementRender(buff.getElement()), Minecraft.getInstance().level);
         }
-        if(!(entity instanceof PlayerEntity) && !Objects.equals(state.getElement().type(), LibElements.ORIGIN)) {
+        if(!(entity instanceof Player) && !Objects.equals(state.getElement().type(), LibElements.ORIGIN)) {
             applyAnimalParticle(entity, state.getElement().getRenderer(), Minecraft.getInstance().level);
         }
 

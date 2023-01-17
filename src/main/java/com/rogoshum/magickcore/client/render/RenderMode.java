@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.client.render;
 
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 
 import java.util.Arrays;
 import java.util.Objects;

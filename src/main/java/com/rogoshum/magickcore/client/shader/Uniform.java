@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.client.shader;
 
-import net.minecraft.client.shader.ShaderDefault;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.blaze3d.shaders.AbstractUniform;
+import com.mojang.math.Matrix4f;
 
-public class Uniform extends ShaderDefault {
+public class Uniform extends AbstractUniform {
 
     public void set(float p_148090_1_) {
     }

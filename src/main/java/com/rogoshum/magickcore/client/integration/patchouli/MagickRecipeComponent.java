@@ -1,20 +1,20 @@
 package com.rogoshum.magickcore.client.integration.patchouli;
 
 import com.google.gson.annotations.SerializedName;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.IVariable;
@@ -36,7 +36,7 @@ public class MagickRecipeComponent implements ICustomComponent {
     }
 
     @Override
-    public void render(MatrixStack ms, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
+    public void render(PoseStack ms, IComponentRenderContext context, float pticks, int mouseX, int mouseY) {
         if(this.recipe == null) return;
         NonNullList<Ingredient>[] recipe = this.recipe.getIngredientList();
         RenderSystem.pushMatrix();
@@ -79,8 +79,8 @@ public class MagickRecipeComponent implements ICustomComponent {
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.translatef((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
         RenderSystem.scalef(scale1, scale1, scale1);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
-        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
+        MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new PoseStack(), renderTypeBuffer);
         renderTypeBuffer.endBatch();
         RenderSystem.popMatrix();
     }

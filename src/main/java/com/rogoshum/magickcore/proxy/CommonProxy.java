@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraftforge.fml.LogicalSide;
 
 import java.util.*;
@@ -71,7 +72,7 @@ public class CommonProxy implements IProxy {
 	}
 
 	@Override
-	public void setClippingHelper(ClippingHelper clippingHelper) {
+	public void setClippingHelper(Frustum clippingHelper) {
 
 	}
 

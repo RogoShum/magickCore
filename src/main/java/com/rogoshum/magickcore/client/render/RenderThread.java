@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class RenderThread extends Thread {
 
     private volatile boolean needUpdate = false;
 
-    private ClippingHelper clippinghelper;
+    private Frustum clippinghelper;
 
     public RenderThread(String name) {
         super(name);
@@ -46,7 +47,7 @@ public class RenderThread extends Thread {
         needUpdate = true;
     }
 
-    public void setClippingHelper(ClippingHelper clippingHelper) {
+    public void setFrustum(Frustum clippingHelper) {
         clippinghelper = clippingHelper;
     }
 

@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -10,16 +12,13 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public class StaffRenderer extends ItemStackTileEntityRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
@@ -29,7 +28,7 @@ public class StaffRenderer extends ItemStackTileEntityRenderer {
     private static final RenderType RENDER_TYPE_1 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
 
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
         matrixStack.translate(0.55, 0.55, 0.5);
         matrixStack.scale(0.65f, 0.65f, 0.65f);
@@ -37,14 +36,14 @@ public class StaffRenderer extends ItemStackTileEntityRenderer {
         matrixStack.pushPose();
         matrixStack.translate(0, 0.5, 0);
         matrixStack.scale(0.1f, 1.2f, 0.1f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
         matrixStack.pushPose();
         matrixStack.translate(0, -0.1, 0);
         matrixStack.scale(0.2f, 0.1f, 0.2f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -60,8 +59,8 @@ public class StaffRenderer extends ItemStackTileEntityRenderer {
             matrixStack.scale(0.4f, 0.4f, 0.4f);
             ItemStack core = new ItemStack(ModItems.MAGICK_CORE.get());
             ExtraDataUtil.itemManaData(core).spellContext().copy(data.spellContext());
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
-            Minecraft.getInstance().getItemRenderer().render(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
+            Minecraft.getInstance().getItemRenderer().render(core, ItemTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
             matrixStack.popPose();
         }
 
@@ -74,7 +73,7 @@ public class StaffRenderer extends ItemStackTileEntityRenderer {
                 matrixStack.mulPose(Vector3f.YN.rotationDegrees(angle));
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
                 matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                         , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
                 matrixStack.popPose();
             }

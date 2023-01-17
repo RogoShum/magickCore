@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.particle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.render.IEasyRender;
@@ -12,23 +14,15 @@ import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.culling.ClippingHelper;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ReuseableStream;
-import net.minecraft.util.math.AABB;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vec3;
-import net.minecraft.world.World;
+import net.minecraft.util.RewindableStream;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -257,7 +251,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
             double d1 = y;
             double d2 = z;
             if (this.canCollide && (x != 0.0D || y != 0.0D || z != 0.0D)) {
-                Vec3 vector3d = Entity.collideBoundingBoxHeuristically((Entity) null, new Vec3(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.empty(), new ReuseableStream<>(Stream.empty()));
+                Vec3 vector3d = Entity.collideBoundingBoxHeuristically((Entity) null, new Vec3(x, y, z), this.getBoundingBox(), this.world, CollisionContext.empty(), new RewindableStream<>(Stream.empty()));
                 x = vector3d.x;
                 y = vector3d.y;
                 z = vector3d.z;
@@ -321,7 +315,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return this;
     }
 
-    public boolean shouldRender(ClippingHelper camera) {
+    public boolean shouldRender(Frustum camera) {
         return camera.isVisible(this.boundingBox);
     }
 
@@ -348,7 +342,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public void render(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         matrixStackIn.pushPose();
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));

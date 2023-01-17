@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
@@ -8,13 +8,12 @@ import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.resources.ResourceLocation;
 
-public class ManaBarHUD extends AbstractGui {
+public class ManaBarHUD extends GuiComponent {
     private final int width;
     private final int height;
     private final Minecraft minecraft;
@@ -23,10 +22,10 @@ public class ManaBarHUD extends AbstractGui {
     private final ResourceLocation mana_element = new ResourceLocation(MagickCore.MOD_ID, "textures/gui/mana_element.png");
     private final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
     private final ResourceLocation sphere_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_rotate.png");
-    private MatrixStack matrixStack;
+    private PoseStack matrixStack;
     private EntityStateData state;
 
-    public ManaBarHUD(MatrixStack matrixStack, EntityStateData state) {
+    public ManaBarHUD(PoseStack matrixStack, EntityStateData state) {
         this.width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         this.height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         this.minecraft = Minecraft.getInstance();
@@ -34,7 +33,7 @@ public class ManaBarHUD extends AbstractGui {
         this.state = state;
     }
 
-    public void setMatrixStack(MatrixStack stack) {
+    public void setPoseStack(PoseStack stack) {
         this.matrixStack = stack;
     }
 

@@ -2,35 +2,35 @@ package com.rogoshum.magickcore.client.shader;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.shaders.AbstractUniform;
+import com.mojang.blaze3d.shaders.Effect;
+import com.mojang.blaze3d.shaders.Program;
+import com.mojang.blaze3d.shaders.ProgramManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.shader.*;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL20;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.Buffer;
-import java.util.HashMap;
-import java.util.Map;
 
-public class ShaderInstance implements IShaderManager, AutoCloseable {
-    private final ShaderDefault shaderDefault = new ShaderDefault();
-    private final ShaderLoader vertex;
-    private final ShaderLoader fragment;
+public class ShaderInstance implements Effect, AutoCloseable {
+    private final AbstractUniform shaderDefault = new AbstractUniform();
+    private final Program vertex;
+    private final Program fragment;
     private final int program;
     private final Object2IntArrayMap<String> uniformCache = new Object2IntArrayMap();
     private boolean active;
 
     public ShaderInstance(String vertex, String fragment) throws IOException {
-        this.vertex = createLoader(ShaderLoader.ShaderType.VERTEX, vertex);
-        this.fragment = createLoader(ShaderLoader.ShaderType.FRAGMENT, fragment);
-        this.program = ShaderLinkHelper.createProgram();
-        ShaderLinkHelper.linkProgram(this);
+        this.vertex = createLoader(Program.Type.VERTEX, vertex);
+        this.fragment = createLoader(Program.Type.FRAGMENT, fragment);
+        this.program = ProgramManager.createProgram();
+        ProgramManager.linkProgram(this);
         int i = GlStateManager.glGetProgrami(program, 35714);
         if (i == 0) {
             MagickCore.LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", this.vertex.getName(), this.fragment.getName());
@@ -39,15 +39,15 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
         }
     }
 
-    public static ShaderLoader createLoader(ShaderLoader.ShaderType shaderType, String path) throws IOException {
-        ShaderLoader shaderloader = shaderType.getPrograms().get(path);
+    public static Program createLoader(Program.Type shaderType, String path) throws IOException {
+        Program shaderloader = shaderType.getPrograms().get(path);
         if (shaderloader == null) {
             ResourceLocation rl = ResourceLocation.tryParse(path);
             ResourceLocation resourcelocation = new ResourceLocation(rl.getNamespace(), "shaders/program/" + rl.getPath() + shaderType.getExtension());
-            IResource iresource = Minecraft.getInstance().getResourceManager().getResource(resourcelocation);
+            Resource iresource = Minecraft.getInstance().getResourceManager().getResource(resourcelocation);
 
             try {
-                shaderloader = ShaderLoader.compileShader(shaderType, path, iresource.getInputStream(), iresource.getSourceName());
+                shaderloader = Program.compileShader(shaderType, path, iresource.getInputStream(), iresource.getSourceName());
             } finally {
                 IOUtils.closeQuietly((Closeable)iresource);
             }
@@ -86,12 +86,12 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
     }
 
     @Override
-    public ShaderLoader getVertexProgram() {
+    public Program getVertexProgram() {
         return vertex;
     }
 
     @Override
-    public ShaderLoader getFragmentProgram() {
+    public Program getFragmentProgram() {
         return fragment;
     }
 

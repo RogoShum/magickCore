@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
@@ -23,11 +24,19 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.block.AbstractBlock.Properties;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import org.jetbrains.annotations.Nullable;
 
-public class ElementCrystalBlock extends CropBlock {
+public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     public ElementCrystalBlock(Properties properties) {
         super(properties);
     }
@@ -44,12 +53,12 @@ public class ElementCrystalBlock extends CropBlock {
 
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity newBlockEntity(BlockGetter world) {
         return new ElementCrystalTileEntity();
     }
 
     @Override
-    protected IItemProvider getBaseSeedId() {
+    protected ItemLike getBaseSeedId() {
         return ModItems.ELEMENT_CRYSTAL_SEEDS.get();
     }
 
@@ -60,7 +69,8 @@ public class ElementCrystalBlock extends CropBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-        Vector3d pos = builder.getOptionalParameter(LootParameters.ORIGIN);
+        ChestBlock
+        Vector3d pos = builder.getOptionalParameter(LootContextParams.ORIGIN);
         if(pos == null) return super.getDrops(state, builder);
         TileEntity tileentity = builder.getLevel().getBlockEntity(new BlockPos(pos));
         if (tileentity instanceof ElementCrystalTileEntity) {

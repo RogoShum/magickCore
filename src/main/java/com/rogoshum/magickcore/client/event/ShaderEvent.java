@@ -29,7 +29,7 @@ public class ShaderEvent {
     private final static HashMap<String, String> shadersResource = new HashMap<String, String>();
     private final static HashSet<String> renderList = new HashSet<String>();
 
-    public void onModelRegistry(ModelRegistryEvent event) {
+    public void onModelRegistry() {
         ModShaders.init();
         RenderSystem.recordRenderCall(this::initPostChain);
     }

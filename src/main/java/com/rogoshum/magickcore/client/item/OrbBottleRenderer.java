@@ -12,8 +12,10 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.item.ItemStack;
 
 public class OrbBottleRenderer extends ItemStackTileEntityRenderer {
     protected final ResourceLocation BOTTLE = new ResourceLocation(MagickCore.MOD_ID + ":textures/items/orb_bottle/bottle.png");

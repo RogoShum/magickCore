@@ -7,15 +7,10 @@ import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.event.PreRenderChunkEvent;
 import com.rogoshum.magickcore.api.event.ProfilerChangeEvent;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
@@ -50,7 +45,7 @@ public class LightShaderManager {
         if(true) return;
         if(RenderHelper.stopShader()) return;
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
 
         if(event.getName().equals("terrain")) {
             shader.useShader();

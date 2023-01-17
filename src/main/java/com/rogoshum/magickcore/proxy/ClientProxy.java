@@ -31,8 +31,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.settings.ParticleStatus;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -115,9 +117,9 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void setClippingHelper(ClippingHelper clippingHelper) {
+	public void setClippingHelper(Frustum clippingHelper) {
 		checkRenderer();
-		renderThread.setClippingHelper(clippingHelper);
+		renderThread.setFrustum(clippingHelper);
 	}
 
 	@Override

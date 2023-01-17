@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraftforge.fml.LogicalSide;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public interface IProxy {
     public void addRenderer(Supplier<IEasyRender> renderSupplier);
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction();
     void updateRenderer();
-    public void setClippingHelper(ClippingHelper clippingHelper);
+    public void setClippingHelper(Frustum clippingHelper);
 
     public void initBlockRenderer();
 }

@@ -1,15 +1,15 @@
 package com.rogoshum.magickcore.client.particle;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public class TrailParticle {
 	private Entity owner;
 	private int tick;
 
-	private Vector3d[] trailPosition;
+	private Vec3[] trailPosition;
 	
-	public TrailParticle(Entity owner, Vector3d position, int amount, int spacing) {
+	public TrailParticle(Entity owner, Vec3 position, int amount, int spacing) {
 
 	}
 
