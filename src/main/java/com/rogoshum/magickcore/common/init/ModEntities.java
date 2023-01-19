@@ -7,23 +7,15 @@ import com.rogoshum.magickcore.common.entity.pointed.*;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.entity.radiation.*;
 import com.rogoshum.magickcore.common.entity.superentity.*;
-import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 
 import com.rogoshum.magickcore.common.lib.LibEntities;
 import com.rogoshum.magickcore.common.registry.DeferredRegister;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.entity.MobCategory;
-import net.minecraft.entity.EntityType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
-@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModEntities {
 	public static final DeferredRegister<EntityType<?>> Entities = DeferredRegister.create(Registry.ENTITY_TYPE, MagickCore.MOD_ID);
 	//public static final EntityType<TimeManagerEntity> time_manager = (EntityType<TimeManagerEntity>) EntityType.Builder.create(TimeManagerEntity::new, MobCategory.MISC).size(1f, 1f).build("time_manager").setRegistryName("time_manager");

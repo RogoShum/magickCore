@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.client.item.ContextPointerRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;

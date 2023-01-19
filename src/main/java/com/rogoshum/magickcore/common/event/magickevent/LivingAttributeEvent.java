@@ -1,6 +1,7 @@
-package com.rogoshum.magickcore.common.event;
+package com.rogoshum.magickcore.common.event.magickevent;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;

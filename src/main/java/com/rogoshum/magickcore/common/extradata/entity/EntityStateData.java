@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
@@ -9,7 +9,6 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -159,12 +158,12 @@ public class EntityStateData extends EntityExtraData {
             updateTick = 0;
         } else
             return;
-        EntityEvents.StateCooldownEvent cEvent = new EntityEvents.StateCooldownEvent((LivingEntity) entity, shieldCoolDown, false, true);
+        EntityEvent.StateCooldownEvent cEvent = new EntityEvent.StateCooldownEvent((LivingEntity) entity, shieldCoolDown, false, true);
         MinecraftForge.EVENT_BUS.post(cEvent);
         if(shieldCoolDown > cEvent.getCooldown())
             shieldCoolDown = cEvent.getCooldown();
 
-        EntityEvents.StateCooldownEvent cEvent_m = new EntityEvents.StateCooldownEvent((LivingEntity) entity, manaCoolDown, true, false);
+        EntityEvent.StateCooldownEvent cEvent_m = new EntityEvent.StateCooldownEvent((LivingEntity) entity, manaCoolDown, true, false);
         MinecraftForge.EVENT_BUS.post(cEvent_m);
         if(manaCoolDown > cEvent_m.getCooldown())
             manaCoolDown = cEvent_m.getCooldown();
@@ -175,7 +174,7 @@ public class EntityStateData extends EntityExtraData {
 
         if(getElementShieldMana() < getMaxElementShieldMana() && shieldCoolDown <= 0) {
             float shieldRegen = updateRate;
-            EntityEvents.ShieldRegenerationEvent event = new EntityEvents.ShieldRegenerationEvent((LivingEntity) entity, shieldRegen);
+            EntityEvent.ShieldRegenerationEvent event = new EntityEvent.ShieldRegenerationEvent((LivingEntity) entity, shieldRegen);
             MinecraftForge.EVENT_BUS.post(event);
             shieldRegen = event.getAmount();
             if(shieldRegen > 0 && this.getManaValue() > 5) {
@@ -185,7 +184,7 @@ public class EntityStateData extends EntityExtraData {
         } else
             this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana()));
 
-        EntityEvents.ShieldCapacityEvent shield_value = new EntityEvents.ShieldCapacityEvent((LivingEntity) entity);
+        EntityEvent.ShieldCapacityEvent shield_value = new EntityEvent.ShieldCapacityEvent((LivingEntity) entity);
         MinecraftForge.EVENT_BUS.post(shield_value);
         this.setMaxElementShieldMana(shield_value.getCapacity() + finalMaxShieldValue);
 
@@ -194,7 +193,7 @@ public class EntityStateData extends EntityExtraData {
 
         if(manaCoolDown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
             float manaRegen = updateRate;
-            EntityEvents.ManaRegenerationEvent eventMana = new EntityEvents.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
+            EntityEvent.ManaRegenerationEvent eventMana = new EntityEvent.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
             MinecraftForge.EVENT_BUS.post(eventMana);
             manaRegen = eventMana.getMana();
 

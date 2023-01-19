@@ -3,9 +3,9 @@ package com.rogoshum.magickcore;
 import com.rogoshum.magickcore.client.init.ModKeyBind;
 import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
-import com.rogoshum.magickcore.common.event.RegisterEvent;
+import com.rogoshum.magickcore.common.event.EventBus;
+import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
+import com.rogoshum.magickcore.common.event.magickevent.RegisterEvent;
 import com.rogoshum.magickcore.common.event.magickevent.ElementFunctionEvent;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
@@ -15,6 +15,7 @@ import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
 public class MagickCore implements ModInitializer {
@@ -40,30 +42,51 @@ public class MagickCore implements ModInitializer {
     public static int tick;
     public HashMap<String, String> modCompatibility = new HashMap<>();
     public static HashMap<String, AdditionLoader> modLoader = new HashMap<>();
+    public static EventBus EVENT_BUS = new EventBus();
 
-    public MagickCore() {
+    public static boolean isModLoaded(String modid) {
+        return modLoader.containsKey(modid);
+    }
+
+    public static float getNegativeToOne() {
+        return rand.nextFloat() - rand.nextFloat();
+    }
+
+    public static float getRandFloat() {
+        return Float.parseFloat(String.format("%.1f",rand.nextFloat()));
+    }
+    public static void addMagickParticle(LitParticle par) {proxy.addMagickParticle(par);}
+
+    private void setup() {
+        ModBrews.registryBrewing();
+        EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
+        RecipeCollector.init();
+    }
+
+    private void doClientStuff() {
+        proxy.initBlockRenderer();
+        ModKeyBind.onKeyboardInput();
+    }
+
+    @Override
+    public void onInitialize() {
         LOGGER.debug("register RegisterEvent");
-        MinecraftForge.EVENT_BUS.register(new RegisterEvent());
+        EVENT_BUS.register(new RegisterEvent());
         //FMLJavaModLoadingContext.get().getModEventBus().addListener(RE::onRegiste2r);
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        // Register the doClientStuff method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::inter);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::generate);
-        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> proxy = new ClientProxy());
-        DistExecutor.unsafeCallWhenOn(Dist.DEDICATED_SERVER, () -> () -> proxy = new CommonProxy());
+        this.setup();
+        callWhenOn(EnvType.CLIENT, () -> this::doClientStuff);
+        callWhenOn(EnvType.CLIENT, () -> () -> proxy = new ClientProxy());
+        callWhenOn(EnvType.SERVER, () -> () -> proxy = new CommonProxy());
         ModElements.registerElement();
         RegisterEvent.initElementMap();
         proxy.registerHandlers();
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new MagickLogicEvent());
-        MinecraftForge.EVENT_BUS.register(new ElementFunctionEvent());
-        MinecraftForge.EVENT_BUS.register(new AdvancementsEvent());
-        MinecraftForge.EVENT_BUS.register(new LivingLootsEvent());
-        MinecraftForge.EVENT_BUS.register(new ModEntities());
+        EVENT_BUS.register(new MagickLogicEvent());
+        EVENT_BUS.register(new ElementFunctionEvent());
+        EVENT_BUS.register(new AdvancementsEvent());
+        EVENT_BUS.register(new LivingLootsEvent());
         ModDataSerializers.DATA_SERIALIZERS.register();
         ModEntities.Entities.register();
         ModBlocks.BLOCKS.register();
@@ -93,57 +116,18 @@ public class MagickCore implements ModInitializer {
                 }
             });
         });
-        modLoader.values().forEach(additionLoader -> additionLoader.onLoad(eventBus));
+        modLoader.values().forEach(AdditionLoader::onInitialize);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.rogoshum.magickcore.common.init.ModConfig.COMMON_CONFIG);
         //GeckoLib.initialize();
     }
 
-    public static boolean isModLoaded(String modid) {
-        return modLoader.containsKey(modid);
-    }
-
-    public static float getNegativeToOne() {
-        return rand.nextFloat() - rand.nextFloat();
-    }
-
-    public static float getRandFloat() {
-        return Float.parseFloat(String.format("%.1f",rand.nextFloat()));
-    }
-    public static void addMagickParticle(LitParticle par) {proxy.addMagickParticle(par);}
-
-    private void setup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            ModBrews.registryBrewing();
-            EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
-            RecipeCollector.init();
-            modLoader.values().forEach(additionLoader -> additionLoader.setup(event));
-        });
-    }
-
-    private void inter(final InterModEnqueueEvent event) {
-        event.enqueueWork(() -> {
-            modLoader.values().forEach(additionLoader -> additionLoader.inter(event));
-        });
-    }
-
-    private void doClientStuff(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            proxy.initBlockRenderer();
-            ClientRegistry.registerKeyBinding(ModKeyBind.SWAP_KEY);
-            modLoader.values().forEach(additionLoader -> additionLoader.doClientStuff(event));
-        });
-    }
-
-    private void generate(final FMLLoadCompleteEvent event) {
-        modLoader.values().forEach(additionLoader -> additionLoader.generate(event));
-    }
-
-    @Override
-    public void onInitialize() {
-
-    }
-
     public static ResourceLocation fromId(String path) {
         return new ResourceLocation(MOD_ID, path);
+    }
+
+    public static void callWhenOn(EnvType envType, Supplier<Runnable> supplier) {
+        if(envType == FabricLoader.getInstance().getEnvironmentType()) {
+            supplier.get().run();
+        }
     }
 }

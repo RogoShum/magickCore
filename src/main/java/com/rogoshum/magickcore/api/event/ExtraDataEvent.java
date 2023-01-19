@@ -2,13 +2,12 @@ package com.rogoshum.magickcore.api.event;
 
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
 import com.rogoshum.magickcore.common.extradata.ItemExtraData;
-import net.minecraftforge.eventbus.api.GenericEvent;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
-public abstract class ExtraDataEvent<T, D> extends GenericEvent<T> {
+public abstract class ExtraDataEvent<D> extends Event {
     private final HashMap<String, D> dataMap;
 
     protected ExtraDataEvent(HashMap<String, D> dataMap) {
@@ -20,14 +19,14 @@ public abstract class ExtraDataEvent<T, D> extends GenericEvent<T> {
             dataMap.put(id, extraData);
     }
 
-    public static class Entity extends ExtraDataEvent<Entity, Callable<EntityExtraData>> {
+    public static class Entity extends ExtraDataEvent<Callable<EntityExtraData>> {
         public Entity(HashMap<String, Callable<EntityExtraData>> dataMap) {
             super(dataMap);
         }
     }
 
-    public static class ItemStack extends ExtraDataEvent<String, Function<net.minecraft.item.ItemStack, ItemExtraData>> {
-        public ItemStack(HashMap<String, Function<net.minecraft.item.ItemStack, ItemExtraData>> dataMap) {
+    public static class ItemStack extends ExtraDataEvent<Function<ItemStack, ItemExtraData>> {
+        public ItemStack(HashMap<String, Function<ItemStack, ItemExtraData>> dataMap) {
             super(dataMap);
         }
     }

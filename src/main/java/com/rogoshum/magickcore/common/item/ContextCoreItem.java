@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.common.item;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;

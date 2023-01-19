@@ -1,20 +1,18 @@
 package com.rogoshum.magickcore.api.event;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.Map;
 
 public class RecipeLoadedEvent extends Event {
-    private final Map<IRecipeType<?>, ImmutableMap.Builder<ResourceLocation, IRecipe<?>>> recipes;
+    private final Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> recipes;
 
-    public RecipeLoadedEvent(Map<IRecipeType<?>, ImmutableMap.Builder<ResourceLocation, IRecipe<?>>> recipes) {
+    public RecipeLoadedEvent(Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> recipes) {
         this.recipes = recipes;
     }
 
-    public Map<IRecipeType<?>, ImmutableMap.Builder<ResourceLocation, IRecipe<?>>> getRecipes() { return recipes; }
+    public Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> getRecipes() { return recipes; }
 }

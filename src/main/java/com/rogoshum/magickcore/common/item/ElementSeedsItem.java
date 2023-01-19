@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;

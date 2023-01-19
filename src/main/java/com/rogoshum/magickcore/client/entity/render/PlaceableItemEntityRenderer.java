@@ -1,26 +1,26 @@
 package com.rogoshum.magickcore.client.entity.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 
 public class PlaceableItemEntityRenderer extends EntityRenderer<PlaceableItemEntity> {
-	public PlaceableItemEntityRenderer(EntityRendererManager renderManager) {
+	public PlaceableItemEntityRenderer(EntityRenderDispatcher renderManager) {
 		super(renderManager);
 	}
 
 	@Override
-	public void render(PlaceableItemEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+	public void render(PlaceableItemEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 		if(entityIn.getDirection().getAxis().isVertical() && entityIn.getDirection().getAxisDirection().getStep() == -1) {
 			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
@@ -30,8 +30,8 @@ public class PlaceableItemEntityRenderer extends EntityRenderer<PlaceableItemEnt
 			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityIn.getDirection().step().z() * 90));
 		}
 		matrixStackIn.pushPose();
-		IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getModel(entityIn.getItemStack(), entityIn.level, (LivingEntity)null);
-		Minecraft.getInstance().getItemRenderer().render(entityIn.getItemStack(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
+		BakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getModel(entityIn.getItemStack(), entityIn.level, (LivingEntity)null);
+		Minecraft.getInstance().getItemRenderer().render(entityIn.getItemStack(), ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
 		matrixStackIn.popPose();
 	}
 

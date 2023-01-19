@@ -4,10 +4,8 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.api.enums.TargetType;
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileRenderer;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -27,7 +25,6 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Pose;
 import net.minecraft.entity.projectile.ProjectileHelper;
-import java.lang.Throwable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -58,7 +55,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -407,7 +403,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                     pass.set(false);
             }
             if(pass.get()) {
-                EntityEvents.HitEntityEvent event = new EntityEvents.HitEntityEvent(this, p_213868_1_.getEntity());
+                EntityEvent.HitEntityEvent event = new EntityEvent.HitEntityEvent(this, p_213868_1_.getEntity());
                 MinecraftForge.EVENT_BUS.post(event);
             }
         }

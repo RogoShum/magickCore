@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.event.PreRenderChunkEvent;
-import com.rogoshum.magickcore.api.event.ProfilerChangeEvent;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

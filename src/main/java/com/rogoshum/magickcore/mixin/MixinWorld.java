@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.mixin;
 
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -16,14 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 @Mixin(Level.class)
 public abstract class MixinWorld {
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
     public void onGuardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn, CallbackInfo info) {
         if(entityIn instanceof LivingEntity) return;
-        EntityEvents.EntityUpdateEvent event = new EntityEvents.EntityUpdateEvent(entityIn);
+        EntityEvent.EntityUpdateEvent event = new EntityEvent.EntityUpdateEvent(entityIn);
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())
             info.cancel();

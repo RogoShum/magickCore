@@ -1,6 +1,7 @@
-package com.rogoshum.magickcore.common.event;
+package com.rogoshum.magickcore.common.event.magickevent;
 
 import com.rogoshum.magickcore.common.advancements.StringTrigger;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibEffect;

@@ -26,35 +26,31 @@ import com.rogoshum.magickcore.common.registry.elementmap.EntityRenderers;
 import com.rogoshum.magickcore.common.registry.elementmap.RenderFunctions;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.ParticleStatus;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.settings.ParticleStatus;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.phys.Vec3;
 
-import java.awt.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class ClientProxy implements IProxy {
 	private final HashMap<String, ElementRenderer> renderers = new HashMap<>();
 	public final ShaderEvent event = new ShaderEvent();
@@ -171,13 +167,12 @@ public class ClientProxy implements IProxy {
 	public void preInit() {}
 
 	public void registerHandlers() {
-		MinecraftForge.EVENT_BUS.register(new RenderEvent());
-		MinecraftForge.EVENT_BUS.register(new LightShaderManager());
-		MinecraftForge.EVENT_BUS.addListener(event::onSetupShaders);
-		MinecraftForge.EVENT_BUS.addListener(event::onRenderShaders);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
+		MagickCore.EVENT_BUS.register(new RenderEvent());
+		MagickCore.EVENT_BUS.register(new LightShaderManager());
+		event.onModelRegistry();
+		MagickCore.EVENT_BUS.register(event);
+		this.registerEntityRenderer();
+		this.registerItemColors(ColorProviderRegistry.ITEM);
 		putElementRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
 
@@ -207,69 +202,76 @@ public class ClientProxy implements IProxy {
 		ManaBuffHUD.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
 	}
 
-	public void registerEntityRenderer(FMLClientSetupEvent event) {
-		//RenderingRegistry.registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_ORB.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_SHIELD.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_STAR.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_LASER.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_SPHERE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.RADIANCE_WALL.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CHAOS_REACH.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.THORNS_CARESS.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SILENCE_SQUALL.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ASCENDANT_REALM.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ELEMENT_ORB.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CONTEXT_CREATOR.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MANA_CAPACITY.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CONTEXT_POINTER.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.RAY_TRACE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ENTITY_CAPTURE.get(), EntityHunterRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CONE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SECTOR.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SPHERE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SQUARE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.RAY.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.BLOOD_BUBBLE.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.LAMP.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ARROW.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.BUBBLE.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.LEAF.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.RED_STONE.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SHADOW.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.WIND.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.JEWELRY_BAG.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.REPEATER.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.GRAVITY_LIFT.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.PLACEABLE_ENTITY.get(), PlaceableItemEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MAGE.get(), MageRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.PHANTOM.get(), ManaObjectRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.ARTIFICIAL_LIFE.get(), ArtificialLifeEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CHAIN.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.SPIN.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.CHARGE.get(), ManaEntityRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(ModEntities.MULTI_RELEASE.get(), ManaEntityRenderer::new);
+	public void registerEntityRenderer() {
+		//registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
+
+		registerEntityRenderingHandler(ModEntities.MANA_ORB.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MANA_SHIELD.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MANA_STAR.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MANA_LASER.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MANA_SPHERE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.RADIANCE_WALL.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CHAOS_REACH.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.THORNS_CARESS.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SILENCE_SQUALL.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.ASCENDANT_REALM.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.ELEMENT_ORB.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CONTEXT_CREATOR.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MANA_CAPACITY.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CONTEXT_POINTER.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.RAY_TRACE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.ENTITY_CAPTURE.get(), EntityHunterRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CONE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SECTOR.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SPHERE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SQUARE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.RAY.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.BLOOD_BUBBLE.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.LAMP.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.ARROW.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.BUBBLE.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.LEAF.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.RED_STONE.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SHADOW.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.WIND.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.JEWELRY_BAG.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.REPEATER.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.GRAVITY_LIFT.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.PLACEABLE_ENTITY.get(), PlaceableItemEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MAGE.get(), MageRenderer::new);
+		registerEntityRenderingHandler(ModEntities.PHANTOM.get(), ManaObjectRenderer::new);
+		registerEntityRenderingHandler(ModEntities.ARTIFICIAL_LIFE.get(), ArtificialLifeEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CHAIN.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.SPIN.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.CHARGE.get(), ManaEntityRenderer::new);
+		registerEntityRenderingHandler(ModEntities.MULTI_RELEASE.get(), ManaEntityRenderer::new);
 	}
 
-	public void registerItemColors(ColorHandlerEvent.Item event) {
-		IItemColor color = (stack, p_getColor_2_) -> {
+	public <E extends Entity> void registerEntityRenderingHandler(EntityType<? extends E> entityType, Function<EntityRenderDispatcher, EntityRenderer<E>> entityRendererFactory) {
+		EntityRendererRegistry.INSTANCE.register(entityType, (dispatcher, context) -> {
+			return entityRendererFactory.apply(dispatcher);
+		});
+	}
+
+	public void registerItemColors(ColorProviderRegistry<ItemLike, ItemColor> event) {
+		ItemColor color = (stack, p_getColor_2_) -> {
 			if(NBTTagHelper.hasElement(stack)) {
 				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor().getDecimalColor();
 			}
 			return 	16777215;
 		};
-		event.getItemColors().register(color, ModItems.ELEMENT_CRYSTAL_SEEDS.get());
-		event.getItemColors().register(color, ModItems.ELEMENT_MEAT.get());
-		event.getItemColors().register(color, ModItems.ELEMENT_CRYSTAL.get());
-		event.getItemColors().register(color, ModItems.ELEMENT_STRING.get());
-		event.getItemColors().register(color, ModItems.ELEMENT_WOOL.get());
+		event.register(color, ModItems.ELEMENT_CRYSTAL_SEEDS.get());
+		event.register(color, ModItems.ELEMENT_MEAT.get());
+		event.register(color, ModItems.ELEMENT_CRYSTAL.get());
+		event.register(color, ModItems.ELEMENT_STRING.get());
+		event.register(color, ModItems.ELEMENT_WOOL.get());
 		color = (stack, p_getColor_2_) -> {
-			CompoundNBT tag = stack.getOrCreateTag();
+			CompoundTag tag = stack.getOrCreateTag();
 			if(tag.contains(WandItem.SET_KEY) && !tag.getCompound(WandItem.SET_KEY).isEmpty())
 				return RenderHelper.getRGB().getDecimalColor();
 			return 	16777215;
 		};
-		event.getItemColors().register(color, ModItems.WAND.get());
+		event.register(color, ModItems.WAND.get());
 	}
 
 	public void putElementRendererIn(String name, ElementRenderer renderer) {
@@ -304,7 +306,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void addMagickParticle(LitParticle par) {
-		Vector3d vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+		Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
 		if(!RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z))
 			return;

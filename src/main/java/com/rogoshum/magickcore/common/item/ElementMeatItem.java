@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;

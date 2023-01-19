@@ -12,16 +12,13 @@ import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.api.entity.IOwnerEntity;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
-import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
-import com.rogoshum.magickcore.common.entity.pointed.MultiReleaseEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
-import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -42,7 +39,6 @@ import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.LootUtil;
@@ -151,7 +147,7 @@ Entity entity = evt.getEntity();
 	 */
 
 	@SubscribeEvent
-	public void onStateCooldown(EntityEvents.StateCooldownEvent event) {
+	public void onStateCooldown(EntityEvent.StateCooldownEvent event) {
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.SHIELD_REGEN.orElse(null)))
 			event.setCooldown(event.getCooldown() - (event.getEntityLiving().getEffect(ModEffects.SHIELD_REGEN.orElse(null)).getAmplifier() + 1));
 	}
@@ -210,7 +206,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onProjectileCreate(EntityEvents.EntityVelocity event) {
+	public void onProjectileCreate(EntityEvent.EntityVelocity event) {
 		if(event.getEntity() instanceof LampEntity) {
 			event.setVelocity(0.2f);
 			event.setInaccuracy(((LampEntity) event.getEntity()).spellContext().range);
@@ -242,7 +238,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onMagickRelease(EntityEvents.MagickReleaseEvent event) {
+	public void onMagickRelease(EntityEvent.MagickReleaseEvent event) {
 		if(event.getContext().containChild(LibContext.SPAWN)) {
 			SpawnContext spawnContext = event.getContext().getChild(LibContext.SPAWN);
 			Entity spawnEntity = spawnContext.entityType.create(event.getContext().world);
@@ -266,7 +262,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void preMagickRelease(EntityEvents.MagickPreReleaseEvent event) {
+	public void preMagickRelease(EntityEvent.MagickPreReleaseEvent event) {
 		if(!(event.getEntity() instanceof LivingEntity))
 			return;
 		if(event.getContext().containChild(LibContext.SPAWN)) {
@@ -375,7 +371,7 @@ Entity entity = evt.getEntity();
 
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onShieldCapacity(EntityEvents.ShieldCapacityEvent event) {
+	public void onShieldCapacity(EntityEvent.ShieldCapacityEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.SHIELD_VALUE.orElse(null)))
 			mana += 25 * (event.getEntityLiving().getEffect(ModEffects.SHIELD_VALUE.orElse(null)).getAmplifier() + 1);
@@ -385,7 +381,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onShieldRegen(EntityEvents.ShieldRegenerationEvent event) {
+	public void onShieldRegen(EntityEvent.ShieldRegenerationEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.SHIELD_REGEN.orElse(null)))
 			mana = (event.getEntityLiving().getEffect(ModEffects.SHIELD_REGEN.orElse(null)).getAmplifier() + 1);
@@ -394,7 +390,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onManaRegen(EntityEvents.ManaRegenerationEvent event) {
+	public void onManaRegen(EntityEvent.ManaRegenerationEvent event) {
 		float mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.MANA_REGEN.orElse(null)))
 			mana = (event.getEntityLiving().getEffect(ModEffects.MANA_REGEN.orElse(null)).getAmplifier() + 1) * 2;
@@ -420,13 +416,13 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onArtificialLifeManaRegen(EntityEvents.ManaRegenerationEvent event) {
+	public void onArtificialLifeManaRegen(EntityEvent.ManaRegenerationEvent event) {
 		if(event.getEntityLiving() instanceof ArtificialLifeEntity)
 			event.setMana(0);
 	}
 
 	@SubscribeEvent
-	public void HitEntity(EntityEvents.HitEntityEvent event) {
+	public void HitEntity(EntityEvent.HitEntityEvent event) {
 		if(event.getEntity() instanceof ISpellContext) {
 			float force = 0;
 			float range = 0;
@@ -731,14 +727,14 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onApplyManaBuff(EntityEvents.ApplyManaBuffEvent event) {
+	public void onApplyManaBuff(EntityEvent.ApplyManaBuffEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		if(state != null && !event.getBeneficial() && (state.getBuffList().containsKey(LibBuff.HYPERMUTEKI) || (state.getElementShieldMana() > 0 && !event.getType().getElement().equals(state.getElement().type()))))
 			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
-	public void onManaEntitySpawn(EntityEvents.MagickSpawnEntityEvent event) {
+	public void onManaEntitySpawn(EntityEvent.MagickSpawnEntityEvent event) {
 		if(event.getMagickContext().projectile instanceof RepeaterEntity)
 			((RepeaterEntity) event.getMagickContext().projectile).setSpawnEntity(event.getEntity());
 		if(event.getMagickContext().projectile instanceof ChainEntity)
@@ -848,7 +844,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void manaEntityUpdate(EntityEvents.EntityUpdateEvent event) {
+	public void manaEntityUpdate(EntityEvent.EntityUpdateEvent event) {
 		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().tickCount % 40 == 0) {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed)
 				Networking.INSTANCE.send(

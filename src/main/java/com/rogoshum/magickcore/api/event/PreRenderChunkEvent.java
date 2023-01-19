@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraft.core.BlockPos;
 
 public class PreRenderChunkEvent extends Event {
     private final BlockPos renderPosition;

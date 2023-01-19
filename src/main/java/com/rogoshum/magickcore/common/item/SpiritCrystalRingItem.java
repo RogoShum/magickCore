@@ -1,10 +1,8 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.integration.curios.CuriosHelper;
-import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;

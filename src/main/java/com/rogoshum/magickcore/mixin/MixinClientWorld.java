@@ -1,10 +1,9 @@
 package com.rogoshum.magickcore.mixin;
 
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
-import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvent;
@@ -22,7 +21,7 @@ public class MixinClientWorld {
 
     @Inject(method = "addEntity", at = @At(value = "TAIL"))
     public void onAddEntity(int entityIdIn, Entity entityToSpawn, CallbackInfo ci) {
-        EntityEvents.EntityAddedToWorldEvent event = new EntityEvents.EntityAddedToWorldEvent(entityToSpawn);
+        EntityEvent.EntityAddedToWorldEvent event = new EntityEvent.EntityAddedToWorldEvent(entityToSpawn);
         MinecraftForge.EVENT_BUS.post(event);
     }
 

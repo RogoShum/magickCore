@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
@@ -22,7 +22,6 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibShaders;
@@ -160,7 +159,7 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void addRenderer(EntityEvents.EntityAddedToWorldEvent event) {
+    public void addRenderer(EntityEvent.EntityAddedToWorldEvent event) {
         if(event.getEntity() instanceof LivingEntity)
             MagickCore.proxy.addRenderer(() -> new ElementShieldRenderer((LivingEntity) event.getEntity()));
         if(event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem() instanceof IManaData)

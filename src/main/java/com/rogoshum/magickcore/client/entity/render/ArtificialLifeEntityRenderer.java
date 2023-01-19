@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.entity.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -15,22 +17,17 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.model.SlimeModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeEntity> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(MagickCore.MOD_ID + ":textures/entity/artificial_life.png");
@@ -38,7 +35,7 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 
 	private static ItemStack ITEM;
 
-	public ArtificialLifeEntityRenderer(EntityRendererManager renderManager) {
+	public ArtificialLifeEntityRenderer(EntityRenderDispatcher renderManager) {
 		super(renderManager);
 	}
 
@@ -48,25 +45,25 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 	}
 
 	@Override
-	public void render(ArtificialLifeEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+	public void render(ArtificialLifeEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 		if(entityIn.deathTime <= 0 && entityIn.isFocus()) {
 			matrixStackIn.pushPose();
 			matrixStackIn.translate(0, entityIn.getEyeHeight(), 0);
 			if(entityIn.getVectorSet().isEmpty()) {
 				matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-				Vector3d direction = Vector3d.atLowerCornerOf(entityIn.getDirection().getOpposite().getNormal());
-				Vector2f rota = EasyRenderer.getRotationFromVector(direction);
+				Vec3 direction = Vec3.atLowerCornerOf(entityIn.getDirection().getOpposite().getNormal());
+				Vec2 rota = EasyRenderer.getRotationFromVector(direction);
 				matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
 				matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
 				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
 				matrixStackIn.translate(0, 0.98f, 0);
 				matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
-				RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
+				RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			} else {
 				matrixStackIn.scale(0.98f, 0.98f, 0.98f);
 				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
-				RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
+				RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			}
 			matrixStackIn.popPose();
 		}
@@ -87,12 +84,12 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 		}
 		matrixStackIn.pushPose();
 		matrixStackIn.mulPose(Vector3f.YP.rotation(f3));
-		Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
+		Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
 		matrixStackIn.popPose();
 		matrixStackIn.pushPose();
 		matrixStackIn.translate(0, -entityIn.getBbHeight() * 0.5, 0);
 		matrixStackIn.scale(4, 4, 4);
-		Minecraft.getInstance().getItemRenderer().renderStatic(ITEM, ItemCameraTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
+		Minecraft.getInstance().getItemRenderer().renderStatic(ITEM, ItemTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
 		matrixStackIn.popPose();
 		matrixStackIn.popPose();
 

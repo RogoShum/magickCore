@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.init;
 
-import com.rogoshum.magickcore.api.event.EntityEvents;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ModBuffs {
     private static HashMap<String, ManaBuff> buff = new HashMap<>();
@@ -153,7 +152,7 @@ public class ModBuffs {
             return false;
         ManaBuff buff = getBuff(type);
         if(buff == null) return false;
-        EntityEvents.ApplyManaBuffEvent event = new EntityEvents.ApplyManaBuffEvent((LivingEntity) entity, buff, beneficial);
+        EntityEvent.ApplyManaBuffEvent event = new EntityEvent.ApplyManaBuffEvent((LivingEntity) entity, buff, beneficial);
         MinecraftForge.EVENT_BUS.post(event);
         if(event.isCanceled())
             return false;

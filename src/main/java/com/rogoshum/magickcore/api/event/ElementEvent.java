@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraftforge.eventbus.api.Event;
-
 public class ElementEvent {
     public static class ElementFunctionApply extends Event {
         private final MagickContext attribute;

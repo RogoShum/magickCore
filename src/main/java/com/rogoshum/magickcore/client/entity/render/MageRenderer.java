@@ -1,15 +1,15 @@
 package com.rogoshum.magickcore.client.entity.render;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class MageRenderer extends VillagerRenderer {
-    public MageRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, (IReloadableResourceManager) Minecraft.getInstance().getResourceManager());
+    public MageRenderer(EntityRenderDispatcher renderManagerIn) {
+        super(renderManagerIn, (ReloadableResourceManager) Minecraft.getInstance().getResourceManager());
     }
 }
