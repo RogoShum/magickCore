@@ -31,6 +31,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,6 +41,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemStack;
@@ -49,22 +53,22 @@ import java.util.List;
 public class ArtificialLifeEntity extends LivingEntity implements ISpellContext, IManaRefraction, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
     public static final NonNullList<ItemStack> ARMOR_ITEMS = NonNullList.withSize(1, ItemStack.EMPTY);
-    private static final DataParameter<Direction> DIRECTION = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.DIRECTION);
-    private static final DataParameter<Boolean> FOCUS = EntityDataManager.defineId(ArtificialLifeEntity.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Direction> DIRECTION = SynchedEntityData.defineId(ArtificialLifeEntity.class, EntityDataSerializers.DIRECTION);
+    private static final EntityDataAccessor<Boolean> FOCUS = SynchedEntityData.defineId(ArtificialLifeEntity.class, EntityDataSerializers.BOOLEAN);
     private Vec3 originPos;
     private BlockPos originBlockPos;
     private boolean power = false;
     private int powerCount;
     private final HashSet<Vec3> vectorSet = new HashSet<>();
-    public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, World worldIn) {
+    public ArtificialLifeEntity(EntityType<? extends LivingEntity> type, Level worldIn) {
         super(type, worldIn);
         this.entityData.define(DIRECTION, Direction.UP);
         this.entityData.define(FOCUS, false);
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         MagickCore.proxy.addRenderer(() -> new ArtificialLifeEntityRenderer(this));
     }
 
@@ -165,7 +169,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return sizeIn.height * 0.5F;
     }
 
@@ -312,13 +316,11 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         }
     }
 
-    @Nonnull
     @Override
     public Iterable<ItemStack> getArmorSlots() {
         return ARMOR_ITEMS;
     }
 
-    @Nonnull
     @Override
     public ItemStack getItemBySlot(EquipmentSlot slotIn) {
         return ItemStack.EMPTY;

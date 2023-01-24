@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientLevel.class)
-public class MixinClientWorld {
+public class MixinClientLevel {
 
     @Inject(method = "addEntity", at = @At(value = "TAIL"))
     public void onAddEntity(int entityIdIn, Entity entityToSpawn, CallbackInfo ci) {
-        EntityEvent.EntityAddedToWorldEvent event = new EntityEvent.EntityAddedToWorldEvent(entityToSpawn);
+        EntityEvent.EntityAddedToLevelEvent event = new EntityEvent.EntityAddedToLevelEvent(entityToSpawn);
         MinecraftForge.EVENT_BUS.post(event);
     }
 

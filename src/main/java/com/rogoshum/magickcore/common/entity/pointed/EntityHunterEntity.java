@@ -17,21 +17,21 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.Util;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,13 +40,12 @@ import java.util.function.Predicate;
 
 public class EntityHunterEntity extends ManaPointEntity implements IManaRefraction {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/entity_capture.png");
-    public EntityHunterEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityHunterEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     public Entity victim;
-
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox(), predicate);
@@ -69,7 +68,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Override
     public boolean releaseMagick() {
         if(victim != null) {
-            Vector3d motion = this.position().add(0, getBbHeight() * 0.5, 0).subtract(victim.position().add(0, victim.getBbHeight() * 0.5, 0)).normalize();
+            Vec3 motion = this.position().add(0, getBbHeight() * 0.5, 0).subtract(victim.position().add(0, victim.getBbHeight() * 0.5, 0)).normalize();
             victim.setDeltaMovement(motion.x, motion.y, motion.z);
             if(!victim.isAlive())
                 victim = null;
@@ -77,7 +76,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         }
         float width = getBbWidth();
         float height = getBbHeight();
-        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof ProjectileEntity) && entity.getBbHeight() < height && entity.getBbWidth() < width;
+        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof Projectile) && entity.getBbHeight() < height && entity.getBbWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)
@@ -112,10 +111,10 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
-        if (!this.level.isClientSide && hand == Hand.MAIN_HAND) {
+        if (!this.level.isClientSide && hand == InteractionHand.MAIN_HAND) {
             if(player.getMainHandItem().getItem() instanceof WandItem) {
                 if(this.victim != null) {
                     ItemStack type = new ItemStack(ModItems.ENTITY_TYPE.get());
@@ -124,9 +123,9 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
                 }
                 this.remove();
             }
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -137,12 +136,12 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
     @Override
     protected void applyParticle() {
         if(victim == null) return;
-        Vector3d center = victim.position().add(0, victim.getBbHeight() * 0.5, 0);
-        Vector3d center1 = position().add(0, getBbHeight() * 0.5, 0);
+        Vec3 center = victim.position().add(0, victim.getBbHeight() * 0.5, 0);
+        Vec3 center1 = position().add(0, getBbHeight() * 0.5, 0);
         for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
             float[] vertex = RenderHelper.vertex_list[i];
             double d0 = getBbWidth() * 0.7f;
-            Vector3d vector3d = new Vector3d(vertex[0], vertex[1], vertex[2]).scale(Math.sqrt(d0 * d0 * 2)).add(center1);
+            Vec3 vector3d = new Vec3(vertex[0], vertex[1], vertex[2]).scale(Math.sqrt(d0 * d0 * 2)).add(center1);
             double dis = vector3d.distanceTo(center);
             int distance = Math.max((int) (10 * dis), 1);
             float directionPoint = (float) (this.tickCount % distance) / distance;
@@ -155,9 +154,9 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
                 else
                     scale = 0.10f;
                 double trailFactor = c / (distance - 1.0D);
-                Vector3d pos = ParticleUtil.drawLine(vector3d, center, trailFactor);
+                Vec3 pos = ParticleUtil.drawLine(vector3d, center, trailFactor);
                 LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, spellContext().element.getRenderer());
+                        , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, spellContext().element.getRenderer());
                 par.setParticleGravity(0);
                 par.setLimitScale();
                 par.setGlow();

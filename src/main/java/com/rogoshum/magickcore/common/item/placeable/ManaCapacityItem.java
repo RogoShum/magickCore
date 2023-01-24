@@ -21,7 +21,7 @@ public class ManaCapacityItem extends EntityItem {
     public void placeEntity(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
         Level world = context.getLevel();
-        Player playerentity = context.getPlayer();
+        Player Player = context.getPlayer();
         ItemStack itemstack = context.getItemInHand();
         Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ManaCapacityEntity manaCapacity = ModEntities.MANA_CAPACITY.get().create(world);
@@ -29,8 +29,8 @@ public class ManaCapacityItem extends EntityItem {
             manaCapacity = (ManaCapacityEntity) createEntity;
         Vec3 pos = Vec3.atCenterOf(blockpos);
         manaCapacity.setPos(pos.x, pos.y - 0.5, pos.z);
-        manaCapacity.setOwner(playerentity);
-        if (playerentity == null || !playerentity.abilities.instabuild) {
+        manaCapacity.setOwner(Player);
+        if (Player == null || !Player.abilities.instabuild) {
             itemstack.shrink(1);
         }
         world.addFreshEntity(manaCapacity);

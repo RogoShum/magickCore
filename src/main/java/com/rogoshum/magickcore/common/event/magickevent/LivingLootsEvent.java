@@ -2,10 +2,10 @@ package com.rogoshum.magickcore.common.event.magickevent;
 
 import com.rogoshum.magickcore.common.entity.ManaItemEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 
 import java.util.HashMap;
 
@@ -25,8 +25,8 @@ public class LivingLootsEvent {
         if(event.getEntityLiving().level.isClientSide()) return;
 
         if(livingLoots.containsKey(event.getEntityLiving().getType())) {
-            ManaItemEntity mana = new ManaItemEntity(event.getEntityLiving().getCommandSenderWorld(), event.getEntityLiving().getX(), event.getEntityLiving().getY(), event.getEntityLiving().getZ(), livingLoots.get(event.getEntityLiving().getType()));
-            event.getEntityLiving().getCommandSenderWorld().addFreshEntity(mana);
+            ManaItemEntity mana = new ManaItemEntity(event.getEntityLiving().getCommandSenderLevel(), event.getEntityLiving().getX(), event.getEntityLiving().getY(), event.getEntityLiving().getZ(), livingLoots.get(event.getEntityLiving().getType()));
+            event.getEntityLiving().getCommandSenderLevel().addFreshEntity(mana);
             mana.setExtendedLifetime();
         }
     }

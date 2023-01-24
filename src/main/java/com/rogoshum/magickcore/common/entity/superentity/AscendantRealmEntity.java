@@ -14,18 +14,18 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,12 +33,12 @@ import java.util.function.Supplier;
 
 public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntity{
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ascendant_realm.png");
-    public AscendantRealmEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public AscendantRealmEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new AscendantRealmRenderer(this);
     }
@@ -63,7 +63,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
         double height = this.getBbHeight() * 0.5;
         for(int i = 0; i < 1; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * width + this.getX()
                     , MagickCore.getNegativeToOne() * height + this.getY() + this.getBbHeight() * 0.5
                     , MagickCore.getNegativeToOne() * width + this.getZ())
                     , 0.15f, 0.15f, 1.0f, 60, this.spellContext().element.getRenderer());
@@ -74,7 +74,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
         }
         for(int i = 0; i < 1; ++i) {
             LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * width + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * width + this.getX()
                     , MagickCore.getNegativeToOne() * height + this.getY() + this.getBbHeight() * 0.5
                     , MagickCore.getNegativeToOne() * width + this.getZ())
                     , this.random.nextFloat(), this.random.nextFloat(), 0.7f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
@@ -91,7 +91,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
         List<Entity> list = findEntity(entity -> entity instanceof LivingEntity);
 
         for (Entity living : list) {
-            if(!(living instanceof MobEntity))
+            if(!(living instanceof Mob))
                 continue;
             TakenEntityData state = ExtraDataUtil.takenEntityData(living);
             if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {

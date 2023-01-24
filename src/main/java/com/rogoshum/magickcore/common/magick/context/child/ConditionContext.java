@@ -7,8 +7,8 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -30,11 +30,11 @@ public class ConditionContext extends ChildContext{
     }
 
     @Override
-    public void serialize(CompoundNBT tag) {
+    public void serialize(CompoundTag tag) {
         if(conditions.isEmpty()) return;
-        CompoundNBT compoundNBT = new CompoundNBT();
+        CompoundTag compoundNBT = new CompoundTag();
         conditions.forEach((condition) -> {
-            CompoundNBT conditionTag = new CompoundNBT();
+            CompoundTag conditionTag = new CompoundTag();
             condition.write(conditionTag);
             compoundNBT.put(condition.getName(), conditionTag);
         });
@@ -60,9 +60,9 @@ public class ConditionContext extends ChildContext{
     }
 
     @Override
-    public void deserialize(CompoundNBT tag) {
+    public void deserialize(CompoundTag tag) {
         if(!tag.contains("Conditions")) return;
-        CompoundNBT compoundNBT = tag.getCompound("Conditions");
+        CompoundTag compoundNBT = tag.getCompound("Conditions");
         compoundNBT.getAllKeys().forEach((key) -> {
             Condition<?> condition = MagickRegistry.getCondition(key);
             if(condition != null) {

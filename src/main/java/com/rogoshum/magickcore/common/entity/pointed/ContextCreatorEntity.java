@@ -20,26 +20,30 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.*;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -54,11 +58,11 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     private int coolDown = 40;
     private boolean dead = false;
 
-    public ContextCreatorEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ContextCreatorEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ContextCreatorRenderer(this);
@@ -77,13 +81,13 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         readAdditionalSaveData(additionalData.readNbt());
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
+    public void writeSpawnData(FriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
@@ -223,7 +227,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void handleEntityEvent(byte id) {
         //super.handleStatusUpdate(id);
@@ -242,26 +246,26 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
 
-        if (hand == Hand.MAIN_HAND) {
+        if (hand == InteractionHand.MAIN_HAND) {
             if(player.getMainHandItem().getItem() instanceof WandItem) {
                 ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
                 ExtraDataUtil.itemManaData(stack).spellContext().copy(innerManaData.spellContext());
                 getStacks().clear();
                 ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + (this.getBbWidth() / 2), this.getZ(), stack);
                 level.addFreshEntity(entity);
-                remove(false);
+                remove();
                 playSound(SoundEvents.BEACON_DEACTIVATE, 0.5f, 2.0f);
                 if(level.isClientSide)
                     spawnParticle();
             } else
                 dropItem();
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -364,7 +368,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

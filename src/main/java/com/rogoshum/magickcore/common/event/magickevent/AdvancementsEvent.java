@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.advancements.StringTrigger;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -8,19 +9,17 @@ import com.rogoshum.magickcore.common.lib.LibEffect;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 
 public class AdvancementsEvent {
     public static final StringTrigger STRING_TRIGGER = CriteriaTriggers.register(new StringTrigger());
 
     @SubscribeEvent
-    public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
-        if(event.getEntityLiving() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = ((ServerPlayerEntity)event.getEntityLiving());
+    public void onLivingUpdate(EntityEvent.LivingEvent.LivingUpdateEvent event) {
+        if(event.getEntityLiving() instanceof ServerPlayer) {
+            ServerPlayer player = ((ServerPlayer)event.getEntityLiving());
             STRING_TRIGGER.trigger(player, LibAdvancements.UNLOCK_ROOT);
 
             player.getActiveEffects().forEach((effectInstance) -> {
@@ -49,7 +48,7 @@ public class AdvancementsEvent {
             });
 
             player.inventory.items.forEach(itemStack -> {
-                String name = itemStack.getItem().getRegistryName() != null ? itemStack.getItem().getRegistryName().toString() : "";
+                String name = itemStack.getItem().getDescriptionId() != null ? itemStack.getItem().getDescriptionId() : "";
                 if(name.contains(Items.POTION.toString()))
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, LibAdvancements.POTION_TYPE);
                 if(name.contains(Items.DRAGON_BREATH.toString()))
@@ -95,7 +94,7 @@ public class AdvancementsEvent {
             });
 
             ExtraDataUtil.entityStateData(player, state -> {
-                if (!state.getElement().type().equals(LibElements.ORIGIN) && event.getEntityLiving() instanceof PlayerEntity) {
+                if (!state.getElement().type().equals(LibElements.ORIGIN) && event.getEntityLiving() instanceof Player) {
                     AdvancementsEvent.STRING_TRIGGER.trigger(player, state.getElement().type());
                 }
             });

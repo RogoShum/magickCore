@@ -11,21 +11,21 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 public class RayTraceEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/ray_trace.png");
-    public RayTraceEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public RayTraceEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -45,30 +45,30 @@ public class RayTraceEntity extends ManaRadiateEntity {
     public void successFX() {
         applyParticle(10);
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new RayRadiateRenderer(this);
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         if(spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
             Entity entity = traceContext.entity;
             if(entity == null && traceContext.uuid != MagickCore.emptyUUID && !this.level.isClientSide) {
-                entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
+                entity = ((ServerLevel) this.level).getEntity(traceContext.uuid);
                 traceContext.entity = entity;
             } else if(entity != null && entity.isAlive()) {
-                Vector3d goal = new Vector3d(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ());
-                Vector3d self = new Vector3d(this.getX(), this.getY(), this.getZ());
+                Vec3 goal = new Vec3(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ());
+                Vec3 self = new Vec3(this.getX(), this.getY(), this.getZ());
                 spellContext().addChild(DirectionContext.create(goal.subtract(self).normalize()));
             }
         }
         Entity target = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
-            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
+            Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
             target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(direction.scale(0.5)), direction, getLength(), false);
         } else if (getOwner() != null) {
             target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(getOwner().getLookAngle().scale(0.5)), getOwner().getLookAngle(), getLength(), false);
@@ -86,15 +86,15 @@ public class RayTraceEntity extends ManaRadiateEntity {
 
     @Override
     public Iterable<BlockPos> findBlocks() {
-        BlockRayTraceResult result = null;
+        BlockHitResult result = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
-            Vector3d direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            result = this.world().clip(new RayTraceContext(this.position(), this.position().add(direction.normalize().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+            Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
+            result = this.world().clip(new ClipContext(this.position(), this.position().add(direction.normalize().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         } else if (getOwner() != null) {
-            result = this.world().clip(new RayTraceContext(this.position(), this.position().add(getOwner().getLookAngle().scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
+            result = this.world().clip(new ClipContext(this.position(), this.position().add(getOwner().getLookAngle().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         }
 
-        if(result != null && result.getType() != RayTraceResult.Type.MISS){
+        if(result != null && result.getType() != HitResult.Type.MISS){
             List<BlockPos> list = new ArrayList<>();
             list.add(result.getBlockPos());
             return list;
@@ -113,8 +113,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
     }
 
     protected void applyParticle(int particleAge) {
-        Vector3d target = this.position();
-        Vector3d dir = Vector3d.ZERO;
+        Vec3 target = this.position();
+        Vec3 dir = Vec3.ZERO;
         if(spellContext().containChild(LibContext.DIRECTION))
             dir = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         else if (getOwner() != null)
@@ -124,9 +124,9 @@ public class RayTraceEntity extends ManaRadiateEntity {
         Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.position(), dir, getLength());
         if(entity != null)
             target = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
-        BlockRayTraceResult result = this.world().clip(new RayTraceContext(this.position(), this.position().add(dir.scale(getLength())), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.ANY, null));
-        if(result.getType() != RayTraceResult.Type.MISS)
-            target = Vector3d.atCenterOf(result.getBlockPos());
+        BlockHitResult result = this.world().clip(new ClipContext(this.position(), this.position().add(dir.scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+        if(result.getType() != HitResult.Type.MISS)
+            target = Vec3.atCenterOf(result.getBlockPos());
 
         float distance = (10f * spellContext().range);
 
@@ -138,7 +138,7 @@ public class RayTraceEntity extends ManaRadiateEntity {
             double ty = this.getY() + (target.y - this.getY()) * trailFactor + level.random.nextGaussian() * 0.005;
             double tz = this.getZ() + (target.z - this.getZ()) * trailFactor + level.random.nextGaussian() * 0.005;
             LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(tx, ty, tz), scale, scale, 1.0f, particleAge, spellContext().element.getRenderer());
+                    , new Vec3(tx, ty, tz), scale, scale, 1.0f, particleAge, spellContext().element.getRenderer());
             par.setLimitScale();
             par.setGlow();
             par.addMotion(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f);

@@ -27,26 +27,30 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -54,12 +58,12 @@ import java.util.function.Supplier;
 
 public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity, IManaRefraction, IRedStoneEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
-    private static final DataParameter<Boolean> TRANS = EntityDataManager.defineId(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> MODE = EntityDataManager.defineId(ManaCapacityEntity.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> TRANS = SynchedEntityData.defineId(ManaCapacityEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> MODE = SynchedEntityData.defineId(ManaCapacityEntity.class, EntityDataSerializers.BOOLEAN);
     private final ManaCapacity manaCapacity = ManaCapacity.create(20000);
     private boolean dead = false;
     private BlockPos blockPos;
-    public ManaCapacityEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ManaCapacityEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
         this.entityData.define(MODE, false);
@@ -70,7 +74,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     public boolean isPickable() {
         return true;
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ManaCapacityRenderer(this);
@@ -227,8 +231,8 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     float directionPoint = (float) (player.tickCount % distance) / distance;
                     int c = (int) (directionPoint * distance);
 
-                    Vector3d end = this.position().add(0, this.getBbHeight() / 2, 0);
-                    Vector3d start = player.position().add(0, player.getBbHeight() / 2, 0);
+                    Vec3 end = this.position().add(0, this.getBbHeight() / 2, 0);
+                    Vec3 start = player.position().add(0, player.getBbHeight() / 2, 0);
                     float scale;
                     for (int i = 0; i < distance; i++) {
                         if(i == c)
@@ -236,9 +240,9 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                         else
                             scale = 0.10f;
                         double trailFactor = i / (distance - 1.0D);
-                        Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
+                        Vec3 pos = ParticleUtil.drawLine(start, end, trailFactor);
                         LitParticle par = new LitParticle(this.level, state.get().getElement().getRenderer().getParticleTexture()
-                                , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, state.get().getElement().getRenderer());
+                                , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, state.get().getElement().getRenderer());
                         par.setParticleGravity(0);
                         par.setLimitScale();
                         par.setGlow();
@@ -268,7 +272,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     @Override
     protected void applyParticle() {
         LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                 , 0.1f, 0.1f, 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
@@ -283,14 +287,14 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
         ItemStack heldItem = player.getItemInHand(hand);
         if(heldItem.getItem() instanceof BlockItem || heldItem.getItem() instanceof EntityItem) {
             return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
         }
-        if (!player.level.isClientSide && hand == Hand.MAIN_HAND) {
+        if (!player.level.isClientSide && hand == InteractionHand.MAIN_HAND) {
             this.setOwner(player);
             if (this.getOwner() == player) {
                 if(player.getMainHandItem().getItem() == ModItems.WAND.get())
@@ -298,21 +302,21 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                 else
                     this.switchTrans();
             }
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
         playSound(SoundEvents.BEACON_ACTIVATE, 0.5f, 2.0f);
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         manaCapacity().deserialize(compound);
         setMode(compound.getBoolean("MODE"));
         setTrans(compound.getBoolean("TRANS"));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         manaCapacity().serialize(compound);
         compound.putBoolean("MODE", getMode());
         compound.putBoolean("TRANS", getTrans());
@@ -323,7 +327,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
         return manaCapacity;
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox(), predicate);

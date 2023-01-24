@@ -22,7 +22,7 @@ public class ArtificialLifeItem extends EntityItem {
     public void placeEntity(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
         Level world = context.getLevel();
-        Player playerentity = context.getPlayer();
+        Player Player = context.getPlayer();
         ItemStack itemstack = context.getItemInHand();
         Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ArtificialLifeEntity artificialLifeEntity = ModEntities.ARTIFICIAL_LIFE.get().create(world);
@@ -30,7 +30,7 @@ public class ArtificialLifeItem extends EntityItem {
             artificialLifeEntity = (ArtificialLifeEntity) createEntity;
         Vec3 pos = Vec3.atCenterOf(blockpos);
         artificialLifeEntity.setPos(pos.x, pos.y - 0.5, pos.z);
-        if (playerentity == null || !playerentity.abilities.instabuild) {
+        if (Player == null || !Player.abilities.instabuild) {
             itemstack.shrink(1);
         }
         world.addFreshEntity(artificialLifeEntity);

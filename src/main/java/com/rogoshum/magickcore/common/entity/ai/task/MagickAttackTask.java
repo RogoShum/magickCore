@@ -8,43 +8,43 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.BrainUtil;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleStatus;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
-import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.util.Hand;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.Queue;
 
-public class MagickAttackTask<T extends LivingEntity> extends Task<T> {
+public class MagickAttackTask<T extends LivingEntity> extends Behavior<T> {
     private final int cooldown;
     private final int range;
 
     public MagickAttackTask(int cooldown, int range) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleStatus.REGISTERED, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleStatus.VALUE_ABSENT));
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryStatus.REGISTERED, MemoryModuleType.HURT_BY_ENTITY, MemoryStatus.REGISTERED, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT));
         this.cooldown = cooldown;
         this.range = range;
     }
 
-    protected boolean checkExtraStartConditions(ServerWorld worldIn, T owner) {
+    protected boolean checkExtraStartConditions(ServerLevel worldIn, T owner) {
         if(!(owner instanceof IManaTaskMob)) return false;
         boolean hasFight = ((IManaTaskMob) owner).conditionSpellMap().containsKey(Activity.FIGHT);
         if(!hasFight) return false;
 
         LivingEntity livingentity = this.getAttackTarget(owner);
         if(livingentity == null) return false;
-        return owner.distanceToSqr(livingentity) <= range * range && BrainUtil.canSee(owner, livingentity);
+        return owner.distanceToSqr(livingentity) <= range * range && BehaviorUtils.canSee(owner, livingentity);
     }
 
-    protected void start(ServerWorld worldIn, T entityIn, long gameTimeIn) {
+    protected void start(ServerLevel worldIn, T entityIn, long gameTimeIn) {
         if(!(entityIn instanceof IManaTaskMob)) return;
         LivingEntity livingentity = this.getAttackTarget(entityIn);
         if(livingentity == null) return;
-        BrainUtil.lookAtEntity(entityIn, livingentity);
-        entityIn.swing(Hand.MAIN_HAND);
+        BehaviorUtils.lookAtEntity(entityIn, livingentity);
+        entityIn.swing(InteractionHand.MAIN_HAND);
         Queue<SpellContext> contextQueue = ((IManaTaskMob) entityIn).conditionSpellMap().get(Activity.REST);
         for (SpellContext context : contextQueue) {
             if (!context.containChild(LibContext.CONDITION)) continue;

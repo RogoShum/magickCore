@@ -7,21 +7,21 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
 public class BubbleEntity extends ManaProjectileEntity {
     public static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/bubble.png");
-    public BubbleEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    public BubbleEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
     }
     private static final ManaFactor WATER_FACTOR = ManaFactor.create(2.0f, 1.0f, 1.0f);
@@ -32,7 +32,7 @@ public class BubbleEntity extends ManaProjectileEntity {
         super.tick();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new BubbleRenderer(this);
     }
@@ -61,13 +61,13 @@ public class BubbleEntity extends ManaProjectileEntity {
     protected void applyParticle() {
         if(isInWater()) return;
         float partial = Minecraft.getInstance().getFrameTime();
-        double x = MathHelper.lerp(partial, this.xOld, this.getX());
-        double y = MathHelper.lerp(partial, this.yOld, this.getY());
-        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        double x = Mth.lerp(partial, this.xOld, this.getX());
+        double y = Mth.lerp(partial, this.yOld, this.getY());
+        double z = Mth.lerp(partial, this.zOld, this.getZ());
         float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
 
         LitParticle par = new LitParticle(this.level, ICON
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + x
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + x
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + y + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + z)
                 , scale, scale, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));

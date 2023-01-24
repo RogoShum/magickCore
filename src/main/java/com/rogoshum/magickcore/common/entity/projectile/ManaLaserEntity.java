@@ -8,21 +8,21 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
 public class ManaLaserEntity extends ManaProjectileEntity {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 0.3f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_laser.png");
-    public ManaLaserEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    public ManaLaserEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -38,7 +38,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new ManaLaserRenderer(this);
     }
@@ -57,7 +57,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
         double scaleZ = (this.getPosZ() - this.lastTickPosZ)/count;
         for (int i = 0; i < count; ++i) {
             LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getLaserTexture()
-                    , new Vector3d(this.lastTickPosX + scaleX * i
+                    , new Vec3(this.lastTickPosX + scaleX * i
                     , this.lastTickPosY + scaleY * i + this.getHeight() / 2
                     , this.lastTickPosZ + scaleZ * i)
                     , 0.3f * getWidth(), 0.3f * getWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));
@@ -71,7 +71,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
          */
 
         LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
                 , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
@@ -80,7 +80,7 @@ public class ManaLaserEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public boolean hitEntityRemove(EntityRayTraceResult result) {
+    public boolean hitEntityRemove(EntityHitResult result) {
         return false;
     }
 

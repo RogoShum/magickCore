@@ -1,22 +1,22 @@
 package com.rogoshum.magickcore.common.block;
 
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
@@ -28,7 +28,7 @@ public class ElementWoolBlock extends BaseBlock{
     }
 
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
         super.tick(state, worldIn, pos, rand);
     }
 
@@ -50,7 +50,7 @@ public class ElementWoolBlock extends BaseBlock{
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-        Vector3d pos = builder.getOptionalParameter(LootParameters.ORIGIN);
+        Vec3 pos = builder.getOptionalParameter(LootParameters.ORIGIN);
         if(pos == null) return super.getDrops(state, builder);
         BlockPos blockPos = new BlockPos(pos.x, pos.y, pos.z);
         TileEntity tileentity = builder.getLevel().getBlockEntity(blockPos);
@@ -62,7 +62,7 @@ public class ElementWoolBlock extends BaseBlock{
     }
 
     @Override
-    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
         TileEntity tileentity = worldIn.getBlockEntity(pos);
         if (!player.isCreative() && tileentity instanceof ElementWoolTileEntity) {
             ElementWoolTileEntity tile = (ElementWoolTileEntity)tileentity;

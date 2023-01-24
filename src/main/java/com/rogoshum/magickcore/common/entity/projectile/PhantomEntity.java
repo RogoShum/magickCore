@@ -8,27 +8,24 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
@@ -39,14 +36,9 @@ public class PhantomEntity extends ManaProjectileEntity {
     }
 
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new PhantomRenderer(this);
-    }
-
-    @Override
-    public EntityClassification getClassification(boolean forSpawnCount) {
-        return ModEntities.PHANTOM.get().getCategory();
     }
 
     @Override
@@ -82,21 +74,21 @@ public class PhantomEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand) {
         if(entity != null)
             entity.interact(player, hand);
         return super.interact(player, hand);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if(compound.contains("phantom"))
             entity = level.getEntity(compound.getInt("phantom"));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         if(entity != null)
             compound.putInt("phantom", entity.getId());
@@ -105,7 +97,7 @@ public class PhantomEntity extends ManaProjectileEntity {
     @Override
     protected void applyParticle() {
         LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getZ())
                 , 0.15f * this.getBbWidth(), 0.15f * this.getBbWidth(), 0.8f, 20, spellContext().element.getRenderer());
@@ -153,12 +145,12 @@ public class PhantomEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+    public boolean hitBlockRemove(BlockHitResult blockRayTraceResult) {
         return false;
     }
 
     @Override
-    public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+    public boolean hitEntityRemove(EntityHitResult entityRayTraceResult) {
         return false;
     }
 }

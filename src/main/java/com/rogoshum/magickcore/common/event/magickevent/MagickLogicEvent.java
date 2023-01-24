@@ -45,36 +45,36 @@ import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.player.ServerPlayer;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -90,7 +90,7 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void entityJoinWorld(EntityJoinWorldEvent evt) {
+	public void entityJoinLevel(EntityJoinLevelEvent evt) {
 		/*
 Entity entity = evt.getEntity();
 
@@ -127,7 +127,7 @@ Entity entity = evt.getEntity();
 	/*
 	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Detonate event) {
-		if(event.getWorld().isRemote()) return;
+		if(event.getLevel().isRemote()) return;
 		List<Entity> list = event.getAffectedEntities();
 		for (int i = 0; i < list.size(); ++i) {
 			Entity entity = list.get(i);
@@ -136,8 +136,8 @@ Entity entity = evt.getEntity();
 				ItemStack output = ModRecipes.findExplosionOutput(originStack).copy();
 				if(output != ItemStack.EMPTY) {
 					output.setCount(originStack.getCount());
-					ManaItemEntity mana = new ManaItemEntity(event.getWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ(), output);
-					if(event.getWorld().addEntity(mana))
+					ManaItemEntity mana = new ManaItemEntity(event.getLevel(), entity.getPosX(), entity.getPosY(), entity.getPosZ(), output);
+					if(event.getLevel().addEntity(mana))
 						entity.remove();
 				}
 			}
@@ -161,13 +161,13 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void firstTimeJoinsWorld(PlayerEvent.PlayerLoggedInEvent event) {
-		if(event.getEntity() instanceof ServerPlayerEntity) {
-			ServerPlayerEntity player = (ServerPlayerEntity)event.getEntity();
-			if(!player.getPersistentData().contains(PlayerEntity.PERSISTED_NBT_TAG))
-				player.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, new CompoundNBT());
+	public void firstTimeJoinsLevel(PlayerEvent.PlayerLoggedInEvent event) {
+		if(event.getEntity() instanceof ServerPlayer) {
+			ServerPlayer player = (ServerPlayer)event.getEntity();
+			if(!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG))
+				player.getPersistentData().put(Player.PERSISTED_NBT_TAG, new CompoundTag());
 
-			CompoundNBT PERSISTED_NBT_TAG = player.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+			CompoundTag PERSISTED_NBT_TAG = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
 			if(!PERSISTED_NBT_TAG.contains("MAGICKCORE_FIRST")) {
 				Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
 				if(book != null) {
@@ -199,7 +199,7 @@ Entity entity = evt.getEntity();
 	public void voidElement(ItemAttributeModifierEvent event) {
 		if(event.getSlotType() == EquipmentSlotType.MAINHAND) {
 			if(NBTTagHelper.hasElementOnTool(event.getItemStack(), LibElements.VOID)) {
-				CompoundNBT tag = NBTTagHelper.getStackTag(event.getItemStack());
+				CompoundTag tag = NBTTagHelper.getStackTag(event.getItemStack());
 				event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785CCCC"), () -> "Weapon modifier", Math.pow(1.1, tag.getInt("VOID_LEVEL") * 6), AttributeModifier.Operation.ADDITION));
 			}
 		}
@@ -337,7 +337,7 @@ Entity entity = evt.getEntity();
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntity());
 		if(event.getMana() <= 0 || event.getContext().noCost)
 			state = null;
-		if(event.getEntity() instanceof PlayerEntity && ((PlayerEntity) event.getEntity()).isCreative())
+		if(event.getEntity() instanceof Player && ((Player) event.getEntity()).isCreative())
 			state = null;
 		if(state != null) {
 			if(state.getBuffList().containsKey(LibBuff.FREEZE)) {
@@ -451,12 +451,12 @@ Entity entity = evt.getEntity();
 	@SubscribeEvent
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
-		if(event.getEntityLiving() instanceof MobEntity && state != null && state.allowElement())
+		if(event.getEntityLiving() instanceof Mob && state != null && state.allowElement())
 			RegisterEvent.testIfElement(event.getEntityLiving());
 
 		if(!event.getEntity().level.isClientSide() && event.getEntity() instanceof MageVillagerEntity) {
 			if(!((MageVillagerEntity) event.getEntity()).getBrain().isActive(Activity.FIGHT)) {
-				((MageVillagerEntity) event.getEntity()).refreshBrain((ServerWorld) event.getEntity().level);
+				((MageVillagerEntity) event.getEntity()).refreshBrain((ServerLevel) event.getEntity().level);
 			}
 		}
 
@@ -470,7 +470,7 @@ Entity entity = evt.getEntity();
 
 		TakenEntityData takenState = ExtraDataUtil.takenEntityData(event.getEntity());
 		if(takenState != null) {
-			takenState.tick((MobEntity) event.getEntity());
+			takenState.tick((Mob) event.getEntity());
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed) {
 				if(event.getEntity().tickCount % 40 == 0)
 					Networking.INSTANCE.send(
@@ -490,13 +490,13 @@ Entity entity = evt.getEntity();
 		if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
 			((LivingEntity)event.getEntity()).setHealth(0.0f);
 
-		CompoundNBT effect_tick = new CompoundNBT();
+		CompoundTag effect_tick = new CompoundTag();
 		for (String s : state.getBuffList().keySet()) {
 			ManaBuff buff = state.getBuffList().get(s);
 			effect_tick.putInt(buff.getType(), buff.getTick());
 		}
 
-		CompoundNBT effect_force = new CompoundNBT();
+		CompoundTag effect_force = new CompoundTag();
 		for (String s : state.getBuffList().keySet()) {
 			ManaBuff buff = state.getBuffList().get(s);
 			effect_force.putFloat(buff.getType(), buff.getForce());
@@ -505,7 +505,7 @@ Entity entity = evt.getEntity();
 		state.tick(event.getEntity());
 
 		if(!event.getEntity().level.isClientSide && !event.getEntity().removed && !state.getState().equals(state.getPreState())) {
-			CompoundNBT tag = new CompoundNBT();
+			CompoundTag tag = new CompoundTag();
 			state.write(tag);
 			Networking.INSTANCE.send(
 					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
@@ -593,7 +593,7 @@ Entity entity = evt.getEntity();
 		AtomicReference<EntityStateData> ref = new AtomicReference<>();
 		ExtraDataUtil.entityStateData(event.getEntity(), ref::set);
 		EntityStateData state = ref.get();
-		if(state != null && !(event.getEntity() instanceof PlayerEntity)) {
+		if(state != null && !(event.getEntity() instanceof Player)) {
 			if(state.getElement().type().equals(LibElements.ORIGIN)) {
 				state.setElement(MagickRegistry.getElement(LibElements.ARC));
 				state.setElementShieldMana(50);
@@ -697,13 +697,13 @@ Entity entity = evt.getEntity();
 				event.setAmount(tool.applyAdditionDamage(event.getAmount()));
 			}
 
-			if(!(entity instanceof PlayerEntity)) {
+			if(!(entity instanceof Player)) {
 				EntityStateData attacker = ExtraDataUtil.entityStateData(entity);
 				float manaNeed = event.getAmount();
 
 				if (attacker != null && !attacker.getElement().type().equals(LibElements.ORIGIN)) {
-					if(event.getEntityLiving() instanceof ServerPlayerEntity)
-						AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) event.getEntityLiving(), LibAdvancements.ELEMENT_CREATURE);
+					if(event.getEntityLiving() instanceof ServerPlayer)
+						AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getEntityLiving(), LibAdvancements.ELEMENT_CREATURE);
 					if (attacker.getElementShieldMana() > 0) {
 						MagickContext attribute = new MagickContext(entity.level).noCost().caster(entity).projectile(event.getSource().getDirectEntity()).victim(event.getEntityLiving()).applyType(ApplyType.DE_BUFF).tick((int) manaNeed * 40).force(manaNeed);
 						MagickReleaseHelper.releaseMagick(attribute);
@@ -712,9 +712,9 @@ Entity entity = evt.getEntity();
 			}
 
 			TakenEntityData taken = ExtraDataUtil.takenEntityData(event.getSource().getEntity());
-			if(event.getSource().getEntity() instanceof MobEntity && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0) {
-				if(entity.level instanceof ServerWorld) {
-					Entity entity1 = ((ServerWorld) entity.level).getEntity(taken.getOwnerUUID());
+			if(event.getSource().getEntity() instanceof Mob && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0) {
+				if(entity.level instanceof ServerLevel) {
+					Entity entity1 = ((ServerLevel) entity.level).getEntity(taken.getOwnerUUID());
 					if(entity1 instanceof LivingEntity) {
 						EntityStateData ownerState = ExtraDataUtil.entityStateData(entity1);
 						if(ownerState != null && ownerState.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
@@ -798,8 +798,8 @@ Entity entity = evt.getEntity();
 				MagickReleaseHelper.releaseMagickEvent(context);
 				event.getEntityLiving().setLastHurtMob(null);
 				event.getEntityLiving().setLastHurtByMob(null);
-				if(event.getEntityLiving() instanceof MobEntity)
-					((MobEntity) event.getEntityLiving()).setTarget(null);
+				if(event.getEntityLiving() instanceof Mob)
+					((Mob) event.getEntityLiving()).setTarget(null);
 			}
 		}
 	}
@@ -827,13 +827,13 @@ Entity entity = evt.getEntity();
 	}
 
 	public static void spawnParticle(String element, Entity entity) {
-		World world = entity.level;
+		Level world = entity.level;
 		if(!world.isClientSide) return;
 		ElementRenderer render = MagickCore.proxy.getElementRender(element);
 
 		for(int i = 0; i < 20; ++i) {
 			LitParticle litPar = new LitParticle(world, render.getParticleTexture()
-					, new Vector3d(MagickCore.getNegativeToOne() * entity.getBbWidth() / 2f + entity.getX()
+					, new Vec3(MagickCore.getNegativeToOne() * entity.getBbWidth() / 2f + entity.getX()
 					, MagickCore.getNegativeToOne() / 2f + entity.getY() + entity.getBbHeight() / 2
 					, MagickCore.getNegativeToOne() * entity.getBbWidth() / 2f + entity.getZ())
 					, entity.getBbWidth() / 5f, entity.getBbWidth() / 5f, 0.8f * MagickCore.rand.nextFloat(), 20, render);
@@ -882,7 +882,7 @@ Entity entity = evt.getEntity();
 			ItemEntity item = (ItemEntity) event.getEntity();
 			ItemStack stack = item.getItem();
 			if(!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT)) {
-				CompoundNBT tag = NBTTagHelper.getToolElementTable(stack);
+				CompoundTag tag = NBTTagHelper.getToolElementTable(stack);
 				for(String element : tag.getAllKeys()) {
 					int count = tag.getInt(element);
 					if(count > 1)
@@ -916,8 +916,8 @@ Entity entity = evt.getEntity();
 		else {
 			state.setElement(old.getElement());
 			state.setMaxManaValue(old.getMaxManaValue() * 0.95f);
-			if(state.getMaxManaValue() <= 2500 && event.getPlayer() instanceof ServerPlayerEntity)
-				AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) event.getPlayer(), "below2500");
+			if(state.getMaxManaValue() <= 2500 && event.getPlayer() instanceof ServerPlayer)
+				AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getPlayer(), "below2500");
 		}
 	}
 }

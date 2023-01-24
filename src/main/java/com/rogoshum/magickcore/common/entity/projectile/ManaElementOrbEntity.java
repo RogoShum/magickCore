@@ -10,30 +10,30 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaCapacity {
     private final ManaCapacity manaCapacity = ManaCapacity.create(Float.MAX_VALUE);
-    private static final DataParameter<Boolean> TYPE = EntityDataManager.defineId(ManaElementOrbEntity.class, DataSerializers.BOOLEAN);
-    public ManaElementOrbEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    private static final EntityDataAccessor<Boolean> TYPE = SynchedEntityData.defineId(ManaElementOrbEntity.class, EntityDataSerializers.BOOLEAN);
+    public ManaElementOrbEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
         this.entityData.define(TYPE, false);
     }
@@ -45,7 +45,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new ElementOrbRenderer(this);
     }
@@ -78,13 +78,13 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         manaCapacity().deserialize(compound);
         super.readAdditionalSaveData(compound);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         manaCapacity().serialize(compound);
         super.addAdditionalSaveData(compound);
     }
@@ -95,12 +95,12 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     }
 
     @Override
-    public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+    public boolean hitEntityRemove(EntityHitResult entityRayTraceResult) {
         return true;
     }
 
     @Override
-    public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+    public boolean hitBlockRemove(BlockHitResult blockRayTraceResult) {
         return false;
     }
 
@@ -109,7 +109,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
         return manaCapacity;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public ResourceLocation getEntityIcon() {
         return spellContext().element.getRenderer().getParticleTexture();
@@ -125,7 +125,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
         int count = (int) (20 * getBbWidth());
         for (int i = 0; i < count; ++i) {
             LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                    , new Vector3d(this.getX() + 0.1 * MagickCore.getNegativeToOne()
+                    , new Vec3(this.getX() + 0.1 * MagickCore.getNegativeToOne()
                     , this.getY() + 0.1 * MagickCore.getNegativeToOne() + this.getBbHeight() / 2
                     , this.getZ() + 0.1 * MagickCore.getNegativeToOne())
                     , 0.3f * getBbWidth(), 0.3f * getBbWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class LightShaderManager {
     private static ShaderInstance shader;
     boolean postedLights = false;
@@ -125,9 +125,9 @@ public class LightShaderManager {
     }
 
     @SubscribeEvent
-    public void renderLast(RenderWorldLastEvent e) {
-        RenderHelper.setWorldMatrix(e.getMatrixStack());
-        RenderHelper.setWorldMatrix4f(e.getProjectionMatrix());
+    public void renderLast(RenderLevelLastEvent e) {
+        RenderHelper.setLevelMatrix(e.getMatrixStack());
+        RenderHelper.setLevelMatrix4f(e.getProjectionMatrix());
         RenderHelper.checkRenderingShader();
         if(true) return;
         if(RenderHelper.stopShader()) return;

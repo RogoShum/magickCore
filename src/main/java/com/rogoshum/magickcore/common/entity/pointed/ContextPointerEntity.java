@@ -21,33 +21,32 @@ import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
-import com.rogoshum.magickcore.common.network.ManaCapacityPack;
-import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.World;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -58,24 +57,24 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     private final SpellContext spellContext = SpellContext.create();
     private int coolDown = 40;
     private boolean dead = false;
-    public ContextPointerEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ContextPointerEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new ContextPointerRenderer(this);
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         readAdditionalSaveData(additionalData.readNbt());
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
+    public void writeSpawnData(FriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
@@ -221,7 +220,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void handleEntityEvent(byte id) {
         //super.handleStatusUpdate(id);
@@ -239,10 +238,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
-        if (hand == Hand.MAIN_HAND) {
+        if (hand == InteractionHand.MAIN_HAND) {
             ItemStack heldItem = player.getItemInHand(hand);
             if(heldItem.getItem() instanceof BlockItem || heldItem.getItem() instanceof EntityItem) {
                 return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
@@ -305,18 +304,18 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                     doNetworkUpdate();
             } else
                 dropItem();
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     public void spawnParticle() {
         float scale = 1f;
         for (int i = 0; i < 20; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vec3(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
+                    , new Vec3(Mth.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
                     , position().y + 0.2
-                    , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().z)
+                    , Mth.sin(MagickCore.getNegativeToOne() * 0.3f) + position().z)
                     , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (80 * MagickCore.rand.nextFloat()), 20), ModElements.ORIGIN.getRenderer());
             par.setGlow();
             par.setParticleGravity(-0.1f);
@@ -387,7 +386,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

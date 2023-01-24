@@ -12,9 +12,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 public class ElementWoolRenderer extends ItemStackTileEntityRenderer {
     protected final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
@@ -30,7 +30,7 @@ public class ElementWoolRenderer extends ItemStackTileEntityRenderer {
         Color color = Color.ORIGIN_COLOR;
 
         if(stack.hasTag()) {
-            CompoundNBT blockTag = stack.getTag();
+            CompoundTag blockTag = stack.getTag();
 
             String type = blockTag.getString("ELEMENT") == "" ? LibElements.ORIGIN : blockTag.getString("ELEMENT");
             color = MagickCore.proxy.getElementRender(type).getColor();
@@ -42,9 +42,9 @@ public class ElementWoolRenderer extends ItemStackTileEntityRenderer {
         matrixStackIn.popPose();
     }
 
-    public static CompoundNBT getBlockTag(CompoundNBT tag)
+    public static CompoundTag getBlockTag(CompoundTag tag)
     {
-        CompoundNBT blockTag = tag.getCompound("BlockEntityTag");
+        CompoundTag blockTag = tag.getCompound("BlockEntityTag");
         return blockTag;
     }
 }

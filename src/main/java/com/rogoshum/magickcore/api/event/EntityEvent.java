@@ -112,8 +112,8 @@ public class EntityEvent extends Event{
         }
     }
 
-    public static class EntityAddedToWorldEvent extends EntityEvent {
-        public EntityAddedToWorldEvent(Entity entity) {
+    public static class EntityAddedToLevelEvent extends EntityEvent {
+        public EntityAddedToLevelEvent(Entity entity) {
             super(entity);
         }
     }

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Mixin(Level.class)
-public abstract class MixinWorld {
+public abstract class MixinLevel {
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
     public void onGuardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn, CallbackInfo info) {
         if(entityIn instanceof LivingEntity) return;

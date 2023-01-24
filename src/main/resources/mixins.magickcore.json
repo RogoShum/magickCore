@@ -7,7 +7,7 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
-    "MixinWorld"
+    "MixinLevel"
   ],
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
@@ -17,11 +17,11 @@
   },
   "client": [
     "MixinChunkRenderer",
-    "MixinClientWorld",
+    "MixinClientLevel",
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
     "MixinLivingRender",
     "MixinClientProfiler",
-    "MixinWorldRender"
+    "MixinLevelRender"
   ]
 }

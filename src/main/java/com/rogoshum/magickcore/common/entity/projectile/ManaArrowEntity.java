@@ -7,20 +7,20 @@ import com.rogoshum.magickcore.client.entity.easyrender.projectile.ManaLaserRend
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
 public class ManaArrowEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/arrow.png");
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.5f, 1.0f, 1.0f);
-    public ManaArrowEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    public ManaArrowEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -32,7 +32,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
             maxMotion = length;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new ManaArrowRenderer(this);
     }
@@ -63,7 +63,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
     @Override
     protected void applyParticle() {
         LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
                 , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
@@ -71,10 +71,10 @@ public class ManaArrowEntity extends ManaProjectileEntity {
         MagickCore.addMagickParticle(par);
     }
 
-    public void addParticle(Vector3d pos, Vector3d direction, int count, float baseScale, float scale) {
+    public void addParticle(Vec3 pos, Vec3 direction, int count, float baseScale, float scale) {
         for (int i = 0; i < count; ++i) {
             LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getLaserTexture()
-                    , new Vector3d(pos.x - i * direction.x
+                    , new Vec3(pos.x - i * direction.x
                     , pos.y - i * direction.y + this.getBbHeight() / 2
                     , pos.z - i * direction.z)
                     , (float) (baseScale * Math.pow(scale, i)), (float) (baseScale * Math.pow(scale, i)), 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element.type()));

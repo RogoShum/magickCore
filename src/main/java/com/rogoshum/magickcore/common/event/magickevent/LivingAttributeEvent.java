@@ -3,13 +3,8 @@ package com.rogoshum.magickcore.common.event.magickevent;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.entity.LivingEntity;
 
-@Mod.EventBusSubscriber(modid = MagickCore.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LivingAttributeEvent {
     @SubscribeEvent
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {

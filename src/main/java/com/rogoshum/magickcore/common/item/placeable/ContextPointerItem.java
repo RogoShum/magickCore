@@ -24,7 +24,7 @@ public class ContextPointerItem extends EntityItem {
     public void placeEntity(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
         Level world = context.getLevel();
-        Player playerentity = context.getPlayer();
+        Player Player = context.getPlayer();
         ItemStack itemstack = context.getItemInHand();
         Entity createEntity = NBTTagHelper.createEntityByItem(context.getItemInHand(), world);
         ContextPointerEntity contextPointer = ModEntities.CONTEXT_POINTER.get().create(world);
@@ -32,8 +32,8 @@ public class ContextPointerItem extends EntityItem {
             contextPointer = (ContextPointerEntity) createEntity;
         Vec3 pos = Vec3.atCenterOf(blockpos);
         contextPointer.setPos(pos.x, pos.y - 0.5, pos.z);
-        contextPointer.setOwner(playerentity);
-        if (playerentity == null || !playerentity.abilities.instabuild) {
+        contextPointer.setOwner(Player);
+        if (Player == null || !Player.abilities.instabuild) {
             itemstack.shrink(1);
         }
         world.addFreshEntity(contextPointer);

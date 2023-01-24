@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
@@ -36,7 +36,7 @@ public class MaterialJarItemRenderer extends ItemStackTileEntityRenderer {
             matrixStackIn.popPose();
             return;
         }
-        CompoundNBT blockTag = NBTTagHelper.getBlockTag(stack.getTag());
+        CompoundTag blockTag = NBTTagHelper.getBlockTag(stack.getTag());
         if(!blockTag.contains("stack")) {
             matrixStackIn.popPose();
             return;

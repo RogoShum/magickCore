@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ItemExtractorRenderer extends TileEntityRenderer<ItemExtractorTileEntity> {
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/glass.png");

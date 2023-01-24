@@ -4,28 +4,32 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.magick.ManaCapacity;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.registry.DeferredRegister;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.IDataSerializer;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DataSerializerEntry;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.world.phys.Vec3;
 
 public class ModDataSerializers {
-    public static final DeferredRegister<DataSerializerEntry> DATA_SERIALIZERS = DeferredRegister.create(ForgeRegistries.DATA_SERIALIZERS, MagickCore.MOD_ID);
-    public static final IDataSerializer<ManaCapacity> MANA_CAPACITY = new IDataSerializer<ManaCapacity>() {
+    public static final ModDataSerializers DATA_SERIALIZERS = new ModDataSerializers();
+
+    public void register() {
+        EntityDataSerializers.registerSerializer(MANA_CAPACITY);
+        EntityDataSerializers.registerSerializer(SPELL_CONTEXT);
+        EntityDataSerializers.registerSerializer(VECTOR3D);
+    }
+    public static final EntityDataSerializer<ManaCapacity> MANA_CAPACITY = new EntityDataSerializer<ManaCapacity>() {
         @Override
-        public void write(PacketBuffer buf, ManaCapacity value) {
-            CompoundNBT tag = new CompoundNBT();
+        public void write(FriendlyByteBuf buf, ManaCapacity value) {
+            CompoundTag tag = new CompoundTag();
             value.serialize(tag);
             buf.writeNbt(tag);
         }
 
         @Override
-        public ManaCapacity read(PacketBuffer buf) {
-            CompoundNBT tag = buf.readNbt();
+        public ManaCapacity read(FriendlyByteBuf buf) {
+            CompoundTag tag = buf.readNbt();
             ManaCapacity capacity = ManaCapacity.create(tag);
             if(capacity == null)
                 return new ManaCapacity(0);
@@ -34,7 +38,7 @@ public class ModDataSerializers {
 
         @Override
         public ManaCapacity copy(ManaCapacity value) {
-            CompoundNBT tag = new CompoundNBT();
+            CompoundTag tag = new CompoundTag();
             value.serialize(tag);
             ManaCapacity capacity = ManaCapacity.create(tag);
             if(capacity == null)
@@ -43,48 +47,44 @@ public class ModDataSerializers {
         }
     };
 
-    public static final IDataSerializer<SpellContext> SPELL_CONTEXT = new IDataSerializer<SpellContext>() {
+    public static final EntityDataSerializer<SpellContext> SPELL_CONTEXT = new EntityDataSerializer<SpellContext>() {
         @Override
-        public void write(PacketBuffer buf, SpellContext value) {
-            CompoundNBT tag = new CompoundNBT();
+        public void write(FriendlyByteBuf buf, SpellContext value) {
+            CompoundTag tag = new CompoundTag();
             value.serialize(tag);
             buf.writeNbt(tag);
         }
 
         @Override
-        public SpellContext read(PacketBuffer buf) {
-            CompoundNBT tag = buf.readNbt();
+        public SpellContext read(FriendlyByteBuf buf) {
+            CompoundTag tag = buf.readNbt();
             return SpellContext.create(tag);
         }
 
         @Override
         public SpellContext copy(SpellContext value) {
-            CompoundNBT tag = new CompoundNBT();
+            CompoundTag tag = new CompoundTag();
             value.serialize(tag);
             return SpellContext.create(tag);
         }
     };
 
-    public static final IDataSerializer<Vector3d> VECTOR3D = new IDataSerializer<Vector3d>() {
+    public static final EntityDataSerializer<Vec3> VECTOR3D = new EntityDataSerializer<Vec3>() {
         @Override
-        public void write(PacketBuffer buf, Vector3d value) {
+        public void write(FriendlyByteBuf buf, Vec3 value) {
             buf.writeDouble(value.x);
             buf.writeDouble(value.y);
             buf.writeDouble(value.z);
         }
 
         @Override
-        public Vector3d read(PacketBuffer buf) {
-            return new Vector3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        public Vec3 read(FriendlyByteBuf buf) {
+            return new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
         }
 
         @Override
-        public Vector3d copy(Vector3d value) {
-            return new Vector3d(value.x, value.y, value.z);
+        public Vec3 copy(Vec3 value) {
+            return new Vec3(value.x, value.y, value.z);
         }
     };
-
-    private static final RegistryObject<DataSerializerEntry> MANA_CAPACITY_REGISTRY = DATA_SERIALIZERS.register("mana_capacity", () -> new DataSerializerEntry(MANA_CAPACITY));
-    private static final RegistryObject<DataSerializerEntry> SPELL_CONTEXT_REGISTRY = DATA_SERIALIZERS.register("spell_context", () -> new DataSerializerEntry(SPELL_CONTEXT));
-    private static final RegistryObject<DataSerializerEntry> VECTOR3D_REGISTRY = DATA_SERIALIZERS.register("vector3d", () -> new DataSerializerEntry(VECTOR3D));
 }

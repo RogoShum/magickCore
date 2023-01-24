@@ -20,8 +20,8 @@ import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleStatus;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
@@ -35,21 +35,25 @@ import net.minecraft.entity.merchant.villager.Villager;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.MerchantOffers;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 
-import javax.annotation.Nonnull;
+
 import java.util.HashMap;
 import java.util.Queue;
 
@@ -82,6 +86,7 @@ public class MageVillager extends Villager implements IManaTaskMob {
     }
 
     public void initBrain(Brain<Villager> villagerBrain) {
+        PiglinAi
         VillagerProfession villagerprofession = this.getVillagerData().getProfession();
         if (this.isBaby()) {
             villagerBrain.setSchedule(Schedule.VILLAGER_BABY);
@@ -105,9 +110,9 @@ public class MageVillager extends Villager implements IManaTaskMob {
     }
 
     @Override
-    public void refreshBrain(@Nonnull ServerWorld serverWorldIn) {
+    public void refreshBrain( ServerLevel serverLevelIn) {
         Brain<Villager> brain = this.getBrain();
-        brain.stopAll(serverWorldIn, this);
+        brain.stopAll(serverLevelIn, this);
         this.brain = brain.copyWithoutBehaviors();
         this.initBrain(this.getBrain());
     }

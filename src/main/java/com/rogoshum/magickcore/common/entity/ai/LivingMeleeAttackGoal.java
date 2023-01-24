@@ -1,18 +1,18 @@
 package com.rogoshum.magickcore.common.entity.ai;
 
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.EnumSet;
 
-public class LivingMeleeAttackGoal  extends Goal {
-    protected final MobEntity attacker;
+public class LivingMeleeAttackGoal extends Goal {
+    protected final Mob attacker;
     private final double speedTowardsTarget;
     private final boolean longMemory;
     private Path path;
@@ -26,7 +26,7 @@ public class LivingMeleeAttackGoal  extends Goal {
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
 
-    public LivingMeleeAttackGoal(MobEntity creature, double speedIn, boolean useLongMemory) {
+    public LivingMeleeAttackGoal(Mob creature, double speedIn, boolean useLongMemory) {
         this.attacker = creature;
         this.speedTowardsTarget = speedIn;
         this.longMemory = useLongMemory;
@@ -82,7 +82,7 @@ public class LivingMeleeAttackGoal  extends Goal {
         } else if (!this.attacker.isWithinRestriction(livingentity.blockPosition())) {
             return false;
         } else {
-            return !(livingentity instanceof PlayerEntity) || !livingentity.isSpectator() && !((PlayerEntity)livingentity).isCreative();
+            return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player)livingentity).isCreative();
         }
     }
 
@@ -101,7 +101,7 @@ public class LivingMeleeAttackGoal  extends Goal {
      */
     public void stop() {
         LivingEntity livingentity = this.attacker.getTarget();
-        if (!EntityPredicates.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
+        if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
             this.attacker.setTarget((LivingEntity)null);
         }
 
@@ -125,7 +125,7 @@ public class LivingMeleeAttackGoal  extends Goal {
             if (this.canPenalize) {
                 this.delayCounter += failedPathFindingPenalty;
                 if (this.attacker.getNavigation().getPath() != null) {
-                    net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigation().getPath().getEndNode();
+                    Node finalPathPoint = this.attacker.getNavigation().getPath().getEndNode();
                     if (finalPathPoint != null && livingentity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
                         failedPathFindingPenalty = 0;
                     else
@@ -153,7 +153,7 @@ public class LivingMeleeAttackGoal  extends Goal {
         double d0 = this.getAttackReachSqr(enemy);
         if (distToEnemySqr <= d0 && this.ticksUntilNextAttack <= 0) {
             this.resetAttackCooldown();
-            this.attacker.swing(Hand.MAIN_HAND);
+            this.attacker.swing(InteractionHand.MAIN_HAND);
             this.attacker.doHurtTarget(enemy);
         }
     }

@@ -11,26 +11,26 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/silence_squall.png");
-    public SilenceSquallEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public SilenceSquallEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new SilenceSqualRenderer(this);
@@ -64,7 +64,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
     protected void applyParticle() {
         for(int i = 0; i < 3; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * 18 + this.getX()
                     , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 18 + this.getZ())
                     , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f, 50, this.spellContext().element.getRenderer());
@@ -77,7 +77,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
 
         for(int i = 0; i < 3; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getTrailTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 18 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * 18 + this.getX()
                     , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 18 + this.getZ())
                     , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 100, this.spellContext().element.getRenderer());
@@ -90,7 +90,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
 
         for(int i = 0; i < 1; ++i) {
             LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * 8 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * 8 + this.getX()
                     , MagickCore.getNegativeToOne() * 6 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 8 + this.getZ())
                     , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.3f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
@@ -136,12 +136,12 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         if(cloest != null && cloest.isAlive()) {
-            Vector3d vec = cloest.position().add(0, 2, 0).subtract(this.position());
+            Vec3 vec = cloest.position().add(0, 2, 0).subtract(this.position());
             this.setDeltaMovement(vec.normalize().scale(0.1));
         }
         else if(this.getOwner() != null)
         {
-            Vector3d vec = this.getOwner().position().add(0, 2, 0).subtract(this.position());
+            Vec3 vec = this.getOwner().position().add(0, 2, 0).subtract(this.position());
             this.setDeltaMovement(vec.normalize().scale(0.1));
         }
         this.xo = this.getX();
@@ -157,7 +157,7 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         return ICON;
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox().inflate(16), predicate);

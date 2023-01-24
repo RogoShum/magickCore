@@ -106,7 +106,7 @@ public class VoidAbility{
 
     public static boolean diffusion(MagickContext context) {
         if(context.victim == null || !context.victim.isAlive() || context.caster == null) return false;
-        Vector3d pos = context.victim.position();
+        Vec3 pos = context.victim.position();
         ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
@@ -138,7 +138,7 @@ public class VoidAbility{
             if(state.getHarvestLevel() > context.force) return false;
             Block block = state.getBlock();
             if (!block.isAir(state, world, pos) && !(block instanceof LiquidBlock) && state.getDestroySpeed(world, pos) != -1) {
-                int exp = state.getExpDrop((IWorldReader) world, pos, (int) context.force, 1);
+                int exp = state.getExpDrop((ILevelReader) world, pos, (int) context.force, 1);
                 if(context.caster instanceof Player) {
                     /*
                     if (!state.canHarvestBlock(world, pos, (Player) context.caster)) {

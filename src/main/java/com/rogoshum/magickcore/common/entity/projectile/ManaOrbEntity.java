@@ -8,17 +8,17 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
@@ -41,7 +41,7 @@ public class ManaOrbEntity extends ManaProjectileEntity {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new ManaOrbRenderer(this);
     }
@@ -59,7 +59,7 @@ public class ManaOrbEntity extends ManaProjectileEntity {
     @Override
     public void renderFrame(float partialTicks) {
         LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
-                , new Vector3d(this.xOld + (this.getX() - this.xOld) * partialTicks
+                , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks
                 , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
                 , this.zOld + (this.getZ() - this.zOld) * partialTicks)
                 , 0.2f * getBbWidth(), 0.2f * getBbWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));

@@ -32,7 +32,7 @@ public class MagickContextItem extends ManaItem {
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         /*
-                if(stack.hasTag() && playerIn instanceof PlayerEntity) {
+                if(stack.hasTag() && playerIn instanceof Player) {
             MagickCore.LOGGER.info(stack.getTag().toString());
         }
          */
@@ -70,8 +70,8 @@ public class MagickContextItem extends ManaItem {
     @Override
     public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
         super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-        if(p_77663_3_ instanceof ServerPlayerEntity) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayerEntity) p_77663_3_, LibAdvancements.MAGICK_CORE);
+        if(p_77663_3_ instanceof ServerPlayer) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.MAGICK_CORE);
         }
     }
 }

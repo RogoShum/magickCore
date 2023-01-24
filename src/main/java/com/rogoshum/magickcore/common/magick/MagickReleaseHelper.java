@@ -279,7 +279,7 @@ public class MagickReleaseHelper {
         }
 
         if(pro instanceof IManaEntity)
-            ((IManaEntity) pro).beforeJoinWorld(context);
+            ((IManaEntity) pro).beforeJoinLevel(context);
 
         EntityEvent.MagickSpawnEntityEvent event = new EntityEvent.MagickSpawnEntityEvent(context, pro);
         MinecraftForge.EVENT_BUS.post(event);
@@ -369,7 +369,7 @@ public class MagickReleaseHelper {
         Vec3 reachVector = positionVector.add(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD);
 
         Entity lookedEntity = null;
-        List<Entity> entitiesInBoundingBox = e.getCommandSenderWorld().getEntities(e, e.getBoundingBox().inflate(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).inflate(1F, 1F, 1F));
+        List<Entity> entitiesInBoundingBox = e.getCommandSenderLevel().getEntities(e, e.getBoundingBox().inflate(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).inflate(1F, 1F, 1F));
         double minDistance = distance;
 
         for (Entity entity : entitiesInBoundingBox) {

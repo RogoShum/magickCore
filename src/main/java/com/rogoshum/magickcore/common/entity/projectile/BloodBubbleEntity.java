@@ -14,28 +14,28 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.function.Supplier;
 
 public class BloodBubbleEntity extends ManaProjectileEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/blood_bubble.png");
-    private static final DataParameter<Float> HEALTH = EntityDataManager.defineId(BloodBubbleEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Boolean> BACK = EntityDataManager.defineId(BloodBubbleEntity.class, DataSerializers.BOOLEAN);
-    public BloodBubbleEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    private static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(BloodBubbleEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> BACK = SynchedEntityData.defineId(BloodBubbleEntity.class, EntityDataSerializers.BOOLEAN);
+    public BloodBubbleEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
         this.entityData.define(HEALTH, this.getType().getWidth());
         this.entityData.define(BACK, false);
@@ -63,7 +63,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
+    protected void onHitEntity(EntityHitResult p_213868_1_) {
         boolean isLiving = p_213868_1_.getEntity() instanceof LivingEntity;
         boolean suitable = suitableEntity(p_213868_1_.getEntity());
         if(isLiving) {
@@ -106,7 +106,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+    public boolean hitBlockRemove(BlockHitResult blockRayTraceResult) {
         return false;
     }
 
@@ -121,7 +121,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     @Override
-    public void beforeJoinWorld(MagickContext context) {
+    public void beforeJoinLevel(MagickContext context) {
         this.setHealth(context.force);
     }
 
@@ -138,7 +138,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     @Override
     public void renderFrame(float partialTicks) {
         LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                , new Vector3d(this.xOld + (this.getX() - this.xOld) * partialTicks
+                , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks
                 , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
                 , this.zOld + (this.getZ() - this.zOld) * partialTicks)
                 , 0.1f * this.getBbWidth(), 0.1f * this.getBbWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
@@ -150,7 +150,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new BloodBubbleRenderer(this);
     }

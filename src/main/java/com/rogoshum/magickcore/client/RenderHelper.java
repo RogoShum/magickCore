@@ -53,21 +53,21 @@ public class RenderHelper {
     private static Class optifineShader = null;
     private static boolean optifineShaderLoaded = false;
     private static boolean checkOptifine = false;
-    private static boolean renderingWorld = false;
+    private static boolean renderingLevel = false;
     private static PoseStack worldPoseStack = new PoseStack();
     private static Matrix4f worldMatrix4f = new Matrix4f();
     protected static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("no_transparency", RenderSystem::disableBlend, () -> {
     });
     protected static final RenderStateShard.OutputStateShard TRANSLUCENT_TARGET = new RenderStateShard.OutputStateShard("translucent_target", () -> {
         /*
-        if (isRenderingWorld() && Minecraft.useShaderTransparency()) {
+        if (isRenderingLevel() && Minecraft.useShaderTransparency()) {
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         }
          */
 
     }, () -> {
         /*
-        if (isRenderingWorld() && Minecraft.useShaderTransparency()) {
+        if (isRenderingLevel() && Minecraft.useShaderTransparency()) {
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         }
          */
@@ -536,8 +536,8 @@ public class RenderHelper {
             this.midFactor = midFactor;
             this.height = height;
             this.stacks = stacks;
-            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;;
-            this.midAlpha = isRenderingWorld() && isRenderingShader() ? midAlpha * 0.1f : midAlpha;;
+            this.alpha = isRenderingLevel() && isRenderingShader() ? alpha * 0.1f : alpha;;
+            this.midAlpha = isRenderingLevel() && isRenderingShader() ? midAlpha * 0.1f : midAlpha;;
             this.alphaFactor = alphaFactor;
             this.color = color;
         }
@@ -576,13 +576,13 @@ public class RenderHelper {
         public final Color color;
         int packedLightIn = halfLight;
         public RenderContext(float alpha, Color color, int packedLightIn) {
-            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;
+            this.alpha = isRenderingLevel() && isRenderingShader() ? alpha * 0.1f : alpha;
             this.color = color;
             this.packedLightIn = packedLightIn;
         }
 
         public RenderContext(float alpha, Color color) {
-            this.alpha = isRenderingWorld() && isRenderingShader() ? alpha * 0.1f : alpha;
+            this.alpha = isRenderingLevel() && isRenderingShader() ? alpha * 0.1f : alpha;
             this.color = color;
         }
 
@@ -1607,28 +1607,28 @@ public class RenderHelper {
         return distance < d0 * d0;
     }
 
-    public static void setWorldMatrix(PoseStack matrixStack) {
+    public static void setLevelMatrix(PoseStack matrixStack) {
         worldPoseStack = matrixStack;
     }
 
-    public static PoseStack getWorldMatrix() {
+    public static PoseStack getLevelMatrix() {
         return worldPoseStack;
     }
 
-    public static void setWorldMatrix4f(Matrix4f matrix4f) {
+    public static void setLevelMatrix4f(Matrix4f matrix4f) {
         worldMatrix4f = matrix4f;
     }
 
-    public static Matrix4f getWorldMatrix4f() {
+    public static Matrix4f getLevelMatrix4f() {
         return worldMatrix4f;
     }
 
-    public static void setRenderingWorld(boolean renderingWorld) {
-        RenderHelper.renderingWorld = renderingWorld;
+    public static void setRenderingLevel(boolean renderingLevel) {
+        RenderHelper.renderingLevel = renderingLevel;
     }
 
-    public static boolean isRenderingWorld() {
-        return renderingWorld;
+    public static boolean isRenderingLevel() {
+        return renderingLevel;
     }
 
     public static boolean showDebug() {

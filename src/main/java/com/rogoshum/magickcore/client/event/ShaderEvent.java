@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.event.RenderLevelEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.init.ModShaders;
@@ -89,7 +89,7 @@ public class ShaderEvent {
     }
 
     @SubscribeEvent
-    public void onSetupShaders(RenderWorldEvent.PreRenderMagickEvent event) {
+    public void onSetupShaders(RenderLevelEvent.PreRenderMagickEvent event) {
         if(Minecraft.useShaderTransparency()) {
             RenderSystem.popMatrix();
         }
@@ -113,7 +113,7 @@ public class ShaderEvent {
     }
 
     @SubscribeEvent
-    public void onRenderShaders(RenderWorldEvent.PostRenderMagickEvent event) {
+    public void onRenderShaders(RenderLevelEvent.PostRenderMagickEvent event) {
         if(RenderHelper.stopShader()) return;
         List<RenderTarget> renderFrame = new ArrayList<>();
         renderList.forEach( shader -> {

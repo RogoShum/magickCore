@@ -14,10 +14,10 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector3i;
 
@@ -63,8 +63,8 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
         RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(0.2f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
         matrixStackIn.popPose();
 
-        Vector3d view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        double dis = view.distanceTo(Vector3d.atCenterOf(tileEntityIn.getBlockPos()));
+        Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        double dis = view.distanceTo(Vec3.atCenterOf(tileEntityIn.getBlockPos()));
         if(dis > 5) return;
         float baseAlpha = (float) ((5f - dis) * 0.1f);
 
@@ -92,7 +92,7 @@ public class MagickCraftingRenderer extends TileEntityRenderer<MagickCraftingTil
     }
 
     public void renderCube(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, Vector3i offset, Color color, float alpha) {
-        WorldRenderer.renderLineBox(matrixStackIn, bufferIn.getBuffer(TYPE), new AxisAlignedBB(BlockPos.ZERO)
+        LevelRenderer.renderLineBox(matrixStackIn, bufferIn.getBuffer(TYPE), new AABB(BlockPos.ZERO)
                 .inflate(-0.66666).move(offset.getX() * 0.333, offset.getY() * 0.333 - 0.333, offset.getZ() * 0.333), color.r(), color.g(), color.b(), alpha);
     }
 }

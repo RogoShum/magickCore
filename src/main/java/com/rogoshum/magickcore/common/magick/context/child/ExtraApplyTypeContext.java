@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.common.magick.context.child;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class ExtraApplyTypeContext extends ChildContext{
@@ -16,12 +16,12 @@ public class ExtraApplyTypeContext extends ChildContext{
     }
 
     @Override
-    public void serialize(CompoundNBT tag) {
+    public void serialize(CompoundTag tag) {
         tag.putString("apply_type", applyType.getLabel());
     }
 
     @Override
-    public void deserialize(CompoundNBT tag) {
+    public void deserialize(CompoundTag tag) {
         applyType = ApplyType.getEnum(tag.getString("apply_type"));
     }
 

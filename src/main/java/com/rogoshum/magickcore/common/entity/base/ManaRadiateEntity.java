@@ -12,15 +12,15 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Pose;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,18 +31,18 @@ import java.util.function.Predicate;
 
 public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick {
     boolean cast = false;
-    public ManaRadiateEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ManaRadiateEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
-    protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    protected float getEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return 0;
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
     }
 
     @Override
@@ -96,8 +96,8 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                 if(condition != null && !condition.test(null, level.getBlockState(pos).getBlock()))
                     continue;
                 MagickContext context = MagickContext.create(this.level, spellContext().postContext).doBlock()
-                        .replenishChild(DirectionContext.create(this.position().subtract(Vector3d.atCenterOf(pos))))
-                        .<MagickContext>replenishChild(PositionContext.create(Vector3d.atLowerCornerOf(pos)))
+                        .replenishChild(DirectionContext.create(this.position().subtract(Vec3.atCenterOf(pos))))
+                        .<MagickContext>replenishChild(PositionContext.create(Vec3.atLowerCornerOf(pos)))
                         .caster(getOwner()).projectile(this).noCost();
                 if (spellContext().postContext != null)
                     context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
@@ -153,7 +153,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
 
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void handleEntityEvent(byte id) {
         if(id == 14)

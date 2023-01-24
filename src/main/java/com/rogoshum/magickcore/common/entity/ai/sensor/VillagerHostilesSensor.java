@@ -2,13 +2,12 @@ package com.rogoshum.magickcore.common.entity.ai.sensor;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.sensing.Sensor;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
         return ImmutableSet.of(MemoryModuleType.ATTACK_TARGET);
     }
 
-    protected void doTick(ServerWorld worldIn, LivingEntity entityIn) {
+    protected void doTick(ServerLevel worldIn, LivingEntity entityIn) {
         entityIn.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, this.findNearestHostile(entityIn));
     }
 
@@ -40,7 +39,7 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
     }
 
     private int compareHostileDistances(LivingEntity livingEntity, LivingEntity target1, LivingEntity target2) {
-        return MathHelper.floor(target1.distanceToSqr(livingEntity) - target2.distanceToSqr(livingEntity));
+        return Mth.floor(target1.distanceToSqr(livingEntity) - target2.distanceToSqr(livingEntity));
     }
 
     private boolean canNoticePresence(LivingEntity livingEntity, LivingEntity target) {

@@ -13,30 +13,29 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Supplier;
 
 public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEntity {
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.2f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/red_stone.png");
-    public RedStoneEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    public RedStoneEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
     }
-    public Vector3d clientMotion = Vector3d.ZERO;
+    public Vec3 clientMotion = Vec3.ZERO;
     private BlockPos blockPos;
     private boolean dead = false;
 
@@ -48,7 +47,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return () -> new RedStoneRenderer(this);
     }
@@ -76,7 +75,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
     @Override
-    public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+    public boolean hitEntityRemove(EntityHitResult entityRayTraceResult) {
         return false;
     }
 
@@ -84,12 +83,12 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     protected float getGravity() {
         BlockPos blockpos = this.blockPosition();
         BlockState blockstate = this.level.getBlockState(blockpos);
-        if (!blockstate.isAir(this.level, blockpos)) {
+        if (!blockstate.isAir()) {
             VoxelShape voxelshape = blockstate.getCollisionShape(this.level, blockpos);
             if (!voxelshape.isEmpty()) {
-                Vector3d vector3d1 = this.position();
+                Vec3 vector3d1 = this.position();
 
-                for(AxisAlignedBB axisalignedbb : voxelshape.toAabbs()) {
+                for(AABB axisalignedbb : voxelshape.toAabbs()) {
                     if (axisalignedbb.move(blockpos).contains(vector3d1)) {
                         return 0;
                     }
@@ -100,9 +99,9 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
-        Vector3d pos = Vector3d.atCenterOf(p_230299_1_.getBlockPos());
-        Vector3d vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
+    protected void onHitBlock(BlockHitResult p_230299_1_) {
+        Vec3 pos = Vec3.atCenterOf(p_230299_1_.getBlockPos());
+        Vec3 vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
         this.setDeltaMovement(vec.subtract(pos).normalize().scale(this.getDeltaMovement().length() * 0.4).add(getDeltaMovement().scale(0.5)));
         if(pos.y < this.positionVec().y && getDeltaMovement().length() > 0.1)
             this.setDeltaMovement(getDeltaMovement().scale(1.8 * getBbWidth()));
@@ -114,7 +113,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
+        PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
@@ -126,7 +125,7 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
     @Override
     protected void applyParticle() {
         LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
                 , getBbWidth() * 0.2f, getBbWidth() * 0.2f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));

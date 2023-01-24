@@ -45,8 +45,8 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         MagickCore.proxy.addRenderer(() -> new RadianceWellLaserRenderer(this));
     }
     @Environment(EnvType.CLIENT)

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.entity.base;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
@@ -11,48 +12,37 @@ import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.*;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -60,9 +50,9 @@ import java.util.function.Supplier;
 
 public abstract class ManaProjectileEntity extends ThrowableProjectile implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
     private final SpellContext spellContext = SpellContext.create();
-    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.OPTIONAL_UUID);
-    private static final DataParameter<Float> HEIGHT = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(ManaProjectileEntity.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Optional<UUID>> dataUUID = SynchedEntityData.defineId(ManaProjectileEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Float> HEIGHT = SynchedEntityData.defineId(ManaProjectileEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> WIDTH = SynchedEntityData.defineId(ManaProjectileEntity.class, EntityDataSerializers.FLOAT);
     public Entity victim;
     public double maxMotion;
     private boolean released = false;
@@ -75,7 +65,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (HEIGHT.equals(key) || WIDTH.equals(key)) {
             this.refreshDimensions();
         }
@@ -83,21 +73,21 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     public void refreshDimensions() {
-        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
+        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
         Pose pose = this.getPose();
-        EntitySize entitysize1 = this.getDimensions(pose);
-        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
+        EntityDimensions entitysize1 = this.getDimensions(pose);
+        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntityDimensionsForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
         ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
         ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AxisAlignedBB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
+        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
     }
 
     @Override
-    public EntitySize getDimensions(Pose poseIn) {
-        return EntitySize.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
+    public EntityDimensions getDimensions(Pose poseIn) {
+        return EntityDimensions.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
     }
 
     public void setHeight(float height) {
@@ -108,11 +98,11 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    protected float getEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return sizeIn.height * -0.5f;
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         List<Entity> entities = new ArrayList<>();
@@ -122,13 +112,13 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
-        CompoundNBT addition = new CompoundNBT();
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        CompoundTag addition = new CompoundTag();
         addAdditionalSaveData(addition);
         buffer.writeNbt(addition);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void handleEntityEvent(byte id) {
         if(id == 3)
@@ -143,7 +133,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         readAdditionalSaveData(additionalData.readNbt());
     }
 
@@ -175,7 +165,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         UUID uuid = getOwnerUUID();
         if(uuid == MagickCore.emptyUUID) return entity;
         if (entity == null && this.level.isClientSide) {
-            Iterator<Entity> it = ((ClientWorld) this.level).entitiesForRendering().iterator();
+            Iterator<Entity> it = ((ClientLevel) this.level).entitiesForRendering().iterator();
             while (it.hasNext()) {
                 Entity entity1 = it.next();
                 if(entity1 != null && entity1.getUUID().equals(uuid)) {
@@ -208,12 +198,12 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     public void normalCollision() {
         if(victim == null) {
-            Vector3d vector3d = this.getDeltaMovement();
+            Vec3 vector3d = this.getDeltaMovement();
             vector3d = vector3d.normalize().scale(getBbWidth() * 0.5);
-            World world = this.level;
-            Vector3d vector3d1 = this.position();
-            Vector3d vector3d2 = vector3d1.add(vector3d);
-            EntityRayTraceResult raytraceResult = ProjectileHelper.getEntityHitResult(world, this, vector3d1, vector3d2, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), Entity::isAlive);
+            Level world = this.level;
+            Vec3 vector3d1 = this.position();
+            Vec3 vector3d2 = vector3d1.add(vector3d);
+            EntityHitResult raytraceResult = ProjectileUtil.getEntityHitResult(world, this, vector3d1, vector3d2, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), Entity::isAlive);
             if (raytraceResult != null) {
                 Entity target = raytraceResult.getEntity();
                 if(target instanceof IManaRefraction) {
@@ -222,7 +212,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                 } else
                     this.victim = target;
                 if (victim != null && !this.level.isClientSide) {
-                    EntityRayTraceResult result = new EntityRayTraceResult(target);
+                    EntityHitResult result = new EntityHitResult(target);
                     onHitEntity(result);
                 }
             }
@@ -247,8 +237,8 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         EntityLightSourceManager.addLightSource(this);
         if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaProjectileEntity>> renderer = getRenderer();
@@ -259,7 +249,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaProjectileEntity>> getRenderer() {
         return null;
     }
@@ -275,13 +265,13 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public Vector3d positionVec() {
+    public Vec3 positionVec() {
         return position();
     }
 
     @Override
-    public World world() {
-        return getCommandSenderWorld();
+    public Level world() {
+        return getCommandSenderLevel();
     }
 
     @Override
@@ -301,8 +291,8 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public SoundCategory getSoundSource() {
-        return SoundCategory.NEUTRAL;
+    public SoundSource getSoundSource() {
+        return SoundSource.NEUTRAL;
     }
 
     @Override
@@ -325,21 +315,21 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
         Entity entity = traceContext.entity;
         if(entity == null && traceContext.uuid != MagickCore.emptyUUID) {
-            entity = ((ServerWorld) this.level).getEntity(traceContext.uuid);
+            entity = ((ServerLevel) this.level).getEntity(traceContext.uuid);
             traceContext.entity = entity;
         } else if(entity != null && entity.isAlive()) {
-            Vector3d goal = new Vector3d(entity.getX(), entity.getY() + entity.getBbHeight() / 1.5f, entity.getZ());
-            Vector3d self = new Vector3d(this.getX(), this.getY(), this.getZ());
+            Vec3 goal = new Vec3(entity.getX(), entity.getY() + entity.getBbHeight() / 1.5f, entity.getZ());
+            Vec3 self = new Vec3(this.getX(), this.getY(), this.getZ());
 
             double length = maxMotion * 0.3;
-            Vector3d motion = goal.subtract(self).normalize().scale(Math.max(length * 0.2, 0.02));
+            Vec3 motion = goal.subtract(self).normalize().scale(Math.max(length * 0.2, 0.02));
             this.setDeltaMovement(motion.add(this.getDeltaMovement().scale(0.8)));
         }
     }
 
-    protected void onHit(RayTraceResult result) {
-        if(result.getType() == RayTraceResult.Type.ENTITY) {
-            EntityRayTraceResult result1 = ((EntityRayTraceResult)result);
+    protected void onHit(HitResult result) {
+        if(result.getType() == HitResult.Type.ENTITY) {
+            EntityHitResult result1 = ((EntityHitResult)result);
             if(result1.getEntity() instanceof IManaRefraction) {
                 if(!((IManaRefraction) result1.getEntity()).refraction(spellContext()))
                     this.victim = result1.getEntity();
@@ -349,10 +339,10 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         super.onHit(result);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected void applyParticle() {
         LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                 , 0.1f, 0.1f, 1.0f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
@@ -361,7 +351,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
         if(tickCount % 5 != 0) return;
         LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
-                , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                 , 0.5f * this.getBbWidth(), 0.5f * this.getBbWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
@@ -373,7 +363,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.hasUUID("Owner")) {
             UUID ownerUUID = compound.getUUID("Owner");
@@ -383,7 +373,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         if (this.getOwner() != null) {
             compound.putUUID("Owner", this.getOwner().getUUID());
@@ -392,7 +382,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
+    protected void onHitEntity(EntityHitResult p_213868_1_) {
         if(suitableEntity(p_213868_1_.getEntity())) {
             ConditionContext condition = null;
             if(spellContext().containChild(LibContext.CONDITION))
@@ -419,7 +409,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
+    protected void onHitBlock(BlockHitResult p_230299_1_) {
         if(spellContext().containChild(LibContext.CONDITION)) {
             ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
             if(!condition.<Block>test(null, level.getBlockState(p_230299_1_.getBlockPos()).getBlock()))
@@ -428,7 +418,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
+        PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
@@ -454,7 +444,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public Vector3d getPostDirection(Entity entity) {
+    public Vec3 getPostDirection(Entity entity) {
         if(entity == this) {
             if(spellContext().containChild(LibContext.DIRECTION))
                 return spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
@@ -469,7 +459,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         if (this.level.isClientSide()) {
             for (int c = 0; c < 10; ++c) {
                 LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                        , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                         , 0.125f, 0.125f, MagickCore.rand.nextFloat(), 80, spellContext().element.getRenderer());
@@ -480,7 +470,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
             }
             for (int i = 0; i < 5; ++i) {
                 LitParticle litPar = new LitParticle(this.level, spellContext().element.getRenderer().getMistTexture()
-                        , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
+                        , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                         , this.getBbWidth() * 0.5f, this.getBbWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
@@ -494,7 +484,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -508,16 +498,16 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         return true;
     }
 
-    public boolean hitEntityRemove(EntityRayTraceResult entityRayTraceResult) {
+    public boolean hitEntityRemove(EntityHitResult entityRayTraceResult) {
         return true;
     }
 
-    public boolean hitBlockRemove(BlockRayTraceResult blockRayTraceResult) {
+    public boolean hitBlockRemove(BlockHitResult blockRayTraceResult) {
         return true;
     }
 
     @Override
-    public AxisAlignedBB boundingBox() {
+    public AABB boundingBox() {
         return getBoundingBox();
     }
 }

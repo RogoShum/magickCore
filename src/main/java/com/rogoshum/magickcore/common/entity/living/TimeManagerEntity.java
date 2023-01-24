@@ -1,12 +1,12 @@
 package com.rogoshum.magickcore.common.entity.living;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 public class TimeManagerEntity extends RelicEntity{
-    public TimeManagerEntity(EntityType<? extends TimeManagerEntity> type, World worldIn) {
+    public TimeManagerEntity(EntityType<? extends TimeManagerEntity> type, Level worldIn) {
 		super(type, worldIn);
 	}
 
@@ -16,7 +16,7 @@ public class TimeManagerEntity extends RelicEntity{
 	}
 
 	@Override
-	public void playerTouch(PlayerEntity entityIn) {
+	public void playerTouch(Player entityIn) {
 
 	}
 

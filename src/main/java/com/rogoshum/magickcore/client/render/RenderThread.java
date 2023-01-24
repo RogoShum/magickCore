@@ -36,13 +36,13 @@ public class RenderThread extends Thread {
     }
 
 
-    //renderWorldLastEvent invoke 1
+    //renderLevelLastEvent invoke 1
     //render
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction() {
         return glFunction;
     }
 
-    //renderWorldLastEvent invoke 2
+    //renderLevelLastEvent invoke 2
     public void update() {
         needUpdate = true;
     }

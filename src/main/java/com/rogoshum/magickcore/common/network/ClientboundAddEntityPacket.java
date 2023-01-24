@@ -133,7 +133,7 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
             {
                 ((IEntityAdditionalSpawnData) livingEntity).readSpawnData(friendlyByteBuf);
             }
-            Minecraft.getInstance().level.putNonPlayerEntity(this.getId(), livingEntity);
+            Minecraft.getInstance().level.putNonPlayer(this.getId(), livingEntity);
             if (livingEntity instanceof Bee) {
                 boolean bl = ((Bee)livingEntity).isAngry();
                 Object beeSoundInstance2;

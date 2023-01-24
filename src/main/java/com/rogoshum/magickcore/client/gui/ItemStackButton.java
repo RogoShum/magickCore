@@ -12,9 +12,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class ItemStackButton extends Button {
             this.blit(matrixStack, this.x-1, this.y-1, 1, 23, 22, 22);
         this.renderBg(matrixStack, minecraft, mouseX, mouseY);
         int j = getFGColor();
-        drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + 21, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + 21, j | Mth.ceil(this.alpha * 255.0F) << 24);
         minecraft.getItemRenderer().renderGuiItem(stack, this.x+2, this.y+2);
     }
 

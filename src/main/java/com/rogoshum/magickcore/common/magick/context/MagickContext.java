@@ -72,7 +72,7 @@ public class MagickContext extends SpellContext {
     public String toString() {
         ToolTipHelper toolTip = new ToolTipHelper();
         if(world != null)
-            toolTip.nextTrans("World", world, ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans("Level", world, ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(caster != null)
             toolTip.nextTrans("Caster", caster, ToolTipHelper.PINK, ToolTipHelper.GREY);
         if(projectile != null)

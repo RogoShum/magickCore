@@ -7,7 +7,7 @@ import com.rogoshum.magickcore.common.entity.living.TimeManagerEntity;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 
 public class TimeManagerRenderer extends EntityRenderer<TimeManagerEntity> {

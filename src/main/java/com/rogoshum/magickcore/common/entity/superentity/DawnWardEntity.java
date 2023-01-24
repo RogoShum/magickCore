@@ -14,21 +14,21 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import net.minecraft.entity.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -37,12 +37,12 @@ import java.util.function.Supplier;
 public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/dawn_ward.png");
 
-    public DawnWardEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public DawnWardEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new DawnWardRenderer(this);
     }
@@ -65,7 +65,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     protected void applyParticle() {
         if(this.tickCount % 2 == 0 && this.level.isClientSide) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                     , 0.2f, 0.2f, 0.9f, 50, this.spellContext().element.getRenderer());
@@ -89,7 +89,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return !(entity instanceof PlayerEntity) && testBoundingBox(entity);
+        return !(entity instanceof Player) && testBoundingBox(entity);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     public boolean testBoundingBox(Entity entityIn) {
-        AxisAlignedBB box = entityIn.getBoundingBox();
+        AABB box = entityIn.getBoundingBox();
 
         if(testBoundingBoxPoint(box.minX, box.minY, box.minZ)) return true;
 
@@ -133,8 +133,8 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     public boolean testBoundingBoxPoint(double x, double y, double z) {
         boolean flag = false;
-        Vector3d vec = new Vector3d(x, y, z);
-        Vector3d center = new Vector3d(this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ());
+        Vec3 vec = new Vec3(x, y, z);
+        Vec3 center = new Vec3(this.getX(), this.getY() + this.getBbHeight() / 2, this.getZ());
 
         if(vec.subtract(center).length() <= (this.getBbWidth() / 2) + 0.25)
             flag = true;
@@ -147,18 +147,18 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
             if(entityIn instanceof LivingEntity) {
                 MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
                 MagickReleaseHelper.releaseMagick(context);
-                ((LivingEntity) entityIn).addEffect(new EffectInstance(Effects.ABSORPTION, 20, 8));
+                ((LivingEntity) entityIn).addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 20, 8));
             }
             return;
         }
 
-        Vector3d vec = new Vector3d(this.getX() - entityIn.getX(), (this.getY() + this.getBbHeight() / 2) - (entityIn.getY() + entityIn.getBbHeight() / 2), this.getZ() - entityIn.getZ());
+        Vec3 vec = new Vec3(this.getX() - entityIn.getX(), (this.getY() + this.getBbHeight() / 2) - (entityIn.getY() + entityIn.getBbHeight() / 2), this.getZ() - entityIn.getZ());
         hitReactions.put(entityIn.getId(), new VectorHitReaction(vec.normalize()));
         double d0 = entityIn.getX() - this.getX();
         double d1 = entityIn.getZ() - this.getZ();
-        double d2 = MathHelper.absMax(d0, d1);
+        double d2 = Mth.absMax(d0, d1);
         if (d2 >= (double)0.01F) {
-            d2 = (double)MathHelper.sqrt(d2);
+            d2 = (double)Mth.sqrt(d2);
             d0 = d0 / d2;
             d1 = d1 / d2;
             double d3 = 1.0D / d2;
@@ -189,11 +189,11 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    protected float getEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return sizeIn.height * 0.5F;
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return new ArrayList<>();

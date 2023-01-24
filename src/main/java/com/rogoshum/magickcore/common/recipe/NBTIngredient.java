@@ -16,12 +16,12 @@ public class NBTIngredient {
     extends Ingredient
     private final HashSet<String> keySet;
     private final HashMap<String, INBT> keyMap;
-    private final CompoundNBT tag;
+    private final CompoundTag tag;
     private final int count;
     private final String name;
     private final String item;
     private final String itemTag;
-    protected NBTIngredient(String item, Ingredient.IItemList stackList, CompoundNBT tag, int count) {
+    protected NBTIngredient(String item, Ingredient.IItemList stackList, CompoundTag tag, int count) {
         super(Stream.of(stackList));
         this.tag = tag;
         this.keySet = NBTTagHelper.getNBTKeySet(tag);
@@ -32,7 +32,7 @@ public class NBTIngredient {
         this.itemTag = null;
     }
 
-    protected NBTIngredient(String name, List<ItemStack> stacks, CompoundNBT tag, int count) {
+    protected NBTIngredient(String name, List<ItemStack> stacks, CompoundTag tag, int count) {
         super(Stream.of(new StackList(stacks)));
         this.tag = tag;
         this.keySet = NBTTagHelper.getNBTKeySet(tag);
@@ -43,7 +43,7 @@ public class NBTIngredient {
         this.itemTag = null;
     }
 
-    protected NBTIngredient(String itemTag, Stream<? extends Ingredient.IItemList> itemLists, CompoundNBT tag, int count) {
+    protected NBTIngredient(String itemTag, Stream<? extends Ingredient.IItemList> itemLists, CompoundTag tag, int count) {
         super(itemLists);
         this.tag = tag;
         this.keySet = NBTTagHelper.getNBTKeySet(tag);
@@ -54,7 +54,7 @@ public class NBTIngredient {
         this.itemTag = itemTag;
     }
 
-    protected NBTIngredient(int type, String name, Stream<? extends Ingredient.IItemList> itemLists, CompoundNBT tag, int count) {
+    protected NBTIngredient(int type, String name, Stream<? extends Ingredient.IItemList> itemLists, CompoundTag tag, int count) {
         super(itemLists);
         this.tag = tag;
         this.keySet = NBTTagHelper.getNBTKeySet(tag);
@@ -78,7 +78,7 @@ public class NBTIngredient {
     public static HashSet<String> getStackNBTKeySet(ItemStack stack) {
         HashSet<String> keys = new HashSet<>();
         if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundTag tag = stack.getTag();
             keys = NBTTagHelper.getNBTKeySet(tag);
         }
         return keys;
@@ -87,7 +87,7 @@ public class NBTIngredient {
     public static HashMap<String, INBT> getStackNBTKeyMap(ItemStack stack) {
         HashMap<String, INBT> keys = new HashMap<>();
         if(stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundTag tag = stack.getTag();
             keys = NBTTagHelper.getNBTKeyMap(tag);
         }
         return keys;
@@ -149,7 +149,7 @@ public class NBTIngredient {
             }
 
             Stream<? extends Ingredient.IItemList> itemLists = Stream.of(ingredientList);
-            CompoundNBT tag = buffer.readNbt();
+            CompoundTag tag = buffer.readNbt();
             int count = buffer.readVarInt();
             int type = buffer.readVarInt();
             String string = buffer.readUtf();
@@ -161,7 +161,7 @@ public class NBTIngredient {
             if(!json.has("name")) {
                 try {
                     int count = JSONUtils.getAsInt(json, "count", 1);
-                    CompoundNBT nbt = new CompoundNBT();
+                    CompoundTag nbt = new CompoundTag();
                     if(json.has("nbt")) {
                         JsonElement element = json.get("nbt");
                         if (element.isJsonObject())
@@ -186,7 +186,7 @@ public class NBTIngredient {
                     String name = JSONUtils.getAsString(json, "name");
                     int count = JSONUtils.getAsInt(json, "count", 1);
 
-                    CompoundNBT nbt = new CompoundNBT();
+                    CompoundTag nbt = new CompoundTag();
                     if(json.has("nbt")) {
                         JsonElement element = json.get("nbt");
                         if (element.isJsonObject())

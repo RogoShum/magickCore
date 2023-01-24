@@ -2,8 +2,8 @@ package com.rogoshum.magickcore.common.magick.condition;
 
 import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.lib.LibConditions;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.Objects;
 
@@ -24,12 +24,12 @@ public class InjurableEntityCondition extends EntityCondition{
     }
 
     @Override
-    protected void serialize(CompoundNBT tag) {
+    protected void serialize(CompoundTag tag) {
 
     }
 
     @Override
-    protected void deserialize(CompoundNBT tag) {
+    protected void deserialize(CompoundTag tag) {
 
     }
 

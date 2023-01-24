@@ -15,17 +15,17 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class LampEntity extends ManaProjectileEntity implements IExistTick {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/lamp.png");
     private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.5f, 1.0f, 1.0f);
-    public LampEntity(EntityType<? extends ThrowableEntity> type, World worldIn) {
+    public LampEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
     }
 
@@ -96,13 +96,13 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     @Override
     protected void applyParticle() {
         float partial = Minecraft.getInstance().getFrameTime();
-        double x = MathHelper.lerp(partial, this.xOld, this.getX());
-        double y = MathHelper.lerp(partial, this.yOld, this.getY());
-        double z = MathHelper.lerp(partial, this.zOld, this.getZ());
+        double x = Mth.lerp(partial, this.xOld, this.getX());
+        double y = Mth.lerp(partial, this.yOld, this.getY());
+        double z = Mth.lerp(partial, this.zOld, this.getZ());
         float scale = Math.max(this.getBbWidth(), 0.5f) * 0.5f;
         for (int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vector3d(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
+                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
                     , scale, scale * 1.2f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
@@ -116,9 +116,9 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult p_230299_1_) {
-        Vector3d pos = Vector3d.atCenterOf(p_230299_1_.getBlockPos());
-        Vector3d vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
+    protected void onHitBlock(BlockHitResult p_230299_1_) {
+        Vec3 pos = Vec3.atCenterOf(p_230299_1_.getBlockPos());
+        Vec3 vec = this.positionVec().add(0, this.getBbHeight() / 2, 0);
         this.setDeltaMovement(vec.subtract(pos).normalize().scale(this.getDeltaMovement().length()));
         if(spellContext().containChild(LibContext.CONDITION)) {
             ConditionContext condition = spellContext().getChild(LibContext.CONDITION);
@@ -128,7 +128,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
         MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
-        PositionContext positionContext = PositionContext.create(Vector3d.atLowerCornerOf(p_230299_1_.getBlockPos()));
+        PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 

@@ -15,20 +15,19 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vec3;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
 public class SpinEntity extends ManaPointEntity {
     protected Vec3 hitPoint = this.position();
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/spin.png");
-    public SpinEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public SpinEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -50,13 +49,13 @@ public class SpinEntity extends ManaPointEntity {
         }
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return level.getEntities(this, new AxisAlignedBB(getHitPoint(), getHitPoint()).inflate(getRange()), predicate);
+        return level.getEntities(this, new AABB(getHitPoint(), getHitPoint()).inflate(getRange()), predicate);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new SpinRenderer(this);
@@ -70,7 +69,7 @@ public class SpinEntity extends ManaPointEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             vec = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
         }
-        Vector2f rotation = ParticleUtil.getRotationForVector(vec);
+        Vec2 rotation = ParticleUtil.getRotationForVector(vec);
         vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(14 - spellContext().range * 0.5f, 1f));
         spellContext().addChild(DirectionContext.create(vec));
         hitPoint =  position().add(vec.scale(range * 2));

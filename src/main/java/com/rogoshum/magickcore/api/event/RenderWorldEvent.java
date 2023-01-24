@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.GameRenderer;
 
-public class RenderWorldEvent {
+public class RenderLevelEvent {
     public static class PreRenderMagickEvent extends Event {
         private final GameRenderer context;
         private final PoseStack mat;

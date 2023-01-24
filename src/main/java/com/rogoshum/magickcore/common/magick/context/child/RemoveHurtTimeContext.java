@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.magick.context.child;
 
 import com.rogoshum.magickcore.common.lib.LibContext;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public class RemoveHurtTimeContext extends ChildContext{
     public static RemoveHurtTimeContext create() {
@@ -9,12 +9,12 @@ public class RemoveHurtTimeContext extends ChildContext{
     }
 
     @Override
-    public void serialize(CompoundNBT tag) {
+    public void serialize(CompoundTag tag) {
 
     }
 
     @Override
-    public void deserialize(CompoundNBT tag) {
+    public void deserialize(CompoundTag tag) {
 
     }
 

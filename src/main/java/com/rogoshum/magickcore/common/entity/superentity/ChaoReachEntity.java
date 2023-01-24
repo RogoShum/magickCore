@@ -44,8 +44,8 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         MagickCore.proxy.addRenderer(() -> new ChaosReachLaserRenderer(this));
     }
     @Environment(EnvType.CLIENT)

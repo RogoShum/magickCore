@@ -4,17 +4,17 @@ import com.rogoshum.magickcore.api.block.ILightingBlock;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.AbstractBlock.Properties;
 
@@ -51,7 +51,7 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
         return state.getValue(LIGHT_LEVEL);
     }
 
-    public void changeLight(ServerWorld worldIn, BlockPos pos, int level) {
+    public void changeLight(ServerLevel worldIn, BlockPos pos, int level) {
         worldIn.setBlock(pos, withLight(level), 2);
     }
 

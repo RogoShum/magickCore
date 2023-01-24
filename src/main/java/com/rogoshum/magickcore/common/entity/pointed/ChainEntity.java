@@ -14,36 +14,33 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.LeadItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class ChainEntity extends ManaPointEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/chain.png");
-    private static final DataParameter<Integer> POST = EntityDataManager.defineId(ChainEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> VICTIM = EntityDataManager.defineId(ChainEntity.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> POST = SynchedEntityData.defineId(ChainEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> VICTIM = SynchedEntityData.defineId(ChainEntity.class, EntityDataSerializers.INT);
     protected Entity postEntity;
     protected Entity victimEntity;
-    public ChainEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public ChainEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.entityData.define(POST, -1);
         this.entityData.define(VICTIM, -1);
@@ -74,14 +71,14 @@ public class ChainEntity extends ManaPointEntity {
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer) {
+    public void writeSpawnData(FriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         buffer.writeInt(this.postEntity == null ? -1 : this.postEntity.getId());
         buffer.writeInt(this.victimEntity == null ? -1 : this.victimEntity.getId());
     }
 
     @Override
-    public void readSpawnData(PacketBuffer additionalData) {
+    public void readSpawnData(FriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         int post = additionalData.readInt();
         int victim = additionalData.readInt();
@@ -136,17 +133,17 @@ public class ChainEntity extends ManaPointEntity {
         if(!fixedPosition() && victimEntity != null) {
             setPos(victimEntity.getX(), victimEntity.getY() + victimEntity.getBbHeight() * 0.5 - 0.25, victimEntity.getZ());
         }
-        if(level.isClientSide && !(victimEntity instanceof PlayerEntity)) return;
+        if(level.isClientSide && !(victimEntity instanceof Player)) return;
         float range = spellContext().range;
         float force = spellContext().force;
         if(victimEntity != null && postEntity != null) {
             if(victimEntity.distanceToSqr(postEntity) >= range * range) {
                 Entity slower = victimEntity;
                 Entity faster = postEntity;
-                Vector3d vicPos = victimEntity.position().add(0,  victimEntity.getBbHeight() * 0.5, 0);
-                Vector3d postPos = postEntity.position().add(0,  postEntity.getBbHeight() * 0.5, 0);
-                Vector3d fasterPos = postPos;
-                Vector3d direction = postPos.subtract(vicPos).normalize();
+                Vec3 vicPos = victimEntity.position().add(0,  victimEntity.getBbHeight() * 0.5, 0);
+                Vec3 postPos = postEntity.position().add(0,  postEntity.getBbHeight() * 0.5, 0);
+                Vec3 fasterPos = postPos;
+                Vec3 direction = postPos.subtract(vicPos).normalize();
                 if(spellContext().containChild(LibContext.TRACE)) {
                     slower = postEntity;
                     faster = victimEntity;
@@ -159,7 +156,7 @@ public class ChainEntity extends ManaPointEntity {
                     direction = direction.scale(0.2);
                 slower.push(direction.x, direction.y, direction.z);
                 if(slower.getDeltaMovement().y <= 0.0D && slower instanceof LivingEntity) {
-                    ((LivingEntity) slower).addEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
+                    ((LivingEntity) slower).addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 1, false, false, false));
                 }
                 if(victimEntity.distanceToSqr(postEntity) >= (range + force) * (range + force) && slower.getDeltaMovement().normalize().dot(direction.normalize()) < 0) {
                     if(slower == postEntity)
@@ -170,14 +167,14 @@ public class ChainEntity extends ManaPointEntity {
             }
         } else if(victimEntity != null) {
             if(victimEntity.distanceToSqr(this) >= range * range) {
-                Vector3d direction = this.position().add(0,  this.getBbHeight() * 0.5, 0).subtract(victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0));
+                Vec3 direction = this.position().add(0,  this.getBbHeight() * 0.5, 0).subtract(victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0));
                 if(victimEntity instanceof LivingEntity)
                     direction = direction.scale(0.03);
                 else
                     direction = direction.scale(0.2);
                 victimEntity.push(direction.x, direction.y, direction.z);
                 if(victimEntity.getDeltaMovement().y <= 0.0D && victimEntity instanceof LivingEntity) {
-                    ((LivingEntity) victimEntity).addEffect(new EffectInstance(Effects.SLOW_FALLING, 20, 1, false, false, false));
+                    ((LivingEntity) victimEntity).addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 1, false, false, false));
                 }
                 if(victimEntity.distanceToSqr(this) >= (range + force) * (range + force) && victimEntity.getDeltaMovement().normalize().dot(direction.normalize()) < 0) {
                     victimEntity = null;
@@ -186,7 +183,6 @@ public class ChainEntity extends ManaPointEntity {
         }
     }
 
-    @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return Collections.emptyList();
@@ -205,22 +201,22 @@ public class ChainEntity extends ManaPointEntity {
 
     @Override
     protected void applyParticle() {
-        Vector3d self = position().add(0, getBbHeight() * 0.5, 0);
-        Vector3d target = self;
+        Vec3 self = position().add(0, getBbHeight() * 0.5, 0);
+        Vec3 target = self;
         if(victimEntity != null && postEntity != null) {
             self = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0);
             target = postEntity.position().add(0, postEntity.getBbHeight() * 0.5, 0);
         } else if(victimEntity != null)
             target = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0);
-        Vector3d end = self;
-        Vector3d start = target;
+        Vec3 end = self;
+        Vec3 start = target;
         double dis = Math.max(start.subtract(end).length() * 10, 1);
         float scale = 0.10f;
         for (int i = 0; i < dis; i++) {
             double trailFactor = i / Math.max((dis - 1.0D), 1);
-            Vector3d pos = ParticleUtil.drawLine(start, end, trailFactor);
+            Vec3 pos = ParticleUtil.drawLine(start, end, trailFactor);
             LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vector3d(pos.x, pos.y, pos.z), scale, scale, 1.0f, 1, spellContext().element.getRenderer());
+                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 1, spellContext().element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -234,8 +230,8 @@ public class ChainEntity extends ManaPointEntity {
     }
 
     @Override
-    public void beforeJoinWorld(MagickContext context) {
-        super.beforeJoinWorld(context);
+    public void beforeJoinLevel(MagickContext context) {
+        super.beforeJoinLevel(context);
         victimEntity = context.victim;
         if(context.separator instanceof IManaEntity)
             victimEntity = context.separator;
@@ -245,7 +241,7 @@ public class ChainEntity extends ManaPointEntity {
         if(spellContext().containChild(LibContext.DIRECTION))
             magickContext.<MagickContext>replenishChild(spellContext().getChild(LibContext.DIRECTION));
         else if(victimEntity != null) {
-            Vector3d dir = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0).subtract((this).position());
+            Vec3 dir = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0).subtract((this).position());
             magickContext.<MagickContext>replenishChild(DirectionContext.create(dir));
         }
         MagickReleaseHelper.releaseMagick(beforeCast(magickContext));

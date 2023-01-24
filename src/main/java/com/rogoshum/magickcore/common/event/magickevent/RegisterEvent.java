@@ -204,10 +204,10 @@ public class RegisterEvent {
 
 
     public static boolean testIfGenerateShield(LivingEntity livingEntity) {
-        for(Player playerEntity : livingEntity.level.players()) {
-            if(playerEntity.getOffhandItem().getItem() instanceof EnderpearlItem &&
-                    playerEntity.getCommandSenderWorld() == livingEntity.getCommandSenderWorld() &&
-                    playerEntity.distanceToSqr(livingEntity) <= 4096)
+        for(Player Player : livingEntity.level.players()) {
+            if(Player.getOffhandItem().getItem() instanceof EnderpearlItem &&
+                    Player.getCommandSenderLevel() == livingEntity.getCommandSenderLevel() &&
+                    Player.distanceToSqr(livingEntity) <= 4096)
                 return true;
         }
 

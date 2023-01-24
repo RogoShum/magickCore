@@ -92,7 +92,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
         return !refraction;
     }
 
-    default void beforeJoinWorld(MagickContext context) {
+    default void beforeJoinLevel(MagickContext context) {
 
     }
 

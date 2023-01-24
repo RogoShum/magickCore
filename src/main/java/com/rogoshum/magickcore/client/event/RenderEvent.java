@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvent;
-import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.event.RenderLevelEvent;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
 import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
@@ -79,7 +79,7 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void renderEntity(RenderWorldEvent.RenderMagickEvent event) {
+    public void renderEntity(RenderLevelEvent.RenderMagickEvent event) {
         PoseStack matrixStackIn = event.getMatrixStack();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
@@ -159,7 +159,7 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void addRenderer(EntityEvent.EntityAddedToWorldEvent event) {
+    public void addRenderer(EntityEvent.EntityAddedToLevelEvent event) {
         if(event.getEntity() instanceof LivingEntity)
             MagickCore.proxy.addRenderer(() -> new ElementShieldRenderer((LivingEntity) event.getEntity()));
         if(event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem() instanceof IManaData)

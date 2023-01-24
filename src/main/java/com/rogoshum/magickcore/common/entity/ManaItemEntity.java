@@ -1,24 +1,26 @@
 package com.rogoshum.magickcore.common.entity;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public class ManaItemEntity extends ItemEntity {
-    public ManaItemEntity(EntityType<? extends ItemEntity> p_i50217_1_, World world) {
+    public ManaItemEntity(EntityType<? extends ItemEntity> p_i50217_1_, Level world) {
         super(p_i50217_1_, world);
     }
 
-    public ManaItemEntity(World worldIn, double x, double y, double z) {
+    public ManaItemEntity(Level worldIn, double x, double y, double z) {
         this(EntityType.ITEM, worldIn);
         this.setPos(x, y, z);
         this.yRot = this.random.nextFloat() * 360.0F;
         this.setDeltaMovement(this.random.nextDouble() * 0.2D - 0.1D, 0.02D, this.random.nextDouble() * 0.2D - 0.1D);
     }
 
-    public ManaItemEntity(World worldIn, double x, double y, double z, ItemStack stack) {
+    public ManaItemEntity(Level worldIn, double x, double y, double z, ItemStack stack) {
         this(worldIn, x, y, z);
         this.setItem(stack);
         this.lifespan = (stack.getItem() == null ? 6000 : stack.getEntityLifespan(worldIn));

@@ -12,8 +12,8 @@ public abstract class EntityItem extends BaseItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        InteractionResult actionresulttype = this.tryPlace(new BlockPlaceContext(context));
-        return !actionresulttype.consumesAction() && this.isEdible() ? this.use(context.getLevel(), context.getPlayer(), context.getHand()).getResult() : actionresulttype;
+        InteractionResult InteractionResult = this.tryPlace(new BlockPlaceContext(context));
+        return !InteractionResult.consumesAction() && this.isEdible() ? this.use(context.getLevel(), context.getPlayer(), context.getHand()).getResult() : InteractionResult;
     }
 
     public InteractionResult tryPlace(BlockPlaceContext context) {

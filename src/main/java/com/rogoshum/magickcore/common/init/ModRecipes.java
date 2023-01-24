@@ -5,11 +5,11 @@ import com.rogoshum.magickcore.common.recipe.*;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import net.minecraft.item.crafting.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;

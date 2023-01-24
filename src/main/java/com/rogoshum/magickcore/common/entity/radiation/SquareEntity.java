@@ -8,17 +8,17 @@ import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class SquareEntity extends ManaRadiateEntity {
     public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.3f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cube.png");
-    public SquareEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public SquareEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -36,12 +36,12 @@ public class SquareEntity extends ManaRadiateEntity {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return () -> new SquareRadiateRenderer(this);
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()), predicate);
@@ -68,9 +68,9 @@ public class SquareEntity extends ManaRadiateEntity {
     protected void applyParticle(int particleAge) {
         float scale = 0.5f;
         double width = this.getBoundingBox().inflate(getRange()).getXsize();
-        List<Vector3d> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getBbHeight() * 0.5, 0), scale, width, width, width);
+        List<Vec3> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getBbHeight() * 0.5, 0), scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
-            Vector3d pos = list.get(i);
+            Vec3 pos = list.get(i);
             LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
                     , pos
                     , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));

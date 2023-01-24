@@ -24,9 +24,15 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -77,12 +83,12 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    public EntitySize getDimensions(Pose poseIn) {
-        return EntitySize.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
+    public EntityDimensions getDimensions(Pose poseIn) {
+        return EntityDimensions.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (HEIGHT.equals(key) || WIDTH.equals(key) || DIRECTION.equals(key)) {
             this.refreshDimensions();
             double d0 = (double)getBbWidth() * 0.5D;
@@ -109,17 +115,16 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    public ActionResultType interact(Player player, Hand hand) {
-        ActionResultType ret = super.interact(player, hand);
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        InteractionResult ret = super.interact(player, hand);
         if (ret.consumesAction()) return ret;
-        if (!player.level.isClientSide && hand == Hand.MAIN_HAND) {
+        if (!player.level.isClientSide && hand == InteractionHand.MAIN_HAND) {
             ItemStack stack = player.getMainHandItem();
-            if(stack.getItem() instanceof BlockItem || stack.getItem() instanceof EntityItem) {
-                return EntityInteractHelper.placeBlock(player, hand, stack, this);
-            }
             if(stack.getItem() instanceof PlaceableEntityItem) {
                 Vec3 vector3d = player.getLookAngle();
                 nextNode(stack, Direction.getNearest(vector3d.x, vector3d.y, vector3d.z));
+            } else if(stack.getItem() instanceof BlockItem || stack.getItem() instanceof EntityItem) {
+                return EntityInteractHelper.placeBlock(player, hand, stack, this);
             } else if (stack.getItem() == ModItems.WAND.get()) {
                 BlockPos pos = new BlockPos(this.position());
                 BlockEntity tile = level.getBlockEntity(pos);
@@ -144,9 +149,9 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                     }
                 }
             }
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -161,9 +166,9 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         float scale = 1f;
         for (int i = 0; i < 20; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                    , new Vec3(MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
+                    , new Vec3(Mth.sin(MagickCore.getNegativeToOne() * 0.3f) + position().x
                     , position().y + 0.2
-                    , MathHelper.sin(MagickCore.getNegativeToOne() * 0.3f) + position().z)
+                    , Mth.sin(MagickCore.getNegativeToOne() * 0.3f) + position().z)
                     , scale * 0.2f, scale * 2f, 0.5f, Math.max((int) (40 * MagickCore.rand.nextFloat()), 20), ModElements.ORIGIN.getRenderer());
             par.setGlow();
             par.setParticleGravity(-0.1f);

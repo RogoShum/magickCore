@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.common.entity.base;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
+import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -17,13 +19,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -42,10 +46,10 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     private final SpellContext spellContext = SpellContext.create();
     private UUID owner_uuid;
     private int owner_id;
-    private static final DataParameter<Optional<UUID>> dataUUID = EntityDataManager.defineId(ManaEntity.class, DataSerializers.OPTIONAL_UUID);
-    private static final DataParameter<Integer> DAMAGE = EntityDataManager.defineId(ManaEntity.class, DataSerializers.INT);
-    private static final DataParameter<Float> HEIGHT = EntityDataManager.defineId(ManaEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> WIDTH = EntityDataManager.defineId(ManaEntity.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Optional<UUID>> dataUUID = SynchedEntityData.defineId(ManaEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> DAMAGE = SynchedEntityData.defineId(ManaEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> HEIGHT = SynchedEntityData.defineId(ManaEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> WIDTH = SynchedEntityData.defineId(ManaEntity.class, EntityDataSerializers.FLOAT);
     private int lastDamageTick;
 
     public ManaEntity(EntityType<?> entityTypeIn, Level worldIn) {
@@ -57,11 +61,11 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    protected float getEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return sizeIn.height * -0.5f;
     }
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (HEIGHT.equals(key) || WIDTH.equals(key)) {
             this.refreshDimensions();
         }
@@ -69,10 +73,28 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     public void refreshDimensions() {
-        EntitySize entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
+        EntityDimensions entityDimensions = this.dimensions;
         Pose pose = this.getPose();
-        EntitySize entitysize1 = this.getDimensions(pose);
-        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
+        EntityDimensions entityDimensions2 = this.getDimensions(pose);
+        this.dimensions = entityDimensions2;
+        this.eyeHeight = this.getEyeHeight(pose, entityDimensions2);
+        if (entityDimensions2.width < entityDimensions.width) {
+            double d = (double)entityDimensions2.width / 2.0D;
+            this.setBoundingBox(new AABB(this.getX() - d, this.getY(), this.getZ() - d, this.getX() + d, this.getY() + (double)entityDimensions2.height, this.getZ() + d));
+        } else {
+            AABB aABB = this.getBoundingBox();
+            this.setBoundingBox(new AABB(aABB.minX, aABB.minY, aABB.minZ, aABB.minX + (double)entityDimensions2.width, aABB.minY + (double)entityDimensions2.height, aABB.minZ + (double)entityDimensions2.width));
+            if (entityDimensions2.width > entityDimensions.width && !this.firstTick && !this.level.isClientSide) {
+                float f = entityDimensions.width - entityDimensions2.width;
+                this.move(MoverType.SELF, new Vec3((double)f, 0.0D, (double)f));
+            }
+
+        }
+
+        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
+        Pose pose = this.getPose();
+        EntityDimensions entitysize1 = this.getDimensions(pose);
+        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntityDimensionsForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
         ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
         ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
@@ -87,8 +109,8 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public EntitySize getDimensions(Pose poseIn) {
-        return EntitySize.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
+    public EntityDimensions getDimensions(Pose poseIn) {
+        return EntityDimensions.scalable(this.getEntityData().get(WIDTH), this.getEntityData().get(HEIGHT));
     }
 
     public void setHeight(float height) {
@@ -237,7 +259,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         return MagickCore.emptyUUID;
     }
 
-    public ManaEntity(EntityType<?> entityTypeIn, World worldIn, MagickElement manaElement) {
+    public ManaEntity(EntityType<?> entityTypeIn, Level worldIn, MagickElement manaElement) {
         super(entityTypeIn, worldIn);
         this.spellContext().element(manaElement);
     }
@@ -331,8 +353,8 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         EntityLightSourceManager.addLightSource(this);
         if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaEntity>> renderer = getRenderer();
@@ -343,7 +365,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
         return null;
     }
@@ -365,7 +387,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public Level world() {
-        return getCommandSenderWorld();
+        return getCommandSenderLevel();
     }
 
     @Override
@@ -374,7 +396,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

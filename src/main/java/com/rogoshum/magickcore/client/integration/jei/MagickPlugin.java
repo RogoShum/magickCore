@@ -13,15 +13,15 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
+
 
 @JeiPlugin
 public class MagickPlugin implements IModPlugin {
     private static final ResourceLocation ID = new ResourceLocation(MagickCore.MOD_ID, "main");
 
-    @Nonnull
+    
     @Override
     public ResourceLocation getPluginUid() {
         return ID;

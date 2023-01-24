@@ -14,27 +14,27 @@ import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.ExtraManaFactorContext;
 import com.rogoshum.magickcore.common.magick.context.child.RemoveHurtTimeContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class MultiReleaseEntity extends ManaEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/multi_release.png");
-    private static final DataParameter<Integer> TARGET = EntityDataManager.defineId(MultiReleaseEntity.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> TARGET = SynchedEntityData.defineId(MultiReleaseEntity.class, EntityDataSerializers.INT);
     protected Entity target;
     protected ManaFactor former;
-    public MultiReleaseEntity(EntityType<?> entityTypeIn, World worldIn) {
+    public MultiReleaseEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         entityData.define(TARGET, -1);
     }
@@ -53,14 +53,14 @@ public class MultiReleaseEntity extends ManaEntity {
     }
 
     @Override
-    public void beforeJoinWorld(MagickContext context) {
+    public void beforeJoinLevel(MagickContext context) {
         target = context.victim;
         if(context.projectile instanceof IManaEntity) {
             former = ((IManaEntity) context.projectile).getManaFactor();
         }
     }
 
-    @Nonnull
+    
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
         if(target == null)
@@ -70,7 +70,7 @@ public class MultiReleaseEntity extends ManaEntity {
 
     @Override
     public boolean releaseMagick() {
-        Vector3d direction = null;
+        Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         } else if (getOwner() != null) {
@@ -81,9 +81,9 @@ public class MultiReleaseEntity extends ManaEntity {
         if(!spellContext().valid()) return false;
 
         if(spellContext().force >= 1) {
-            Vector3d[] vectors = ParticleUtil.drawCone(this.position().add(0, getBbHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range, (int) (spellContext().force + 1));
-            for (Vector3d vector : vectors) {
-                Vector3d dir = vector.subtract(this.position().add(0, getBbHeight() * 0.5, 0)).normalize();
+            Vec3[] vectors = ParticleUtil.drawCone(this.position().add(0, getBbHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range, (int) (spellContext().force + 1));
+            for (Vec3 vector : vectors) {
+                Vec3 dir = vector.subtract(this.position().add(0, getBbHeight() * 0.5, 0)).normalize();
                 MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                         .replenishChild(RemoveHurtTimeContext.create())
                         .replenishChild(ExtraManaFactorContext.create(getManaFactor()))

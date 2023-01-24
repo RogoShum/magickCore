@@ -65,7 +65,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.translate(0, 0.2f + height * 0.2f, 0);
         matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         if(tileEntityIn.getMainItem() != null) {
-            IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tileEntityIn.getMainItem(), tileEntityIn.getWorld(), (LivingEntity) null);
+            IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tileEntityIn.getMainItem(), tileEntityIn.getLevel(), (LivingEntity) null);
             Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getMainItem(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
 

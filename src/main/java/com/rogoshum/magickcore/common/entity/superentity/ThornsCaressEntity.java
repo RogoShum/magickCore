@@ -37,8 +37,8 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
         MagickCore.proxy.addRenderer(() -> new ThornsCaressLaserRenderer(this));
     }
     @Environment(EnvType.CLIENT)

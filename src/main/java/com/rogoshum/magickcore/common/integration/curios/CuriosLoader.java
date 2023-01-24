@@ -8,14 +8,14 @@ import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -55,7 +55,7 @@ public class CuriosLoader extends AdditionLoader {
     }
 
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void onKeyboardInput(InputEvent.KeyInputEvent event) {
         if(Minecraft.getInstance().player == null) return;
 

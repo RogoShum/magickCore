@@ -18,14 +18,14 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ElementItemRecipeWrapper implements ICustomCraftingCategoryExtensio
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout iRecipeLayout, @Nonnull IIngredients ingredients) {
+    public void setRecipe( IRecipeLayout iRecipeLayout,  IIngredients ingredients) {
         iRecipeLayout.getItemStacks().set(ingredients);
         iRecipeLayout.setShapeless();
 
@@ -91,7 +91,7 @@ public class ElementItemRecipeWrapper implements ICustomCraftingCategoryExtensio
     }
 
     @Override
-    public void setIngredients(@Nonnull IIngredients ingredients) {
+    public void setIngredients( IIngredients ingredients) {
         if(RecipeCollector.INPUTS.containsKey(name)) {
             ingredients.setInputLists(VanillaTypes.ITEM, RecipeCollector.INPUTS.get(name));
         }
