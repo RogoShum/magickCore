@@ -16,7 +16,9 @@ import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
 import com.rogoshum.magickcore.common.network.TakenStatePack;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -58,7 +60,7 @@ public class TakenAbility{
             state.setOwner(context.caster.getUUID());
             state.setTime(context.tick);
             Networking.INSTANCE.send(
-                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim)),
                     new TakenStatePack(context.victim.getId(), context.tick, context.victim.getUUID()));
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
         }
@@ -84,7 +86,7 @@ public class TakenAbility{
             state.setTime(time);
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
-                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim)),
                     new TakenStatePack(context.victim.getId(), time, context.victim.getUUID()));
             return true;
         }

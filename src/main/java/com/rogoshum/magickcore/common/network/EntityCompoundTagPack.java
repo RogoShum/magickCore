@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.network;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,7 +38,7 @@ public class EntityCompoundTagPack extends EntityPack<ClientNetworkContext<?>>{
     public static void updateEntity(Entity entity) {
         if(entity.level.isClientSide) return;
         Networking.INSTANCE.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
+                SimpleChannel.SendType.server(PlayerLookup.tracking(entity)),
                 new EntityCompoundTagPack(entity.getId(), entity));
     }
 }

@@ -3,6 +3,7 @@ package com.rogoshum.magickcore;
 import com.rogoshum.magickcore.client.init.ModKeyBind;
 import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.EventBus;
 import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.magickevent.RegisterEvent;
@@ -12,6 +13,7 @@ import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
@@ -20,6 +22,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +62,7 @@ public class MagickCore implements ModInitializer {
 
     private void setup() {
         ModBrews.registryBrewing();
-        EntitySpawnPlacementRegistry.register(ModEntities.MAGE.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
+        PrivateUtil.registerSpawnPlacements(ModEntities.MAGE.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
         RecipeCollector.init();
     }
 
@@ -96,9 +99,6 @@ public class MagickCore implements ModInitializer {
         ModSounds.SOUNDS.register();
         ModTileEntities.TILE_ENTITY.register();
         //ModEnchantments.ENCHANTMENTS.register(eventBus);
-        ModVillager.POI_TYPES.register();
-        ModVillager.VILLAGER_PROFESSIONS.register();
-        ModVillager.SENSOR_TYPES.register();
         ModVillager.init();
         ModBuffs.initBuff();
         ManaMaterials.init();
@@ -117,7 +117,6 @@ public class MagickCore implements ModInitializer {
             });
         });
         modLoader.values().forEach(AdditionLoader::onInitialize);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.rogoshum.magickcore.common.init.ModConfig.COMMON_CONFIG);
         //GeckoLib.initialize();
     }
 

@@ -280,7 +280,7 @@ public class RegisterEvent {
 
     @SubscribeEvent
     public void tradeEvent(VillagerTradesEvent event) {
-        if(event.getType() == ModVillager.MAGE.get()) {
+        if(event.getType() == ModVillager.MAGE) {
             for (int i = 1; i < 6; i++) {
                 ArrayList<VillagerTrades.ITrade> list = new ArrayList<>();
                 for (int c = 0; c < 6; ++c) {

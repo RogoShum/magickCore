@@ -9,8 +9,12 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.ParticleSamplePack;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
@@ -211,9 +215,9 @@ public class ParticleUtil {
         float scale = Math.max(0.1f, 0.05f * force);
         if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 0, element.type(), net.minecraft.world.phys.Vec3.ZERO);
-            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.dimension()
-            )), pack);
+            Networking.INSTANCE.send(
+                    SimpleChannel.SendType.server(PlayerLookup.tracking((ServerLevel) world, new BlockPos(center)))
+                    , pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
             for (int i = 0; i < count; ++i) {
@@ -236,9 +240,7 @@ public class ParticleUtil {
         float scale = Math.max(0.1f, 0.05f * force);
         if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 1, element.type(), motion);
-            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.dimension()
-            )), pack);
+            Networking.INSTANCE.send(SimpleChannel.SendType.server(PlayerLookup.tracking((ServerLevel) world, new BlockPos(center))), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
             for (int i = 0; i < count; ++i) {
@@ -261,9 +263,7 @@ public class ParticleUtil {
         float scale = 1f;
         if(!world.isClientSide) {
             ParticleSamplePack pack = new ParticleSamplePack(0, type, center, force, (byte) 2, element.type(), Vec3.ZERO);
-            Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                    center.x, center.y, center.z, 48, world.dimension()
-            )), pack);
+            Networking.INSTANCE.send(SimpleChannel.SendType.server(PlayerLookup.tracking((ServerLevel) world, new BlockPos(center))), pack);
         } else {
             ResourceLocation res = ParticleType.getResourceLocation(type, element);
             for (int i = 0; i < count * 10; ++i) {

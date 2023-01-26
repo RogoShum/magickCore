@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvent;
 import net.minecraft.core.BlockPos;
@@ -23,7 +24,7 @@ public abstract class MixinLevel {
     public void onGuardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn, CallbackInfo info) {
         if(entityIn instanceof LivingEntity) return;
         EntityEvent.EntityUpdateEvent event = new EntityEvent.EntityUpdateEvent(entityIn);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         if(event.isCanceled())
             info.cancel();
     }

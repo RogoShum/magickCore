@@ -44,7 +44,9 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -474,7 +476,7 @@ Entity entity = evt.getEntity();
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed) {
 				if(event.getEntity().tickCount % 40 == 0)
 					Networking.INSTANCE.send(
-							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+							SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()),
 							new TakenStatePack(event.getEntity().getId(), takenState.getTime(), takenState.getOwnerUUID()));
 			}
 		}
@@ -508,7 +510,7 @@ Entity entity = evt.getEntity();
 			CompoundTag tag = new CompoundTag();
 			state.write(tag);
 			Networking.INSTANCE.send(
-					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+					SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
 					new EntityStatePack(event.getEntity().getId(), tag));
 		}
 
@@ -848,7 +850,7 @@ Entity entity = evt.getEntity();
 		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().tickCount % 40 == 0) {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed)
 				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
 						new OwnerStatePack(event.getEntity().getId(), ((IOwnerEntity) event.getEntity()).getOwner().getUUID()));
 		}
 
@@ -856,7 +858,7 @@ Entity entity = evt.getEntity();
 			ManaCapacity data = ((IManaCapacity) event.getEntity()).manaCapacity();
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed && event.getEntity().tickCount % 10 == 0) {
 				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
 						new ManaCapacityPack(event.getEntity().getId(), data));
 			}
 		}

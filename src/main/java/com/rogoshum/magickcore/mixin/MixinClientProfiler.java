@@ -11,7 +11,7 @@ public class MixinClientProfiler {
                     value = "TAIL")
     )
     private void onTerrainSection(String p_219895_1_, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new ProfilerChangeEvent(p_219895_1_));
+        MagickCore.EVENT_BUS.post(new ProfilerChangeEvent(p_219895_1_));
     }
      */
 }

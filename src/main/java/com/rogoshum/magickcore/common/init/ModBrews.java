@@ -1,92 +1,71 @@
 package com.rogoshum.magickcore.common.init;
 
-import de.siphalor.nbtcrafting.recipe.BrewingRecipe;
+import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
 import net.minecraft.core.Registry;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class ModBrews {
 
     public static void registryBrewing() {
-        Ingredient nothing = PotionIngredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get()));
-        ItemStack SHIELD_REGEN = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P.get());
-        ItemStack SHIELD_VALUE = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P.get());
-        ItemStack MANA_REGEN = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P.get());
-        ItemStack MANA_CONSUME_REDUCE = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P.get());
-        ItemStack MANA_FORCE = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P.get());
-        ItemStack MANA_TICK = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_TICK_P.get());
-        ItemStack MANA_RANGE = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_RANGE_P.get());
+        Potion nothing = ModEffects.NOTHING.get();
+        Potion SHIELD_REGEN = ModEffects.SHIELD_REGEN_P.get();
+        Potion SHIELD_VALUE = ModEffects.SHIELD_VALUE_P.get();
+        Potion MANA_REGEN = ModEffects.MANA_REGEN_P.get();
+        Potion MANA_CONSUME_REDUCE = ModEffects.MANA_CONSUM_REDUCE_P.get();
+        Potion MANA_FORCE = ModEffects.MANA_FORCE_P.get();
+        Potion MANA_TICK = ModEffects.MANA_TICK_P.get();
+        Potion MANA_RANGE = ModEffects.MANA_RANGE_P.get();
         //ItemStack MANA_MULTI_CAST = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P.get());
-        ItemStack MANA_CHAOS = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.CHAOS_THEOREM_P.get());
-        ItemStack MANA_CONVERT = PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P.get());
-
+        Potion MANA_CHAOS = ModEffects.CHAOS_THEOREM_P.get();
+        Potion MANA_CONVERT = ModEffects.MANA_CONVERT_P.get();
         Registry.ITEM.forEach(item -> {
             String name = item.getDescriptionId();
-            Ingredient ingredient = Ingredient.of(item);
             if(name.contains("spirit_crystal"))
-                PotionBrewing.(new BrewingRecipe(PotionIngredient.of(Items.POTION), Ingredient.of(item), PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
+                PrivateUtil.registerPotionBrewing(Potions.WATER, item, ModEffects.NOTHING.get());
             else if(name.contains("dragon_breath"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
+                PrivateUtil.registerPotionBrewing(nothing, item, ModEffects.TRACE_P.get());
             else if(name.contains("shulker"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, SHIELD_REGEN));
+                PrivateUtil.registerPotionBrewing(nothing, item, SHIELD_REGEN);
             else if(name.contains("scute"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, SHIELD_VALUE));
+                PrivateUtil.registerPotionBrewing(nothing, item, SHIELD_VALUE);
             else if(name.contains("golden_carrot"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_CONSUME_REDUCE));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_CONSUME_REDUCE);
             else if(name.contains("nautilus"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_REGEN));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_REGEN);
             else if(name.contains("netherite"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_FORCE));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_FORCE);
             else if(name.contains("rabbit_foot"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_RANGE));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_RANGE);
             else if(name.contains("sugar"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_TICK));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_TICK);
             //else if(name.contains("pufferfish"))
-                //BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_MULTI_CAST));
+                //(PrivateUtil).registerPotionBrewing();(nothing, item, MANA_MULTI_CAST));
             else if(name.contains("phantom_membrane"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_CHAOS));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_CHAOS);
             else if(name.contains("blaze_powder"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, MANA_CONVERT));
+                PrivateUtil.registerPotionBrewing(nothing, item, MANA_CONVERT);
             else if(name.contains("redstone")) {
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(SHIELD_REGEN), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(SHIELD_VALUE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_CONSUME_REDUCE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_REGEN), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_FORCE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_RANGE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_RANGE_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_TICK), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_TICK_P_I.get())));
+                PrivateUtil.registerPotionBrewing(SHIELD_REGEN, item, ModEffects.SHIELD_REGEN_P_I.get());
+                PrivateUtil.registerPotionBrewing(SHIELD_VALUE, item, ModEffects.SHIELD_VALUE_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_CONSUME_REDUCE, item, ModEffects.MANA_CONSUM_REDUCE_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_REGEN, item, ModEffects.MANA_REGEN_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_FORCE, item, ModEffects.MANA_FORCE_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_RANGE, item, ModEffects.MANA_RANGE_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_TICK, item, ModEffects.MANA_TICK_P_I.get());
             }
             else if(name.contains("glowstone")) {
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(SHIELD_REGEN), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_REGEN_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(SHIELD_VALUE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.SHIELD_VALUE_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_CONSUME_REDUCE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONSUM_REDUCE_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_REGEN), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_REGEN_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_FORCE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_FORCE_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_RANGE), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_RANGE_P_II.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_TICK), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_TICK_P_II.get())));
-                //BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.fromStacks(MANA_MULTI_CAST), ingredient, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P_I.get())));
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(MANA_CONVERT), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.MANA_CONVERT_P_I.get())));
+                PrivateUtil.registerPotionBrewing(SHIELD_REGEN, item, ModEffects.SHIELD_REGEN_P_II.get());
+                PrivateUtil.registerPotionBrewing(SHIELD_VALUE, item, ModEffects.SHIELD_VALUE_P_II.get());
+                PrivateUtil.registerPotionBrewing(MANA_CONSUME_REDUCE, item, ModEffects.MANA_CONSUM_REDUCE_P_II.get());
+                PrivateUtil.registerPotionBrewing(MANA_REGEN, item, ModEffects.MANA_REGEN_P_II.get());
+                PrivateUtil.registerPotionBrewing(MANA_FORCE, item, ModEffects.MANA_FORCE_P_II.get());
+                PrivateUtil.registerPotionBrewing(MANA_RANGE, item, ModEffects.MANA_RANGE_P_II.get());
+                PrivateUtil.registerPotionBrewing(MANA_TICK, item, ModEffects.MANA_TICK_P_II.get());
+                //(PrivateUtil).registerPotionBrewing();(Potionitem.fromStacks(MANA_MULTI_CAST), item, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), ModEffects.MULTI_RELEASE_P_I.get());
+                PrivateUtil.registerPotionBrewing(MANA_CONVERT, item, ModEffects.MANA_CONVERT_P_I.get());
             }
         });
-    }
-
-    public static class PotionIngredient extends Ingredient {
-        protected PotionIngredient(Stream<? extends Value> itemLists) {
-            super(itemLists);
-        }
-
-        @Override
-        public boolean test(@Nullable ItemStack p_test_1_) {
-            if(p_test_1_ == null) return false;
-            for (ItemStack stack : this.getItems()) {
-                if(PotionUtils.getPotion(p_test_1_).getEffects().equals(PotionUtils.getPotion(stack).getEffects()))
-                    return true;
-            }
-            return false;
-        }
     }
 }

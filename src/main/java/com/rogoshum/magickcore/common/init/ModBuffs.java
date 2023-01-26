@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.init;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
@@ -10,6 +11,8 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.network.EntityStatePack;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -153,7 +156,7 @@ public class ModBuffs {
         ManaBuff buff = getBuff(type);
         if(buff == null) return false;
         EntityEvent.ApplyManaBuffEvent event = new EntityEvent.ApplyManaBuffEvent((LivingEntity) entity, buff, beneficial);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         if(event.isCanceled())
             return false;
         if(force < 1 && force > 0.4)
@@ -166,8 +169,9 @@ public class ModBuffs {
             if(applied && !entity.level.isClientSide) {
                 CompoundTag tag = new CompoundTag();
                 state.write(tag);
+                ;
                 Networking.INSTANCE.send(
-                        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+                        SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
                         new EntityStatePack(event.getEntity().getId(), tag));
             }
         }

@@ -8,6 +8,7 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.KeyMapping;
@@ -36,26 +37,25 @@ public class ModKeyBind {
                     ItemStack offHand = player.getOffhandItem();
                     if(mainHand.getItem() instanceof IManaContextItem || offHand.getItem() instanceof IManaContextItem) {
                         press = -1;
-                        Networking.INSTANCE.send(
-                                PacketDistributor.SERVER.noArg(), CSpellSwapPack.openGUI(player.getId()));
+                        Networking.INSTANCE.send(SimpleChannel.SendType.client(), CSpellSwapPack.openGUI(player.getId()));
                     } else if(press > 20 && (mainHand.getItem() instanceof MagickContextItem || offHand.getItem() instanceof MagickContextItem)) {
                         press = -1;
                         Networking.INSTANCE.send(
-                                PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getId()));
+                                SimpleChannel.SendType.client(), CSpellSwapPack.pushItem(player.getId()));
                     } else if(press > 20 && offHand.getItem() instanceof MagickContextItem) {
                         press = -1;
                         Networking.INSTANCE.send(
-                                PacketDistributor.SERVER.noArg(), CSpellSwapPack.pushItem(player.getId()));
+                                SimpleChannel.SendType.client(), CSpellSwapPack.pushItem(player.getId()));
                     } else if(press > 20) {
                         press = -1;
                         if(player.isShiftKeyDown()) {
                             for(int i = 0; i < 3; ++i) {
                                 Networking.INSTANCE.send(
-                                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getId()));
+                                        SimpleChannel.SendType.client(), CSpellSwapPack.popItem(player.getId()));
                             }
                         } else {
                             Networking.INSTANCE.send(
-                                    PacketDistributor.SERVER.noArg(), CSpellSwapPack.popItem(player.getId()));
+                                    SimpleChannel.SendType.client(), CSpellSwapPack.popItem(player.getId()));
                         }
                     }
                 } else

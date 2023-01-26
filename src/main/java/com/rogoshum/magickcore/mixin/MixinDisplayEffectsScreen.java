@@ -48,7 +48,7 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
         if (Minecraft.getInstance().player.getActiveEffects().isEmpty()) {
             EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
             if(state != null && !state.getBuffList().isEmpty()) {
-                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this)))
+                if (MagickCore.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this)))
                     this.leftPos = (this.width - this.imageWidth) / 2;
                 else
                     this.leftPos = 160 + (this.width - this.imageWidth - 200) / 2;

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IEntityData;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
@@ -23,7 +24,7 @@ public class MixinEntity implements IEntityData {
         Entity thisEntity = (Entity)(Object)this;
         HashMap<String, Callable<EntityExtraData>> dataMap = new HashMap<>();
         ExtraDataEvent.Entity event = new ExtraDataEvent.Entity(dataMap);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         dataMap.forEach((key, value) -> {
             try {
                 EntityExtraData data = value.call();

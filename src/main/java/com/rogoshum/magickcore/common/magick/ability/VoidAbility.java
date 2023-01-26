@@ -148,7 +148,7 @@ public class VoidAbility{
                      */
                     BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (Player) context.caster);
                     event.setExpToDrop(exp);
-                    MinecraftForge.EVENT_BUS.post(event);
+                    MagickCore.EVENT_BUS.post(event);
                     if(event.isCanceled()) return false;
                     exp = event.getExpToDrop();
                 }

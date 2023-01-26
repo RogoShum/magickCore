@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.init;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.entity.pointed.*;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.entity.radiation.*;

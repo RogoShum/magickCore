@@ -4,10 +4,15 @@
   "mixins": [
     "MixinEntity",
     "MixinItemStack",
+    "MixinLevel",
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
-    "MixinLevel"
+    "fabric.registry.MixinPoiType",
+    "fabric.registry.MixinPotionBrewing",
+    "fabric.registry.MixinSensorType",
+    "fabric.registry.MixinSpawnPlacements",
+    "fabric.registry.MixinVillagerProfession"
   ],
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
@@ -18,10 +23,10 @@
   "client": [
     "MixinChunkRenderer",
     "MixinClientLevel",
+    "MixinClientProfiler",
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
-    "MixinLivingRender",
-    "MixinClientProfiler",
-    "MixinLevelRender"
+    "MixinLevelRender",
+    "MixinLivingRender"
   ]
 }

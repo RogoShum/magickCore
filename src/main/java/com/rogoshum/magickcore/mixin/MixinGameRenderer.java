@@ -23,9 +23,9 @@ public class MixinGameRenderer{
         matrix.getLast().getMatrix().mul(Minecraft.getInstance().gameRenderer.getProjectionMatrix(activerenderinfo, partialTicks, true));
         Matrix4f matrix4f = matrix.getLast().getMatrix();
         Minecraft.getInstance().gameRenderer.resetProjectionMatrix(matrix4f);
-        MinecraftForge.EVENT_BUS.post(new RenderLevelEvent.PreRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
-        MinecraftForge.EVENT_BUS.post(new RenderLevelEvent.RenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
-        MinecraftForge.EVENT_BUS.post(new RenderLevelEvent.PostRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
+        MagickCore.EVENT_BUS.post(new RenderLevelEvent.PreRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
+        MagickCore.EVENT_BUS.post(new RenderLevelEvent.RenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
+        MagickCore.EVENT_BUS.post(new RenderLevelEvent.PostRenderMagickEvent(Minecraft.getInstance().worldRenderer, matrixStack, partialTicks, matrix4f));
 
          
     }

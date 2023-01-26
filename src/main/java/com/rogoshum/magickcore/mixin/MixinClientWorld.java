@@ -22,7 +22,7 @@ public class MixinClientLevel {
     @Inject(method = "addEntity", at = @At(value = "TAIL"))
     public void onAddEntity(int entityIdIn, Entity entityToSpawn, CallbackInfo ci) {
         EntityEvent.EntityAddedToLevelEvent event = new EntityEvent.EntityAddedToLevelEvent(entityToSpawn);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
     }
 
     @Redirect(method = "playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V"))

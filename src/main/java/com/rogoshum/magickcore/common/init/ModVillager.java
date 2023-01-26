@@ -7,6 +7,7 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.registry.DeferredRegister;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
+import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -25,15 +26,9 @@ import java.util.List;
 import java.util.Random;
 
 public class ModVillager {
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(Registry.VILLAGER_PROFESSION, MagickCore.MOD_ID);
-    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(Registry.POINT_OF_INTEREST_TYPE, MagickCore.MOD_ID);
-    public static final DeferredRegister<SensorType<?>> SENSOR_TYPES = DeferredRegister.create(Registry.SENSOR_TYPE, MagickCore.MOD_ID);
-    public static final RegistryObject<PoiType> MAGE_POI = POI_TYPES.register("mage",
-            () -> new PoiType("mage", ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1));
-    public static final RegistryObject<VillagerProfession> MAGE = VILLAGER_PROFESSIONS.register("mage",
-            () -> new VillagerProfession("mage", MAGE_POI.get(), ImmutableSet.of(), ImmutableSet.of(), (SoundEvent)null));
-
-    public static final RegistryObject<SensorType<Sensor<? super LivingEntity>>> VILLAGER_HOSTILES = SENSOR_TYPES.register("villager_hostiles", () -> new SensorType<>(VillagerHostilesSensor::new));
+    public static final PoiType MAGE_POI = PrivateUtil.registerPoiType(MagickCore.fromId("mage").toString(), ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1);
+    public static final VillagerProfession MAGE = PrivateUtil.registerVillagerProfession(MagickCore.fromId("mage").toString(), MAGE_POI, null);
+    public static final SensorType<Sensor<? super LivingEntity>> VILLAGER_HOSTILES = PrivateUtil.registerSensorType(MagickCore.fromId("villager_hostiles").toString(), VillagerHostilesSensor::new);
     private static final List<RegistryObject<?>> TradList = new ArrayList<>();
 
     public static void init() {

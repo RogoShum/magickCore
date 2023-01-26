@@ -99,8 +99,7 @@ public class CSpellSwapPack extends EntityPack<ServerNetworkContext<?>> {
             }
         } else if(pack.operate == 124) {
             SSpellSwapPack sSpellSwapPack = new SSpellSwapPack(pack.id, player);
-            Networking.INSTANCE.send(
-                    PacketDistributor.PLAYER.with(() -> player), sSpellSwapPack);
+            Networking.INSTANCE.send(SimpleChannel.SendType.server(player), sSpellSwapPack);
         }
         data.save();
     }

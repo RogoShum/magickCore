@@ -4,8 +4,12 @@ import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.ParticlePack;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -94,8 +98,6 @@ public class ParticleBuilder {
 
     public void send () {
         ParticlePack pack = new ParticlePack(0, texture, position, scaleWidth, scaleHeight, alpha, maxAge, element, glow, trace, grav, limitSize, motion, canCollide, color, shake);
-        Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
-                position.x, position.y, position.z, 32, world.dimension()
-        )), pack);
+        Networking.INSTANCE.send(SimpleChannel.SendType.server(PlayerLookup.tracking((ServerLevel) world, new BlockPos(position))), pack);
     }
 }

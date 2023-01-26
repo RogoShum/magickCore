@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Widget;
@@ -58,7 +59,7 @@ public class SpellSwapBoxGUI extends Screen {
             int finalI = i;
             this.addButton(new ItemStackButton(x, y, 21, 21, item.getHoverName(), (button) -> {
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getId(), finalI));
+                        SimpleChannel.SendType.client(), CSpellSwapPack.swapItem(player.getId(), finalI));
                 onClose();
             }, item));
             y+=30;
@@ -75,7 +76,7 @@ public class SpellSwapBoxGUI extends Screen {
             int finalC = i;
             this.addButton(new ItemStackButton(x, y, 21, 21, new TextComponent(""), (button) -> {
                 Networking.INSTANCE.send(
-                        PacketDistributor.SERVER.noArg(), CSpellSwapPack.swapItem(player.getId(), finalC));
+                        SimpleChannel.SendType.client(), CSpellSwapPack.swapItem(player.getId(), finalC));
                 onClose();
             }, ItemStack.EMPTY));
             y+=30;

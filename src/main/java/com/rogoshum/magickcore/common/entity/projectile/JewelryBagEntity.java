@@ -88,7 +88,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 ItemEntity itemEntity = items.get(0);
                 if(itemEntity.isAlive()) {
                     EntityEvent.HitEntityEvent event = new EntityEvent.HitEntityEvent(this, itemEntity);
-                    MinecraftForge.EVENT_BUS.post(event);
+                    MagickCore.EVENT_BUS.post(event);
                     ItemContext context = ItemContext.create(itemEntity.getItem());
                     itemEntity.remove();
                     spellContext().addChild(context);
@@ -227,7 +227,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
             }
             if(pass.get()) {
                 EntityEvent.HitEntityEvent event = new EntityEvent.HitEntityEvent(this, p_213868_1_.getEntity());
-                MinecraftForge.EVENT_BUS.post(event);
+                MagickCore.EVENT_BUS.post(event);
             }
         }
 

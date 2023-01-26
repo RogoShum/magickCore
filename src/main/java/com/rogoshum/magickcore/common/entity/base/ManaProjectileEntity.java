@@ -394,7 +394,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
             }
             if(pass.get()) {
                 EntityEvent.HitEntityEvent event = new EntityEvent.HitEntityEvent(this, p_213868_1_.getEntity());
-                MinecraftForge.EVENT_BUS.post(event);
+                MagickCore.EVENT_BUS.post(event);
             }
         }
 

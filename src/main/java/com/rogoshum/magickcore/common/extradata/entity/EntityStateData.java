@@ -159,12 +159,12 @@ public class EntityStateData extends EntityExtraData {
         } else
             return;
         EntityEvent.StateCooldownEvent cEvent = new EntityEvent.StateCooldownEvent((LivingEntity) entity, shieldCoolDown, false, true);
-        MinecraftForge.EVENT_BUS.post(cEvent);
+        MagickCore.EVENT_BUS.post(cEvent);
         if(shieldCoolDown > cEvent.getCooldown())
             shieldCoolDown = cEvent.getCooldown();
 
         EntityEvent.StateCooldownEvent cEvent_m = new EntityEvent.StateCooldownEvent((LivingEntity) entity, manaCoolDown, true, false);
-        MinecraftForge.EVENT_BUS.post(cEvent_m);
+        MagickCore.EVENT_BUS.post(cEvent_m);
         if(manaCoolDown > cEvent_m.getCooldown())
             manaCoolDown = cEvent_m.getCooldown();
 
@@ -175,7 +175,7 @@ public class EntityStateData extends EntityExtraData {
         if(getElementShieldMana() < getMaxElementShieldMana() && shieldCoolDown <= 0) {
             float shieldRegen = updateRate;
             EntityEvent.ShieldRegenerationEvent event = new EntityEvent.ShieldRegenerationEvent((LivingEntity) entity, shieldRegen);
-            MinecraftForge.EVENT_BUS.post(event);
+            MagickCore.EVENT_BUS.post(event);
             shieldRegen = event.getAmount();
             if(shieldRegen > 0 && this.getManaValue() > 5) {
                 this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana() + shieldRegen));
@@ -185,7 +185,7 @@ public class EntityStateData extends EntityExtraData {
             this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana()));
 
         EntityEvent.ShieldCapacityEvent shield_value = new EntityEvent.ShieldCapacityEvent((LivingEntity) entity);
-        MinecraftForge.EVENT_BUS.post(shield_value);
+        MagickCore.EVENT_BUS.post(shield_value);
         this.setMaxElementShieldMana(shield_value.getCapacity() + finalMaxShieldValue);
 
         if(manaCoolDown > 0)
@@ -194,7 +194,7 @@ public class EntityStateData extends EntityExtraData {
         if(manaCoolDown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
             float manaRegen = updateRate;
             EntityEvent.ManaRegenerationEvent eventMana = new EntityEvent.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
-            MinecraftForge.EVENT_BUS.post(eventMana);
+            MagickCore.EVENT_BUS.post(eventMana);
             manaRegen = eventMana.getMana();
 
             this.setManaValue(this.getManaValue() + manaRegen);

@@ -4,20 +4,70 @@ import com.rogoshum.magickcore.MagickCore;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SimpleChannel {
-    private final HashMap<ResourceLocation, Message> packMap = new HashMap<>();
+    private final HashMap<ResourceLocation, Message<? extends NetworkPack<?>>> packMap = new HashMap<>();
     public <T extends NetworkPack<?>> Message<T> messageBuilder(Class<T> clazz) {
         return new Message<>(this, clazz);
+    }
+
+    public <MSG extends NetworkPack<?>> void send(SendType sendType, MSG networkPack) {
+        if(sendType.isClient) {
+            Map.Entry<ResourceLocation, Message<? extends NetworkPack<?>>> messageEntry = packMap.entrySet().stream().filter((entry -> entry.getValue().type == networkPack.getClass())).findFirst().get();
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            Message<MSG> message = (Message<MSG>) messageEntry.getValue();
+            message.encoder.accept(networkPack, buf);
+            ClientPlayNetworking.send(messageEntry.getKey(), buf);
+        } else {
+            Map.Entry<ResourceLocation, Message<? extends NetworkPack<?>>> messageEntry = packMap.entrySet().stream().filter((entry -> entry.getValue().type == networkPack.getClass())).findFirst().get();
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            Message<MSG> message = (Message<MSG>) messageEntry.getValue();
+            message.encoder.accept(networkPack, buf);
+            if(sendType.players != null)
+                for (ServerPlayer player : sendType.players) {
+                    ServerPlayNetworking.send(player, messageEntry.getKey(), buf);
+                }
+        }
+    }
+
+    public static class SendType {
+        private final ServerPlayer[] players;
+        private final boolean isClient;
+        private SendType(boolean isClient, ServerPlayer[] players) {
+            this.isClient = isClient;
+            this.players = players;
+        }
+
+        public static SendType server(ServerPlayer... players) {
+            return new SendType(false, players);
+        }
+
+        public static SendType server(Collection<ServerPlayer> players) {
+            return new SendType(false, (ServerPlayer[]) players.toArray());
+        }
+
+        public static SendType server() {
+            return new SendType(false, null);
+        }
+
+        public static SendType client() {
+            return new SendType(true, null);
+        }
     }
 
     public static class Message<MSG extends NetworkPack<?>> {

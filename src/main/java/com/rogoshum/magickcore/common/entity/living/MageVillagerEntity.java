@@ -22,19 +22,8 @@ import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleStatus;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
-import net.minecraft.entity.ai.brain.schedule.Activity;
-import net.minecraft.entity.ai.brain.schedule.Schedule;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.*;
-import net.minecraft.entity.merchant.villager.VillagerData;
-import net.minecraft.entity.merchant.villager.Villager;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.merchant.villager.VillagerTrades;
-import net.minecraft.item.MerchantOffers;
+import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,23 +46,23 @@ import net.minecraft.server.level.ServerLevel;
 import java.util.HashMap;
 import java.util.Queue;
 
-public class MageVillager extends Villager implements IManaTaskMob {
+public class MageVillagerEntity extends Villager implements IManaTaskMob {
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.LIVING_ENTITIES, MemoryModuleType.VISIBLE_LIVING_ENTITIES, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_DETECTED_RECENTLY);
-    private static final ImmutableList<SensorType<? extends Sensor<? super Villager>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_BED, SensorType.HURT_BY, ModVillager.VILLAGER_HOSTILES.get(), SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_DETECTED);
+    private static final ImmutableList<SensorType<? extends Sensor<? super Villager>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_BED, SensorType.HURT_BY, ModVillager.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_DETECTED);
 
     private HashMap<Activity, Queue<SpellContext>> spellMap = new HashMap<>();
-    public MageVillager(EntityType<? extends MageVillager> type, Level worldIn) {
+    public MageVillagerEntity(EntityType<? extends MageVillagerEntity> type, Level worldIn) {
         super(type, worldIn);
         initSpellMap();
     }
 
-    protected Brain.BrainCodec<Villager> brainProvider() {
+    protected Brain.Provider<Villager> brainProvider() {
         return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
     }
 
     @Override
     public void setVillagerData(VillagerData data) {
-        data = data.setProfession(ModVillager.MAGE.get());
+        data = data.setProfession(ModVillager.MAGE);
         super.setVillagerData(data);
     }
 
@@ -86,24 +75,22 @@ public class MageVillager extends Villager implements IManaTaskMob {
     }
 
     public void initBrain(Brain<Villager> villagerBrain) {
-        PiglinAi
         VillagerProfession villagerprofession = this.getVillagerData().getProfession();
         if (this.isBaby()) {
             villagerBrain.setSchedule(Schedule.VILLAGER_BABY);
-            villagerBrain.addActivity(Activity.PLAY, VillagerTasks.getPlayPackage(0.5F));
+            villagerBrain.addActivity(Activity.PLAY, VillagerGoalPackages.getPlayPackage(0.5F));
         } else {
             villagerBrain.setSchedule(Schedule.VILLAGER_DEFAULT);
-            villagerBrain.addActivityWithConditions(Activity.WORK, VillagerTasks.getWorkPackage(villagerprofession, 0.5F), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleStatus.VALUE_PRESENT)));
+            villagerBrain.addActivityWithConditions(Activity.WORK, VillagerGoalPackages.getWorkPackage(villagerprofession, 0.5F), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT)));
         }
         MagickAttackTask<LivingEntity> attackTask = isBaby() ? new MagickAttackTask<>(15, 8) : new MagickAttackTask<>(40, 16);
-
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new SwimTask(0.8F)));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new Swim(0.8F)));
         villagerBrain.addActivityAndRemoveMemoryWhenStopped(Activity.FIGHT, 0, ImmutableList.of(attackTask), MemoryModuleType.ATTACK_TARGET);
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new InteractWithDoorTask()));
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new AttackStrafingTask<>(5, 0.75F)));
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new LookTask(45, 90)));
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new WalkToTargetTask()));
-        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new TradeTask(0.5F)));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new InteractWithDoor()));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new BackUpIfTooClose<>(5, 0.75F)));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new LookAtTargetSink(45, 90)));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new MoveToTargetSink()));
+        villagerBrain.addActivity(Activity.FIGHT, 0, ImmutableList.of(new LookAndFollowTradingPlayerSink(0.5F)));
 
         villagerBrain.setCoreActivities(ImmutableSet.of(Activity.FIGHT));
         villagerBrain.updateActivityFromSchedule(this.level.getDayTime(), this.level.getGameTime());
@@ -157,9 +144,9 @@ public class MageVillager extends Villager implements IManaTaskMob {
     @Override
     protected void updateTrades() {
         VillagerData villagerdata = this.getVillagerData();
-        Int2ObjectMap<VillagerTrades.ITrade[]> int2objectmap = VillagerTrades.TRADES.get(villagerdata.getProfession());
+        Int2ObjectMap<VillagerTrades.ItemListing[]> int2objectmap = VillagerTrades.TRADES.get(villagerdata.getProfession());
         if (int2objectmap != null && !int2objectmap.isEmpty()) {
-            VillagerTrades.ITrade[] avillagertrades$itrade = int2objectmap.get(villagerdata.getLevel());
+            VillagerTrades.ItemListing[] avillagertrades$itrade = int2objectmap.get(villagerdata.getLevel());
             if (avillagertrades$itrade != null) {
                 MerchantOffers merchantoffers = this.getOffers();
                 this.addOffersFromItemListings(merchantoffers, avillagertrades$itrade, 6);

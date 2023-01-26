@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.mixin;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -24,6 +25,6 @@ public class MixinRecipeManager {
             , at = @At(value = "INVOKE", target = "java/util/Map.entrySet ()Ljava/util/Set;", ordinal = 1)
     )
     public void onApply(Map<ResourceLocation, JsonElement> objectIn, ResourceManager resourceManagerIn, ProfilerFiller profilerIn, CallbackInfo ci, Map<RecipeType<?>, ImmutableMap.Builder<ResourceLocation, Recipe<?>>> map) {
-        MinecraftForge.EVENT_BUS.post(new RecipeLoadedEvent(map));
+        MagickCore.EVENT_BUS.post(new RecipeLoadedEvent(map));
     }
 }

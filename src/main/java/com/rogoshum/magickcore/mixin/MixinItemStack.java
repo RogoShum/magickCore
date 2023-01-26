@@ -165,7 +165,7 @@ public class MixinItemStack{
         ItemStack thisStack = (ItemStack)(Object)this;
         HashMap<String, Function<ItemStack, ItemExtraData>> dataMap = new HashMap<>();
         ExtraDataEvent.ItemStack event = new ExtraDataEvent.ItemStack(dataMap);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         dataMap.forEach((key, value) -> {
             try {
                 ItemExtraData itemExtraData = value.apply(thisStack);

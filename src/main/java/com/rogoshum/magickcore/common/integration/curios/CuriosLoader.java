@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.item.SpiritCrystalRingItem;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.network.SimpleChannel;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
@@ -37,7 +38,7 @@ public class CuriosLoader extends AdditionLoader {
                 .decoder(CCastSpellPack::new)
                 .server(CCastSpellPack::handler)
                 .add();
-        MinecraftForge.EVENT_BUS.register(this);
+        MagickCore.EVENT_BUS.register(this);
     }
 
     @Override
@@ -63,13 +64,13 @@ public class CuriosLoader extends AdditionLoader {
         if (CuriosKeyBind.TAKE_OFF_KEY.consumeClick() && ring != null) {
             ring.shrink(1);
             Networking.INSTANCE.send(
-                    PacketDistributor.SERVER.noArg(), CCastSpellPack.take(Minecraft.getInstance().player.getId()));
+                    SimpleChannel.SendType.client(), CCastSpellPack.take(Minecraft.getInstance().player.getId()));
         }
 
         if (CuriosKeyBind.CAST_KEY.consumeClick()) {
             if(!press)
                 Networking.INSTANCE.send(
-                    PacketDistributor.SERVER.noArg(), CCastSpellPack.cast(Minecraft.getInstance().player.getId()));
+                    SimpleChannel.SendType.client(), CCastSpellPack.cast(Minecraft.getInstance().player.getId()));
             press = true;
         } else
             press = false;

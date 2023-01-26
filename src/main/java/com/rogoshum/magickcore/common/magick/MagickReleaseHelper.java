@@ -80,13 +80,13 @@ public class MagickReleaseHelper {
     public static EntityEvent.MagickPreReleaseEvent preReleaseMagickEvent(MagickContext context) {
         float manaNeed = Math.max(0, manaNeed(context) - context.reduceCost);
         EntityEvent.MagickPreReleaseEvent event = new EntityEvent.MagickPreReleaseEvent(context, context.noCost ? 0 : manaNeed);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         return event;
     }
 
     public static EntityEvent.MagickReleaseEvent releaseMagickEvent(MagickContext context) {
         EntityEvent.MagickReleaseEvent event = new EntityEvent.MagickReleaseEvent(context);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         return event;
     }
 
@@ -282,7 +282,7 @@ public class MagickReleaseHelper {
             ((IManaEntity) pro).beforeJoinLevel(context);
 
         EntityEvent.MagickSpawnEntityEvent event = new EntityEvent.MagickSpawnEntityEvent(context, pro);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         if(!event.isCanceled()) {
             if(pro instanceof IManaEntity && context.containChild(LibContext.SEPARATOR)) {
                 SpellContext preForm = ((IManaEntity) pro).spellContext();
@@ -324,13 +324,13 @@ public class MagickReleaseHelper {
             return STAR_VELOCITY;
 
         EntityEvent.EntityVelocity event = new EntityEvent.EntityVelocity(entity);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         return event.getVelocity();
     }
 
     private static float getInaccuracy(Entity entity) {
         EntityEvent.EntityVelocity event = new EntityEvent.EntityVelocity(entity);
-        MinecraftForge.EVENT_BUS.post(event);
+        MagickCore.EVENT_BUS.post(event);
         return event.getInaccuracy();
     }
 
