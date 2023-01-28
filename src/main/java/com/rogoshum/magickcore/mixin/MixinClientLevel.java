@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

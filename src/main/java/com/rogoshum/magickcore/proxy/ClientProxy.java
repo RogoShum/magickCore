@@ -119,7 +119,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void tick(LogicalSide side) {
+	public void tick(EnvType side) {
 		checkThread();
 		magickThread.tick();
 	}

@@ -3,6 +3,9 @@ package com.rogoshum.magickcore.client.render;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.rogoshum.magickcore.mixin.fabric.reflection.ICompositeType;
+import com.rogoshum.magickcore.mixin.fabric.reflection.ITexture;
+import com.rogoshum.magickcore.mixin.fabric.reflection.ITextureState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
 import java.util.Optional;
@@ -44,18 +47,15 @@ public class SingleBuffer implements MultiBufferSource {
             temp = type.apply(this.texture);
         } else {
             try {
-                clazz = (Class<RenderType>) Class.forName("net.minecraft.client.renderer.RenderType$CompositeState");
+                clazz = (Class<RenderType>) Class.forName("net.minecraft.client.renderer.RenderType$CompositeRenderType");
                 if(p_getBuffer_1_.getClass().equals(clazz)) {
-                    Object o = ObfuscationReflectionHelper.getPrivateValue(clazz, p_getBuffer_1_, "state");
-                    if(o instanceof RenderType.CompositeState) {
-                        RenderType.CompositeState state = (RenderType.CompositeState) o;
-                        RenderStateShard.TextureStateShard textureState = ObfuscationReflectionHelper.getPrivateValue(RenderType.CompositeState.class, state, "textureState");
-                        Optional<ResourceLocation> texture = ObfuscationReflectionHelper.getPrivateValue(RenderStateShard.TextureStateShard.class, textureState, "texture");
-                        if(texture.isPresent()) {
-                            temp = type.apply(texture.get());
-                        } else
-                            temp = type.apply(this.texture);
-                    }
+                    RenderType.CompositeState state = ((ICompositeType)p_getBuffer_1_).getState();
+                    RenderStateShard.TextureStateShard textureState = ((ITextureState)(Object)state).getTextureState();
+                    Optional<ResourceLocation> texture = ((ITexture)textureState).getTexture();
+                    if(texture.isPresent()) {
+                        temp = type.apply(texture.get());
+                    } else
+                        temp = type.apply(this.texture);
                 }
             } catch (Exception I) {
 

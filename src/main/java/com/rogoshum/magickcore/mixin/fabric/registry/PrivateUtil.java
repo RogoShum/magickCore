@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.mixin.fabric.registry;
 
+import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -38,5 +39,9 @@ public class PrivateUtil {
 
     public static <U extends Sensor<?>> SensorType<U> registerSensorType(String string, Supplier<U> supplier) {
         return MixinSensorType.create(string, supplier);
+    }
+
+    public static <T extends CriterionTrigger<?>> T registerCriterionTrigger(T criterionTrigger) {
+        return MixinCriteriaTriggers.create(criterionTrigger);
     }
 }

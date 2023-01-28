@@ -19,6 +19,7 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.mixin.fabric.reflection.IScaleEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -73,16 +74,12 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     public void refreshDimensions() {
-        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
         Pose pose = this.getPose();
-        EntityDimensions entitysize1 = this.getDimensions(pose);
-        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntityDimensionsForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
-        entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
-        double d0 = (double)entitysize1.width * 0.5;
-        //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
+        EntityDimensions entitySize = this.getDimensions(pose);
+        ((IScaleEntity)this).setEntityDimensions(entitySize);
+        ((IScaleEntity)this).setEyeHeight(this.getEyeHeight(pose, entitySize));
+        double d0 = (double)entitySize.width * 0.5;
+        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitySize.height, this.getZ() + d0));
     }
 
     @Override
@@ -238,7 +235,6 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     @Override
     public void onAddedToLevel() {
-        super.onAddedToLevel();
         EntityLightSourceManager.addLightSource(this);
         if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaProjectileEntity>> renderer = getRenderer();
@@ -271,7 +267,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     @Override
     public Level world() {
-        return getCommandSenderLevel();
+        return level;
     }
 
     @Override

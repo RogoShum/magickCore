@@ -5,6 +5,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
+import com.rogoshum.magickcore.api.event.ItemAttributeModifierEvent;
+import com.rogoshum.magickcore.api.event.PlayerEvent;
+import com.rogoshum.magickcore.api.event.living.LivingDamageEvent;
+import com.rogoshum.magickcore.api.event.living.LivingDeathEvent;
+import com.rogoshum.magickcore.api.event.living.LivingEvent;
+import com.rogoshum.magickcore.api.event.living.LivingHealEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
@@ -44,57 +50,40 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.brain.schedule.Activity;
+import net.minecraft.core.Registry;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.entity.monster.IMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayer;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagickLogicEvent {
 	private static final List<Entity> timeLords = new ArrayList<Entity>();
-	@SubscribeEvent
-	public void updateLightSource(TickEvent.ServerTickEvent event) {
-		if(event.phase == TickEvent.Phase.END) {
-			//EntityLightSourceManager.tick(event.side);
-			//MagickCore.proxy.tick(LogicalSide.SERVER);
-		}
-	}
 
 	@SubscribeEvent
-	public void entityJoinLevel(EntityJoinLevelEvent evt) {
+	public void entityJoinLevel(EntityEvent.EntityAddedToLevelEvent evt) {
 		/*
-Entity entity = evt.getEntity();
+			Entity entity = evt.getEntity();
 
 		if (entity instanceof ManaRadiateEntity) {
 			evt.setCanceled(true);
@@ -103,27 +92,33 @@ Entity entity = evt.getEntity();
 
 	}
 
-	@SubscribeEvent
-	public void updateLightSource(TickEvent.ClientTickEvent event) {
-		if(!Minecraft.getInstance().isPaused() && event.phase == TickEvent.Phase.END) {
-			MagickCore.proxy.addAdditionTask(() -> {
-				if(RenderHelper.getPlayer() == null) {
+	static {
+		ClientTickEvents.END_CLIENT_TICK.register((client)-> {
+			if(!client.isPaused()) {
+				MagickCore.proxy.addAdditionTask(() -> {
+					if(RenderHelper.getPlayer() == null) {
+						EntityLightSourceManager.clear();
+						RenderEvent.clearParticle();
+						VertexShakerHelper.clear();
+					}
+
+					VertexShakerHelper.tickGroup();
+					RenderEvent.tickParticle();
+					MagickPoint.points.forEach(MagickPoint::tick);
+				}, () -> {
 					EntityLightSourceManager.clear();
 					RenderEvent.clearParticle();
 					VertexShakerHelper.clear();
-				}
+				});
+				MagickCore.proxy.tick(EnvType.CLIENT);
+				//EntityLightSourceManager.tick(EnvType.CLIENT);
+			}
+		});
 
-				VertexShakerHelper.tickGroup();
-				RenderEvent.tickParticle();
-				MagickPoint.points.forEach(MagickPoint::tick);
-			}, () -> {
-				EntityLightSourceManager.clear();
-				RenderEvent.clearParticle();
-				VertexShakerHelper.clear();
-			});
-			MagickCore.proxy.tick(LogicalSide.CLIENT);
-			//EntityLightSourceManager.tick(LogicalSide.CLIENT);
-		}
+		ServerTickEvents.END_SERVER_TICK.register((server -> {
+			//EntityLightSourceManager.tick(event.side);
+			//MagickCore.proxy.tick(EnvType.SERVER);
+		}));
 	}
 
 	/*
@@ -166,18 +161,13 @@ Entity entity = evt.getEntity();
 	public void firstTimeJoinsLevel(PlayerEvent.PlayerLoggedInEvent event) {
 		if(event.getEntity() instanceof ServerPlayer) {
 			ServerPlayer player = (ServerPlayer)event.getEntity();
-			if(!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG))
-				player.getPersistentData().put(Player.PERSISTED_NBT_TAG, new CompoundTag());
-
-			CompoundTag PERSISTED_NBT_TAG = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
-			if(!PERSISTED_NBT_TAG.contains("MAGICKCORE_FIRST")) {
-				Item book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
-				if(book != null) {
-					ItemStack stack = new ItemStack(book);
-					NBTTagHelper.getStackTag(stack).putString("patchouli:book", "magickcore:magickcore");
-					player.inventory.add(stack);
-					PERSISTED_NBT_TAG.putBoolean("MAGICKCORE_FIRST", true);
-				}
+			CompoundTag persistentData = ExtraDataUtil.entityStateData(player).getPersistData();
+			if(!persistentData.contains("MAGICKCORE_FIRST")) {
+				Item book = Registry.ITEM.get(new ResourceLocation("patchouli:guide_book"));
+				ItemStack stack = new ItemStack(book);
+				NBTTagHelper.getStackTag(stack).putString("patchouli:book", "magickcore:magickcore");
+				player.inventory.add(stack);
+				persistentData.putBoolean("MAGICKCORE_FIRST", true);
 				int lucky = 1;
 				while (MagickCore.rand.nextBoolean())
 					lucky++;
@@ -199,7 +189,7 @@ Entity entity = evt.getEntity();
 
 	@SubscribeEvent
 	public void voidElement(ItemAttributeModifierEvent event) {
-		if(event.getSlotType() == EquipmentSlotType.MAINHAND) {
+		if(event.getSlotType() == EquipmentSlot.MAINHAND) {
 			if(NBTTagHelper.hasElementOnTool(event.getItemStack(), LibElements.VOID)) {
 				CompoundTag tag = NBTTagHelper.getStackTag(event.getItemStack());
 				event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785CCCC"), () -> "Weapon modifier", Math.pow(1.1, tag.getInt("VOID_LEVEL") * 6), AttributeModifier.Operation.ADDITION));
@@ -263,7 +253,7 @@ Entity entity = evt.getEntity();
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@SubscribeEvent
 	public void preMagickRelease(EntityEvent.MagickPreReleaseEvent event) {
 		if(!(event.getEntity() instanceof LivingEntity))
 			return;
@@ -372,7 +362,7 @@ Entity entity = evt.getEntity();
 	}
 
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent
 	public void onShieldCapacity(EntityEvent.ShieldCapacityEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.SHIELD_VALUE.orElse(null)))
@@ -382,7 +372,7 @@ Entity entity = evt.getEntity();
 		event.setCapacity(event.getCapacity() + mana);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent
 	public void onShieldRegen(EntityEvent.ShieldRegenerationEvent event) {
 		int mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.SHIELD_REGEN.orElse(null)))
@@ -391,7 +381,7 @@ Entity entity = evt.getEntity();
 		event.setAmount(event.getAmount() + mana);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent
 	public void onManaRegen(EntityEvent.ManaRegenerationEvent event) {
 		float mana = 0;
 		if(event.getEntityLiving().getActiveEffectsMap().containsKey(ModEffects.MANA_REGEN.orElse(null)))
@@ -417,7 +407,7 @@ Entity entity = evt.getEntity();
 		event.setMana(event.getMana() + mana);
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@SubscribeEvent
 	public void onArtificialLifeManaRegen(EntityEvent.ManaRegenerationEvent event) {
 		if(event.getEntityLiving() instanceof ArtificialLifeEntity)
 			event.setMana(0);
@@ -476,7 +466,7 @@ Entity entity = evt.getEntity();
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed) {
 				if(event.getEntity().tickCount % 40 == 0)
 					Networking.INSTANCE.send(
-							SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()),
+							SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
 							new TakenStatePack(event.getEntity().getId(), takenState.getTime(), takenState.getOwnerUUID()));
 			}
 		}
@@ -563,7 +553,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onWeakenBuff(LivingHurtEvent event) {
+	public void onWeakenBuff(LivingDamageEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		Entity entity = event.getSource().getEntity();
 		if(entity instanceof LivingEntity) {
@@ -591,7 +581,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onLightning(EntityStruckByLightningEvent event) {
+	public void onLightning(EntityEvent.EntityStruckByLightningEvent event) {
 		AtomicReference<EntityStateData> ref = new AtomicReference<>();
 		ExtraDataUtil.entityStateData(event.getEntity(), ref::set);
 		EntityStateData state = ref.get();
@@ -605,34 +595,23 @@ Entity entity = evt.getEntity();
 		}
 	}
 
-	public void reduceDamage(LivingEvent event, float reduceAmount) {
-		if(event instanceof LivingDamageEvent) {
-			LivingDamageEvent damageEvent = (LivingDamageEvent) event;
-			damageEvent.setAmount(damageEvent.getAmount() - reduceAmount);
-			if(damageEvent.getAmount() <= 0)
-				event.setCanceled(true);
-			else
-				damageEvent.setAmount(damageEvent.getAmount() * (10 - Math.min(2.5f, reduceAmount)) * 0.1f);
-		} else if (event instanceof LivingAttackEvent) {
-			LivingAttackEvent damageEvent = (LivingAttackEvent) event;
-			float amount = damageEvent.getAmount() - reduceAmount;
-			if(amount <= 0)
-				event.setCanceled(true);
-		}
+	public void reduceDamage(LivingDamageEvent event, float reduceAmount) {
+		event.setAmount(event.getAmount() - reduceAmount);
+		if (event.getAmount() <= 0)
+			event.setCanceled(true);
+		else
+			event.setAmount(event.getAmount() * (10 - Math.min(2.5f, reduceAmount)) * 0.1f);
 	}
 
-	public void onDamage(DamageSource damageSource, LivingEvent event, EntityStateData state, Entity trueSource) {
+	public void onDamage(DamageSource damageSource, LivingDamageEvent event, EntityStateData state, Entity trueSource) {
 		float reduceAmount = state.getMaxManaValue() * 0.0005f;
 
 		if(state.getElement() == ModElements.SOLAR) {
 			if(damageSource.isFire() || damageSource.isExplosion()) {
 				reduceDamage(event, reduceAmount);
-				if(event instanceof LivingDamageEvent) {
-					LivingDamageEvent damageEvent = (LivingDamageEvent) event;
-					if(reduceAmount >= damageEvent.getAmount()) {
-						if(event.getEntityLiving().getRemainingFireTicks() > 0)
-							event.getEntityLiving().setSecondsOnFire(0);
-					}
+				if(reduceAmount >= event.getAmount()) {
+					if(event.getEntityLiving().getRemainingFireTicks() > 0)
+						event.getEntityLiving().setSecondsOnFire(0);
 				}
 			}
 		} else if(state.getElement() == ModElements.VOID) {
@@ -692,7 +671,7 @@ Entity entity = evt.getEntity();
 			onDamage(event.getSource(), event, state, entity);
 		}
 
-		if(entity instanceof LivingEntity || entity instanceof IMob) {
+		if(entity instanceof LivingEntity) {
 			ElementToolData tool = ExtraDataUtil.elementToolData(entity);
 
 			if (tool != null) {
@@ -744,7 +723,7 @@ Entity entity = evt.getEntity();
 	}
 
 	@SubscribeEvent
-	public void onElementShield(LivingAttackEvent event) {
+	public void onElementShield(LivingDamageEvent event) {
 		EntityStateData state = ExtraDataUtil.entityStateData(event.getEntityLiving());
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			event.setCanceled(true);
@@ -806,7 +785,7 @@ Entity entity = evt.getEntity();
 		}
 	}
 
-	public static void HandleElementShield(EntityStateData state, float damage, LivingAttackEvent event) {
+	public static void HandleElementShield(EntityStateData state, float damage, LivingDamageEvent event) {
 		if(state.getElementShieldMana() >= damage) {
 			state.hitElementShield();
 			state.setElementShieldMana(state.getElementShieldMana() - damage);

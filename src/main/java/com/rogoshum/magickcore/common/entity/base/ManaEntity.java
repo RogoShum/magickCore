@@ -4,16 +4,15 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
-import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.network.NetworkHooks;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
+import com.rogoshum.magickcore.mixin.fabric.reflection.IScaleEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -35,8 +34,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class ManaEntity extends Entity implements IManaEntity, ILightSourceEntity, IEntityAdditionalSpawnData {
@@ -72,35 +69,14 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
         super.onSyncedDataUpdated(key);
     }
 
+    @Override
     public void refreshDimensions() {
-        EntityDimensions entityDimensions = this.dimensions;
         Pose pose = this.getPose();
-        EntityDimensions entityDimensions2 = this.getDimensions(pose);
-        this.dimensions = entityDimensions2;
-        this.eyeHeight = this.getEyeHeight(pose, entityDimensions2);
-        if (entityDimensions2.width < entityDimensions.width) {
-            double d = (double)entityDimensions2.width / 2.0D;
-            this.setBoundingBox(new AABB(this.getX() - d, this.getY(), this.getZ() - d, this.getX() + d, this.getY() + (double)entityDimensions2.height, this.getZ() + d));
-        } else {
-            AABB aABB = this.getBoundingBox();
-            this.setBoundingBox(new AABB(aABB.minX, aABB.minY, aABB.minZ, aABB.minX + (double)entityDimensions2.width, aABB.minY + (double)entityDimensions2.height, aABB.minZ + (double)entityDimensions2.width));
-            if (entityDimensions2.width > entityDimensions.width && !this.firstTick && !this.level.isClientSide) {
-                float f = entityDimensions.width - entityDimensions2.width;
-                this.move(MoverType.SELF, new Vec3((double)f, 0.0D, (double)f));
-            }
-
-        }
-
-        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
-        Pose pose = this.getPose();
-        EntityDimensions entitysize1 = this.getDimensions(pose);
-        net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntityDimensionsForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
-        entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
-        double d0 = (double)entitysize1.width * 0.5;
-        //double d1 = (entitysize1.height - entitysize.height) * 0.5;
-        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
+        EntityDimensions entitySize = this.getDimensions(pose);
+        ((IScaleEntity)this).setEntityDimensions(entitySize);
+        ((IScaleEntity)this).setEyeHeight(this.getEyeHeight(pose, entitySize));
+        double d0 = (double)entitySize.width * 0.5;
+        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitySize.height, this.getZ() + d0));
     }
 
     @Override
@@ -326,14 +302,15 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     protected void collideWithNearbyEntities() {
-        List<Entity> list = this.level.getEntities(this, this.getBoundingBox(), EntityPredicates.pushableBy(this));
+        /*
+        List<Entity> list = this.level.getEntities(this, this.getBoundingBox(), EntitySelector.pushableBy(this));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
                 //this.applyEntityCollision(entity);
             }
         }
-
+         */
     }
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
@@ -354,7 +331,6 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public void onAddedToLevel() {
-        super.onAddedToLevel();
         EntityLightSourceManager.addLightSource(this);
         if(level.isClientSide) {
             Supplier<EasyRenderer<? extends ManaEntity>> renderer = getRenderer();
@@ -387,7 +363,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public Level world() {
-        return getCommandSenderLevel();
+        return level;
     }
 
     @Override

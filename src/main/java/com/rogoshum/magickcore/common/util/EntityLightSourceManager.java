@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.util;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import com.rogoshum.magickcore.common.init.ModBlocks;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,8 +20,8 @@ import java.util.List;
 public class EntityLightSourceManager {
     private static final List<ILightSourceEntity> lightList = new ArrayList<>();
 
-    public static void tick(LogicalSide side) {
-        if(side.isClient() && Minecraft.getInstance().level == null) return;
+    public static void tick(EnvType side) {
+        if(side == EnvType.CLIENT && Minecraft.getInstance().level == null) return;
 
         for (int i = 0; i < lightList.size(); ++i) {
             ILightSourceEntity entity = lightList.get(i);

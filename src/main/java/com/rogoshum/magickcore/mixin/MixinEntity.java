@@ -4,9 +4,12 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IEntityData;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
+import com.rogoshum.magickcore.mixin.fabric.reflection.IScaleEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,7 +19,12 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 @Mixin(Entity.class)
-public class MixinEntity implements IEntityData {
+public abstract class MixinEntity implements IEntityData, IScaleEntity {
+    @Shadow private EntityDimensions dimensions;
+    @Shadow private float eyeHeight;
+
+    @Shadow public abstract boolean equals(Object object);
+
     private final HashMap<String, EntityExtraData> extraData = new HashMap<>();
 
     @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"), cancellable = true)
@@ -65,5 +73,20 @@ public class MixinEntity implements IEntityData {
     @Override
     public HashMap<String, EntityExtraData> extraData() {
         return extraData;
+    }
+
+    @Override
+    public void setEntityDimensions(EntityDimensions dimensions) {
+        this.dimensions = dimensions;
+    }
+
+    @Override
+    public EntityDimensions getEntityDimensions() {
+        return this.dimensions;
+    }
+
+    @Override
+    public void setEyeHeight(float eyeHeight) {
+        this.eyeHeight = eyeHeight;
     }
 }

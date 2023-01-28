@@ -18,4 +18,6 @@ public interface IEntityAdditionalSpawnData {
      * @param additionalData The packet data stream
      */
     void readSpawnData(FriendlyByteBuf additionalData);
+
+    default void onAddedToLevel() {}
 }

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.mixin.fabric.reflection.ILayersRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -90,14 +91,7 @@ public class LayerRenderHelper extends LivingEntityRenderer {
         float f7 = this.getBob(entityIn, partialTicks);
         this.setupRotations(entityIn, matrixStackIn, f7, f, partialTicks);
         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
-
-        Method me = ObfuscationReflectionHelper.findMethod(LivingEntityRenderer.class, "scale", LivingEntity.class,PoseStack.class,float.class);
-        try {
-            me.invoke(renderer, entityIn, matrixStackIn, partialTicks);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
+        ((ILayersRenderer)renderer).invokeScale(entityIn, matrixStackIn, partialTicks);
         matrixStackIn.translate(0.0D, (double)-1.501F, 0.0D);
         float f8 = 0.0F;
         float f5 = 0.0F;
@@ -125,7 +119,7 @@ public class LayerRenderHelper extends LivingEntityRenderer {
         }
 
         if(renderer instanceof LivingEntityRenderer) {
-            List<RenderLayer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingEntityRenderer.class, (LivingEntityRenderer)renderer, "layers");
+            List<RenderLayer> layerRenderers = ((ILayersRenderer)renderer).getLayers();
             for (int cc = 0; cc < layerRenderers.size(); ++cc) {
                 RenderLayer layerrenderer = layerRenderers.get(cc);
                 layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);

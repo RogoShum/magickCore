@@ -7,7 +7,7 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraftforge.fml.LogicalSide;
+import net.fabricmc.api.EnvType;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -21,7 +21,7 @@ public class CommonProxy implements IProxy {
 	public void preInit() {}
 
 	@Override
-	public void tick(LogicalSide side) {
+	public void tick(EnvType side) {
 		checkThread();
 		magickThread.tick();
 	}

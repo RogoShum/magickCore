@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
@@ -29,6 +30,7 @@ public class EntityStateData extends EntityExtraData {
     public static final String ALLOW_ELEMENT = "ALLOW_ELEMENT";
     public static final String UPDATE_RATE = "UPDATE_RATE";
     public static final String UPDATE_TICK = "UPDATE_TICK";
+    public static final String PERSIST_DATA = "persist_data";
 
     private float maxManaValue;
     private float maxShieldValue;
@@ -52,6 +54,7 @@ public class EntityStateData extends EntityExtraData {
     }
 
     private CompoundTag state = new CompoundTag();
+    private CompoundTag persistData = new CompoundTag();
 
     public void setElemented() {
         allowElement = true;
@@ -242,6 +245,7 @@ public class EntityStateData extends EntityExtraData {
         }
         this.setUpdateRate(nbt.getInt(UPDATE_RATE));
         this.updateTick = nbt.getInt(UPDATE_TICK);
+        this.persistData = nbt.getCompound(PERSIST_DATA);
     }
 
     public void write(CompoundTag nbt) {
@@ -267,9 +271,14 @@ public class EntityStateData extends EntityExtraData {
         nbt.put(EFFECT_FORCE, effectForce);
         nbt.putInt(UPDATE_TICK, updateTick);
         nbt.putInt(UPDATE_RATE, updateRate);
+        nbt.put(PERSIST_DATA, persistData);
     }
 
     public CompoundTag getPreState() {
         return preState;
+    }
+
+    public CompoundTag getPersistData() {
+        return persistData;
     }
 }

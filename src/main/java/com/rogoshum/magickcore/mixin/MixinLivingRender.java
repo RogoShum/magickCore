@@ -13,6 +13,7 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.mixin.fabric.reflection.ILayersRenderer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -31,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class MixinLivingRender<T extends LivingEntity, M extends EntityModel<T>>{
+public abstract class MixinLivingRender<T extends LivingEntity, M extends EntityModel<T>> implements ILayersRenderer<T, M> {
 
     @Shadow
     protected final List<RenderLayer<T, M>> layers = Lists.newArrayList();
@@ -217,4 +218,16 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
 
     @Shadow
     protected abstract boolean isBodyVisible(T livingEntityIn);
+
+    @Shadow protected abstract void scale(T livingEntity, PoseStack poseStack, float f);
+
+    @Override
+    public List<RenderLayer<T, M>> getLayers() {
+        return layers;
+    }
+
+    @Override
+    public void invokeScale(T livingEntity, PoseStack poseStack, float f) {
+        scale(livingEntity, poseStack, f);
+    }
 }

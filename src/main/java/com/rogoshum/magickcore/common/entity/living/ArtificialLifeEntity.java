@@ -68,7 +68,6 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
     @Override
     public void onAddedToLevel() {
-        super.onAddedToLevel();
         MagickCore.proxy.addRenderer(() -> new ArtificialLifeEntityRenderer(this));
     }
 

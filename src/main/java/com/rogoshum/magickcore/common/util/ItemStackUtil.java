@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
+import com.rogoshum.magickcore.mixin.fabric.reflection.IAgeItemEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,8 +26,6 @@ public class ItemStackUtil {
         } else if (stack1.getCount() >= stack1.getMaxStackSize()) {
             return false;
         } else if (stack2.hasTag() ^ stack1.hasTag()) {
-            return false;
-        } else if (!stack1.areCapsCompatible(stack2)) {
             return false;
         } else {
             return !stack2.hasTag() || stack2.getTag().equals(stack1.getTag());
@@ -60,14 +59,14 @@ public class ItemStackUtil {
     }
 
     public static int getItemEntityAge(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "age");
+        return ((IAgeItemEntity)entity).getAge();
     }
 
     public static int getItemEntityPickupDelay(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "pickupDelay");
+        return ((IAgeItemEntity)entity).getPickupDelay();
     }
 
     public static void setItemEntityAge(ItemEntity entity, int age) {
-        ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, age, "age");
+        ((IAgeItemEntity)entity).setAge(age);
     }
 }

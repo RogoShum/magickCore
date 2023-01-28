@@ -7,7 +7,9 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvent;
+import com.rogoshum.magickcore.api.event.RenderGameOverlayEvent;
 import com.rogoshum.magickcore.api.event.RenderLevelEvent;
+import com.rogoshum.magickcore.api.event.living.LivingEvent;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
 import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
@@ -22,6 +24,7 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibShaders;
@@ -30,9 +33,12 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,26 +67,22 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
-    public void onOverlayRender(RenderGameOverlayEvent.Post event) {
+    public void onOverlayRender(RenderGameOverlayEvent event) {
         if (Minecraft.getInstance().player == null) {
             return;
         }
         EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
-            ManaBarHUD manaBarGUI = new ManaBarHUD(event.getMatrixStack(), state);
-            manaBarGUI.render();
-        } else if(event.getType() == RenderGameOverlayEvent.ElementType.POTION_ICONS) {
-            ManaBuffHUD manaBuffHUD = new ManaBuffHUD(event.getMatrixStack(), state);
-            manaBuffHUD.render();
-        } else if(event.getType() == RenderGameOverlayEvent.ElementType.HELMET) {
-            ElementShieldHUD elementShieldGUI = new ElementShieldHUD(state);
-            elementShieldGUI.render();
-        }
+        ManaBarHUD manaBarGUI = new ManaBarHUD(event.getPoseStack(), state);
+        manaBarGUI.render();
+        ManaBuffHUD manaBuffHUD = new ManaBuffHUD(event.getPoseStack(), state);
+        manaBuffHUD.render();
+        ElementShieldHUD elementShieldGUI = new ElementShieldHUD(state);
+        elementShieldGUI.render();
     }
 
     @SubscribeEvent
     public void renderEntity(RenderLevelEvent.RenderMagickEvent event) {
-        PoseStack matrixStackIn = event.getMatrixStack();
+        PoseStack matrixStackIn = event.getPoseStack();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
         HashMap<RenderMode, Queue<Consumer<RenderParams>>> renderer = MagickCore.proxy.getGlFunction();
@@ -150,7 +152,7 @@ public class RenderEvent {
         double d0 = vec.x();
         double d1 = vec.y();
         double d2 = vec.z();
-        Matrix4f matrix4f = event.getMatrixStack().last().pose();
+        Matrix4f matrix4f = event.getPoseStack().last().pose();
 
         Frustum clippinghelper = new Frustum(matrix4f, event.getProjectionMatrix());
         clippinghelper.prepare(d0, d1, d2);
@@ -168,22 +170,23 @@ public class RenderEvent {
             MagickCore.proxy.addRenderer(() -> new WandSelectionRenderer(Minecraft.getInstance().player));
     }
 
-    @SubscribeEvent
-    public void onItemDescription(ItemTooltipEvent event) {
-        if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(LibElementTool.TOOL_ELEMENT)) {
-            CompoundTag tag = NBTTagHelper.getToolElementTable(event.getItemStack());
-            if(tag.getAllKeys().size() > 0) {
-                event.getToolTip().add((new StringTextComponent("")));
-                event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_DESCRIPTION)));
-            }
-            Iterator<String> keys = tag.getAllKeys().iterator();
+    static {
+        ItemTooltipCallback.EVENT.register(((stack, context, lines) -> {
+            if(stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT)) {
+                CompoundTag tag = NBTTagHelper.getToolElementTable(stack);
+                if(tag.getAllKeys().size() > 0) {
+                    lines.add((new TextComponent("")));
+                    lines.add((new TranslatableComponent(LibElementTool.TOOL_DESCRIPTION)));
+                }
+                Iterator<String> keys = tag.getAllKeys().iterator();
 
-            while (keys.hasNext()) {
-                String element = keys.next();
-                int duration = tag.getInt(element);
-                event.getToolTip().add((new TranslationTextComponent(LibElementTool.TOOL_ATTRIBUTE + element)).append(" ").append((new TranslationTextComponent(LibElementTool.TOOL_DURATION).append(" " + Integer.toString(duration)))));
+                while (keys.hasNext()) {
+                    String element = keys.next();
+                    int duration = tag.getInt(element);
+                    lines.add((new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + element)).append(" ").append((new TranslatableComponent(LibElementTool.TOOL_DURATION).append(" " + Integer.toString(duration)))));
+                }
             }
-        }
+        }));
     }
 
     public static void tickParticle() {

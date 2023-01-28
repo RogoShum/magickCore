@@ -8,6 +8,9 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
+    "fabric.reflection.MixinBlockPlaceContext",
+    "fabric.reflection.MixinItemEntity",
+    "fabric.registry.MixinCriteriaTriggers",
     "fabric.registry.MixinPoiType",
     "fabric.registry.MixinPotionBrewing",
     "fabric.registry.MixinSensorType",
@@ -27,6 +30,10 @@
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
     "MixinLevelRender",
-    "MixinLivingRender"
+    "MixinLivingRender",
+    "fabric.MixinGui",
+    "fabric.reflection.MixinRenderType",
+    "fabric.reflection.MixinRenderType$MixinCompositeState",
+    "fabric.reflection.MixinRenderType$MixinTextureStateShard"
   ]
 }

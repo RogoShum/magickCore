@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
-import com.rogoshum.magickcore.api.event.EntityEvent;
+import com.rogoshum.magickcore.api.event.living.LivingEvent;
 import com.rogoshum.magickcore.common.advancements.StringTrigger;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -8,16 +8,17 @@ import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibEffect;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 
 public class AdvancementsEvent {
-    public static final StringTrigger STRING_TRIGGER = CriteriaTriggers.register(new StringTrigger());
+    public static final StringTrigger STRING_TRIGGER = PrivateUtil.registerCriterionTrigger(new StringTrigger());
 
     @SubscribeEvent
-    public void onLivingUpdate(EntityEvent.LivingEvent.LivingUpdateEvent event) {
+    public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
         if(event.getEntityLiving() instanceof ServerPlayer) {
             ServerPlayer player = ((ServerPlayer)event.getEntityLiving());
             STRING_TRIGGER.trigger(player, LibAdvancements.UNLOCK_ROOT);

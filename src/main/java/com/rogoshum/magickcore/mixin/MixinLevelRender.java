@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderLevelEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import net.minecraft.client.Camera;

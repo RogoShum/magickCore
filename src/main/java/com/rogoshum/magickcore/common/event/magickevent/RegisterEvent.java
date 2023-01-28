@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.event.magickevent;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
+import com.rogoshum.magickcore.api.event.living.LivingDeathEvent;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.*;

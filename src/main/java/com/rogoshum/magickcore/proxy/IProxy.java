@@ -5,9 +5,8 @@ import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraftforge.fml.LogicalSide;
 
 import java.util.HashMap;
 import java.util.Queue;
@@ -19,7 +18,7 @@ public interface IProxy {
 
     public void preInit();
 
-    public void tick(LogicalSide side);
+    public void tick(EnvType side);
     public int getRunTick();
 
     public void addTask(Runnable run);
