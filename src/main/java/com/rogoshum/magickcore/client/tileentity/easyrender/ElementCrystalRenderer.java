@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -13,7 +13,7 @@ import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -28,9 +28,9 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
     }
 
     public void render(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        BufferBuilder buffer = Tessellator.getInstance().getBuilder();
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(1.0f, color);
         matrixStackIn.translate(0, -0.1, 0);
         matrixStackIn.scale(0.5f, 0.5f, 0.5f);

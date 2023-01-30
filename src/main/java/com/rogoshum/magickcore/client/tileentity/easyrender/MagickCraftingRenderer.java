@@ -1,10 +1,10 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -15,7 +15,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
     }
 
 
-    public void render(MagickCraftingTileEntity tileEntityIn, MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, float partialTicks) {
+    public void render(MagickCraftingTileEntity tileEntityIn, PoseStack matrixStackIn, MultiBufferSource.Impl bufferIn, float partialTicks) {
         /*
         matrixStackIn.push();
         float length = 0.7f;
@@ -27,7 +27,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(45f));
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-degree));
         matrixStackIn.scale(0.1f, length, 0.1f);
-        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        BufferBuilder buffer = Tesselator.getInstance().getBuffer();
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, buffer, RenderHelper.getTexedSphereGlow(blank, 1f, 0f)), 4, 0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight);
         matrixStackIn.pop();
         matrixStackIn.translate(-offset1, 0.0, -offset1);
@@ -66,7 +66,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.scale(0.6f, 0.6f, 0.6f);
         if(tileEntityIn.getMainItem() != null) {
             IBakedModel ibakedmodel = Minecraft.getInstance().getItemRenderer().getItemModelWithOverrides(tileEntityIn.getMainItem(), tileEntityIn.getLevel(), (LivingEntity) null);
-            Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getMainItem(), ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            Minecraft.getInstance().getItemRenderer().renderItem(tileEntityIn.getMainItem(), ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
         }
 
          */

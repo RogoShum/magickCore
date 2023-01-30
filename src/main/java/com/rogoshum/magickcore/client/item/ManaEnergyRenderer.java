@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
@@ -25,13 +25,13 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Queue;
 
-public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
+public class ManaEnergyRenderer extends EasyItemRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation TAKEN = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
     private static final HashMap<ApplyType, ResourceLocation> APPLY_TYPE_TEXTURES = new HashMap<>();
@@ -71,9 +71,9 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
     }
 
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
-        BufferBuilder buffer = Tessellator.getInstance().getBuilder();
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         matrixStack.translate(0.5, 0.5, 0.5);
         ItemManaData itemManaData = ExtraDataUtil.itemManaData(stack);
         SpellContext spellContext = itemManaData.spellContext();
@@ -85,7 +85,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
                 matrixStack.translate(vertex[0] * 0.6, vertex[1] * 0.6, vertex[2] * 0.6);
                 matrixStack.scale(0.25f, 0.25f, 0.25f);
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees(270));
-                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE)
+                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
                         , new RenderHelper.RenderContext(0.3f, Color.ORIGIN_COLOR, combinedLight));
                 matrixStack.popPose();
             }
@@ -113,7 +113,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.popPose();
     }
 
-    public void renderSingleEnergy(MatrixStack matrixStack, IRenderTypeBuffer bufferIn, BufferBuilder buffer, SpellContext spellContext, int combinedLight, ItemStack stack) {
+    public void renderSingleEnergy(PoseStack matrixStack, MultiBufferSource bufferIn, BufferBuilder buffer, SpellContext spellContext, int combinedLight, ItemStack stack) {
         //tick
         int tick = spellContext.tick;
         int orbStack = tick / 20;
@@ -191,7 +191,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.popPose();
     }
 
-    public void renderEnergy(MatrixStack matrixStack, int combinedLight, int energyType, int stack, float last) {
+    public void renderEnergy(PoseStack matrixStack, int combinedLight, int energyType, int stack, float last) {
         float scale = 0.1f;
         float alpha = 0.2f;
 
@@ -241,11 +241,11 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.popPose();
     }
 
-    public void renderOrb(MatrixStack matrixStack, int combinedLight, Color color, float scale, float alpha) {
+    public void renderOrb(PoseStack matrixStack, int combinedLight, Color color, float scale, float alpha) {
         matrixStack.pushPose();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.scale(scale, scale, scale);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(alpha, color, combinedLight));
         matrixStack.popPose();
         scale = 1.5f;
@@ -254,7 +254,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.mulPose(Vector3f.ZP.rotation(45));
     }
 
-    public void renderEntity(EntityType<?> entityType, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
+    public void renderEntity(EntityType<?> entityType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
         Entity entity = entityType.create(Minecraft.getInstance().level);
         if(entity == null) return;
 
@@ -265,7 +265,7 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
             if(icon == null)
                 icon = IManaEntity.orbTex;
 
-            BufferContext bufferContext = BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedOrbGlow(icon));
+            BufferContext bufferContext = BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbGlow(icon));
             Color color = manaEntity.spellContext().element.color();
             Matrix4f matrix4f = matrixStack.last().pose();
             float alpha = 0.5f;
@@ -298,18 +298,18 @@ public class ManaEnergyRenderer extends ItemStackTileEntityRenderer {
         matrixStack.popPose();
     }
 
-    public void renderMaterial(IMaterialLimit material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
+    public void renderMaterial(IMaterialLimit material, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
         renderMaterial(material.getMaterial(), matrixStack, bufferIn, combinedLight);
     }
 
-    public void renderMaterial(Material material, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight) {
+    public void renderMaterial(Material material, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
         matrixStack.pushPose();
         ItemStack stack = new ItemStack(material.getItem());
         float f3 = ((float) MagickCore.proxy.getRunTick() + Minecraft.getInstance().getFrameTime()) / 100.0F;
         matrixStack.translate(0, -0.1, 0);
         matrixStack.mulPose(Vector3f.YP.rotation(f3));
         IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
-        Minecraft.getInstance().getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+        Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.GROUND, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
         matrixStack.popPose();
     }
 }

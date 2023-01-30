@@ -1,5 +1,5 @@
 package com.rogoshum.magickcore.client.integration.jei;
-
+/*
 import com.google.common.collect.ImmutableList;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -59,3 +59,4 @@ public class MagickPlugin implements IModPlugin {
         registration.useNbtForSubtypes(ModItems.ELEMENT_STRING.get());
     }
 }
+*/

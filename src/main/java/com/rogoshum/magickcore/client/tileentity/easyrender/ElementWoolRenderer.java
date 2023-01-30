@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -27,7 +27,7 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
     }
 
     public void render(RenderParams renderParams) {
-        MatrixStack matrixStackIn = renderParams.matrixStack;
+        PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
         RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight));
         RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight));
@@ -42,7 +42,7 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
     }
 
     public void renderLight(RenderParams params) {
-        MatrixStack matrixStackIn = params.matrixStack;
+        PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
     }
 

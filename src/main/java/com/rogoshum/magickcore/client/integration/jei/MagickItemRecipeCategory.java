@@ -1,5 +1,5 @@
 package com.rogoshum.magickcore.client.integration.jei;
-
+/*
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
@@ -72,3 +72,4 @@ public class MagickItemRecipeCategory implements IRecipeCategory<MagickWorkbench
         iRecipeLayout.getItemStacks().set(1, stacks);
     }
 }
+*/

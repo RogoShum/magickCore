@@ -1,5 +1,5 @@
 package com.rogoshum.magickcore.client.integration.jei;
-
+/*
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.rogoshum.magickcore.api.INBTRecipe;
@@ -106,3 +106,5 @@ public class ElementItemRecipeWrapper implements ICustomCraftingCategoryExtensio
         return name;
     }
 }
+
+ */

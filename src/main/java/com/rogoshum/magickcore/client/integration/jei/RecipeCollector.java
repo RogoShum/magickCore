@@ -1,5 +1,5 @@
 package com.rogoshum.magickcore.client.integration.jei;
-
+/*
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.rogoshum.magickcore.MagickCore;
@@ -129,7 +129,7 @@ public class RecipeCollector {
             RECIPES.put(magickCraftingTransformRecipe.getId(), ImmutableList.of(ImmutableList.of(magickCraftingTransformRecipe.getOutput()), lists.get(0)));
         });
 
-         */
+
 
         addElementCoreRecipe(LibElements.ARC, new ItemStack(ModItems.ARC.get()));
         addElementCoreRecipe(LibElements.SOLAR, new ItemStack(ModItems.SOLAR.get()));
@@ -179,3 +179,4 @@ public class RecipeCollector {
         return items.build();
     }
 }
+*/

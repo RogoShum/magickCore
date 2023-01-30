@@ -59,8 +59,8 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         RenderSystem.disableTexture();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        Tesselator Tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = Tesselator.getBuilder();
         matrixStackIn.translate(0, 0.5f, 0);
         this.draw(bufferbuilder, matrixStackIn.last().pose(), 1.05f, 0.02f, 0, 0, 0);
         this.draw(bufferbuilder, matrixStackIn.last().pose(), percentage, 0, color.r(), color.g(), color.b());

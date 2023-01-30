@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.client.integration.jei;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
+/*
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -14,8 +14,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.Item;
@@ -84,7 +84,7 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
     }
 
     @Override
-    public void draw(SpiritCraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(SpiritCraftingRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         NonNullList<Ingredient>[] ingredientList = recipe.getIngredientList();
         RenderSystem.pushMatrix();
         RenderSystem.multMatrix(matrixStack.last().pose());
@@ -113,8 +113,8 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.translatef((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
         RenderSystem.scalef(scale1, scale1, scale1);
-        IRenderTypeBuffer.Impl renderTypeBuffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
-        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemCameraTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new MatrixStack(), renderTypeBuffer);
+        MultiBufferSource.Impl renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new PoseStack(), renderTypeBuffer);
         renderTypeBuffer.endBatch();
         RenderSystem.popMatrix();
     }
@@ -125,3 +125,4 @@ public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraft
         iRecipeLayout.getItemStacks().set(0, inbtRecipe.getResultItem());
     }
 }
+*/

@@ -29,6 +29,7 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
@@ -279,17 +280,17 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void initBlockRenderer() {
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), MagickCraftingRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
-		ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
+		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
 		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}
 

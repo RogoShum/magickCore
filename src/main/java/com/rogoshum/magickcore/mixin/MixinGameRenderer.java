@@ -8,10 +8,10 @@ public class MixinGameRenderer{
     //, target = "net/minecraft/client/Minecraft.getMainWindow ()Lnet/minecraft/client/MainWindow;", ordinal = 6
     /*
     @Inject(method = "renderLevel", at = @At(value = "TAIL"))
-    public void onFabulousRender(float p_228378_1_, long p_228378_2_, MatrixStack p_228378_4_, CallbackInfo ci) {
+    public void onFabulousRender(float p_228378_1_, long p_228378_2_, PoseStack p_228378_4_, CallbackInfo ci) {
         /*
         if (Minecraft.isFabulousGraphicsEnabled()) return;
-        MatrixStack matrixStack = new MatrixStack();
+        PoseStack matrixStack = new PoseStack();
         ActiveRenderInfo activerenderinfo = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
         net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup cameraSetup = net.minecraftforge.client.ForgeHooksClient.onCameraSetup((GameRenderer)(Object) this, activerenderinfo, partialTicks);
         activerenderinfo.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
@@ -19,7 +19,7 @@ public class MixinGameRenderer{
 
         matrixStack.rotate(Vector3f.XP.rotationDegrees(activerenderinfo.getPitch()));
         matrixStack.rotate(Vector3f.YP.rotationDegrees(activerenderinfo.getYaw() + 180.0F));
-        MatrixStack matrix = new MatrixStack();
+        PoseStack matrix = new PoseStack();
         matrix.getLast().getMatrix().mul(Minecraft.getInstance().gameRenderer.getProjectionMatrix(activerenderinfo, partialTicks, true));
         Matrix4f matrix4f = matrix.getLast().getMatrix();
         Minecraft.getInstance().gameRenderer.resetProjectionMatrix(matrix4f);

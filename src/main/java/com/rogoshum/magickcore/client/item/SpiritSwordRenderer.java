@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -9,25 +10,24 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
 
-public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
+public class SpiritSwordRenderer extends EasyItemRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation QUARTZ = new ResourceLocation( "minecraft:textures/block/quartz_block_top.png");
     private static final RenderType RENDER_TYPE_0 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/oak_log.png"));
     private static final RenderType RENDER_TYPE_1 = RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
 
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType p_239207_2_, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType p_239207_2_, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.65f, 0.65f, 0.65f);
@@ -35,7 +35,7 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
         matrixStack.pushPose();
         matrixStack.translate(0, 0.7, 0);
         matrixStack.scale(0.08f, 0.6f, 0.08f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -44,7 +44,7 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
         matrixStack.scale(0.25f, 0.25f, 0.25f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedEntity(QUARTZ))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntity(QUARTZ))
                 , new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -53,7 +53,7 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
         matrixStack.scale(0.3f, 0.15f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -62,7 +62,7 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
         matrixStack.scale(0.3f, 0.15f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -71,7 +71,7 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
         matrixStack.scale(0.15f, 1.0f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tessellator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -82,8 +82,8 @@ public class SpiritSwordRenderer extends ItemStackTileEntityRenderer {
             matrixStack.scale(0.35f, 0.35f, 0.35f);
             ItemStack core = new ItemStack(ModItems.MAGICK_CORE.get());
             ExtraDataUtil.itemManaData(core).spellContext().copy(data.spellContext());
-            IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
-            Minecraft.getInstance().getItemRenderer().render(core, ItemCameraTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+            BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(core, null, null);
+            Minecraft.getInstance().getItemRenderer().render(core, ItemTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
             matrixStack.popPose();
         }
         matrixStack.popPose();

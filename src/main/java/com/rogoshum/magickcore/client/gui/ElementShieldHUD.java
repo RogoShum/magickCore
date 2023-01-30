@@ -35,14 +35,14 @@ public class ElementShieldHUD extends GuiComponent {
         RenderSystem.color4f(color.r(), color.g(), color.b(), alpha);
         RenderSystem.disableAlphaTest();
         minecraft.getTextureManager().bind(TEXTURE);
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        Tesselator Tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = Tesselator.getBuilder();
         bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.vertex(0.0D, (double)this.height, -90.0D).uv(0.0F, 1.0F).endVertex();
         bufferbuilder.vertex((double)this.width, (double)this.height, -90.0D).uv(1.0F, 1.0F).endVertex();
         bufferbuilder.vertex((double)this.width, 0.0D, -90.0D).uv(1.0F, 0.0F).endVertex();
         bufferbuilder.vertex(0.0D, 0.0D, -90.0D).uv(0.0F, 0.0F).endVertex();
-        tessellator.end();
+        Tesselator.end();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.enableAlphaTest();

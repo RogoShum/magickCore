@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -8,20 +10,17 @@ import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
 
-public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
+public class ContextPointerRenderer extends EasyItemRenderer {
     protected static final ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind.png");
 
     @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLight, int combinedOverlay) {
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
         Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().level);
@@ -39,7 +38,7 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
         float height = 0.2f + pointer.getBbHeight();
         float radius = 0.25f;
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
 
@@ -48,13 +47,13 @@ public class ContextPointerRenderer extends ItemStackTileEntityRenderer {
         matrixStackIn.translate(0, 0.2, 0);
         radius = 0.5f;
         context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
         matrixStackIn.translate(0, -0.2, 0);
         radius = 0.4f;
         context = new RenderHelper.CylinderContext(radius, radius, 1, height, 16, 0, alpha, 0.3f, pointer.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
+        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedCylinderGlint(
                         wind, pointer.getBbHeight(), 0f))
                 , RenderHelper.drawCylinder(context, null, 0));
         matrixStackIn.popPose();
