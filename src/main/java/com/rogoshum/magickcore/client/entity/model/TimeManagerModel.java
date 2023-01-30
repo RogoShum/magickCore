@@ -1,20 +1,20 @@
 package com.rogoshum.magickcore.client.entity.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.common.entity.living.TimeManagerEntity;
 
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
 
 public class TimeManagerModel extends EntityModel<TimeManagerEntity> {
-    private final ModelRenderer body;
+    private final ModelPart body;
 
     public TimeManagerModel() {
         texWidth = 128;
         texHeight = 128;
  
-        body = new ModelRenderer(this);
+        body = new ModelPart(this);
         this.body.addBox(-4.0F, 16.0F, -4.0F, 8.0F, 8.0F, 8.0F);
     }
 
@@ -26,7 +26,7 @@ public class TimeManagerModel extends EntityModel<TimeManagerEntity> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
     }
 

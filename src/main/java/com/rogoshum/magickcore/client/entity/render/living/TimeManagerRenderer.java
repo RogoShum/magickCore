@@ -1,19 +1,19 @@
 package com.rogoshum.magickcore.client.entity.render.living;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.living.TimeManagerEntity;
 
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.*;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
 
 public class TimeManagerRenderer extends EntityRenderer<TimeManagerEntity> {
     private EntityModel<TimeManagerEntity> flyingSwordModel;
 
-    public TimeManagerRenderer(EntityRendererManager renderManager) {
+    public TimeManagerRenderer(EntityRenderDispatcher renderManager) {
         super(renderManager);
     }
 
@@ -23,7 +23,7 @@ public class TimeManagerRenderer extends EntityRenderer<TimeManagerEntity> {
     }
 
     @Override
-    public void render(TimeManagerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(TimeManagerEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
         matrixStackIn.pushPose();
         Matrix4f positionMatrix = matrixStackIn.last().pose();

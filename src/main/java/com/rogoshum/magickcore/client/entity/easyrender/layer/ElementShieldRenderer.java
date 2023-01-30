@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.client.entity.easyrender.layer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;

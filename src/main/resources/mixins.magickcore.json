@@ -33,7 +33,7 @@
     "MixinLivingRender",
     "fabric.MixinGui",
     "fabric.reflection.MixinRenderType",
-    "fabric.reflection.MixinRenderType$MixinCompositeState",
-    "fabric.reflection.MixinRenderType$MixinTextureStateShard"
+    "fabric.reflection.MixinCompositeState",
+    "fabric.reflection.MixinTextureStateShard"
   ]
 }

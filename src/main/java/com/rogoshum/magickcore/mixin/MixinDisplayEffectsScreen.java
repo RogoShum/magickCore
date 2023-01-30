@@ -131,7 +131,7 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
     }
 
     @ModifyVariable(method = "renderEffects",
-            at = @At(value = "INVOKE", target = "com/google/common/collect/Ordering.natural ()Lcom/google/common/collect/Ordering;"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen;renderBackgrounds(Lcom/mojang/blaze3d/vertex/PoseStack;IILjava/lang/Iterable;)V"),
             ordinal = 1
     )
     private int onRenderingEffects(int value) {
