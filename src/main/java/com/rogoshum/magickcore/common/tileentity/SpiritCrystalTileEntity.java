@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.common.init.ModTileEntities;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class SpiritCrystalTileEntity extends BlockEntity {

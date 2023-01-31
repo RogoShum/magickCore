@@ -9,6 +9,7 @@ import com.rogoshum.magickcore.api.event.RenderLevelEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.init.ModShaders;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;

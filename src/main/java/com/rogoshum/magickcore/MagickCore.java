@@ -1,15 +1,10 @@
 package com.rogoshum.magickcore;
 
 import com.rogoshum.magickcore.client.init.ModKeyBind;
-import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.common.event.EventBus;
-import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
-import com.rogoshum.magickcore.common.event.magickevent.RegisterEvent;
-import com.rogoshum.magickcore.common.event.magickevent.ElementFunctionEvent;
-import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
-import com.rogoshum.magickcore.common.event.magickevent.MagickLogicEvent;
+import com.rogoshum.magickcore.common.event.magickevent.*;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.network.Networking;
@@ -63,7 +58,8 @@ public class MagickCore implements ModInitializer {
     private void setup() {
         ModBrews.registryBrewing();
         PrivateUtil.registerSpawnPlacements(ModEntities.MAGE.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
-        RecipeCollector.init();
+        //RecipeCollector.init();
+        LivingAttributeEvent.registerEntityAttributes();
     }
 
     private void doClientStuff() {

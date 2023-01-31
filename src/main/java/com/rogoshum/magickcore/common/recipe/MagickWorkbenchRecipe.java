@@ -118,7 +118,7 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
     }
 
     public static class Serializer implements RecipeSerializer<MagickWorkbenchRecipe> {
-        private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "magick_workbench");
+        public static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "magick_workbench");
         public static final RecipeSerializer<?> INSTANCE = new Serializer();
         public MagickWorkbenchRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             String s = GsonHelper.getAsString(json, "group", "");

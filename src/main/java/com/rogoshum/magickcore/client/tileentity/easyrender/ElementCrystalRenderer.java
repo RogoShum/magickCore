@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.client.render.BufferContext;
@@ -10,12 +12,10 @@ import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.level.block.CropBlock;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -61,7 +61,7 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
     @Override
     public void update() {
         super.update();
-        int age = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(CropsBlock.AGE);
+        int age = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(CropBlock.AGE);
         ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + Integer.toString(age) + ".png");
         TYPE = RenderHelper.getTexedOrbGlow(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -17,6 +18,7 @@ import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
@@ -24,13 +26,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public class VoidAbility{
     public static boolean hitEntity(MagickContext context) {
@@ -64,7 +70,7 @@ public class VoidAbility{
 
     public static void storeTEInStack(ItemStack stack, BlockEntity te) {
         CompoundTag compoundnbt = te.save(new CompoundTag());
-        if (stack.getItem() instanceof SkullItem && compoundnbt.contains("SkullOwner")) {
+        if (stack.getItem() instanceof PlayerHeadItem && compoundnbt.contains("SkullOwner")) {
             CompoundTag compoundnbt2 = compoundnbt.getCompound("SkullOwner");
             stack.getOrCreateTag().put("SkullOwner", compoundnbt2);
         } else {

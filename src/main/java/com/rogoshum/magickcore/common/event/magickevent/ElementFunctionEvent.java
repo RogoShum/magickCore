@@ -23,12 +23,12 @@ public class ElementFunctionEvent {
         String elementFunction = event.getMagickContext().element.type() +"_"+event.getMagickContext().applyType.getLabel();
         if(event.getMagickContext().doBlock)
             elementFunction = "block_"+elementFunction;
-        /*
+
         if(ModConfig.ELEMENT_BAN.get().contains(elementFunction)) {
             event.setCanceled(true);
             return;
         }
-         */
+
         if(event.getMagickContext().victim instanceof ItemEntity && event.getMagickContext().applyType == ApplyType.ATTACK)
             event.setCanceled(true);
 

@@ -5,7 +5,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.level.Level;
 
 public class ManaItemEntity extends ItemEntity {
@@ -23,7 +22,6 @@ public class ManaItemEntity extends ItemEntity {
     public ManaItemEntity(Level worldIn, double x, double y, double z, ItemStack stack) {
         this(worldIn, x, y, z);
         this.setItem(stack);
-        this.lifespan = (stack.getItem() == null ? 6000 : stack.getEntityLifespan(worldIn));
     }
 
     @Override

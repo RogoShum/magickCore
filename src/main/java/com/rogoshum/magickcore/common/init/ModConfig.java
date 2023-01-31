@@ -1,24 +1,41 @@
 package com.rogoshum.magickcore.common.init;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ModConfig {
+    public static AtomicDouble ORIGIN_FORCE = new AtomicDouble(5);
+    public static AtomicDouble ORIGIN_RANGE = new AtomicDouble(3);
+    public static AtomicInteger ORIGIN_TICK = new AtomicInteger(120);
+
+    public static AtomicDouble ENDER_FORCE = new AtomicDouble(7);
+    public static AtomicDouble ENDER_RANGE = new AtomicDouble(5);
+    public static AtomicInteger ENDER_TICK = new AtomicInteger(140);
+
+    public static AtomicDouble NETHER_FORCE = new AtomicDouble(6);
+    public static AtomicDouble NETHER_RANGE = new AtomicDouble(7);
+    public static AtomicInteger NETHER_TICK = new AtomicInteger(300);
+
+    public static AtomicReference<List<? extends String>> ELEMENT_BAN = new AtomicReference<>(new ArrayList<>());
+    public static AtomicReference<List<? extends String>> FORM_BAN = new AtomicReference<>(new ArrayList<>());
+    /*
     public static ForgeConfigSpec COMMON_CONFIG;
-    public static ForgeConfigSpec.DoubleValue ORIGIN_FORCE;
-    public static ForgeConfigSpec.DoubleValue ORIGIN_RANGE;
-    public static ForgeConfigSpec.IntValue ORIGIN_TICK;
+    public static AtomicDouble ORIGIN_FORCE;
+    public static AtomicDouble ORIGIN_RANGE;
+    public static AtomicInteger ORIGIN_TICK;
 
-    public static ForgeConfigSpec.DoubleValue ENDER_FORCE;
-    public static ForgeConfigSpec.DoubleValue ENDER_RANGE;
-    public static ForgeConfigSpec.IntValue ENDER_TICK;
+    public static AtomicDouble ENDER_FORCE;
+    public static AtomicDouble ENDER_RANGE;
+    public static AtomicInteger ENDER_TICK;
 
-    public static ForgeConfigSpec.DoubleValue NETHER_FORCE;
-    public static ForgeConfigSpec.DoubleValue NETHER_RANGE;
-    public static ForgeConfigSpec.IntValue NETHER_TICK;
+    public static AtomicDouble NETHER_FORCE;
+    public static AtomicDouble NETHER_RANGE;
+    public static AtomicInteger NETHER_TICK;
 
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> ELEMENT_BAN;
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> FORM_BAN;
@@ -56,4 +73,7 @@ public class ModConfig {
 
         COMMON_CONFIG = COMMON_BUILDER.build();
     }
+     */
 }
+
+

@@ -2,13 +2,16 @@ package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-public class MaterialJarTileEntity extends BlockEntity {
+public class MaterialJarTileEntity extends BlockEntity implements BlockEntityClientSerializable {
     private ItemStack stack = ItemStack.EMPTY;
     private int count;
     public MaterialJarTileEntity() {
@@ -20,11 +23,6 @@ public class MaterialJarTileEntity extends BlockEntity {
         CompoundTag compoundNBT = super.getUpdateTag();
         storageTag(compoundNBT);
         return compoundNBT;
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundTag tag) {
-        extractTag(tag);
     }
 
     @Override
@@ -99,17 +97,6 @@ public class MaterialJarTileEntity extends BlockEntity {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
     }
 
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
-    }
-
     public void dropItem() {
         if (!level.isClientSide && getCount() > 0 && !getStack().isEmpty()) {
             ItemStack itemstack = new ItemStack(ModItems.MATERIAL_JAR.get());
@@ -127,5 +114,16 @@ public class MaterialJarTileEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        extractTag(tag);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        storageTag(tag);
+        return tag;
     }
 }

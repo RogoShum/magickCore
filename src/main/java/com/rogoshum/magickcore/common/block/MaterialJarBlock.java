@@ -2,37 +2,29 @@ package com.rogoshum.magickcore.common.block;
 
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.common.tileentity.MaterialJarTileEntity;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.level.Level;
 
-import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.block.AbstractBlock.Properties;
-
-public class MaterialJarBlock extends BaseBlock{
+public class MaterialJarBlock extends BaseBlock implements EntityBlock {
     protected static final VoxelShape SHAPE = Block.box(3.0D, 0.0D, 3.0D, 13.0D, 16.0D, 13.0D);
     public MaterialJarBlock(Properties properties) {
         super(properties);
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity newBlockEntity(BlockGetter world) {
         return new MaterialJarTileEntity();
     }
 
@@ -59,12 +51,12 @@ public class MaterialJarBlock extends BaseBlock{
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
         return SHAPE;
     }
 
     public void playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        TileEntity tileentity = worldIn.getBlockEntity(pos);
+        BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (!player.isCreative() && tileentity instanceof MaterialJarTileEntity) {
             MaterialJarTileEntity tile = (MaterialJarTileEntity)tileentity;
             tile.dropItem();

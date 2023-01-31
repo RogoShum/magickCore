@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -24,24 +26,18 @@ import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.alchemy.PotionUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -308,7 +304,7 @@ public class ManaEnergyRenderer extends EasyItemRenderer {
         float f3 = ((float) MagickCore.proxy.getRunTick() + Minecraft.getInstance().getFrameTime()) / 100.0F;
         matrixStack.translate(0, -0.1, 0);
         matrixStack.mulPose(Vector3f.YP.rotation(f3));
-        IBakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
+        BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null);
         Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.GROUND, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
         matrixStack.popPose();
     }

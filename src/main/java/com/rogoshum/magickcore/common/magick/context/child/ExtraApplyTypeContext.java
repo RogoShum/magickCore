@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class ExtraApplyTypeContext extends ChildContext{
     public ApplyType applyType = ApplyType.NONE;
@@ -37,6 +37,6 @@ public class ExtraApplyTypeContext extends ChildContext{
 
     @Override
     public String getString(int tab) {
-        return new TranslationTextComponent(MagickCore.MOD_ID + ".context." + applyType).getString();
+        return new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString();
     }
 }

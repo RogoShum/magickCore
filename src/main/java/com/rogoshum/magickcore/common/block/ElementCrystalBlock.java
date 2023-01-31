@@ -4,26 +4,18 @@ import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.block.CropsBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-import net.minecraft.block.AbstractBlock.Properties;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.ChestBlock;
@@ -39,11 +31,6 @@ import org.jetbrains.annotations.Nullable;
 public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     public ElementCrystalBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
     }
 
     @Override
@@ -63,7 +50,7 @@ public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+    public int getLightBlock(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
         return 10;
     }
 

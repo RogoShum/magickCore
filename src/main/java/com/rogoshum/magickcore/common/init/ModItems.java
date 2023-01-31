@@ -11,38 +11,31 @@ import com.rogoshum.magickcore.common.lib.*;
 import com.rogoshum.magickcore.common.registry.DeferredRegister;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
 import net.minecraft.core.Registry;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.item.Food;
-import net.minecraft.item.Item;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registry.ITEM, MagickCore.MOD_ID);
     public static final RegistryObject<Item> MAGE_EGG = ITEMS.register("mage_spawn_egg", () -> new SpawnEggItem(ModEntities.MAGE_ENTITY_TYPE, 0xff0000, 0xffe700, new Item.Properties().tab(ModGroups.ITEM_GROUP)));
     //block items
     public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new BlockItem(ModBlocks.MATERIAL_JAR.get()
-            , BaseItem.properties().setISTER(() -> MaterialJarItemRenderer::new)));
+            , BaseItem.properties()));
     public static final RegistryObject<Item> SPIRIT_ORE = ITEMS.register(LibItem.SPIRIT_ORE, () -> new BlockItem(ModBlocks.SPIRIT_ORE.get()
             , BaseItem.properties()));
     public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new BlockItem(ModBlocks.ITEM_EXTRACTOR.get()
-            , BaseItem.properties().setISTER(() -> ItemExtractorRenderer::new)));
+            , BaseItem.properties()));
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_CRYSTAL = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
-    public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties().setISTER(() -> SpiritWoodStickRenderer::new), 0.4f, 0.4f));
+    public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties(), 0.4f, 0.4f));
     public static final RegistryObject<Item> MAGICK_CONTAINER = ITEMS.register("magick_container", ManaCapacityItem::new);
     public static final RegistryObject<Item> WAND = ITEMS.register(LibItem.WAND, WandItem::new);
 
-    public static final RegistryObject<Item> STAFF = ITEMS.register(LibItem.STAFF, () -> new SpiritWoodStaffItem(BaseItem.properties().stacksTo(1).setISTER(() -> StaffRenderer::new)));
-    public static final RegistryObject<Item> SPIRIT_CRYSTAL_STAFF = ITEMS.register(LibItem.SPIRIT_CRYSTAL_STAFF, () -> new SpiritCrystalStaffItem(BaseItem.properties().stacksTo(1).setISTER(() -> StaffRenderer::new)));
-    public static final RegistryObject<ManaItem> SPIRIT_BOW = ITEMS.register(LibItem.SPIRIT_BOW, () -> new SpiritBowItem(BaseItem.properties().stacksTo(1).setISTER(() -> SpiritBowRenderer::new)));
-    public static final RegistryObject<ManaItem> SPIRIT_SWORD = ITEMS.register(LibItem.SPIRIT_SWORD, () -> new SpiritSwordItem(BaseItem.properties().stacksTo(1).setISTER(() -> SpiritSwordRenderer::new)));
+    public static final RegistryObject<Item> STAFF = ITEMS.register(LibItem.STAFF, () -> new SpiritWoodStaffItem(BaseItem.properties().stacksTo(1)));
+    public static final RegistryObject<Item> SPIRIT_CRYSTAL_STAFF = ITEMS.register(LibItem.SPIRIT_CRYSTAL_STAFF, () -> new SpiritCrystalStaffItem(BaseItem.properties().stacksTo(1)));
+    public static final RegistryObject<ManaItem> SPIRIT_BOW = ITEMS.register(LibItem.SPIRIT_BOW, () -> new SpiritBowItem(BaseItem.properties().stacksTo(1)));
+    public static final RegistryObject<ManaItem> SPIRIT_SWORD = ITEMS.register(LibItem.SPIRIT_SWORD, () -> new SpiritSwordItem(BaseItem.properties().stacksTo(1)));
     public static final RegistryObject<ManaItem> STAR_STAFF = ITEMS.register(LibItem.STAR_STAFF, StarStaffItem::new);
     public static final RegistryObject<ManaItem> ORB_STAFF = ITEMS.register(LibItem.ORB_STAFF, OrbStaffItem::new);
     public static final RegistryObject<ManaItem> LASER_STAFF = ITEMS.register(LibItem.LASER_STAFF, LaserStaffItem::new);
@@ -85,7 +78,7 @@ public class ModItems {
     public static final RegistryObject<Item> ELEMENT_CRYSTAL_SEEDS = ITEMS.register("element_crystal_seeds", () -> new ElementSeedsItem(ModBlocks.ELEMENT_CRYSTAL.get(), BaseItem.properties()));
     public static final RegistryObject<Item> ORB_BOTTLE = ITEMS.register("orb_bottle", OrbBottleItem::new);
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(
-            new Food.Builder().meat().saturationMod(3f).fast().alwaysEat().effect(() -> new MobEffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
+            new FoodProperties.Builder().meat().saturationMod(3f).fast().alwaysEat().effect(new MobEffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> ELEMENT_CRYSTAL = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties()));
     public static final RegistryObject<Item> ELEMENT_WOOL = ITEMS.register("element_wool", ElementWoolItem::new);
     public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", ElementStringItem::new);

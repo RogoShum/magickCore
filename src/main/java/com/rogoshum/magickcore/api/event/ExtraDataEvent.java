@@ -25,8 +25,8 @@ public abstract class ExtraDataEvent<D> extends Event {
         }
     }
 
-    public static class ItemStack extends ExtraDataEvent<Function<ItemStack, ItemExtraData>> {
-        public ItemStack(HashMap<String, Function<ItemStack, ItemExtraData>> dataMap) {
+    public static class ItemStack extends ExtraDataEvent<Function<net.minecraft.world.item.ItemStack, ItemExtraData>> {
+        public ItemStack(HashMap<String, Function<net.minecraft.world.item.ItemStack, ItemExtraData>> dataMap) {
             super(dataMap);
         }
     }

@@ -1,5 +1,5 @@
 package com.rogoshum.magickcore.common.item;
-
+/*
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.integration.curios.CuriosHelper;
@@ -46,3 +46,5 @@ public class SpiritCrystalRingItem extends ManaItem implements ICurioItem, IMana
         return true;
     }
 }
+
+ */

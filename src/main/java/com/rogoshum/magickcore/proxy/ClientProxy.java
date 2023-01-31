@@ -6,7 +6,7 @@ import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.render.*;
 import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
+import com.rogoshum.magickcore.client.item.*;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderParams;
@@ -17,6 +17,8 @@ import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.tileentity.*;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
+import com.rogoshum.magickcore.client.tileentity.ElementWoolRenderer;
+import com.rogoshum.magickcore.client.tileentity.ItemExtractorRenderer;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibBuff;
@@ -28,6 +30,7 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
@@ -42,6 +45,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.phys.Vec3;
 
@@ -55,11 +59,20 @@ import java.util.function.Supplier;
 public class ClientProxy implements IProxy {
 	private final HashMap<String, ElementRenderer> renderers = new HashMap<>();
 	public final ShaderEvent event = new ShaderEvent();
+	private static final HashMap<Item, EasyItemRenderer> customItemRenderer = new HashMap<>();
 	private TaskThread magickThread;
 	private RenderThread renderThread;
 
 	public ElementRenderer getElementRender(String name) {
 		return this.renderers.get(name) != null ? this.renderers.get(name) : this.renderers.get(LibElements.ORIGIN);
+	}
+
+	public static void registerItemRenderer(Item item, EasyItemRenderer renderer) {
+		customItemRenderer.put(item, renderer);
+	}
+
+	public static EasyItemRenderer getItemRenderer(Item item) {
+		return customItemRenderer.get(item);
 	}
 
 	public void checkRenderer() {
@@ -176,7 +189,13 @@ public class ClientProxy implements IProxy {
 		this.registerItemColors(ColorProviderRegistry.ITEM);
 		putElementRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
-
+		registerItemRenderer(ModItems.MATERIAL_JAR.get(), new MaterialJarItemRenderer());
+		registerItemRenderer(ModItems.ITEM_EXTRACTOR.get(), new com.rogoshum.magickcore.client.item.ItemExtractorRenderer());
+		registerItemRenderer(ModItems.SPIRIT_WOOD_STICK.get(), new SpiritWoodStickRenderer());
+		registerItemRenderer(ModItems.STAFF.get(), new StaffRenderer());
+		registerItemRenderer(ModItems.SPIRIT_CRYSTAL_STAFF.get(), new StaffRenderer());
+		registerItemRenderer(ModItems.SPIRIT_BOW.get(), new SpiritBowRenderer());
+		registerItemRenderer(ModItems.SPIRIT_SWORD.get(), new SpiritSwordRenderer());
 		ObjectRegistry<EntityRenderers> entityRenderers = new ObjectRegistry<>(LibRegistry.ENTITY_RENDERER);
 		ObjectRegistry<RenderFunctions> renderFunctions = new ObjectRegistry<>(LibRegistry.RENDER_FUNCTION);
 		ModElements.elements.forEach(elementType -> {
@@ -281,17 +300,17 @@ public class ClientProxy implements IProxy {
 
 	public void initBlockRenderer() {
 		BlockEntityRendererRegistry.register(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), MagickCraftingRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
 		BlockEntityRendererRegistry.register(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRendererRegistry.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
 		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRendererRegistry.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
 		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
-		RenderTypeLookup.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}
 
 	private void putElementRenderer() {

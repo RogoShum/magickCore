@@ -1,17 +1,17 @@
 package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
 
 public class SpiritWoodStickRenderer extends EasyItemRenderer {
     private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(RenderHelper.blankTex);

@@ -6,11 +6,9 @@ import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.condition.Condition;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
-import net.minecraft.block.Block;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,13 +93,13 @@ public class ConditionContext extends ChildContext{
             toolTip.prefix();
             if(condition.isNegate())
                 toolTip.builder.append(ToolTipHelper.DEEP_GREY)
-                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition.negate").getString())
+                        .append(new TranslatableComponent(MagickCore.MOD_ID + ".condition.negate").getString())
                         .append(" ")
                         .append(ToolTipHelper.GREY)
-                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
+                        .append(new TranslatableComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
             else
                 toolTip.builder.append(ToolTipHelper.GREY)
-                        .append(new TranslationTextComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
+                        .append(new TranslatableComponent(MagickCore.MOD_ID + ".condition." + condition.getName()).getString());
             String post = condition.toString();
             if(!post.isEmpty()) {
                 String[] postSplit = post.split("\n");

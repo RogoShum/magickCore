@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.integration.curios;
 
+/*
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.item.BaseItem;
@@ -76,3 +77,5 @@ public class CuriosLoader extends AdditionLoader {
             press = false;
     }
 }
+
+ */

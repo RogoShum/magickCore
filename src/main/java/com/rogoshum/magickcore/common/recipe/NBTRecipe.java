@@ -287,7 +287,7 @@ public class NBTRecipe extends CustomRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<NBTRecipe> {
-        private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "nbt");
+        public static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "nbt");
         public static final RecipeSerializer<?> INSTANCE = new Serializer();
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             String s = GsonHelper.getAsString(json, "group", "");

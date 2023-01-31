@@ -15,7 +15,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
     }
 
 
-    public void render(MagickCraftingTileEntity tileEntityIn, PoseStack matrixStackIn, MultiBufferSource.Impl bufferIn, float partialTicks) {
+    public void render(MagickCraftingTileEntity tileEntityIn, PoseStack matrixStackIn, MultiBufferSource bufferIn, float partialTicks) {
         /*
         matrixStackIn.push();
         float length = 0.7f;

@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.integration.curios;
 
+/*
 import com.rogoshum.magickcore.common.item.SpiritCrystalRingItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -47,3 +48,5 @@ public class CuriosHelper {
         return spellContext.isEmpty() ? null : spellContext.get(0);
     }
 }
+
+ */

@@ -2,23 +2,20 @@ package com.rogoshum.magickcore.common.block;
 
 import com.rogoshum.magickcore.api.block.ILightingBlock;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
-import net.minecraft.block.AirBlock;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.level.ServerLevel;
 
+import net.minecraft.world.level.block.state.StateDefinition;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.block.AbstractBlock.Properties;
-
-public class FakeAirBlock extends AirBlock implements ILightingBlock {
+public class FakeAirBlock extends AirBlock implements ILightingBlock, EntityBlock {
     private final BlockState defaultState;
 
     public FakeAirBlock(BlockState state, BlockBehaviour.Properties properties) {
@@ -31,20 +28,15 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
         return defaultState;
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public BlockEntity newBlockEntity(BlockGetter world) {
         return new GlowAirTileEntity();
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return getLight(state);
+    public int getLightBlock(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
+        return getLight(blockState);
     }
 
     protected int getLight(BlockState state) {
@@ -61,7 +53,7 @@ public class FakeAirBlock extends AirBlock implements ILightingBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(LIGHT_LEVEL);
         builder.add(STATE);

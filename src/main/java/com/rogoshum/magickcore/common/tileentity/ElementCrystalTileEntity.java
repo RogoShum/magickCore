@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.block.ILoadBlockEntity;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -11,7 +12,10 @@ import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.fabricmc.loom.util.Constants;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
@@ -21,12 +25,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ElementCrystalTileEntity extends BlockEntity implements TickableBlockEntity, ILightSourceEntity {
+public class ElementCrystalTileEntity extends BlockEntity implements TickableBlockEntity, ILightSourceEntity, BlockEntityClientSerializable, ILoadBlockEntity {
     public String eType = LibElements.ORIGIN;
     public int age;
     public ElementCrystalTileEntity() {
@@ -102,30 +107,7 @@ public class ElementCrystalTileEntity extends BlockEntity implements TickableBlo
         level.addFreshEntity(orb);
     }
 
-    private void updateInfo() { level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundNBT = super.getUpdateTag();
-        compoundNBT.putString("TYPE", this.eType);
-        return compoundNBT;
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundTag tag) {
-        this.eType = tag.getString("TYPE");
-    }
+    private void updateInfo() { level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2); }
 
     @Override
     public void load(BlockState state, CompoundTag compound) {
@@ -173,7 +155,7 @@ public class ElementCrystalTileEntity extends BlockEntity implements TickableBlo
 
     @Override
     public AABB boundingBox() {
-        return getRenderBoundingBox();
+        return new AABB(this.getBlockPos());
     }
 
     @Override
@@ -193,7 +175,17 @@ public class ElementCrystalTileEntity extends BlockEntity implements TickableBlo
 
     @Override
     public void onLoad() {
-        super.onLoad();
         //MagickCore.proxy.addRenderer(new ElementCrystalRenderer(this));
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        this.eType = tag.getString("TYPE");
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        tag.putString("TYPE", this.eType);
+        return tag;
     }
 }

@@ -153,7 +153,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
     }
 
     public static class Serializer implements RecipeSerializer<SpiritCraftingRecipe> {
-        private static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "spirit_crafting");
+        public static final ResourceLocation NAME = new ResourceLocation(MagickCore.MOD_ID, "spirit_crafting");
         public static final RecipeSerializer<?> INSTANCE = new SpiritCraftingRecipe.Serializer();
         public SpiritCraftingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             String s = GsonHelper.getAsString(json, "group", "");

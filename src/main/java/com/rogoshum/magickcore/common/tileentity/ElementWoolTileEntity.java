@@ -1,12 +1,14 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.block.ILoadBlockEntity;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -23,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEntity {
+public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEntity, BlockEntityClientSerializable, ILoadBlockEntity {
     public String eType = LibElements.ORIGIN;
     public ElementWoolTileEntity() {
         super(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get());
@@ -60,29 +62,6 @@ public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEn
         return Util.make(new ArrayList<>(), (list) -> list.add(stack));
     }
 
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compoundNBT = super.getUpdateTag();
-        compoundNBT.putString("TYPE", this.eType);
-        return compoundNBT;
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundTag tag) {
-        this.eType = tag.getString("TYPE");
-    }
-
     @Override
     public void load(BlockState state, CompoundTag compound) {
         this.eType = compound.getString("TYPE");
@@ -112,7 +91,7 @@ public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEn
 
     @Override
     public AABB boundingBox() {
-        return getRenderBoundingBox();
+        return new AABB(this.getBlockPos());
     }
 
     @Override
@@ -132,8 +111,18 @@ public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEn
 
     @Override
     public void onLoad() {
-        super.onLoad();
         //MagickCore.proxy.addRenderer(new ElementWoolRenderer(this));
         EntityLightSourceManager.addLightSource(this);
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        this.eType = tag.getString("TYPE");
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        tag.putString("TYPE", this.eType);
+        return tag;
     }
 }

@@ -29,6 +29,7 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -92,9 +93,9 @@ public class MagickReleaseHelper {
 
     public static void failed(MagickContext context, Entity entity) {
         for(int i = 0; i < 40; ++i) {
-            context.world.addParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + entity.getEntity().getX()
-                    , MagickCore.getNegativeToOne() + entity.getEntity().getY() + entity.getEntity().getBbHeight() * 0.5
-                    , MagickCore.getNegativeToOne() + entity.getEntity().getZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
+            context.world.addParticle(ParticleTypes.ASH, MagickCore.getNegativeToOne() + entity.getX()
+                    , MagickCore.getNegativeToOne() + entity.getY() + entity.getBbHeight() * 0.5
+                    , MagickCore.getNegativeToOne() + entity.getZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
         }
     }
 
@@ -187,12 +188,12 @@ public class MagickReleaseHelper {
         if(spawnContext.entityType == null)
             return false;
 
-        if(ModConfig.FORM_BAN.get().contains(spawnContext.entityType.getRegistryName().toString())) {
+        if(ModConfig.FORM_BAN.get().contains(spawnContext.entityType.getDescriptionId())) {
             return false;
         }
 
-        if(context.caster instanceof ServerPlayer && spawnContext.entityType.getRegistryName() != null) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) context.caster, "entity_type_" + spawnContext.entityType.getRegistryName().getPath());
+        if(context.caster instanceof ServerPlayer) {
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) context.caster, "entity_type_" + spawnContext.entityType.getDescriptionId());
         }
         Entity pro = spawnContext.entityType.create(context.world);
         if(pro == null)
@@ -358,7 +359,7 @@ public class MagickReleaseHelper {
         Entity foundEntity = null;
 
         double distance = finalD;
-        RayTraceResult pos = traceBlock ? raycast(e, vec, diraction, finalD) : null;
+        HitResult pos = traceBlock ? raycast(e, vec, diraction, finalD) : null;
         Vec3 positionVector = vec;
 
         if (pos != null) {
@@ -369,7 +370,7 @@ public class MagickReleaseHelper {
         Vec3 reachVector = positionVector.add(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD);
 
         Entity lookedEntity = null;
-        List<Entity> entitiesInBoundingBox = e.getCommandSenderLevel().getEntities(e, e.getBoundingBox().inflate(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).inflate(1F, 1F, 1F));
+        List<Entity> entitiesInBoundingBox = e.level.getEntities(e, e.getBoundingBox().inflate(lookVector.x * (double) finalD, lookVector.y * (double) finalD, lookVector.z * (double) finalD).inflate(1F, 1F, 1F));
         double minDistance = distance;
 
         for (Entity entity : entitiesInBoundingBox) {

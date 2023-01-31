@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.integration.curios;
 
+/*
 import com.rogoshum.magickcore.MagickCore;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
@@ -21,3 +22,6 @@ public class CuriosKeyBind {
             GLFW.GLFW_KEY_K,
             "key.category." + MagickCore.MOD_ID);
 }
+
+
+ */

@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
+import com.rogoshum.magickcore.common.recipe.NBTRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
@@ -108,7 +110,7 @@ public class GenerationUtil {
                 json.append(line);
             }
 
-            return JSONUtils.parse(json.toString());
+            return GsonHelper.parse(json.toString());
         } catch (NoSuchFileException ignored) {
             System.out.println("File not found.");
         } catch (Exception ex) {

@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import com.rogoshum.magickcore.api.event.living.LivingDeathEvent;
+import com.rogoshum.magickcore.api.event.living.LivingEvent;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.*;
@@ -16,11 +18,14 @@ import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -112,7 +117,7 @@ public class RegisterEvent {
     }
 
     @SubscribeEvent
-    public void onDrops(LivingDropsEvent event) {
+    public void onDrops(LivingDeathEvent event) {
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
             if(!event.getEntityLiving().level.isClientSide) {
                 /*
@@ -146,8 +151,7 @@ public class RegisterEvent {
                 event.getEntityLiving().level.addFreshEntity(orb);
             }
         });
-
-
+        /*
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
             if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().level.isClientSide) {
                 Collection<ItemEntity> loots = event.getDrops();
@@ -184,6 +188,8 @@ public class RegisterEvent {
                 });
             }
         });
+
+         */
     }
 
     @SubscribeEvent
@@ -207,7 +213,7 @@ public class RegisterEvent {
     public static boolean testIfGenerateShield(LivingEntity livingEntity) {
         for(Player Player : livingEntity.level.players()) {
             if(Player.getOffhandItem().getItem() instanceof EnderpearlItem &&
-                    Player.getCommandSenderLevel() == livingEntity.getCommandSenderLevel() &&
+                    Player.level == livingEntity.level &&
                     Player.distanceToSqr(livingEntity) <= 4096)
                 return true;
         }
@@ -215,9 +221,11 @@ public class RegisterEvent {
         return false;
     }
 
-    @SubscribeEvent
-    public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event) {
-        testIfElement(event.getEntityLiving());
+    static {
+        ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+            if(entity instanceof LivingEntity)
+                testIfElement((LivingEntity) entity);
+        });
     }
 
     public static boolean testIfElement(LivingEntity living) {
@@ -234,12 +242,12 @@ public class RegisterEvent {
         }
 
         String dimension_name = living.level.dimension().location().toString();
-        if(living instanceof IMob && spawnElementMap_dimension.containsKey(dimension_name)) {
+        if(living instanceof Mob && spawnElementMap_dimension.containsKey(dimension_name)) {
             transEntityElement(living, state, spawnElementMap_dimension.get(dimension_name));
         }
 
         String biome_type = living.level.getBiome(living.blockPosition()).getBiomeCategory().getSerializedName();
-        if(living instanceof IMob && spawnElementMap_biome.containsKey(biome_type)) {
+        if(living instanceof Mob && spawnElementMap_biome.containsKey(biome_type)) {
             transEntityElement(living, state, spawnElementMap_biome.get(biome_type));
         }
         return state.getElement() != ModElements.ORIGIN;
@@ -279,6 +287,7 @@ public class RegisterEvent {
         event.add(LibRegistry.ITEM_DATA, ItemManaData::new);
     }
 
+    /*
     @SubscribeEvent
     public void tradeEvent(VillagerTradesEvent event) {
         if(event.getType() == ModVillager.MAGE) {
@@ -303,6 +312,8 @@ public class RegisterEvent {
         ).range(64).squared().count(20));
     }
 
+
+     */
     @SubscribeEvent
     public void onAddReload(RecipeLoadedEvent event) {
         /*

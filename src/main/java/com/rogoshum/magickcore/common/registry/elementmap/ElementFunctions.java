@@ -1,10 +1,10 @@
 package com.rogoshum.magickcore.common.registry.elementmap;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.ElementEvent;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.registry.ElementMap;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Function;
 
