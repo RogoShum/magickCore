@@ -8,6 +8,7 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
+    "fabric.reflection.IAgeItemEntity",
     "fabric.reflection.MixinBlockPlaceContext",
     "fabric.reflection.MixinItemEntity",
     "fabric.registry.MixinCriteriaTriggers",
@@ -32,8 +33,8 @@
     "MixinLevelRender",
     "MixinLivingRender",
     "fabric.MixinGui",
-    "fabric.reflection.MixinRenderType",
     "fabric.reflection.MixinCompositeState",
+    "fabric.reflection.MixinRenderType",
     "fabric.reflection.MixinTextureStateShard"
   ]
 }
