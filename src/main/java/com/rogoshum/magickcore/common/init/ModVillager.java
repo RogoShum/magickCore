@@ -5,11 +5,10 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.ai.sensor.VillagerHostilesSensor;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.registry.DeferredRegister;
 import com.rogoshum.magickcore.common.registry.RegistryObject;
-import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
-import net.minecraft.core.Registry;
-import net.minecraft.sounds.SoundEvent;
+import com.rogoshum.magickcore.mixin.fabric.registry.MixinSensorType;
+import com.rogoshum.magickcore.mixin.fabric.registry.MixinVillagerProfession;
+import net.fabricmc.fabric.mixin.object.builder.PointOfInterestTypeAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,9 +25,9 @@ import java.util.List;
 import java.util.Random;
 
 public class ModVillager {
-    public static final PoiType MAGE_POI = PrivateUtil.registerPoiType(MagickCore.fromId("mage").toString(), ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1);
-    public static final VillagerProfession MAGE = PrivateUtil.registerVillagerProfession(MagickCore.fromId("mage").toString(), MAGE_POI, null);
-    public static final SensorType<Sensor<? super LivingEntity>> VILLAGER_HOSTILES = PrivateUtil.registerSensorType(MagickCore.fromId("villager_hostiles").toString(), VillagerHostilesSensor::new);
+    public static final PoiType MAGE_POI = PointOfInterestTypeAccessor.callCreate(MagickCore.fromId("mage").toString(), ImmutableSet.copyOf(ModBlocks.MAGICK_CRAFTING.get().getStateDefinition().getPossibleStates()), 1, 1);
+    public static final VillagerProfession MAGE = MixinVillagerProfession.create(MagickCore.fromId("mage").toString(), MAGE_POI, null);
+    public static final SensorType<Sensor<? super LivingEntity>> VILLAGER_HOSTILES = MixinSensorType.create(MagickCore.fromId("villager_hostiles").toString(), VillagerHostilesSensor::new);
     private static final List<RegistryObject<?>> TradList = new ArrayList<>();
 
     public static void init() {

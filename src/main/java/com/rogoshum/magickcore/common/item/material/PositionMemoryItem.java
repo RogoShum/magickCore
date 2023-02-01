@@ -12,10 +12,10 @@ import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import com.rogoshum.magickcore.api.mixin.IItemUpdate;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class PositionMemoryItem extends BaseItem implements IManaMaterial {
+public class PositionMemoryItem extends BaseItem implements IManaMaterial, IItemUpdate {
     public PositionMemoryItem() {
         super(properties());
     }
@@ -55,7 +55,7 @@ public class PositionMemoryItem extends BaseItem implements IManaMaterial {
             data.spellContext().applyType(ApplyType.SPAWN_ENTITY);
             entity.setItem(stack1);
         }
-        return super.onEntityItemUpdate(stack, entity);
+        return false;
     }
 
     @Override

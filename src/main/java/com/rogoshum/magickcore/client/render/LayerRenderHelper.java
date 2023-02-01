@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.mixin.fabric.reflection.ILayersRenderer;
+import com.rogoshum.magickcore.api.mixin.ILayersRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,7 +21,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 
-import java.lang.reflect.*;
 import java.util.List;
 
 public class LayerRenderHelper extends LivingEntityRenderer {

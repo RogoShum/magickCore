@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.block.MagickCraftingBlock;
-import com.rogoshum.magickcore.client.item.SpiritCrystalItemRenderer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModBlocks;
@@ -12,6 +11,7 @@ import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import com.rogoshum.magickcore.api.mixin.IItemUpdate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,14 +30,14 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class SpiritCrystalItem extends PlaceableEntityItem {
+public class SpiritCrystalItem extends PlaceableEntityItem implements IItemUpdate {
     public static String[][] CRAFTING_RECIPE = {
             {"s", "", "s"},
             {"", "", ""},
             {"s", "", "s"}
     };
     public SpiritCrystalItem() {
-        super(BaseItem.properties().setISTER(() -> SpiritCrystalItemRenderer::new), 0.25f, 0.25f);
+        super(BaseItem.properties(), 0.25f, 0.25f);
     }
 
     @Override

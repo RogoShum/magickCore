@@ -43,7 +43,7 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
     private byte xRot;
     private byte yHeadRot;
     private Entity entity;
-    private FriendlyByteBuf friendlyByteBuf;
+    private CompoundTag additionTag;
 
     public ClientboundAddEntityPacket() {
     }
@@ -67,6 +67,12 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
         this.yd = (int)(f * 8000.0D);
         this.zd = (int)(g * 8000.0D);
         this.entity = livingEntity;
+        if (livingEntity instanceof IEntityAdditionalSpawnData)
+        {
+            CompoundTag tag = new CompoundTag();
+            ((IEntityAdditionalSpawnData)livingEntity).writeSpawnData(tag);
+            this.additionTag = tag;
+        }
     }
 
     public void read(FriendlyByteBuf friendlyByteBuf) throws IOException {
@@ -82,6 +88,7 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
         this.xd = friendlyByteBuf.readShort();
         this.yd = friendlyByteBuf.readShort();
         this.zd = friendlyByteBuf.readShort();
+        this.additionTag = friendlyByteBuf.readNbt();
     }
 
     public void write(FriendlyByteBuf friendlyByteBuf) throws IOException {
@@ -99,7 +106,9 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
         friendlyByteBuf.writeShort(this.zd);
         if (entity instanceof IEntityAdditionalSpawnData)
         {
-            ((IEntityAdditionalSpawnData)entity).writeSpawnData(friendlyByteBuf);
+            CompoundTag tag = new CompoundTag();
+            ((IEntityAdditionalSpawnData)entity).writeSpawnData(tag);
+            friendlyByteBuf.writeNbt(tag);
         }
     }
 
@@ -131,9 +140,9 @@ public class ClientboundAddEntityPacket implements Packet<ClientGamePacketListen
             livingEntity.setDeltaMovement((double)((float)this.getXd() / 8000.0F), (double)((float)this.getYd() / 8000.0F), (double)((float)this.getZd() / 8000.0F));
             if (livingEntity instanceof IEntityAdditionalSpawnData)
             {
-                ((IEntityAdditionalSpawnData) livingEntity).readSpawnData(friendlyByteBuf);
+                ((IEntityAdditionalSpawnData) livingEntity).readSpawnData(this.additionTag);
             }
-            Minecraft.getInstance().level.putNonPlayer(this.getId(), livingEntity);
+            Minecraft.getInstance().level.putNonPlayerEntity(this.getId(), livingEntity);
             if (livingEntity instanceof Bee) {
                 boolean bl = ((Bee)livingEntity).isAngry();
                 Object beeSoundInstance2;

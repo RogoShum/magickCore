@@ -4,7 +4,6 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -14,6 +13,7 @@ import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
+import com.rogoshum.magickcore.api.mixin.IItemUpdate;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -29,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ManaEnergyItem extends ManaItem implements IManaMaterial {
+public class ManaEnergyItem extends ManaItem implements IManaMaterial, IItemUpdate {
     public ManaEnergyItem() {
-        super(properties().setISTER(() -> ManaEnergyRenderer::new));
+        super(properties());
     }
 
     @Override

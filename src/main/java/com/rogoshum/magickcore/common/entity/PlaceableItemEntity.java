@@ -224,15 +224,13 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        CompoundTag addition = new CompoundTag();
+    public void writeSpawnData(CompoundTag addition) {
         addAdditionalSaveData(addition);
-        buffer.writeNbt(addition);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-        readAdditionalSaveData(additionalData.readNbt());
+    public void readSpawnData(CompoundTag additionalData) {
+        readAdditionalSaveData(additionalData);
     }
 
     @Override

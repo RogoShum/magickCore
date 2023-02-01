@@ -3,9 +3,9 @@ package com.rogoshum.magickcore.client.render;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.rogoshum.magickcore.mixin.fabric.reflection.ICompositeType;
-import com.rogoshum.magickcore.mixin.fabric.reflection.ITexture;
-import com.rogoshum.magickcore.mixin.fabric.reflection.ITextureState;
+import com.rogoshum.magickcore.mixin.fabric.accessor.MixinCompositeType;
+import com.rogoshum.magickcore.mixin.fabric.accessor.MixinTexture;
+import com.rogoshum.magickcore.mixin.fabric.accessor.MixinTextureState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
 import java.util.Optional;
@@ -49,9 +49,9 @@ public class SingleBuffer implements MultiBufferSource {
             try {
                 clazz = (Class<RenderType>) Class.forName("net.minecraft.client.renderer.RenderType$CompositeRenderType");
                 if(p_getBuffer_1_.getClass().equals(clazz)) {
-                    RenderType.CompositeState state = ((ICompositeType)p_getBuffer_1_).getState();
-                    RenderStateShard.TextureStateShard textureState = ((ITextureState)(Object)state).getTextureState();
-                    Optional<ResourceLocation> texture = ((ITexture)textureState).getTexture();
+                    RenderType.CompositeState state = ((MixinCompositeType)p_getBuffer_1_).getState();
+                    RenderStateShard.TextureStateShard textureState = ((MixinTextureState)(Object)state).getTextureState();
+                    Optional<ResourceLocation> texture = ((MixinTexture)textureState).getTexture();
                     if(texture.isPresent()) {
                         temp = type.apply(texture.get());
                     } else

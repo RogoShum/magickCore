@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.nbt.CompoundTag;
@@ -337,10 +338,7 @@ public class NBTTagHelper {
             }
         }
         public static PlayerData playerData(Player player) {
-            CompoundTag persistentData = player.getPersistentData();
-            if(!persistentData.contains(Player.PERSISTED_NBT_TAG))
-                persistentData.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
-            return new PlayerData(persistentData.getCompound(Player.PERSISTED_NBT_TAG));
+            return new PlayerData(ExtraDataUtil.entityStateData(player).getPersistData());
         }
 
         public void pushSpell(ItemStack stack) {

@@ -9,14 +9,12 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(PotionBrewing.class)
-public abstract class MixinPotionBrewing {
-    @Shadow
-    private static void addMix(Potion potion, Item item, Potion potion2) {
-    }
-
-    protected static void add(Potion potion, Item item, Potion potion2) {
-        addMix(potion, item, potion2);
+public interface MixinPotionBrewing {
+    @Invoker("addMix")
+    static void add(Potion potion, Item item, Potion potion2) {
+        throw new AssertionError("Untransformed Accessor!");
     }
 }

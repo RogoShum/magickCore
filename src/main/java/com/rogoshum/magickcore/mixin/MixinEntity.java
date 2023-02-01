@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IEntityData;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.common.extradata.EntityExtraData;
-import com.rogoshum.magickcore.mixin.fabric.reflection.IScaleEntity;
+import com.rogoshum.magickcore.api.mixin.IScaleEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -27,7 +27,7 @@ public abstract class MixinEntity implements IEntityData, IScaleEntity {
 
     private final HashMap<String, EntityExtraData> extraData = new HashMap<>();
 
-    @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
     protected void onConstructor(CallbackInfo info) {
         Entity thisEntity = (Entity)(Object)this;
         HashMap<String, Callable<EntityExtraData>> dataMap = new HashMap<>();

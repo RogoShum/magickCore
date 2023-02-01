@@ -21,13 +21,8 @@ public class FakeFluidBlock extends LiquidBlock implements ILightingBlock {
     }
 
     @Override
-    public int getLightValue(BlockState state, LevelAccessor world, BlockPos pos) {
-        return getLight(state);
-    }
-
-    @Override
     public int getLightBlock(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
-        return super.getLightBlock(blockState, blockGetter, blockPos);
+        return getLight(blockState);
     }
 
     protected int getLight(BlockState state) {

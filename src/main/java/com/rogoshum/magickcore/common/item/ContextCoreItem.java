@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
+import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.event.magickevent.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.materials.Material;
+import com.rogoshum.magickcore.api.mixin.IItemUpdate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -28,12 +29,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-public class ContextCoreItem extends BaseItem{
+public class ContextCoreItem extends BaseItem implements IItemUpdate {
     public ContextCoreItem() {
-        super(properties().stacksTo(8).setISTER(() -> ManaEnergyRenderer::new));
+        super(properties().stacksTo(8));
     }
 
-    @Override
+    @SubscribeEvent
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         if(entity.tickCount > 20) {
             boolean upGround = true;

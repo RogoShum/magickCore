@@ -59,9 +59,9 @@ public class EventBus {
                     "Method " + method + " has @SubscribeEvent annotation, " +
                             "but takes an argument that is not an Event subtype : " + eventType);
         }
-        if(!listenerMap.containsKey(target.getClass()))
+        if(!listenerMap.containsKey(eventType))
             listenerMap.put((Class<? extends Event>) eventType, new HashMap<>());
-        HashMap<Method, Object> listeners = listenerMap.get(target.getClass());
+        HashMap<Method, Object> listeners = listenerMap.get(eventType);
         listeners.put(real, target);
     }
 

@@ -10,17 +10,14 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.function.Supplier;
 
 @Mixin(SensorType.class)
-public abstract class MixinSensorType {
-    @Shadow
-    private static <U extends Sensor<?>> SensorType<U> register(String string, Supplier<U> supplier) {
-        return null;
-    }
-
-    protected static <U extends Sensor<?>> SensorType<U> create(String string, Supplier<U> supplier) {
-        return register(string, supplier);
+public interface MixinSensorType {
+    @Invoker("register")
+    static <U extends Sensor<?>> SensorType<U> create(String string, Supplier<U> supplier) {
+        throw new AssertionError("Untransformed Accessor!");
     }
 }

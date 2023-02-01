@@ -82,7 +82,7 @@ public class WitherAbility{
             Tag<Item> itemITag = iTag.get();
             Item item = itemEntity.getItem().getItem();
             for (Item tagItem : itemITag.getValues()) {
-                if(tagItem.getRegistryName().getNamespace().equals(itemEntity.getItem().getItem().getRegistryName().getNamespace()))
+                if(new ResourceLocation(tagItem.getDescriptionId()).getNamespace().equals(new ResourceLocation(itemEntity.getItem().getItem().getDescriptionId()).getNamespace()))
                     item = tagItem;
                 else if(!item.is(itemITag))
                     item = tagItem;

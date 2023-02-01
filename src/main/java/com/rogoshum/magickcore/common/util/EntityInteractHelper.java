@@ -1,12 +1,10 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
-import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
-import com.rogoshum.magickcore.mixin.fabric.reflection.IReplaceClicked;
+import com.rogoshum.magickcore.mixin.fabric.accessor.MixinReplaceClicked;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +25,7 @@ public class EntityInteractHelper {
                             new BlockPos(entity.position()),
                             false
                     ));
-            ((IReplaceClicked)blockItemUseContext).setReplaceClicked(false);
+            ((MixinReplaceClicked)blockItemUseContext).setReplaceClicked(false);
             return ((BlockItem) stack.getItem()).place(blockItemUseContext);
         } else if(stack.getItem() instanceof EntityItem) {
             Vec3 vector3d = player.getLookAngle();
@@ -38,7 +36,7 @@ public class EntityInteractHelper {
                             new BlockPos(entity.position()),
                             false
                     ));
-            ((IReplaceClicked)blockItemUseContext).setReplaceClicked(false);
+            ((MixinReplaceClicked)blockItemUseContext).setReplaceClicked(false);
             return ((EntityItem) stack.getItem()).tryPlace(blockItemUseContext);
         }
         return InteractionResult.PASS;

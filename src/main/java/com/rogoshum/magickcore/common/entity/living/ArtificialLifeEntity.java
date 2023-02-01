@@ -364,19 +364,15 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        CompoundTag tag = new CompoundTag();
+    public void writeSpawnData(CompoundTag tag) {
         spellContext().serialize(tag);
-        buffer.writeNbt(tag);
-        tag = new CompoundTag();
         serializeBlockSet(tag);
-        buffer.writeNbt(tag);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-        spellContext().deserialize(additionalData.readNbt());
-        deserializeBlockSet(additionalData.readNbt());
+    public void readSpawnData(CompoundTag additionalData) {
+        spellContext().deserialize(additionalData);
+        deserializeBlockSet(additionalData);
     }
 
     public void serializeBlockSet(CompoundTag compoundNBT) {

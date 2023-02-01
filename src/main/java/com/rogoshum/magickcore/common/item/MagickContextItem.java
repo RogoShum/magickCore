@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +22,7 @@ import net.minecraft.world.level.Level;
 
 public class MagickContextItem extends ManaItem {
     public MagickContextItem() {
-        super(properties().stacksTo(16).setISTER(() -> ManaEnergyRenderer::new));
+        super(properties().stacksTo(16));
     }
 
     @Override

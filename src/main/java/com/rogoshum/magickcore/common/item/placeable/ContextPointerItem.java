@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class ContextPointerItem extends EntityItem {
     public ContextPointerItem() {
-        super(properties().stacksTo(32).setISTER(() -> ContextPointerRenderer::new));
+        super(properties().stacksTo(32));
     }
 
     @Override

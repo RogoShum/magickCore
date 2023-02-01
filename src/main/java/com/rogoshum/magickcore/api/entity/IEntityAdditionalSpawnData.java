@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.api.entity;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 public interface IEntityAdditionalSpawnData {
@@ -9,7 +10,7 @@ public interface IEntityAdditionalSpawnData {
      *
      * @param buffer The packet data stream
      */
-    void writeSpawnData(FriendlyByteBuf buffer);
+    void writeSpawnData(CompoundTag buffer);
 
     /**
      * Called by the client when it receives a Entity spawn packet.
@@ -17,7 +18,7 @@ public interface IEntityAdditionalSpawnData {
      *
      * @param additionalData The packet data stream
      */
-    void readSpawnData(FriendlyByteBuf additionalData);
+    void readSpawnData(CompoundTag additionalData);
 
     default void onAddedToLevel() {}
 }

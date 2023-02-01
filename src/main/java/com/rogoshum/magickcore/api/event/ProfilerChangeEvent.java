@@ -9,7 +9,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-public class ProfilerChangeEvent implements FabricEvent{
+public class ProfilerChangeEvent extends com.rogoshum.magickcore.api.event.Event implements FabricEvent{
     public static final Event<ProfilerChangeEvent.Fabric> EVENT = EventFactory.createArrayBacked(ProfilerChangeEvent.Fabric.class,
             (listeners) -> (string) -> {
                 for (ProfilerChangeEvent.Fabric event : listeners) {

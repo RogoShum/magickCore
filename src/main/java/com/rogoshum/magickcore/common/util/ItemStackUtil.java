@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
-import com.rogoshum.magickcore.mixin.fabric.reflection.IAgeItemEntity;
+import com.rogoshum.magickcore.mixin.fabric.accessor.MixinAgeItemEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -59,14 +59,14 @@ public class ItemStackUtil {
     }
 
     public static int getItemEntityAge(ItemEntity entity) {
-        return ((IAgeItemEntity)entity).getAge();
+        return ((MixinAgeItemEntity)entity).getAge();
     }
 
     public static int getItemEntityPickupDelay(ItemEntity entity) {
-        return ((IAgeItemEntity)entity).getPickupDelay();
+        return ((MixinAgeItemEntity)entity).getPickupDelay();
     }
 
     public static void setItemEntityAge(ItemEntity entity, int age) {
-        ((IAgeItemEntity)entity).setAge(age);
+        ((MixinAgeItemEntity)entity).setAge(age);
     }
 }

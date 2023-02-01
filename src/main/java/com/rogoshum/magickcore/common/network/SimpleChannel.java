@@ -58,7 +58,7 @@ public class SimpleChannel {
         }
 
         public static SendType server(Collection<ServerPlayer> players) {
-            return new SendType(false, (ServerPlayer[]) players.toArray());
+            return new SendType(false, players.toArray(new ServerPlayer[0]));
         }
 
         public static SendType server() {
@@ -106,7 +106,7 @@ public class SimpleChannel {
         }
 
         public void add() {
-            ResourceLocation res = MagickCore.fromId(type.getName());
+            ResourceLocation res = MagickCore.fromId(type.getName().toLowerCase());
             this.channel.packMap.put(res, this);
             if(environment == EnvType.CLIENT) {
                 ClientPlayNetworking.registerGlobalReceiver(res, (client, handler, buf, responseSender) -> {

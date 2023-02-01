@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.mixin.fabric.reflection;
+package com.rogoshum.magickcore.api.mixin;
 
 import net.minecraft.world.entity.EntityDimensions;
 

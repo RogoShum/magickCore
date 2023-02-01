@@ -12,7 +12,7 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
-import com.rogoshum.magickcore.mixin.fabric.reflection.IScaleEntity;
+import com.rogoshum.magickcore.api.mixin.IScaleEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -97,10 +97,8 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
-        CompoundTag addition = new CompoundTag();
+    public void writeSpawnData(CompoundTag addition) {
         addAdditionalSaveData(addition);
-        buffer.writeNbt(addition);
     }
 
     @Environment(EnvType.CLIENT)
@@ -118,8 +116,8 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-        readAdditionalSaveData(additionalData.readNbt());
+    public void readSpawnData(CompoundTag additionalData) {
+        readAdditionalSaveData(additionalData);
     }
 
     @Override

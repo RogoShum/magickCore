@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -8,7 +7,6 @@ import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -19,6 +17,8 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
@@ -26,14 +26,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.SkullBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -135,37 +131,26 @@ public class VoidAbility{
             BlockPos pos = new BlockPos(positionContext.pos);
             Level world = context.world;
 
-            if (!world.isAreaLoaded(pos, 1)) return false;
+            if (!world.isLoaded(pos)) return false;
             if(context.caster instanceof Player) {
                 if(!world.mayInteract((Player) context.caster, pos)) return false;
             } else if(!world.getGameRules().getRule(GameRules.RULE_MOBGRIEFING).get()) return false;
 
             BlockState state = world.getBlockState(pos);
-            if(state.getHarvestLevel() > context.force) return false;
+            //if(state > context.force) return false;
             Block block = state.getBlock();
-            if (!block.isAir(state, world, pos) && !(block instanceof LiquidBlock) && state.getDestroySpeed(world, pos) != -1) {
-                int exp = state.getExpDrop((ILevelReader) world, pos, (int) context.force, 1);
-                if(context.caster instanceof Player) {
-                    /*
-                    if (!state.canHarvestBlock(world, pos, (Player) context.caster)) {
-                        return false;
-                    }
-
-                     */
-                    BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, state, (Player) context.caster);
-                    event.setExpToDrop(exp);
-                    MagickCore.EVENT_BUS.post(event);
-                    if(event.isCanceled()) return false;
-                    exp = event.getExpToDrop();
-                }
-
+            if (!state.isAir() && !(block instanceof LiquidBlock) && state.getDestroySpeed(world, pos) != -1) {
+                int exp = 0;
                 ItemStack result = ItemStack.EMPTY;
                 BlockEntity te = null;
-                if (state.hasTileEntity())
+                if (state.getBlock() instanceof EntityBlock)
                     te = world.getBlockEntity(pos);
 
                 try {
-                    result = state.getPickBlock(null, world, pos, null);
+                    result = block.getCloneItemStack(context.world, pos, state);
+                    if (result.isEmpty()) {
+                        return false;
+                    }
                 } catch (Exception ignored) {
 
                 }
@@ -176,10 +161,12 @@ public class VoidAbility{
                     storeTEInStack(result, te);
                 } //else
                 //result.setCount((int) context.range);
-
+                /*
                 if (world instanceof ServerLevel) {
                     block.popExperience((ServerLevel) world, pos, exp);
                 }
+
+                 */
                 world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                 world.levelEvent(2001, pos, Block.getId(state));
                 ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, result);
@@ -189,6 +176,6 @@ public class VoidAbility{
             return false;
         }
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addEffect(new EffectInstance(Effects.INVISIBILITY, context.tick * 10));
+        return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, context.tick * 10));
     }
 }

@@ -8,14 +8,13 @@ import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibEffect;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.fabricmc.fabric.mixin.object.builder.CriteriaAccessor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 
 public class AdvancementsEvent {
-    public static final StringTrigger STRING_TRIGGER = PrivateUtil.registerCriterionTrigger(new StringTrigger());
+    public static final StringTrigger STRING_TRIGGER = CriteriaAccessor.callRegister(new StringTrigger());
 
     @SubscribeEvent
     public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {

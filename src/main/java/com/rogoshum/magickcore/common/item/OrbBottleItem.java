@@ -36,10 +36,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class OrbBottleItem extends BaseItem{
+public class OrbBottleItem extends BaseItem {
 
     public OrbBottleItem() {
-        super(properties().stacksTo(64).craftRemainder(ModItems.ORB_BOTTLE.get()).setISTER(() -> OrbBottleRenderer::new));
+        super(properties().stacksTo(64));
+    }
+
+    @Override
+    public boolean hasCraftingRemainingItem() {
+        return true;
     }
 
     @Override

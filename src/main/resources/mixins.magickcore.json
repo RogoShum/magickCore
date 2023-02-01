@@ -8,11 +8,11 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
-    "fabric.reflection.IAgeItemEntity",
-    "fabric.reflection.MixinBlockPlaceContext",
-    "fabric.reflection.MixinItemEntity",
-    "fabric.registry.MixinCriteriaTriggers",
-    "fabric.registry.MixinPoiType",
+    "fabric.MixinItemEntity",
+    "fabric.accessor.MixinAgeItemEntity",
+    "fabric.accessor.MixinDamageSource",
+    "fabric.accessor.MixinItem",
+    "fabric.accessor.MixinReplaceClicked",
     "fabric.registry.MixinPotionBrewing",
     "fabric.registry.MixinSensorType",
     "fabric.registry.MixinSpawnPlacements",
@@ -32,9 +32,12 @@
     "MixinGameRenderer",
     "MixinLevelRender",
     "MixinLivingRender",
+    "fabric.MixinBlockRender",
+    "fabric.MixinEntityRender",
     "fabric.MixinGui",
-    "fabric.reflection.MixinCompositeState",
-    "fabric.reflection.MixinRenderType",
-    "fabric.reflection.MixinTextureStateShard"
+    "fabric.MixinItemRenderer",
+    "fabric.accessor.MixinCompositeType",
+    "fabric.accessor.MixinTexture",
+    "fabric.accessor.MixinTextureState"
   ]
 }

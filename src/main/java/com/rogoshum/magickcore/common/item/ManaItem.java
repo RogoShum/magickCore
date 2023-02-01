@@ -13,6 +13,7 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -63,8 +64,8 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         ExtraDataUtil.itemManaData(stack, data -> {
             String information = "";
-            KeyBinding key = Minecraft.getInstance().options.keyShift;
-            boolean isKeyDown = InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue());
+            KeyMapping key = Minecraft.getInstance().options.keyShift;
+            boolean isKeyDown = key.isDown();
             if(isKeyDown)
                 information = data.spellContext().toString();
             else

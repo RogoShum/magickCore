@@ -68,17 +68,15 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(CompoundTag additionalData) {
         super.readSpawnData(additionalData);
-        readAdditionalSaveData(additionalData.readNbt());
+        readAdditionalSaveData(additionalData);
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(CompoundTag buffer) {
         super.writeSpawnData(buffer);
-        CompoundTag addition = new CompoundTag();
-        addAdditionalSaveData(addition);
-        buffer.writeNbt(addition);
+        addAdditionalSaveData(buffer);
     }
 
     @Override

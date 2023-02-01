@@ -31,7 +31,7 @@ import java.util.List;
 public class PotionTypeItem extends ManaItem implements IManaMaterial {
 
     public PotionTypeItem() {
-        super(properties().setISTER(() -> ManaEnergyRenderer::new));
+        super(properties());
     }
 
     @Override

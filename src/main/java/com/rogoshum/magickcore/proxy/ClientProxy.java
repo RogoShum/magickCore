@@ -31,13 +31,12 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -185,7 +184,6 @@ public class ClientProxy implements IProxy {
 		MagickCore.EVENT_BUS.register(new LightShaderManager());
 		event.onModelRegistry();
 		MagickCore.EVENT_BUS.register(event);
-		this.registerEntityRenderer();
 		this.registerItemColors(ColorProviderRegistry.ITEM);
 		putElementRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
@@ -196,6 +194,16 @@ public class ClientProxy implements IProxy {
 		registerItemRenderer(ModItems.SPIRIT_CRYSTAL_STAFF.get(), new StaffRenderer());
 		registerItemRenderer(ModItems.SPIRIT_BOW.get(), new SpiritBowRenderer());
 		registerItemRenderer(ModItems.SPIRIT_SWORD.get(), new SpiritSwordRenderer());
+		registerItemRenderer(ModItems.ELEMENT_WOOL.get(), new com.rogoshum.magickcore.client.item.ElementWoolRenderer());
+		registerItemRenderer(ModItems.MANA_ENERGY.get(), new ManaEnergyRenderer());
+		registerItemRenderer(ModItems.SPIRIT_CRYSTAL.get(), new SpiritCrystalItemRenderer());
+		registerItemRenderer(ModItems.CONTEXT_CORE.get(), new ManaEnergyRenderer());
+		registerItemRenderer(ModItems.MAGICK_CORE.get(), new ManaEnergyRenderer());
+		registerItemRenderer(ModItems.ORB_BOTTLE.get(), new OrbBottleRenderer());
+		registerItemRenderer(ModItems.CONTEXT_POINTER.get(), new ContextPointerRenderer());
+		registerItemRenderer(ModItems.MAGICK_CONTAINER.get(), new ManaCapacityRenderer());
+		registerItemRenderer(ModItems.POTION_TYPE.get(), new ManaEnergyRenderer());
+		registerItemRenderer(ModItems.ENTITY_TYPE.get(), new ManaEnergyRenderer());
 		ObjectRegistry<EntityRenderers> entityRenderers = new ObjectRegistry<>(LibRegistry.ENTITY_RENDERER);
 		ObjectRegistry<RenderFunctions> renderFunctions = new ObjectRegistry<>(LibRegistry.RENDER_FUNCTION);
 		ModElements.elements.forEach(elementType -> {
@@ -220,57 +228,6 @@ public class ClientProxy implements IProxy {
 		ManaBuffHUD.addBuffTexture(LibBuff.SLOW, new ResourceLocation("textures/mob_effect/slowness.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.RADIANCE_WELL, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/radiance_well.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
-	}
-
-	public void registerEntityRenderer() {
-		//registerEntityRenderingHandler(ModEntites.time_manager, TimeManagerRenderer::new);
-
-		registerEntityRenderingHandler(ModEntities.MANA_ORB.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MANA_SHIELD.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MANA_STAR.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MANA_LASER.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MANA_SPHERE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.RADIANCE_WALL.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CHAOS_REACH.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.THORNS_CARESS.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SILENCE_SQUALL.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.ASCENDANT_REALM.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.ELEMENT_ORB.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CONTEXT_CREATOR.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MANA_CAPACITY.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CONTEXT_POINTER.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.RAY_TRACE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.ENTITY_CAPTURE.get(), EntityHunterRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CONE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SECTOR.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SPHERE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SQUARE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.RAY.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.BLOOD_BUBBLE.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.LAMP.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.ARROW.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.BUBBLE.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.LEAF.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.RED_STONE.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SHADOW.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.WIND.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.JEWELRY_BAG.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.REPEATER.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.GRAVITY_LIFT.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.PLACEABLE_ENTITY.get(), PlaceableItemEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MAGE.get(), MageRenderer::new);
-		registerEntityRenderingHandler(ModEntities.PHANTOM.get(), ManaObjectRenderer::new);
-		registerEntityRenderingHandler(ModEntities.ARTIFICIAL_LIFE.get(), ArtificialLifeEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CHAIN.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.SPIN.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.CHARGE.get(), ManaEntityRenderer::new);
-		registerEntityRenderingHandler(ModEntities.MULTI_RELEASE.get(), ManaEntityRenderer::new);
-	}
-
-	public <E extends Entity> void registerEntityRenderingHandler(EntityType<? extends E> entityType, Function<EntityRenderDispatcher, EntityRenderer<E>> entityRendererFactory) {
-		EntityRendererRegistry.INSTANCE.register(entityType, (dispatcher, context) -> {
-			return entityRendererFactory.apply(dispatcher);
-		});
 	}
 
 	public void registerItemColors(ColorProviderRegistry<ItemLike, ItemColor> event) {
@@ -299,17 +256,11 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void initBlockRenderer() {
-		BlockEntityRendererRegistry.register(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), MagickCraftingRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
-		BlockEntityRendererRegistry.register(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
-		BlockEntityRendererRegistry.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
-		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
-		BlockEntityRendererRegistry.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
-		BlockEntityRendererRegistry.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}
 

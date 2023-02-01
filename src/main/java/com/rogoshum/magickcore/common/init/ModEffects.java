@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModEffects {
+    public static final List<MobEffect> effectList = new ArrayList<>();
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registry.MOB_EFFECT, MagickCore.MOD_ID);
     public static RegistryObject<MobEffect> SHIELD_REGEN = EFFECTS.register(LibEffect.SHIELD_REGEN, () -> new ModEffect(MobEffectCategory.BENEFICIAL, 2706137));
     public static RegistryObject<MobEffect> SHIELD_VALUE = EFFECTS.register(LibEffect.SHIELD_VALUE, () -> new ModEffect(MobEffectCategory.BENEFICIAL, 2706038));
@@ -61,7 +62,7 @@ public class ModEffects {
     public static RegistryObject<Potion> MANA_CONVERT_P_I = POTIONS.register(LibEffect.MANA_CONVERT_I, () -> new Potion(new MobEffectInstance(MANA_CONVERT.get(), 1500, 1)));
 
     public static RegistryObject<Potion> NOTHING = POTIONS.register(LibEffect.NOTHING, Potion::new);
-    public static final List<MobEffect> effectList = new ArrayList<>();
+
 
     public static class ModEffect extends MobEffect {
         protected ModEffect(MobEffectCategory typeIn, int liquidColorIn) {

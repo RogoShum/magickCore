@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.7-SNAPSHOT'
+	id 'fabric-loom' version '1.1-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -31,10 +31,6 @@ repositories {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
 	}
-	maven {
-		name = "Ladysnake Libs"
-		url = "https://ladysnake.jfrog.io/artifactory/mods"
-	}
 	maven { url 'https://maven.blamejared.com' }
 	maven { url "https://maven.shedaniel.me" }
 
@@ -49,14 +45,15 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "de.siphalor:nbtcrafting-1.16:2+"
-	modImplementation "dev.emi:trinkets:2.6.7"
+	//modImplementation "dev.emi:trinkets:2.6.7"
 	modImplementation "vazkii.patchouli:Patchouli:1.16.4-54-FABRIC-SNAPSHOT"
-	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:6.5.433"
+	//modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:6.5.433"
 
+	/*
 	include modApi('teamreborn:energy:2.3.0') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-
+	 */
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }

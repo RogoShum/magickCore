@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class ManaCapacityItem extends EntityItem {
     public ManaCapacityItem() {
-        super(properties().setISTER(() -> ManaCapacityRenderer::new));
+        super(properties());
     }
 
     @Override

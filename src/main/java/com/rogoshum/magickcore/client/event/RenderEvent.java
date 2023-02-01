@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.api.event.RenderGameOverlayEvent;
 import com.rogoshum.magickcore.api.event.RenderLevelEvent;
@@ -168,6 +169,9 @@ public class RenderEvent {
             MagickCore.proxy.addRenderer(() -> new ManaItemDurationBarRenderer((ItemEntity) event.getEntity()));
         if(event.getEntity() == Minecraft.getInstance().player)
             MagickCore.proxy.addRenderer(() -> new WandSelectionRenderer(Minecraft.getInstance().player));
+        if(event.getEntity() instanceof IEntityAdditionalSpawnData) {
+            ((IEntityAdditionalSpawnData) event.getEntity()).onAddedToLevel();
+        }
     }
 
     static {

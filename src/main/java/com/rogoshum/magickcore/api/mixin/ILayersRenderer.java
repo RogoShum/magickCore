@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.mixin.fabric.reflection;
+package com.rogoshum.magickcore.api.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;

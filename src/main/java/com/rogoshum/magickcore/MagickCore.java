@@ -8,7 +8,7 @@ import com.rogoshum.magickcore.common.event.magickevent.*;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.network.Networking;
-import com.rogoshum.magickcore.mixin.fabric.registry.PrivateUtil;
+import com.rogoshum.magickcore.mixin.fabric.registry.MixinSpawnPlacements;
 import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.CommonProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
@@ -17,6 +17,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +58,7 @@ public class MagickCore implements ModInitializer {
 
     private void setup() {
         ModBrews.registryBrewing();
-        PrivateUtil.registerSpawnPlacements(ModEntities.MAGE.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
+        MixinSpawnPlacements.add(ModEntities.MAGE.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MageVillagerEntity::checkMobSpawnRules);
         //RecipeCollector.init();
         LivingAttributeEvent.registerEntityAttributes();
     }
@@ -74,9 +75,9 @@ public class MagickCore implements ModInitializer {
         //FMLJavaModLoadingContext.get().getModEventBus().addListener(RE::onRegiste2r);
         // Register the setup method for modloading
         this.setup();
-        callWhenOn(EnvType.CLIENT, () -> this::doClientStuff);
         callWhenOn(EnvType.CLIENT, () -> () -> proxy = new ClientProxy());
         callWhenOn(EnvType.SERVER, () -> () -> proxy = new CommonProxy());
+        callWhenOn(EnvType.CLIENT, () -> this::doClientStuff);
         ModElements.registerElement();
         RegisterEvent.initElementMap();
         proxy.registerHandlers();

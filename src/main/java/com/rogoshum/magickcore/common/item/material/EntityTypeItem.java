@@ -47,7 +47,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     private static final HashSet<EntityType<?>> ERROR_TYPE = new HashSet<>();
     private static final HashMap<EntityType<?>, ManaFactor> BENEFICIAL_ENERGY = new HashMap<>();
     public EntityTypeItem() {
-        super(properties().setISTER(() -> ManaEnergyRenderer::new));
+        super(properties());
     }
 
     public static ManaFactor getBeneficialEnergy(EntityType<?> entityType) {

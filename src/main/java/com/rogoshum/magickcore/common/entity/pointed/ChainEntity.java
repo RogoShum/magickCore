@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -71,17 +72,17 @@ public class ChainEntity extends ManaPointEntity {
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(CompoundTag buffer) {
         super.writeSpawnData(buffer);
-        buffer.writeInt(this.postEntity == null ? -1 : this.postEntity.getId());
-        buffer.writeInt(this.victimEntity == null ? -1 : this.victimEntity.getId());
+        buffer.putInt("postEntity", this.postEntity == null ? -1 : this.postEntity.getId());
+        buffer.putInt("victimEntity", this.victimEntity == null ? -1 : this.victimEntity.getId());
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(CompoundTag additionalData) {
         super.readSpawnData(additionalData);
-        int post = additionalData.readInt();
-        int victim = additionalData.readInt();
+        int post = additionalData.getInt("postEntity");
+        int victim = additionalData.getInt("victimEntity");
         if(post != -1)
             postEntity = level.getEntity(post);
         if(victim != -1)

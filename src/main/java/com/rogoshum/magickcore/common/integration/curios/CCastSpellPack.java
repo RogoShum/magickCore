@@ -49,7 +49,7 @@ public class CCastSpellPack extends EntityPack<ServerNetworkContext<?>> {
         CCastSpellPack pack = ctx.packet();
         if(player == null || player.removed)
             return;
-
+/*
         ItemStack ring = CuriosHelper.getSpiritRing(player);
         if(ring == null || ring.isEmpty()) return;
         if(pack.operate == 0) {
@@ -70,5 +70,7 @@ public class CCastSpellPack extends EntityPack<ServerNetworkContext<?>> {
             if(!player.addItem(copy))
                 player.drop(copy, false, true);
         }
+
+ */
     }
 }

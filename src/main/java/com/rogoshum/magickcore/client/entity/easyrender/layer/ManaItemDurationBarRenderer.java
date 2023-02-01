@@ -41,7 +41,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
 
         if(RenderHelper.showDebug() && entity.getItem().getItem() instanceof IManaData)
             updateSpellContext();
-        if(entity.getItem().getItem() instanceof IManaData && entity.getItem().getItem().showDurabilityBar(entity.getItem())) {
+        if(entity.getItem().getItem() instanceof IManaData && ((IManaData) entity.getItem().getItem()).showDurabilityBar(entity.getItem())) {
             render = true;
             ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
             color = data.spellContext().element.color();
@@ -59,8 +59,8 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         RenderSystem.disableTexture();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableBlend();
-        Tesselator Tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = Tesselator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
         matrixStackIn.translate(0, 0.5f, 0);
         this.draw(bufferbuilder, matrixStackIn.last().pose(), 1.05f, 0.02f, 0, 0, 0);
         this.draw(bufferbuilder, matrixStackIn.last().pose(), percentage, 0, color.r(), color.g(), color.b());
