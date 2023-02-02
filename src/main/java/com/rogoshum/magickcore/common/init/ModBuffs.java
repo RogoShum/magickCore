@@ -171,7 +171,7 @@ public class ModBuffs {
                 state.write(tag);
                 ;
                 Networking.INSTANCE.send(
-                        SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
+                        SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()), event.getEntity()),
                         new EntityStatePack(event.getEntity().getId(), tag));
             }
         }

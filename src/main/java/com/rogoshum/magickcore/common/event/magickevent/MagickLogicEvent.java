@@ -466,7 +466,7 @@ public class MagickLogicEvent {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed) {
 				if(event.getEntity().tickCount % 40 == 0)
 					Networking.INSTANCE.send(
-							SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
+							SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()), event.getEntity()),
 							new TakenStatePack(event.getEntity().getId(), takenState.getTime(), takenState.getOwnerUUID()));
 			}
 		}
@@ -495,13 +495,10 @@ public class MagickLogicEvent {
 		}
 
 		state.tick(event.getEntity());
-
 		if(!event.getEntity().level.isClientSide && !event.getEntity().removed && !state.getState().equals(state.getPreState())) {
 			CompoundTag tag = new CompoundTag();
 			state.write(tag);
-			Networking.INSTANCE.send(
-					SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
-					new EntityStatePack(event.getEntity().getId(), tag));
+			Networking.INSTANCE.send(SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()), event.getEntity()), new EntityStatePack(event.getEntity().getId(), tag));
 		}
 
 		if(state.getBuffList().isEmpty()) return;
@@ -829,7 +826,7 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().tickCount % 40 == 0) {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed)
 				Networking.INSTANCE.send(
-						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
+						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()), event.getEntity()),
 						new OwnerStatePack(event.getEntity().getId(), ((IOwnerEntity) event.getEntity()).getOwner().getUUID()));
 		}
 
@@ -837,7 +834,7 @@ public class MagickLogicEvent {
 			ManaCapacity data = ((IManaCapacity) event.getEntity()).manaCapacity();
 			if(!event.getEntity().level.isClientSide && !event.getEntity().removed && event.getEntity().tickCount % 10 == 0) {
 				Networking.INSTANCE.send(
-						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity())),
+						SimpleChannel.SendType.server(PlayerLookup.tracking(event.getEntity()), event.getEntity()),
 						new ManaCapacityPack(event.getEntity().getId(), data));
 			}
 		}

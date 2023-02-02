@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Supplier;
 
@@ -32,11 +33,17 @@ public class EntityStatePack extends EntityPack<ClientNetworkContext<?>>{
         EntityStatePack pack = context.packet();
         if(pack.tag == null) return;
         Entity entity = Minecraft.getInstance().level.getEntity(pack.id);
+        if(entity instanceof Player) {
+            boolean t = true;
+        }
         if(entity == null || entity.removed)
             return;
         EntityStateData state = ExtraDataUtil.entityStateData(entity);
         if(state != null) {
             state.read(pack.tag);
+        }
+        if(entity instanceof Player) {
+            boolean f = true;
         }
     }
 }

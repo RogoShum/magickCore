@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.mixin;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.event.EntityEvent;
+import com.rogoshum.magickcore.api.event.living.LivingEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +23,13 @@ import java.util.function.Consumer;
 public abstract class MixinLevel {
     @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
     public void onGuardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn, CallbackInfo info) {
-        if(entityIn instanceof LivingEntity) return;
+        if(entityIn instanceof LivingEntity) {
+            LivingEvent.LivingUpdateEvent event = new LivingEvent.LivingUpdateEvent((LivingEntity) entityIn);
+            MagickCore.EVENT_BUS.post(event);
+            if(event.isCanceled())
+                info.cancel();
+            return;
+        }
         EntityEvent.EntityUpdateEvent event = new EntityEvent.EntityUpdateEvent(entityIn);
         MagickCore.EVENT_BUS.post(event);
         if(event.isCanceled())

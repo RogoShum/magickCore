@@ -60,7 +60,7 @@ public class TakenAbility{
             state.setOwner(context.caster.getUUID());
             state.setTime(context.tick);
             Networking.INSTANCE.send(
-                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim)),
+                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim), context.victim),
                     new TakenStatePack(context.victim.getId(), context.tick, context.victim.getUUID()));
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
         }
@@ -86,7 +86,7 @@ public class TakenAbility{
             state.setTime(time);
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
-                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim)),
+                    SimpleChannel.SendType.server(PlayerLookup.tracking(context.victim), context.victim),
                     new TakenStatePack(context.victim.getId(), time, context.victim.getUUID()));
             return true;
         }

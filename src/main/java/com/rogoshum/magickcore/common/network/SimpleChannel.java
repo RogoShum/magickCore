@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.apache.logging.log4j.core.jmx.Server;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,6 +58,15 @@ public class SimpleChannel {
         }
 
         public static SendType server(Collection<ServerPlayer> players) {
+            return new SendType(false, players.toArray(new ServerPlayer[0]));
+        }
+
+        public static SendType server(Collection<ServerPlayer> players, Entity self) {
+            if(self instanceof ServerPlayer) {
+                List<ServerPlayer> list = new ArrayList<>(players);
+                list.add((ServerPlayer) self);
+                players = list;
+            }
             return new SendType(false, players.toArray(new ServerPlayer[0]));
         }
 

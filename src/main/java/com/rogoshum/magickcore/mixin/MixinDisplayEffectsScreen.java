@@ -11,7 +11,6 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
-import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
@@ -58,7 +57,7 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
             at = @At(value = "RETURN"),
             locals = LocalCapture.CAPTURE_FAILSOFT
     )
-    protected void onRenderEffectBackground(PoseStack matrixStack, int p_238810_2_, int p_238810_3_, Iterable<EffectInstance> effects, CallbackInfo ci, int i) {
+    protected void onRenderEffectBackground(PoseStack matrixStack, int p_238810_2_, int p_238810_3_, Iterable<MobEffectInstance> effects, CallbackInfo ci, int i) {
         if(!manaBuffHashMap.isEmpty()) {
             for(int c = 0; c < manaBuffHashMap.keySet().size(); ++c) {
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);

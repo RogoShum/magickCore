@@ -26,12 +26,6 @@ public class LivingEvent extends EntityEvent{
         }
     }
 
-    public static class LivingJumpEvent extends LivingEvent {
-        public LivingJumpEvent(LivingEntity e) {
-            super(e);
-        }
-    }
-
     public static class LivingVisibilityEvent extends LivingEvent {
         private double visibilityModifier;
         @Nullable

@@ -38,7 +38,7 @@ public class EntityCompoundTagPack extends EntityPack<ClientNetworkContext<?>>{
     public static void updateEntity(Entity entity) {
         if(entity.level.isClientSide) return;
         Networking.INSTANCE.send(
-                SimpleChannel.SendType.server(PlayerLookup.tracking(entity)),
+                SimpleChannel.SendType.server(PlayerLookup.tracking(entity), entity),
                 new EntityCompoundTagPack(entity.getId(), entity));
     }
 }

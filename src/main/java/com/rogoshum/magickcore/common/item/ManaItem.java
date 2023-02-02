@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.api.itemstack.IColorDurabilityBar;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.init.ModSounds;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public abstract class ManaItem extends BaseItem implements IManaData {
+public abstract class ManaItem extends BaseItem implements IManaData, IColorDurabilityBar {
     public ManaItem(Properties properties) {
         super(properties);
     }
@@ -47,6 +48,27 @@ public abstract class ManaItem extends BaseItem implements IManaData {
             }
         }
         return InteractionResultHolder.consume(itemstack);
+    }
+
+    @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getRGBDurabilityForDisplay(ItemStack stack) {
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        Color color = data.spellContext().element.getRenderer().getColor();
+        if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
+            color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
+        }
+        return color.getDecimalColor();
+    }
+
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack) {
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        return 1f - data.manaCapacity().getMana() / data.manaCapacity().getMaxMana();
     }
 
     @Override

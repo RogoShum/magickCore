@@ -89,6 +89,11 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         SpellContext spellContext = data.spellContext();
         spellContext.applyType(ApplyType.POTION);
