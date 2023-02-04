@@ -98,7 +98,7 @@ public class MagickCraftingTileEntity extends BlockEntity implements TickableBlo
         List<ItemEntity> list = level.getEntitiesOfClass(ItemEntity.class, new AABB(worldPosition).inflate(0.5), null);
         for (ItemEntity item : list) {
             Container inventory = new SimpleContainer(item.getItem());
-            Optional<MagickWorkbenchRecipe> optional = level.getRecipeManager().getRecipeFor(MagickWorkbenchRecipe.MAGICK_WORKBENCH, inventory, level);
+            Optional<MagickWorkbenchRecipe> optional = level.getRecipeManager().getRecipeFor(ModRecipes.MAGICK_WORKBENCH, inventory, level);
             ItemStack stack = ItemStack.EMPTY;
             if(optional.isPresent())
                 stack = optional.get().assemble(inventory);

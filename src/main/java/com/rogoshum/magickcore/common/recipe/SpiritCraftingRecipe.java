@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
@@ -22,11 +23,6 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 
 public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
-    public static final RecipeType<SpiritCraftingRecipe> SPIRIT_CRAFTING = Registry.register(Registry.RECIPE_TYPE, MagickCore.MOD_ID, new RecipeType<SpiritCraftingRecipe>() {
-        public String toString() {
-            return "spirit_crafting";
-        }
-    });
     private final int recipeY;
     private final int recipeX;
     private final int recipeZ;
@@ -131,7 +127,7 @@ public class SpiritCraftingRecipe implements Recipe<MatrixInventory> {
 
     @Override
     public RecipeType<?> getType() {
-        return SPIRIT_CRAFTING;
+        return ModRecipes.SPIRIT_CRAFTING;
     }
 
     public static NonNullList<Ingredient> deserializeIngredients(String[] pattern, Map<String, Ingredient> keys, int patternWidth, int patternHeight) {

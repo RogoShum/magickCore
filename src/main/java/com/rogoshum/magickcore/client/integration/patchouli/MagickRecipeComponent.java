@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -88,7 +89,7 @@ public class MagickRecipeComponent implements ICustomComponent {
     @Override
     public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
         this.magickRecipe = lookup.apply(IVariable.wrap(this.magickRecipe)).asString();
-        List<SpiritCraftingRecipe> recipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(SpiritCraftingRecipe.SPIRIT_CRAFTING);
+        List<SpiritCraftingRecipe> recipes = Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(ModRecipes.SPIRIT_CRAFTING);
         recipes.forEach(magickCraftingRecipe -> magickCraftingRecipe.getId().toString().equals(this.magickRecipe));
         Optional<SpiritCraftingRecipe> optional = recipes.stream().filter(recipe -> recipe.getId().toString().equals(this.magickRecipe)).findAny();
         optional.ifPresent(magickCraftingRecipe -> this.recipe = magickCraftingRecipe);

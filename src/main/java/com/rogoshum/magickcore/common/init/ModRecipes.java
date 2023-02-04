@@ -5,20 +5,19 @@ import com.rogoshum.magickcore.common.recipe.*;
 import com.rogoshum.magickcore.common.event.magickevent.LivingLootsEvent;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import com.rogoshum.magickcore.common.event.SubscribeEvent;
+import net.minecraft.world.item.crafting.RecipeType;
 
-import java.util.HashMap;
 public class ModRecipes {
-    //Explosion Recipes(easy recipe)
-    private static final HashMap<String, MagickCraftingTransformRecipe> ExplosionRecipesMap = new HashMap<>();
-
-    public static HashMap<String, MagickCraftingTransformRecipe> getExplosionRecipes() {
-        return ExplosionRecipesMap;
-    }
-
-    //Event registry MagickLogicEvent::onExplosion
-
-    //////////////////////////////
+    public static final RecipeType<SpiritCraftingRecipe> SPIRIT_CRAFTING = Registry.register(Registry.RECIPE_TYPE, MagickCore.fromId("spirit_crafting"), new RecipeType<SpiritCraftingRecipe>() {
+        public String toString() {
+            return "spirit_crafting";
+        }
+    });
+    public static final RecipeType<MagickWorkbenchRecipe> MAGICK_WORKBENCH = Registry.register(Registry.RECIPE_TYPE, MagickCore.fromId("magick_workbench"), new RecipeType<MagickWorkbenchRecipe>() {
+        public String toString() {
+            return "magick_workbench";
+        }
+    });
     public static final RecipeSerializer<?> NBT_RECIPE = NBTRecipe.Serializer.INSTANCE;
     public static final RecipeSerializer<?> MAGICK_WORKBENCH_RECIPE = MagickWorkbenchRecipe.Serializer.INSTANCE;
     public static final RecipeSerializer<?> SPIRIT_CRAFTING_RECIPE = SpiritCraftingRecipe.Serializer.INSTANCE;
@@ -32,9 +31,7 @@ public class ModRecipes {
         registerRecipes();
     }
 
-    @SubscribeEvent
     public static void registerRecipes() {
-        init();
         Registry.register(Registry.RECIPE_SERIALIZER, NBTRecipe.Serializer.NAME,
                 NBT_RECIPE);
         Registry.register(Registry.RECIPE_SERIALIZER, MagickWorkbenchRecipe.Serializer.NAME,
@@ -44,11 +41,11 @@ public class ModRecipes {
 
         Registry.register(Registry.RECIPE_SERIALIZER, MANA_ITEM_CONTEXT_RECIPE.getId(),
                 MANA_ITEM_CONTEXT_RECIPE.getSerializer());
-        Registry.register(Registry.RECIPE_SERIALIZER, SpiritCraftingRecipe.Serializer.NAME,
+        Registry.register(Registry.RECIPE_SERIALIZER, BLOCK_CONDITION_RECIPE.getId(),
                 BLOCK_CONDITION_RECIPE.getSerializer());
-        Registry.register(Registry.RECIPE_SERIALIZER, SpiritCraftingRecipe.Serializer.NAME,
+        Registry.register(Registry.RECIPE_SERIALIZER, MANA_ITEM_MATERIAL_RECIPE.getId(),
                 MANA_ITEM_MATERIAL_RECIPE.getSerializer());
-        Registry.register(Registry.RECIPE_SERIALIZER, SpiritCraftingRecipe.Serializer.NAME,
+        Registry.register(Registry.RECIPE_SERIALIZER, ELEMENT_TOOL_RECIPE.getId(),
                 ELEMENT_TOOL_RECIPE.getSerializer());
         //CraftingHelper.register(new ResourceLocation(MagickCore.MOD_ID, "nbt"), NBTIngredient.Serializer.INSTANCE);
     }

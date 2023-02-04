@@ -8,6 +8,7 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
+    "fabric.MixinIngredient",
     "fabric.MixinItemEntity",
     "fabric.MixinServerPlayer",
     "fabric.accessor.MixinAgeItemEntity",

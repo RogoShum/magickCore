@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.entity.IEntityAdditionalSpawnData;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -133,7 +134,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                     Optional<PlaceableItemEntity>[][][] matrix = MultiBlockUtil.createBlockPosArrays(workbench.getCraftingMatrix().getMatrix(), Optional.empty());
                     if(matrix != null) {
                         MatrixInventory matrixInventory = new MatrixInventory(matrix);
-                        Optional<SpiritCraftingRecipe> optional = level.getRecipeManager().getRecipeFor(SpiritCraftingRecipe.SPIRIT_CRAFTING, matrixInventory, level);
+                        Optional<SpiritCraftingRecipe> optional = level.getRecipeManager().getRecipeFor(ModRecipes.SPIRIT_CRAFTING, matrixInventory, level);
                         if(optional.isPresent()) {
                             workbench.getCraftingMatrix().getMatrix().values().forEach(entity -> {
                                 entity.noDrops = true;

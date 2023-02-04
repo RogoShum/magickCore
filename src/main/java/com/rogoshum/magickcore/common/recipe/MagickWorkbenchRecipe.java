@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
@@ -24,11 +25,6 @@ import net.minecraft.world.level.Level;
 import java.util.HashSet;
 
 public class MagickWorkbenchRecipe implements Recipe<Container> {
-    public static final RecipeType<MagickWorkbenchRecipe> MAGICK_WORKBENCH = Registry.register(Registry.RECIPE_TYPE, MagickCore.MOD_ID, new RecipeType<MagickWorkbenchRecipe>() {
-        public String toString() {
-            return "magick_workbench";
-        }
-    });
     private final Ingredient ingredient;
     private final ItemStack recipeOutput;
     private final HashSet<String> keySet;
@@ -50,7 +46,7 @@ public class MagickWorkbenchRecipe implements Recipe<Container> {
 
     @Override
     public RecipeType<?> getType() {
-        return MAGICK_WORKBENCH;
+        return ModRecipes.MAGICK_WORKBENCH;
     }
 
     public ItemStack getResultItem() {

@@ -44,7 +44,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "de.siphalor:nbtcrafting-1.16:2+"
+	//modImplementation "de.siphalor:nbtcrafting-1.16:2+"
 	//modImplementation "dev.emi:trinkets:2.6.7"
 	modImplementation "vazkii.patchouli:Patchouli:1.16.4-54-FABRIC-SNAPSHOT"
 	//modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:6.5.433"

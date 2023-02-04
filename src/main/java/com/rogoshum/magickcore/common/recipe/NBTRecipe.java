@@ -6,7 +6,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.*;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import de.siphalor.nbtcrafting.api.RecipeUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.CraftingContainer;

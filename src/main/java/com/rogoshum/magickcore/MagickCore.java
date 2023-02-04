@@ -100,6 +100,7 @@ public class MagickCore implements ModInitializer {
         ModBuffs.initBuff();
         ManaMaterials.init();
         ModRegistry.init();
+        ModRecipes.init();
         Networking.registerMessage();
         modCompatibility.put("curios", "com.rogoshum.magickcore.common.integration.curios.CuriosLoader");
         FabricLoader.getInstance().getAllMods().forEach( modInfo -> {
