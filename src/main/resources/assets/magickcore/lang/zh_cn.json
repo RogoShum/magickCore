@@ -1,9 +1,9 @@
 {
-    "itemGroup.magickcore_group": "魔法核心",
-    "itemGroup.magickcore_entity_type_group": "法术形态",
-    "itemGroup.magickcore_element_item_group": "元素物品",
-    "itemGroup.magickcore_magick_context_group": "完备法术",
-    "itemGroup.magickcore_potion_type_group": "魔力药水",
+    "itemGroup.magickcore.group": "魔法核心",
+    "itemGroup.magickcore.entity_type_group": "法术形态",
+    "itemGroup.magickcore.element_item_group": "元素物品",
+    "itemGroup.magickcore.magick_context_group": "完备法术",
+    "itemGroup.magickcore.potion_type_group": "魔力药水",
 
     "gui.magickcore.category.magick_crafting": "魔法工作台",
     "key.category.magickcore": "魔法核心按键配置",

@@ -1,11 +1,9 @@
 package com.rogoshum.magickcore.common.event.magickevent;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.event.EntityEvent;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import com.rogoshum.magickcore.api.event.living.LivingDeathEvent;
-import com.rogoshum.magickcore.api.event.living.LivingEvent;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.event.SubscribeEvent;
 import com.rogoshum.magickcore.common.init.*;
@@ -18,10 +16,16 @@ import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.Util;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.monster.*;
@@ -29,11 +33,10 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.*;
@@ -77,6 +80,16 @@ public class RegisterEvent {
         element_animal.add(EntityType.SHEEP);
         element_animal.add(EntityType.CHICKEN);
         element_animal.add(EntityType.PIG);
+
+        for (int i = 1; i < 6; i++) {
+            Int2ObjectMap<VillagerTrades.ItemListing[]> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+            int2ObjectMap.put(i, Util.make(new VillagerTrades.ItemListing[1], itemListings -> {
+                itemListings[0] = new ModVillager.EntityTypeTrade();
+            }));
+            VillagerTrades.TRADES.put(ModVillager.MAGE, int2ObjectMap);
+        }
+        ResourceLocation key = MagickCore.fromId("spirit_ore");
+        Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, key, SPIRIT_ORE);
     }
 
     public static boolean containAnimalType(EntityType<?> type)
@@ -114,95 +127,6 @@ public class RegisterEvent {
 
         spawnElementMap.put(clazz, table);
         return true;
-    }
-
-    @SubscribeEvent
-    public void onDrops(LivingDeathEvent event) {
-        ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
-            if(!event.getEntityLiving().level.isClientSide) {
-                /*
-                if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived()) {
-                    ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
-                    Vec3 vec = event.getEntityLiving().getPositionVec();
-                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                    orb.spellContext().element(state.getElement());
-                    orb.spellContext().tick(200);
-                    orb.setShooter(event.getEntityLiving());
-                    event.getEntityLiving().world.addEntity(orb);
-                }
-                else {
-                    ManaPowerEntity orb = new ManaPowerEntity(ModEntities.mana_power.get(), event.getEntityLiving().world);
-                    Vec3 vec = event.getEntityLiving().getPositionVec();
-                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                    orb.spellContext().tick(100);
-                    orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
-                    event.getEntityLiving().world.addEntity(orb);
-                }
-
-                 */
-                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
-                Vec3 vec = event.getEntityLiving().position();
-                orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
-                orb.spellContext().element(state.getElement());
-                orb.setOrbType(true);
-                orb.manaCapacity().setMana(event.getEntityLiving().getMaxHealth());
-                orb.spellContext().tick(200);
-                orb.setOwner(event.getEntityLiving());
-                event.getEntityLiving().level.addFreshEntity(orb);
-            }
-        });
-        /*
-        ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
-            if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().level.isClientSide) {
-                Collection<ItemEntity> loots = event.getDrops();
-                loots.forEach((e) -> {
-                    if (e.getItem().isEdible()) {
-                        int count = e.getItem().getCount();
-                        ItemStack stack = new ItemStack(ModItems.ELEMENT_MEAT.get());
-                        CompoundTag tag = new CompoundTag();
-                        tag.putString("ELEMENT", state.getElement().type());
-                        stack.setCount(count);
-                        stack.setTag(tag);
-                        e.setItem(stack);
-                    }
-
-                    if (e.getItem().getItem().getRegistryName().toString().contains("wool")) {
-                        int count = e.getItem().getCount();
-                        ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
-                        CompoundTag tag = new CompoundTag();
-                        tag.putString("ELEMENT", state.getElement().type());
-                        stack.setCount(count);
-                        stack.setTag(tag);
-                        e.setItem(stack);
-                    }
-
-                    if (e.getItem().getItem().getRegistryName().toString().contains("string")) {
-                        int count = e.getItem().getCount();
-                        ItemStack stack = new ItemStack(ModItems.ELEMENT_STRING.get());
-                        CompoundTag tag = new CompoundTag();
-                        tag.putString("ELEMENT", state.getElement().type());
-                        stack.setCount(count);
-                        stack.setTag(tag);
-                        e.setItem(stack);
-                    }
-                });
-            }
-        });
-
-         */
-    }
-
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
-        /*
-        if(event.getSource().getTrueSource() == event.getSource().getImmediateSource() && event.getSource().getTrueSource() instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) event.getSource().getTrueSource()).getHeldItemMainhand();
-            if(EnchantmentHelper.getEnchantmentLevel(ModEnchantments.ELEMENT_DEPRIVATION.get(), stack) > 0) {
-                ExtraDataHelper.entityStateData(event.getEntityLiving(), EntityStateData::setDeprived);
-            }
-        }
-
-         */
     }
 
     public static float getShieldCapacity(LivingEntity livingEntity) {
@@ -287,33 +211,11 @@ public class RegisterEvent {
         event.add(LibRegistry.ITEM_DATA, ItemManaData::new);
     }
 
-    /*
-    @SubscribeEvent
-    public void tradeEvent(VillagerTradesEvent event) {
-        if(event.getType() == ModVillager.MAGE) {
-            for (int i = 1; i < 6; i++) {
-                ArrayList<VillagerTrades.ITrade> list = new ArrayList<>();
-                for (int c = 0; c < 6; ++c) {
-                    list.add(new ModVillager.EntityTypeTrade());
-                }
-                event.getTrades().put(i, list);
-            }
-        }
-    }
+    public static final ConfiguredFeature<?, ?> SPIRIT_ORE = Feature.ORE.configured(new OreConfiguration(OreConfiguration.Predicates.NATURAL_STONE,
+            ModBlocks.SPIRIT_ORE.get().defaultBlockState(),
+            6)
+    ).range(64).squared().count(20);
 
-    @SubscribeEvent
-    public void onBiomesLoad(BiomeLoadingEvent event) {
-        if(event.getClimate().temperature > 0.5 && event.getClimate().temperature < 1.3) {
-            event.getSpawns().getSpawner(EntityClassification.CREATURE).add(new MobSpawnInfo.Spawners(ModEntities.MAGE.get(), 10, 1, 1));
-        }
-        event.getGeneration().addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.configured(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE,
-                ModBlocks.SPIRIT_ORE.get().defaultBlockState(),
-                6)
-        ).range(64).squared().count(20));
-    }
-
-
-     */
     @SubscribeEvent
     public void onAddReload(RecipeLoadedEvent event) {
         /*

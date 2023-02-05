@@ -15,10 +15,14 @@ import com.rogoshum.magickcore.proxy.IProxy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,6 +93,7 @@ public class MagickCore implements ModInitializer {
         EVENT_BUS.register(new LivingLootsEvent());
         ModDataSerializers.DATA_SERIALIZERS.register();
         ModEntities.Entities.register();
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(), MobCategory.CREATURE, ModEntities.MAGE.get(), 10, 1, 1);
         ModBlocks.BLOCKS.register();
         ModEffects.EFFECTS.register();
         ModEffects.POTIONS.register();

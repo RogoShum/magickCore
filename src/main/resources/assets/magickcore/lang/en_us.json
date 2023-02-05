@@ -1,10 +1,10 @@
 {
     //i love google translate
-    "itemGroup.magickcore_group": "Magick Core",
-    "itemGroup.magickcore_entity_type_group": "Spell Form",
-    "itemGroup.magickcore_element_item_group": "Element Items",
-    "itemGroup.magickcore_magick_context_group": "Magick Context",
-    "itemGroup.magickcore_potion_type_group": "Magick Potion",
+    "itemGroup.magickcore.group": "Magick Core",
+    "itemGroup.magickcore.entity_type_group": "Spell Form",
+    "itemGroup.magickcore.element_item_group": "Element Items",
+    "itemGroup.magickcore.magick_context_group": "Magick Context",
+    "itemGroup.magickcore.potion_type_group": "Magick Potion",
 
     "gui.magickcore.category.magick_crafting": "Magick Workbench",
     "key.category.magickcore": "MagickCore",

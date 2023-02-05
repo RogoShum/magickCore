@@ -1,20 +1,28 @@
 package com.rogoshum.magickcore.mixin;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.event.living.LivingDamageEvent;
 import com.rogoshum.magickcore.api.event.living.LivingDeathEvent;
 import com.rogoshum.magickcore.api.event.living.LivingHealEvent;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.LootUtil;
+import net.minecraft.Util;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity {
@@ -29,6 +37,8 @@ public abstract class MixinLivingEntity extends Entity {
     public abstract float getMaxHealth();
 
     @Shadow public int deathTime;
+
+    @Shadow public abstract boolean isAlive();
 
     @ModifyArg(method = "setHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F"), index = 0)
     public float onSetHealth(float health) {
@@ -50,19 +60,25 @@ public abstract class MixinLivingEntity extends Entity {
     }
 
     @ModifyVariable(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSleeping()Z"), argsOnly = true, index = 2)
-    public float onHurt(float value) {
-       /*
-        LivingDamageEvent damageEvent = new LivingDamageEvent((LivingEntity) (Object)this, args.get(0), args.get(1));
+    public float onHurt(float value, DamageSource damageSource) {
+        LivingDamageEvent damageEvent = new LivingDamageEvent((LivingEntity) (Object)this, damageSource, value);
         MagickCore.EVENT_BUS.post(damageEvent);
-        args.set(1, damageEvent.getAmount());
-        return value;
-        */
-        return value;
+        return damageEvent.getAmount();
     }
 
     @Inject(method = "die", at = @At(value = "HEAD"))
     public void onDie(DamageSource damageSource, CallbackInfo ci) {
         LivingDeathEvent deathEvent = new LivingDeathEvent((LivingEntity) (Object)this, damageSource);
         MagickCore.EVENT_BUS.post(deathEvent);
+    }
+
+    @ModifyArg(method = "dropFromLootTable", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/loot/LootTable;getRandomItems(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V"), index = 1)
+    public Consumer<ItemStack> onLoot(Consumer<ItemStack> consumer) {
+        return itemStack -> {
+            List<ItemStack> lootList = new ArrayList<>();
+            lootList.add(itemStack);
+            LootUtil.modifyLivingLoot((LivingEntity) (Object)this, lootList);
+            consumer.accept(lootList.get(0));
+        };
     }
 }

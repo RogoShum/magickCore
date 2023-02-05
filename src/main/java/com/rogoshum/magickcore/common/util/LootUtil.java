@@ -17,15 +17,18 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class LootUtil {
 
@@ -145,5 +148,44 @@ public class LootUtil {
         context.applyType(ApplyType.BUFF).force(force).tick(tick).range(range).element(element);
         spellContext.post(context);
         return spellContext;
+    }
+
+    public static void modifyLivingLoot(LivingEntity entity, List<ItemStack> stacks) {
+        ExtraDataUtil.entityStateData(entity, state -> {
+            if (!state.getElement().type().equals(LibElements.ORIGIN) && !entity.level.isClientSide) {
+                for (int i = 0; i < stacks.size(); ++i) {
+                    ItemStack e = stacks.get(i);
+                    if (e.isEdible()) {
+                        int count = e.getCount();
+                        ItemStack stack = new ItemStack(ModItems.ELEMENT_MEAT.get());
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        stacks.set(i, stack);
+                    }
+
+                    if (e.getDescriptionId().contains("wool")) {
+                        int count = e.getCount();
+                        ItemStack stack = new ItemStack(ModItems.ELEMENT_WOOL.get());
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        stacks.set(i, stack);
+                    }
+
+                    if (e.getDescriptionId().contains("string")) {
+                        int count = e.getCount();
+                        ItemStack stack = new ItemStack(ModItems.ELEMENT_STRING.get());
+                        CompoundTag tag = new CompoundTag();
+                        tag.putString("ELEMENT", state.getElement().type());
+                        stack.setCount(count);
+                        stack.setTag(tag);
+                        stacks.set(i, stack);
+                    }
+                }
+            }
+        });
     }
 }

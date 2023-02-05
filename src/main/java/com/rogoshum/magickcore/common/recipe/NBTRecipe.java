@@ -4,9 +4,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.nbt.CompoundTag;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class NBTRecipe extends CustomRecipe {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     static int MAX_WIDTH = 3;
     static int MAX_HEIGHT = 3;
 
@@ -281,8 +284,34 @@ public class NBTRecipe extends CustomRecipe {
         return map;
     }
 
-    public static ItemStack deserializeItem(JsonObject object) {
-        return ShapedRecipe.itemFromJson(object);
+    public static ItemStack deserializeItem(JsonObject json) {
+        ItemStack stack = ShapedRecipe.itemFromJson(json);
+
+        if (json.has("nbt"))
+        {
+            String string = GsonHelper.getAsString(json, "item");
+            try
+            {
+                JsonElement element = json.get("nbt");
+                CompoundTag nbt;
+                if(element.isJsonObject())
+                    nbt = TagParser.parseTag(GSON.toJson(element));
+                else
+                    nbt = TagParser.parseTag(GsonHelper.convertToString(element, "nbt"));
+
+                CompoundTag tmp = new CompoundTag();
+                tmp.put("tag", nbt);
+                tmp.putString("id", string);
+                tmp.putInt("Count", GsonHelper.getAsInt(json, "count", 1));
+
+                return ItemStack.of(tmp);
+            }
+            catch (CommandSyntaxException e)
+            {
+                throw new JsonSyntaxException("Invalid NBT Entry: " + e.toString());
+            }
+        }
+        return stack;
     }
 
     public static class Serializer implements RecipeSerializer<NBTRecipe> {
