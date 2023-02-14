@@ -1,0 +1,17 @@
+{
+  "name": "Super Spawner",
+  "advancement": "magickcore:learn/ender_dragon_material",
+  "icon": "magickcore:super_spawner",
+  "category": "spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The super spawner can draw out the super power of the current element, and all the current mana needs to be consumed. Unable to carry Magick Context."
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:super_spawner",
+      "text": "Crafted at the Magic Workbench."
+    }
+  ]
+}

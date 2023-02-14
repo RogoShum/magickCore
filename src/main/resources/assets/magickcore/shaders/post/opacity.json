@@ -1,0 +1,15 @@
+{
+    "targets": [
+        "magickcore:opacity_final",
+        "magickcore:opacity_swap"
+    ],
+    "passes": [{
+        "name": "magickcore:opacity",
+        "intarget": "magickcore:opacity_final",
+        "outtarget": "magickcore:opacity_swap"
+    }, {
+        "name": "blit",
+        "intarget": "magickcore:opacity_swap",
+        "outtarget": "magickcore:opacity_final"
+    }]
+}

@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"group":"magickcore",
+	"pattern":[
+		"O O",
+		" O "
+	],
+	"key":{
+		"O":{
+			"type": "magickcore:nbt",
+			"item":"magickcore:element_crystal",
+			"nbt": "{ELEMENT:\"origin\"}"
+		}
+	},
+	"result":{
+		"item":"magickcore:orb_bottle",
+		"count":1
+	}
+}

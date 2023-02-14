@@ -1,0 +1,22 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SO"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "name":"wool"
+    },"O":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:orb_bottle",
+      "nbt": "{ELEMENT:\"\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:element_wool",
+    "nbt": "{ELEMENT:\"\"}",
+    "count":1
+  }
+}

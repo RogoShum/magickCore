@@ -1,0 +1,23 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ "SSS",
+      "SSS",
+      "SSS"],
+    [ "SSS",
+      "S S",
+      "SSS"],
+    [ "SSS",
+      "SSS",
+      "SSS"]
+  ],
+  "key":{
+    "S":{
+      "item":"magickcore:spirit_crystal"
+    }
+  },
+  "result":{
+    "item":"magickcore:magick_container",
+    "count":1
+  }
+}

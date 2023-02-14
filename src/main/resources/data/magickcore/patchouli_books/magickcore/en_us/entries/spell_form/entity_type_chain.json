@@ -1,0 +1,18 @@
+{
+  "name": "Mana Chain",
+  "advancement": "magickcore:learn/trigger_entity_type_chain",
+  "icon": "magickcore:entity_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:chain\"}},APPLY_TYPE:\"none\",TICK:0,RANGE:0.0f}}",
+  "category": "spell_form",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The Mana Chain is a point-type spell form, it is possible to bind a target and a post spell form. The length of the chain can be determined based on the mana range. The resilience of the chain is linked to the force of the spell, with lower force making it easier to break."
+    },{
+      "type": "text",
+      "text": "Without a post spell form, the chain seems to be fixed in place with the space, completely still, and the target can only move within the range. When there is a post spell form and the mana chain does not have a trace attribute, the chain is fixed based on the post spell form. When there is a post spell form and the mana chain has a trace attribute, the chain is fixed based on the target."
+    },{
+      "type": "text",
+      "text": "If the previous spell form carries inferior flint, the mana chain will target the previous spell form."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Magick Workbench",
+  "advancement": "magickcore:learn/magick_crafting",
+  "icon": "magickcore:spirit_crystal",
+  "category": "spirit_product",
+  "pages": [
+	{
+      "type": "text",
+      "text": "The magick workbench is a kind of workbench that is used to assist in the production of spirit products. Only the use of spirit products can lead the supracausal power in the living. This workbench can also convert ordinary materials into mana materials."
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_wood_stick",
+      "text": "Now we can try to convert ordinary sticks into spirit wood sticks, simply drop the stick on the workbench to start the conversion."
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "minecraft:air",
+      "item1": "magickcore:spirit_wood_stick",
+      "item2": "minecraft:air",
+      "item3": "magickcore:spirit_wood_stick",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:wand",
+      "text": "The spirit wood stick is the raw material for making the wand, which allows us to operate the magick workbench to craft spirit products."
+    },
+    {
+      "type": "text",
+      "text": "After the crafting is complete, we can place the spirit wood sticks on the workbench and build them up one by one. After reaching three, right-click with the wand to craft a spirit wood staff."
+    },
+    {
+      "type": "image",
+      "title": "placed like this",
+      "images": ["magickcore:textures/book_image/wand.png"],
+      "border": "true"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:spirit_wood_staff",
+      "text": "The carft of the magic workbench requires the use of a wand to complete the craft."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Element Meat",
+  "advancement": "magickcore:learn/element_meat",
+  "icon": "magickcore:element_meat",
+  "category": "element_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:element_meat",
+	  "text": "Eating element meat can provide players with element attribute buffs."
+    }
+  ]
+}

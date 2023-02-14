@@ -1,0 +1,12 @@
+{
+  "name": "§5Void §7Hit Entity",
+  "advancement": "magickcore:learn/trigger_element_func_void_hit_entity",
+  "icon": "magickcore:void",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Void of the Hit makes target weakness, weakness make target take more damage. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

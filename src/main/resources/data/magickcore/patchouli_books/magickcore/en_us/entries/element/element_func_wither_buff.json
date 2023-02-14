@@ -1,0 +1,12 @@
+{
+  "name": "§2Wither §7Buff",
+  "advancement": "magickcore:learn/trigger_element_func_wither_buff",
+  "icon": "magickcore:wither",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Wither of the Buff can be cleared from the caster: potion effects etc. amplifier lower than potion effects that buff amplifier. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

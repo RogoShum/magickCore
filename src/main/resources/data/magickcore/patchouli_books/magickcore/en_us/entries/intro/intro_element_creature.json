@@ -1,0 +1,39 @@
+{
+  "name": "Element Creature",
+  "advancement": "magickcore:learn/element_creature",
+  "icon": "minecraft:shield",
+  "category": "intro",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Natural monsters often carry different elements of magic, They can be observed surrounded by elemental particles。$(br2)If the monster has many paracausal powers, could use element shield to defense."
+    },
+	{
+      "type": "image",
+	  "title": "Matching Element",
+	  "images": ["magickcore:textures/book_image/element_shield.png"],
+	  "border": "true",
+	  "text": "Elemental Shield is a defense mechanism that protects owner."
+    },
+    {
+      "type": "text",
+      "text": "The elemental shield capacity of a natural creature is usually half or less of its maximum health.$(br2)Elemental shields can reduce the power of non-magic damage to a certain extent, and only attacks of the matching element can achieve the maximum benefit。$(br2)Melee weapons wrapped in elemental string can also deal effective damage to elemental shields.$(br2)Players can also generate elemental shields for a short time by drinking shield potions."
+    },
+    {
+      "type": "text",
+      "text": "Creatures carrying elemental energy after death, their elemental energy in the body will be drawn out in various ways, usually only dropping an orb of elemental ."
+    },
+    {
+      "type": "image",
+      "title": "Element Energy",
+      "images": ["magickcore:textures/book_image/element_power.png"],
+      "text": "This is the elemental energy of the Stasis",
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "title": " ",
+      "text": "Elemental energy can be absorbed by living, increasing the limit of the mana of the living, it can also be stored in element containers, and made into different element props. Nether Quartz is required to craft elemental containers."
+    }
+  ]
+}

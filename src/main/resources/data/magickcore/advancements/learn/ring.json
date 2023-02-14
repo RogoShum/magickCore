@@ -1,0 +1,11 @@
+{
+   "parent": "magickcore:learn/magick_crafting",
+   "criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "ring"
+		}
+	}
+  }
+}

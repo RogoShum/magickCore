@@ -1,0 +1,12 @@
+{
+  "name": "§8夺魂§7攻击",
+  "advancement": "magickcore:learn/trigger_element_func_taken_attack",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "攻击状态的夺魂元素可以用夺魂魔法伤害攻击目标，对受蛊惑的实体效果更加。收益魔力能量为强度和存在时间。"
+    }
+  ]
+}

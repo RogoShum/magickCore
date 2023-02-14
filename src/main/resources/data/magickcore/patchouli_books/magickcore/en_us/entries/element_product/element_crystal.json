@@ -1,0 +1,27 @@
+{
+  "name": "Element Crystal",
+  "advancement": "magickcore:learn/element_crystal",
+  "icon": "magickcore:element_crystal",
+  "category": "element_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:element_crystal",
+	  "text": "Converted from Quartz at a Magic Workbench. Element crystal can carry the mana of different element, and can also be used to make Element Bottle to store element energy. With Element Bottle we can proceed to transform our own element. Cast the magic of different functions."
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "minecraft:air",
+      "item1": "minecraft:air",
+      "item2": "minecraft:air",
+      "item3": "magickcore:element_crystal",
+      "item4": "minecraft:air",
+      "item5": "magickcore:element_crystal",
+      "item6": "minecraft:air",
+      "item7": "magickcore:element_crystal",
+      "item8": "minecraft:air",
+      "output": "magickcore:orb_bottle",
+      "text": "Element Bottle recipe"
+    }
+  ]
+}

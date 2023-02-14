@@ -1,0 +1,12 @@
+{
+  "name": "§bArc §7Diffusion",
+  "advancement": "magickcore:learn/trigger_element_func_arc_diffusion",
+  "icon": "magickcore:arc",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Arc of the Diffusion can extract the target's health and convert it into mana for the caster. When the diffuse arc touches the block, the energy of the block can be extracted to restore the mana of the caster. The attribute of having mana gain is force, range, and duration."
+    }
+  ]
+}

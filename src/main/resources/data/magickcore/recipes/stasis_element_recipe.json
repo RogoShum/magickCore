@@ -1,0 +1,19 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SS",
+    "SS"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_crystal",
+      "nbt": "{ELEMENT:\"stasis\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:stasis",
+    "count":1
+  }
+}

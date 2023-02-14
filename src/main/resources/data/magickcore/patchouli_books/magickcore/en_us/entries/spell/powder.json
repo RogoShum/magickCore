@@ -1,0 +1,13 @@
+{
+  "name": "Mana Powder",
+  "advancement": "magickcore:learn/mana_powder",
+  "icon": "magickcore:mana_gunpowder",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_gunpowder",
+	  "text": "Converted at a magick workbench using gunpowder."
+    }
+  ]
+}

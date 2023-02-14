@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:ghast_tear"
+  },
+  "result":{
+    "item":"magickcore:mana_dragon_breath",
+    "count":1
+  }
+}

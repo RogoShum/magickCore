@@ -1,0 +1,12 @@
+{
+  "name": "§8Taken §7Hit Entity",
+  "advancement": "magickcore:learn/trigger_element_func_taken_hit_entity",
+  "icon": "magickcore:taken",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Taken of the Hit can inflict a bewitch effect on the target, make target neutral. The attribute of having mana gain is duration. Do less effect on Boss."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "package": "com.rogoshum.magickcore.mixin",
+  "mixins": [
+    "MixinEntity",
+    "MixinItemStack",
+    "MixinLevelChunk",
+    "MixinLivingEntity",
+    "MixinMobEntity",
+    "MixinRecipeManager",
+    "MixinWorld"
+  ],
+  "minVersion": "0.8.1",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "magickcore.refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "MixinChunkRenderer",
+    "MixinClientProfiler",
+    "MixinClientWorld",
+    "MixinDisplayEffectsScreen",
+    "MixinGameRenderer",
+    "MixinLivingRender",
+    "MixinWorldRender"
+  ]
+}

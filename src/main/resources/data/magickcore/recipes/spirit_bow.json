@@ -1,0 +1,20 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ " SW"],
+    [ "S W"],
+    [ " SW"]
+  ],
+  "key":{
+    "W":{
+      "item":"magickcore:spirit_wood_stick"
+    },
+    "S":{
+      "item":"magickcore:spirit_crystal"
+    }
+  },
+  "result":{
+    "item":"magickcore:spirit_bow",
+    "count":1
+  }
+}

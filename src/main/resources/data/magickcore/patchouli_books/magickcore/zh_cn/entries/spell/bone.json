@@ -1,0 +1,13 @@
+{
+  "name": "魔力骨头",
+  "advancement": "magickcore:learn/mana_bone",
+  "icon": "magickcore:mana_bone",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_bone",
+	  "text": "使用骨头在魔法工作台转换而成。"
+    }
+  ]
+}

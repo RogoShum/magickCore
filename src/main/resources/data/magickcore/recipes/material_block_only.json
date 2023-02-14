@@ -1,0 +1,11 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:cobblestone"
+  },
+  "result":{
+    "item":"magickcore:condition_block",
+    "nbt": "{item_extra_data:{CHILD_CONTEXT:{condition:{Conditions:{block_only:{target_type:\"TARGET\",negate:0b,blocks:{}}}}}}}",
+    "count":1
+  }
+}

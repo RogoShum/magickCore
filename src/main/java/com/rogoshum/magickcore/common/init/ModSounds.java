@@ -1,0 +1,52 @@
+package com.rogoshum.magickcore.common.init;
+
+import com.rogoshum.magickcore.MagickCore;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+public class ModSounds {
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MagickCore.MOD_ID);
+    public static final RegistryObject<SoundEvent> chaos_spawn = SOUNDS.register("chaos_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "chaos_spawn")));
+    public static final RegistryObject<SoundEvent> chaos_ambience = SOUNDS.register("chaos_ambience", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "chaos_ambience")));
+    public static final RegistryObject<SoundEvent> dawnward_spawn = SOUNDS.register("dawnward_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "dawnward_spawn")));
+    public static final RegistryObject<SoundEvent> chaos_attak = SOUNDS.register("chaos_attak", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "chaos_attak")));
+    public static final RegistryObject<SoundEvent> shpere_dissipate = SOUNDS.register("shpere_dissipate", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "shpere_dissipate")));
+    public static final RegistryObject<SoundEvent> sphere_ambience = SOUNDS.register("sphere_ambience", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "sphere_ambience")));
+    public static final RegistryObject<SoundEvent> sphere_spawn = SOUNDS.register("sphere_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "sphere_spawn")));
+    public static final RegistryObject<SoundEvent> squal_ambience = SOUNDS.register("squal_ambience", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "squal_ambience")));
+    public static final RegistryObject<SoundEvent> squal_spawn = SOUNDS.register("squal_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "squal_spawn")));
+    public static final RegistryObject<SoundEvent> wall_ambience = SOUNDS.register("wall_ambience", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wall_ambience")));
+    public static final RegistryObject<SoundEvent> wall_dissipate = SOUNDS.register("wall_dissipate", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wall_dissipate")));
+    public static final RegistryObject<SoundEvent> wall_spawn = SOUNDS.register("wall_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wall_spawn")));
+    public static final RegistryObject<SoundEvent> wither_ambience = SOUNDS.register("wither_ambience", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wither_ambience")));
+    public static final RegistryObject<SoundEvent> wither_spawn = SOUNDS.register("wither_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wither_spawn")));
+    public static final RegistryObject<SoundEvent> blaze = SOUNDS.register("blaze", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "blaze")));
+    public static final RegistryObject<SoundEvent> flame = SOUNDS.register("flame", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "flame")));
+    public static final RegistryObject<SoundEvent> flick = SOUNDS.register("flick", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "flick")));
+    public static final RegistryObject<SoundEvent> glass = SOUNDS.register("glass", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "glass")));
+    public static final RegistryObject<SoundEvent> glitter = SOUNDS.register("glitter", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "glitter")));
+    public static final RegistryObject<SoundEvent> glitter_another = SOUNDS.register("glitter_another", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "glitter_another")));
+    public static final RegistryObject<SoundEvent> laser_beam = SOUNDS.register("laser_beam", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "laser_beam")));
+    public static final RegistryObject<SoundEvent> magical_focus_energy = SOUNDS.register("magical_focus_energy", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "magical_focus_energy")));
+    public static final RegistryObject<SoundEvent> magick_bench = SOUNDS.register("magick_bench", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "magick_bench")));
+    public static final RegistryObject<SoundEvent> place = SOUNDS.register("place", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "place")));
+    public static final RegistryObject<SoundEvent> ring_pointer = SOUNDS.register("ring_pointer", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "ring_pointer")));
+    public static final RegistryObject<SoundEvent> soft_buildup = SOUNDS.register("soft_buildup", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "soft_buildup")));
+    public static final RegistryObject<SoundEvent> soft_buildup_mid = SOUNDS.register("soft_buildup_mid", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "soft_buildup_mid")));
+    public static final RegistryObject<SoundEvent> soft_buildup_high = SOUNDS.register("soft_buildup_high", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "soft_buildup_high")));
+    public static final RegistryObject<SoundEvent> soft_sweep = SOUNDS.register("soft_sweep", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "soft_sweep")));
+    public static final RegistryObject<SoundEvent> thunder = SOUNDS.register("thunder", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "thunder")));
+    public static final RegistryObject<SoundEvent> wind_fx = SOUNDS.register("wind_fx", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wind_fx")));
+    public static final RegistryObject<SoundEvent> gatorix_flying = SOUNDS.register("gatorix_flying", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "gatorix_flying")));
+    public static final RegistryObject<SoundEvent> gatorix_spawn = SOUNDS.register("gatorix_spawn", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "gatorix_spawn")));
+    public static final RegistryObject<SoundEvent> beam = SOUNDS.register("beam", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "beam")));
+    public static final RegistryObject<SoundEvent> cruise_ship = SOUNDS.register("cruise_ship", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "cruise_ship")));
+    public static final RegistryObject<SoundEvent> wind = SOUNDS.register("wind", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wind")));
+    public static final RegistryObject<SoundEvent> horror_effect = SOUNDS.register("horror_effect", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "horror_effect")));
+    public static final RegistryObject<SoundEvent> explosion = SOUNDS.register("explosion", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "explosion")));
+}

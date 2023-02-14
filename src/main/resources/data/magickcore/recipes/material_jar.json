@@ -1,0 +1,18 @@
+{
+  "type": "magickcore:spirit_crafting",
+  "pattern":[
+    [ "SS",
+      "SS"],
+    [ "SS",
+      "SS"]
+  ],
+  "key":{
+    "S":{
+      "item":"magickcore:spirit_crystal"
+    }
+  },
+  "result":{
+    "item":"magickcore:material_jar",
+    "count":1
+  }
+}

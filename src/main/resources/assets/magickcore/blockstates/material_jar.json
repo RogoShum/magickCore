@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "magickcore:block/material_jar" }
+  }
+}

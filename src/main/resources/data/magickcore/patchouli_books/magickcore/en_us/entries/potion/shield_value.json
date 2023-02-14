@@ -1,0 +1,13 @@
+{
+  "name": "Shield Capacity Potion",
+  "advancement": "magickcore:learn/mana_scute",
+  "icon": "minecraft:potion{Potion:\"magickcore:shield_value\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:shield_value\"}",
+	  "text": "Brewed from items containing the word \"scute\" and refreshing water.$(br2)Potions can be improved with redstone dust or glowstone dust.$(br2)Function: Improve element shield capacity."
+    }
+  ]
+}

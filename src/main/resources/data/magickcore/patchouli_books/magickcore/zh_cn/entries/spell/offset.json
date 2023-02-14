@@ -1,0 +1,13 @@
+{
+  "name": "偏移记忆",
+  "advancement": "magickcore:learn/offset_memory",
+  "icon": "magickcore:offset_memory",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:offset_memory",
+	  "text": "使用铁锭在魔法工作台转换而成。偏移记忆可以记录方向和距离的偏移，需要选择两个方块，记录的会是两个方块之间的方向和距离，施法的位置会加上偏移的记忆。潜行右键可以删除记忆。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Chaos Theorem Potion",
+  "advancement": "magickcore:learn/mana_chaos",
+  "icon": "minecraft:potion{Potion:\"magickcore:chaos_theorem\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:chaos_theorem\"}",
+	  "text": "Brewed from items containing the word \"phantom_membrane\" and refreshing water.$(br2)Function: Make magic indiscriminate between friend and foe."
+    }
+  ]
+}

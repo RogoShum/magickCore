@@ -1,0 +1,14 @@
+{
+  "name": "Element Seeds",
+  "advancement": "magickcore:learn/element_seeds",
+  "icon": "magickcore:element_crystal_seeds",
+  "category": "element_product",
+  "pages": [
+    {
+      "title": "Arc Element Seeds",
+      "type": "spotlight",
+      "item": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
+      "text": "The seeds that have absorbed the mana can grow element crystals that match their own elements, Element crystals with element attributes can be used to change the element of creatures."
+    }
+  ]
+}

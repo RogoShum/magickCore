@@ -1,0 +1,13 @@
+{
+  "name": "Mana Nether Wart",
+  "advancement": "magickcore:learn/mana_wart",
+  "icon": "magickcore:mana_nether_wart",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_nether_wart",
+	  "text": "Converted using nether wart at a magick workbench."
+    }
+  ]
+}

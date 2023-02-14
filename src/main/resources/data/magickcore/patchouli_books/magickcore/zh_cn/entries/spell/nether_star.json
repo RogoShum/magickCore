@@ -1,0 +1,26 @@
+{
+  "name": "下界之星核心",
+  "advancement": "magickcore:learn/nether_star_material",
+  "icon": "magickcore:nether_star_material",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:nether_star_material",
+	  "text": "使用下界之星在魔法工作台转换而成，与法术核心合成后可以提升法术核心的最高能量上限。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:nether_star_material",
+      "item1": "magickcore:context_core",
+      "item2": "minecraft:air",
+      "item3": "minecraft:air",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:context_core{mana_material:\"nether_star\"}"
+    }
+  ]
+}

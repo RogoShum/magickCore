@@ -1,0 +1,12 @@
+{
+  "name": "Origin §7Attack",
+  "advancement": "magickcore:learn/trigger_element_func_origin_attack",
+  "icon": "magickcore:textures/items/origin_material.png",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A mediocre magic attack. Deals more damage to airborne entities. The attribute of having mana gain is force."
+    }
+  ]
+}

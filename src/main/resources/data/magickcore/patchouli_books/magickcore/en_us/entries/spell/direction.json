@@ -1,0 +1,13 @@
+{
+  "name": "Direction Memory",
+  "advancement": "magickcore:learn/direction_memory",
+  "icon": "magickcore:direction_memory",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:direction_memory",
+	  "text": "Converted at the Magick Workbench using Gold Ingot. Direction Memory can record direction by right-click. Also can select two blocks to record the direction between them. Sneak right-click to delete the record."
+    }
+  ]
+}

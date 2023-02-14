@@ -1,0 +1,13 @@
+{
+  "name": "激光法杖",
+  "advancement": "magickcore:learn/laser_staff",
+  "icon": "magickcore:laser_staff",
+  "category": "spirit_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:laser_staff",
+	  "text": "激光法杖是一种魔法道具，无法合成，无法替换完备法术。可以在战利品箱内获取到。"
+    }
+  ]
+}

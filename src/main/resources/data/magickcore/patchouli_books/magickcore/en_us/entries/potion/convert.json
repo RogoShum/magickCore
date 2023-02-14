@@ -1,0 +1,13 @@
+{
+  "name": "Mana Convert Potion",
+  "advancement": "magickcore:learn/mana_convert",
+  "icon": "minecraft:potion{Potion:\"magickcore:mana_convert\"}",
+  "category": "potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:mana_convert\"}",
+	  "text": "Brewed from items containing the word \"blaze_powder\" and refreshing water.$(br2)Potions can be improved with Glowstone Dust.$(br2)Function: Restore mana when damaged."
+    }
+  ]
+}

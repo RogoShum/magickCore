@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "magickcore:block/magick_supplier" }
+  }
+}

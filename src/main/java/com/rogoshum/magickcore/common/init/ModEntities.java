@@ -1,0 +1,63 @@
+package com.rogoshum.magickcore.common.init;
+
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
+import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.pointed.*;
+import com.rogoshum.magickcore.common.entity.projectile.*;
+import com.rogoshum.magickcore.common.entity.radiation.*;
+import com.rogoshum.magickcore.common.entity.superentity.*;
+import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
+
+import com.rogoshum.magickcore.common.lib.LibEntities;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntityType;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+public class ModEntities {
+	public static final DeferredRegister<EntityType<?>> Entities = DeferredRegister.create(ForgeRegistries.ENTITIES, MagickCore.MOD_ID);
+	//public static final EntityType<TimeManagerEntity> time_manager = (EntityType<TimeManagerEntity>) EntityType.Builder.create(TimeManagerEntity::new, EntityClassification.MISC).size(1f, 1f).build("time_manager").setRegistryName("time_manager");
+	public static final RegistryObject<EntityType<ManaOrbEntity>> MANA_ORB = Entities.register(LibEntities.MANA_ORB, () -> EntityType.Builder.of(ManaOrbEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.MANA_ORB));
+	public static final RegistryObject<EntityType<ManaStarEntity>> MANA_STAR = Entities.register(LibEntities.MANA_STAR, () -> EntityType.Builder.of(ManaStarEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.MANA_STAR));
+	public static final RegistryObject<EntityType<ManaLaserEntity>> MANA_LASER = Entities.register(LibEntities.MANA_LASER, () -> EntityType.Builder.of(ManaLaserEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.MANA_LASER));
+	public static final RegistryObject<EntityType<DawnWardEntity>> MANA_SHIELD = Entities.register(LibEntities.MANA_SHIELD, () -> EntityType.Builder.<DawnWardEntity>of(DawnWardEntity::new, MobCategory.MISC).sized(8f, 8f).build(LibEntities.MANA_SHIELD));
+	public static final RegistryObject<EntityType<ManaSphereEntity>> MANA_SPHERE = Entities.register(LibEntities.MANA_SPHERE, () -> EntityType.Builder.of(ManaSphereEntity::new, MobCategory.MISC).sized(2.2f, 2.2f).build(LibEntities.MANA_SPHERE));
+	public static final RegistryObject<EntityType<RadianceWellEntity>> RADIANCE_WALL = Entities.register(LibEntities.RADIANCE_WALL, () -> EntityType.Builder.of(RadianceWellEntity::new, MobCategory.MISC).sized(9.0f, 2.0f).build(LibEntities.RADIANCE_WALL));
+	public static final RegistryObject<EntityType<ChaoReachEntity>> CHAOS_REACH = Entities.register(LibEntities.CHAOS_REACH, () -> EntityType.Builder.of(ChaoReachEntity::new, MobCategory.MISC).sized(2.0f, 2.0f).build(LibEntities.CHAOS_REACH));
+	public static final RegistryObject<EntityType<ThornsCaressEntity>> THORNS_CARESS = Entities.register(LibEntities.THORNS_CARESS, () -> EntityType.Builder.of(ThornsCaressEntity::new, MobCategory.MISC).sized(2.0f, 2.0f).build(LibEntities.THORNS_CARESS));
+	public static final RegistryObject<EntityType<SilenceSquallEntity>> SILENCE_SQUALL = Entities.register(LibEntities.SILENCE_SQUALL, () -> EntityType.Builder.of(SilenceSquallEntity::new, MobCategory.MISC).sized(3.0f, 3.0f).build(LibEntities.SILENCE_SQUALL));
+	public static final RegistryObject<EntityType<AscendantRealmEntity>> ASCENDANT_REALM = Entities.register(LibEntities.ASCENDANT_REALM, () -> EntityType.Builder.of(AscendantRealmEntity::new, MobCategory.MISC).sized(10.0f, 2.0f).build(LibEntities.ASCENDANT_REALM));
+	public static final RegistryObject<EntityType<ManaElementOrbEntity>> ELEMENT_ORB = Entities.register(LibEntities.ELEMENT_ORB, () -> EntityType.Builder.of(ManaElementOrbEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.ELEMENT_ORB));
+	public static final RegistryObject<EntityType<ContextCreatorEntity>> CONTEXT_CREATOR = Entities.register(LibEntities.CONTEXT_CREATOR, () -> EntityType.Builder.of(ContextCreatorEntity::new, MobCategory.MISC).sized(3.0f, 3.0f).build(LibEntities.CONTEXT_CREATOR));
+	public static final RegistryObject<EntityType<ManaCapacityEntity>> MANA_CAPACITY = Entities.register(LibEntities.MANA_CAPACITY, () -> EntityType.Builder.of(ManaCapacityEntity::new, MobCategory.MISC).sized(1.0f, 1.0f).build(LibEntities.MANA_CAPACITY));
+	public static final RegistryObject<EntityType<ContextPointerEntity>> CONTEXT_POINTER = Entities.register(LibEntities.CONTEXT_POINTER, () -> EntityType.Builder.of(ContextPointerEntity::new, MobCategory.MISC).sized(1.0f, 1.0f).build(LibEntities.CONTEXT_POINTER));
+	public static final RegistryObject<EntityType<RayTraceEntity>> RAY_TRACE = Entities.register(LibEntities.RAY_TRACE, () -> EntityType.Builder.of(RayTraceEntity::new, MobCategory.MISC).sized(0.0f, 0.0f).build(LibEntities.RAY_TRACE));
+	public static final RegistryObject<EntityType<EntityHunterEntity>> ENTITY_CAPTURE = Entities.register(LibEntities.ENTITY_HUNTER, () -> EntityType.Builder.of(EntityHunterEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.ENTITY_HUNTER));
+	public static final RegistryObject<EntityType<ConeEntity>> CONE = Entities.register(LibEntities.CONE, () -> EntityType.Builder.of(ConeEntity::new, MobCategory.MISC).sized(0.0f, 0.0f).build(LibEntities.CONE));
+	public static final RegistryObject<EntityType<SectorEntity>> SECTOR = Entities.register(LibEntities.SECTOR, () -> EntityType.Builder.of(SectorEntity::new, MobCategory.MISC).sized(0.0f, 0.0f).build(LibEntities.SECTOR));
+	public static final RegistryObject<EntityType<SphereEntity>> SPHERE = Entities.register(LibEntities.SPHERE, () -> EntityType.Builder.of(SphereEntity::new, MobCategory.MISC).sized(0.0f, 0.0f).build(LibEntities.SPHERE));
+	public static final RegistryObject<EntityType<SquareEntity>> SQUARE = Entities.register(LibEntities.SQUARE, () -> EntityType.Builder.of(SquareEntity::new, MobCategory.MISC).sized(0.0f, 0.0f).build(LibEntities.SQUARE));
+	public static final RegistryObject<EntityType<RayEntity>> RAY = Entities.register(LibEntities.RAY, () -> EntityType.Builder.of(RayEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.RAY));
+	public static final RegistryObject<EntityType<BloodBubbleEntity>> BLOOD_BUBBLE = Entities.register(LibEntities.BLOOD_BUBBLE, () -> EntityType.Builder.of(BloodBubbleEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.BLOOD_BUBBLE));
+	public static final RegistryObject<EntityType<LampEntity>> LAMP = Entities.register(LibEntities.LAMP, () -> EntityType.Builder.of(LampEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.LAMP));
+	public static final RegistryObject<EntityType<ManaArrowEntity>> ARROW = Entities.register(LibEntities.ARROW, () -> EntityType.Builder.of(ManaArrowEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.ARROW));
+	public static final RegistryObject<EntityType<BubbleEntity>> BUBBLE = Entities.register(LibEntities.BUBBLE, () -> EntityType.Builder.of(BubbleEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.BUBBLE));
+	public static final RegistryObject<EntityType<LeafEntity>> LEAF = Entities.register(LibEntities.LEAF, () -> EntityType.Builder.of(LeafEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.LEAF));
+	public static final RegistryObject<EntityType<RedStoneEntity>> RED_STONE = Entities.register(LibEntities.RED_STONE, () -> EntityType.Builder.of(RedStoneEntity::new, MobCategory.MISC).sized(0.3f, 0.3f).build(LibEntities.RED_STONE));
+	public static final RegistryObject<EntityType<ShadowEntity>> SHADOW = Entities.register(LibEntities.SHADOW, () -> EntityType.Builder.of(ShadowEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.SHADOW));
+	public static final RegistryObject<EntityType<WindEntity>> WIND = Entities.register(LibEntities.WIND, () -> EntityType.Builder.of(WindEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.WIND));
+	public static final RegistryObject<EntityType<GravityLiftEntity>> GRAVITY_LIFT = Entities.register(LibEntities.GRAVITY_LIFT, () -> EntityType.Builder.of(GravityLiftEntity::new, MobCategory.MISC).sized(1.0f, 1.0f).build(LibEntities.GRAVITY_LIFT));
+	public static final RegistryObject<EntityType<PlaceableItemEntity>> PLACEABLE_ENTITY = Entities.register(LibEntities.PLACEABLE_ENTITY, () -> EntityType.Builder.of(PlaceableItemEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(LibEntities.PLACEABLE_ENTITY));
+	public static final RegistryObject<EntityType<MageVillagerEntity>> MAGE = Entities.register(LibEntities.MAGE, () -> EntityType.Builder.of(MageVillagerEntity::new, MobCategory.CREATURE).sized(0.6F, 1.95F).clientTrackingRange(10).build(LibEntities.MAGE));
+	public static final RegistryObject<EntityType<PhantomEntity>> PHANTOM = Entities.register(LibEntities.PHANTOM, () -> EntityType.Builder.of(PhantomEntity::new, MobCategory.MISC).sized(0.0F, 0.0F).build(LibEntities.PHANTOM));
+	public static final RegistryObject<EntityType<RepeaterEntity>> REPEATER = Entities.register(LibEntities.REPEATER, () -> EntityType.Builder.of(RepeaterEntity::new, MobCategory.MISC).sized(0.0F, 0.0F).build(LibEntities.REPEATER));
+	public static final RegistryObject<EntityType<JewelryBagEntity>> JEWELRY_BAG = Entities.register(LibEntities.JEWELRY_BAG, () -> EntityType.Builder.of(JewelryBagEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).build(LibEntities.JEWELRY_BAG));
+	public static final RegistryObject<EntityType<ArtificialLifeEntity>> ARTIFICIAL_LIFE = Entities.register(LibEntities.ARTIFICIAL_LIFE, () -> EntityType.Builder.of(ArtificialLifeEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(10).build(LibEntities.ARTIFICIAL_LIFE));
+	public static final RegistryObject<EntityType<SpinEntity>> SPIN = Entities.register(LibEntities.SPIN, () -> EntityType.Builder.of(SpinEntity::new, MobCategory.MISC).sized(0.25F, 0.25F).build(LibEntities.SPIN));
+	public static final RegistryObject<EntityType<ChainEntity>> CHAIN = Entities.register(LibEntities.CHAIN, () -> EntityType.Builder.of(ChainEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).build(LibEntities.CHAIN));
+	public static final RegistryObject<EntityType<MultiReleaseEntity>> MULTI_RELEASE = Entities.register(LibEntities.MULTI_RELEASE, () -> EntityType.Builder.of(MultiReleaseEntity::new, MobCategory.MISC).sized(0.25F, 0.25F).build(LibEntities.MULTI_RELEASE));
+	public static final RegistryObject<EntityType<ChargeEntity>> CHARGE = Entities.register(LibEntities.CHARGE, () -> EntityType.Builder.of(ChargeEntity::new, MobCategory.MISC).sized(0.15F, 0.15F).build(LibEntities.CHARGE));
+}

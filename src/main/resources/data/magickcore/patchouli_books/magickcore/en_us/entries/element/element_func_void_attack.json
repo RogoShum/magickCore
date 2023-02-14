@@ -1,0 +1,12 @@
+{
+  "name": "§5Void §7Attack",
+  "advancement": "magickcore:learn/trigger_element_func_void_attack",
+  "icon": "magickcore:void",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Void of the Attack can inflict void magic damage on the target, and is more effective against weakened targets. The attribute of having mana gain is force."
+    }
+  ]
+}

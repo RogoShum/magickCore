@@ -1,0 +1,12 @@
+{
+  "name": "§3Stasis §7Attack",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_attack",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Stasis of the Attack can inflict stasis magic damage on the target, and the effect on the target in the chilly state is better. The attribute of having mana gain is force and duration."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Laser Staff",
+  "advancement": "magickcore:learn/laser_staff",
+  "icon": "magickcore:laser_staff",
+  "category": "spirit_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:laser_staff",
+	  "text": "The laser staff is a kind of magic prop, which cannot be crafted and cannot replace Magick Context."
+    }
+  ]
+}

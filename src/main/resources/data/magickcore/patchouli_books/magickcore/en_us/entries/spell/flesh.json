@@ -1,0 +1,13 @@
+{
+  "name": "Mana Flesh",
+  "advancement": "magickcore:learn/mana_flesh",
+  "icon": "magickcore:mana_flesh",
+  "category": "spell",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_flesh",
+	  "text": "Converted from rotten flesh at a magick workbench."
+    }
+  ]
+}

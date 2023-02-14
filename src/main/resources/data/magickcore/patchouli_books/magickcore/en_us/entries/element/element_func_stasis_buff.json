@@ -1,0 +1,12 @@
+{
+  "name": "§3Stasis §7Buff",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_buff",
+  "icon": "magickcore:stasis",
+  "category": "element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Stasis of the Buff The can give the player the stasis effect, and when the effect lasts, it can give the surrounding \"non-friendly units\" the chilly effect. The attribute of having mana gain is force and duration."
+    }
+  ]
+}
