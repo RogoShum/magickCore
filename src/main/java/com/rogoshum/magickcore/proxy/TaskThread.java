@@ -47,7 +47,7 @@ public class TaskThread extends Thread{
                         additionTask.run();
                     } catch (Exception e) {
                         MagickCore.LOGGER.info("Addition Task Crashed!");
-                        MagickCore.LOGGER.debug(e);
+                        e.printStackTrace();
                         additionTask = null;
                         if(additionCatch != null) {
                             additionCatch.run();

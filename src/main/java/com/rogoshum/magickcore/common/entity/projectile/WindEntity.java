@@ -44,7 +44,7 @@ public class WindEntity extends ManaProjectileEntity {
         super.tick();
         //this.setNoGravity(true);
         this.noPhysics = true;
-        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), null);
+        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), (Entity::isAlive));
         for(int i = 0; i < entityList.size(); ++i) {
             Entity entity = entityList.get(i);
             if(!suitableEntity(entity)) continue;

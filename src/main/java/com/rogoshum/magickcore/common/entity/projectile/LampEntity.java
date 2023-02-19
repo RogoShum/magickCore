@@ -55,7 +55,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         if(spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
             if(traceContext.entity == null) {
-                List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), null);
+                List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), Entity::isAlive);
                 for(int i = 0; i < entityList.size(); ++i) {
                     Entity entity = entityList.get(i);
                     if(!suitableEntity(entity)) continue;

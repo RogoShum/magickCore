@@ -3,7 +3,9 @@ package com.rogoshum.magickcore.client.event;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
@@ -11,6 +13,7 @@ import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.init.ModShaders;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.renderer.PostChain;
@@ -83,6 +86,11 @@ public class ShaderEvent {
                 MagickCore.LOGGER.warn("Failed to load shader: {}", resourceLocation, e);
             }
         });
+        try {
+            RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.NEW_ENTITY));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         try {
             LightShaderManager.init();

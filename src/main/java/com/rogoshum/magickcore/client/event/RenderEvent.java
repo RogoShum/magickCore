@@ -51,6 +51,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -58,7 +59,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
-    private static final HashMap<RenderMode, Queue<LitParticle>> particles = new HashMap<>();
+    private static final ConcurrentHashMap<RenderMode, Queue<LitParticle>> particles = new ConcurrentHashMap<>();
 
     public static void addMagickParticle(LitParticle par) {
         if(par.getTexture() == null) return;
@@ -217,8 +218,7 @@ public class RenderEvent {
     }
 
     public static void clearParticle() {
-        particles.values().forEach(list -> list.forEach(LitParticle::remove));
-        particles.values().forEach(Collection::clear);
+        particles.keySet().forEach(key -> particles.put(key, Queues.newConcurrentLinkedQueue()));
     }
 
     @SubscribeEvent

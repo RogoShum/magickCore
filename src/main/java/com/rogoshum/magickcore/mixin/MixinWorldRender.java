@@ -21,6 +21,7 @@ public class MixinWorldRender {
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/PostChain.process (F)V", ordinal = 1))
     public void onFabulousRender(PoseStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, Camera activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci) {
         RenderHelper.setRenderingWorld(true);
+        RenderHelper.setWorldMatrix4f(projectionIn);
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
@@ -31,6 +32,7 @@ public class MixinWorldRender {
     public void onNormalRender(PoseStack matrixStackIn, float partialTicks, long finishTimeNano, boolean drawBlockOutline, Camera activeRenderInfoIn, GameRenderer gameRendererIn, LightTexture lightmapIn, Matrix4f projectionIn, CallbackInfo ci) {
         if (Minecraft.useShaderTransparency()) return;
         RenderHelper.setRenderingWorld(true);
+        RenderHelper.setWorldMatrix4f(projectionIn);
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PreRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.RenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));
         MinecraftForge.EVENT_BUS.post(new RenderWorldEvent.PostRenderMagickEvent(Minecraft.getInstance().levelRenderer, matrixStackIn, partialTicks, projectionIn));

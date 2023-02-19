@@ -32,7 +32,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
 
     @Nonnull
     default List<Entity> findEntity() {
-        return findEntity(null);
+        return findEntity((entity)-> true);
     }
 
     default void lookAt(Vec3 direction) {
