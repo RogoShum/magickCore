@@ -25,9 +25,7 @@ public class EntityHunterModel extends EntityModel<Entity> {
 	public static LayerDefinition createBodyLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
-
-		PartDefinition bb_main = partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create().texOffs(0, 0).addBox(-64.0F, -88.0F, 0.0F, 64.0F, 64.0F, 64.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
-
+		partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create().texOffs(0, 0).addBox(-32.0F, -40.0F, -32.0F, 64.0F, 64.0F, 64.0F, new CubeDeformation(-24f)), PartPose.offset(0.0F, 24.0F, 0.0F));
 		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 

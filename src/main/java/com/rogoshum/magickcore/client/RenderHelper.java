@@ -169,6 +169,7 @@ public class RenderHelper {
     protected static final RenderStateShard.DepthTestStateShard DEPTH_LESS = new RenderStateShard.DepthTestStateShard("<", 513);
     protected static final RenderStateShard.DepthTestStateShard DEPTH_LEQUAL = new RenderStateShard.DepthTestStateShard("<=", 515);
 
+
     @OnlyIn(Dist.CLIENT)
     public static class LineStateShard extends RenderStateShard {
         private final OptionalDouble width;
@@ -196,7 +197,7 @@ public class RenderHelper {
             return this.name + "[" + (this.width.isPresent() ? this.width.getAsDouble() : "window_scale") + "]";
         }
     }
-    
+
     public static RenderType getTexedOrbSolid(ResourceLocation locationIn) {
         RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
                 .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
