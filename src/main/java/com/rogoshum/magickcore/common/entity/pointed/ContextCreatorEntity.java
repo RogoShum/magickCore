@@ -105,7 +105,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         List<ItemEntity> items = this.level.getEntities(EntityType.ITEM, this.getBoundingBox().inflate(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && item.tickCount > 10 && item.position().distanceToSqr(this.position()) <= 2.5) {
+            if(item.isAlive() && ((item.tickCount > 10 && item.level.isClientSide()) || (item.tickCount > 15 && !item.level.isClientSide())) && item.position().distanceToSqr(this.position()) <= 2.5) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 if(material.upgradeManaItem(item.getItem(), innerManaData)) {
                     Vec3 relativeVec = relativeVec(item);
@@ -259,7 +259,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 getStacks().clear();
                 ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + (this.getBbWidth() / 2), this.getZ(), stack);
                 level.addFreshEntity(entity);
-                remove(RemovalReason.DISCARDED);
+                setRemoved(RemovalReason.DISCARDED);
                 playSound(SoundEvents.BEACON_DEACTIVATE, 0.5f, 2.0f);
                 if(level.isClientSide)
                     spawnParticle();

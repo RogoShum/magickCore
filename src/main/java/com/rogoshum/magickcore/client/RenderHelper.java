@@ -67,7 +67,16 @@ public class RenderHelper {
         RenderHelper.rendertypeEntityTranslucentShader = rendertypeEntityTranslucentShader;
     }
 
+    public static ShaderInstance getPositionTextureShader() {
+        return positionTextureShader;
+    }
+
+    public static void setPositionTextureShader(ShaderInstance positionTextureShader) {
+        RenderHelper.positionTextureShader = positionTextureShader;
+    }
+
     private static ShaderInstance rendertypeEntityTranslucentShader;
+    private static ShaderInstance positionTextureShader;
     protected static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("no_transparency", RenderSystem::disableBlend, () -> {
     });
     protected static final RenderStateShard.OutputStateShard TRANSLUCENT_TARGET = new RenderStateShard.OutputStateShard("translucent_target", () -> {
@@ -155,6 +164,7 @@ public class RenderHelper {
     protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getRendertypeEntityTranslucentShader);
     protected static final RenderStateShard.ShaderStateShard POSITION_COLOR_TEX_LIGHTMAP_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorTexLightmapShader);
     protected static final RenderStateShard.ShaderStateShard POSITION_COLOR_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorShader);
+    protected static final RenderStateShard.ShaderStateShard LINE_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader);
     protected static final RenderStateShard.WriteMaskStateShard COLOR_DEPTH_WRITE = new RenderStateShard.WriteMaskStateShard(true, true);
     protected static final RenderStateShard.WriteMaskStateShard COLOR_WRITE = new RenderStateShard.WriteMaskStateShard(true, false);
     protected static final RenderStateShard.CullStateShard CULL_DISABLED = new RenderStateShard.CullStateShard(false);
@@ -271,12 +281,12 @@ public class RenderHelper {
     }
 
     public static RenderStateShard.TexturingStateShard getEntityGlint(float glintScale, float glintRotate) {
-        return new RenderStateShard.TexturingStateShard("cylinder_glint_texturing_" + glintScale + "_" + glintRotate,
+        return new RenderStateShard.TexturingStateShard("entity_glint_texturing_" + glintScale + "_" + glintRotate,
                 () -> {
                     long i = Util.getMillis() * 8L;
-                    float f = (float)(i % 110000L) / 110000.0F;
-                    float f1 = (float)(i % 30000L) / 30000.0F;
-                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(-f, f1, 0.0F);
+                    float f = (float) (i % 110000L) / 110000.0F;
+                    float f1 = (float) (i % 30000L) / 30000.0F;
+                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(f, f1, 0.0F);
                     matrix4f.multiply(Vector3f.YP.rotationDegrees(glintRotate));
                     matrix4f.multiply(Matrix4f.createScaleMatrix(glintScale, glintScale, glintScale));
                     RenderSystem.setTextureMatrix(matrix4f);
@@ -343,14 +353,12 @@ public class RenderHelper {
         return new RenderStateShard.TexturingStateShard("laser_glint_texturing_" + glintScale,
                 () -> {
                     long i = Util.getMillis() * 8L;
-                    float f1 = (float)(i % 30000L) / 30000.0F;
+                    float f1 = (i % (3000L * glintScale)) / (3000.0F * glintScale);
                     Matrix4f matrix4f = Matrix4f.createTranslateMatrix(0.0f, f1, 0.0F);
-                    matrix4f.multiply(Matrix4f.createScaleMatrix(glintScale, glintScale, glintScale));
+                    matrix4f.multiply(Matrix4f.createScaleMatrix(1, glintScale, 1));
                     RenderSystem.setTextureMatrix(matrix4f);
                 }
-            , () -> {
-            RenderSystem.resetTextureMatrix();
-        });
+            , RenderSystem::resetTextureMatrix);
     }
 
     public static RenderType getTexedLaserGlint(ResourceLocation locationIn, float glintScale) {
@@ -372,9 +380,8 @@ public class RenderHelper {
         return new RenderStateShard.TexturingStateShard("cylinder_glint_texturing_" + glintScale + "_" + glintRotate,
                 () -> {
                     long i = Util.getMillis() * 8L;
-                    float f = (float)(i % 110000L) / 110000.0F;
-                    float f1 = (float)(i % 30000L) / 30000.0F;
-                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(-f, f1, 0.0F);
+                    float f1 = (float) (i % 30000L) / 30000.0F;
+                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(0.0f, f1, 0.0F);
                     matrix4f.multiply(Vector3f.YP.rotationDegrees(glintRotate));
                     matrix4f.multiply(Matrix4f.createScaleMatrix(1.0f, glintScale, 1.0f));
                     RenderSystem.setTextureMatrix(matrix4f);
@@ -407,17 +414,28 @@ public class RenderHelper {
         return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
     }
 
+    public static final RenderStateShard.LayeringStateShard VIEW_OFFSET_Z_LAYERING = new RenderStateShard.LayeringStateShard("view_offset_z_layering", () -> {
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.pushPose();
+        posestack.scale(0.99975586F, 0.99975586F, 0.99975586F);
+        RenderSystem.applyModelViewMatrix();
+    }, () -> {
+        PoseStack posestack = RenderSystem.getModelViewStack();
+        posestack.popPose();
+        RenderSystem.applyModelViewMatrix();
+    });
+
     public static RenderType getLineStripGlow(double width) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setWriteMaskState(COLOR_DEPTH_WRITE).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setLayeringState(VIEW_OFFSET_Z_LAYERING).setWriteMaskState(COLOR_DEPTH_WRITE).setShaderState(LINE_SHADER).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
         return RenderType.create(MagickCore.MOD_ID + ":LINES_STRIP_" + width, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.LINE_STRIP, 256, false, false, rendertype$state);
     }
 
     public static RenderType getLineStripPC(double width) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setShaderState(POSITION_COLOR_SHADER).setTransparencyState(ADDITIVE_TRANSPARENCY).setWriteMaskState(COLOR_DEPTH_WRITE).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setShaderState(LINE_SHADER).setLayeringState(VIEW_OFFSET_Z_LAYERING).setTransparencyState(ADDITIVE_TRANSPARENCY).setWriteMaskState(COLOR_DEPTH_WRITE).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
         return RenderType.create(MagickCore.MOD_ID + ":LINES_STRIP_PC_" + width, DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256, false, false, rendertype$state);
     }
     public static RenderType getLinesGlow(double width) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setWriteMaskState(COLOR_DEPTH_WRITE).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setLayeringState(VIEW_OFFSET_Z_LAYERING).setWriteMaskState(COLOR_DEPTH_WRITE).setShaderState(LINE_SHADER).setOutputState(TRANSLUCENT_TARGET).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
         return RenderType.create(MagickCore.MOD_ID + ":LINES_" + width, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.LINES, 256, false, false, rendertype$state);
     }
 
@@ -704,7 +722,10 @@ public class RenderHelper {
             Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
             pack.type.setupRenderState();
             for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), GameRenderer.getPositionColorTexShader());
+                if(pack.type.mode() == VertexFormat.Mode.LINES || pack.type.mode() == VertexFormat.Mode.LINE_STRIP)
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), GameRenderer.getRendertypeLinesShader());
+                else
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), GameRenderer.getPositionColorTexShader());
             }
             pack.type.clearRenderState();
             end(pack);
@@ -741,7 +762,10 @@ public class RenderHelper {
             Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(context);
             pack.type.setupRenderState();
             for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
+                if(pack.type.mode() == VertexFormat.Mode.LINES || pack.type.mode() == VertexFormat.Mode.LINE_STRIP)
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), GameRenderer.getRendertypeLinesShader());
+                else
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
             }
             pack.type.clearRenderState();
             end(pack);
@@ -1102,7 +1126,10 @@ public class RenderHelper {
             type.setupRenderState();
             Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
             for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
+                if(context.type.mode() == VertexFormat.Mode.LINES || context.type.mode() == VertexFormat.Mode.LINE_STRIP)
+                    vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), GameRenderer.getRendertypeLinesShader());
+                else
+                    vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
             }
             type.clearRenderState();
             end(context);
@@ -1137,7 +1164,10 @@ public class RenderHelper {
             type.setupRenderState();
             Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
             for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
+                if(context.type.mode() == VertexFormat.Mode.LINES || context.type.mode() == VertexFormat.Mode.LINE_STRIP)
+                    vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), GameRenderer.getRendertypeLinesShader());
+                else
+                    vertexBuffer.drawWithShader(matrixStack.last().pose(), getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
             }
             type.clearRenderState();
             end(context);
@@ -1207,7 +1237,10 @@ public class RenderHelper {
             Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
             pack.type.setupRenderState();
             for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
+                if(pack.type.mode() == VertexFormat.Mode.LINES || pack.type.mode() == VertexFormat.Mode.LINE_STRIP)
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), GameRenderer.getRendertypeLinesShader());
+                else
+                    vertexBuffer.drawWithShader(matrix4f, getWorldMatrix4f(), getRendertypeEntityTranslucentShader());
             }
             pack.type.clearRenderState();
             end(pack);
@@ -1342,10 +1375,11 @@ public class RenderHelper {
         imax = stacks / 2;
         // draw intermediate stacks as quad strips
         Queue<Queue<VertexAttribute>> queues = Queues.newArrayDeque();
+        Queue<VertexAttribute> queue = Queues.newArrayDeque();
         for (i = imin; i < imax; i++) {
             rho = i * drho;
             s = 0.0f;
-            Queue<VertexAttribute> queue = Queues.newArrayDeque();
+
             for (j = 0; j <= stacks; j++) {
                 theta = (j == stacks) ? 0.0f : j * dtheta;
                 x = (float) (-Math.sin(theta) * Math.sin(rho));
@@ -1362,9 +1396,10 @@ public class RenderHelper {
                 queue.add(vertex1);
                 s += ds;
             }
-            queues.add(queue);
+
             t -= dt;
         }
+        queues.add(queue);
         return queues;
     }
 
@@ -1419,8 +1454,8 @@ public class RenderHelper {
         }
 
         float scale = 1f - maxAlhpa * limit;
-        if(scale > 0)
-            scale = -scale;
+        if(scale < 0)
+            scale = 0;
 
         VertexAttribute vertexAttribute = new VertexAttribute();
         vertexAttribute.setPos(x * scale, y * scale, z * scale);

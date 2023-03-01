@@ -323,12 +323,14 @@ public class RegisterEvent {
 
     public static List<OreConfiguration.TargetBlockState> ORE_SPIRIT_TARGET_LIST;
     public static Holder<ConfiguredFeature<OreConfiguration, ?>> ORE_SPIRIT;
+    public static Holder<PlacedFeature> ORE_SPIRIT_UPPER;
     public static Holder<PlacedFeature> ORE_SPIRIT_MIDDLE;
 
     public static void registerOres() {
         ORE_SPIRIT_TARGET_LIST = List.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, ModBlocks.SPIRIT_ORE.get().defaultBlockState()), OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, ModBlocks.SPIRIT_ORE.get().defaultBlockState()));
         ORE_SPIRIT = FeatureUtils.register(MagickCore.fromId("ore_spirit").toString(), Feature.ORE, new OreConfiguration(ORE_SPIRIT_TARGET_LIST, 9));
-        ORE_SPIRIT_MIDDLE = PlacementUtils.register(MagickCore.fromId("ore_spirit").toString(), ORE_SPIRIT, commonOrePlacement(90,HeightRangePlacement.triangle(VerticalAnchor.absolute(80), VerticalAnchor.absolute(384))));
+        ORE_SPIRIT_UPPER = PlacementUtils.register(MagickCore.fromId("ore_spirit_upper").toString(), ORE_SPIRIT, commonOrePlacement(10, HeightRangePlacement.triangle(VerticalAnchor.absolute(-24), VerticalAnchor.absolute(56))));
+        ORE_SPIRIT_MIDDLE = PlacementUtils.register(MagickCore.fromId("ore_spirit_middle").toString(), ORE_SPIRIT, commonOrePlacement(90,HeightRangePlacement.triangle(VerticalAnchor.absolute(80), VerticalAnchor.absolute(384))));
     }
 
     private static List<PlacementModifier> orePlacement(PlacementModifier p_195347_, PlacementModifier p_195348_) {
@@ -344,7 +346,7 @@ public class RegisterEvent {
         if(event.getClimate().temperature > 0.5 && event.getClimate().temperature < 1.3) {
             event.getSpawns().getSpawner(MobCategory.CREATURE).add(new MobSpawnSettings.SpawnerData(ModEntities.MAGE.get(), 10, 1, 1));
         }
-
+        event.getGeneration().addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ORE_SPIRIT_UPPER);
         event.getGeneration().addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, ORE_SPIRIT_MIDDLE);
     }
 

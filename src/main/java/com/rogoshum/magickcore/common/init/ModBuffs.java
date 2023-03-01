@@ -21,10 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ModBuffs {
-    private static HashMap<String, ManaBuff> buff = new HashMap<>();
+    private static final HashMap<String, ManaBuff> BUFFS = new HashMap<>();
 
     public static void initBuff() {
         putBuff(LibBuff.PARALYSIS, LibElements.ARC, false, (e, force) -> {
@@ -122,16 +121,16 @@ public class ModBuffs {
         };
 
         if(beneficial)
-            buff.put(s, buf.beneficial());
+            BUFFS.put(s, buf.beneficial());
         else
-            buff.put(s, buf);
+            BUFFS.put(s, buf);
     }
 
     public static ManaBuff getBuff(String type) {
         ManaBuff b = null;
         try {
-            if(buff.containsKey(type))
-                b = buff.get(type).clone();
+            if(BUFFS.containsKey(type))
+                b = BUFFS.get(type).clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }

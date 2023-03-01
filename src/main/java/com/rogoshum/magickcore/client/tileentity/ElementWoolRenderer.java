@@ -1,9 +1,11 @@
 package com.rogoshum.magickcore.client.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.proxy.ClientProxy;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -25,6 +27,7 @@ public class ElementWoolRenderer implements BlockEntityRenderer<ElementWoolTileE
     public void render(ElementWoolTileEntity tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
+        float f = MagickCore.proxy.getRunTick();
         RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
         RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
         matrixStackIn.popPose();

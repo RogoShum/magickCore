@@ -88,6 +88,7 @@ public class ShaderEvent {
         });
         try {
             RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.NEW_ENTITY));
+            RenderHelper.setPositionTextureShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_tex"), DefaultVertexFormat.POSITION_TEX));
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -104,6 +105,7 @@ public class ShaderEvent {
         if(Minecraft.useShaderTransparency()) {
             PoseStack poseStack = RenderSystem.getModelViewStack();
             poseStack.popPose();
+            RenderSystem.applyModelViewMatrix();
         }
         if(RenderHelper.stopShader()) return;
         Minecraft mc = Minecraft.getInstance();
@@ -151,6 +153,7 @@ public class ShaderEvent {
         if(Minecraft.useShaderTransparency()) {
             poseStack.pushPose();
             poseStack.mulPoseMatrix(event.getMatrixStack().last().pose());
+            RenderSystem.applyModelViewMatrix();
         }
     }
 }

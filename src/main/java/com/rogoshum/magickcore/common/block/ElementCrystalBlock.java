@@ -1,9 +1,13 @@
 package com.rogoshum.magickcore.common.block;
 
+import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
+import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.entity.player.Player;
@@ -47,6 +51,17 @@ public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     }
 
     @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalTileEntity::tick);
+    }
+
+    @Nullable
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> p_152133_, BlockEntityType<E> p_152134_, BlockEntityTicker<? super E> p_152135_) {
+        return p_152134_ == p_152133_ ? (BlockEntityTicker<A>)p_152135_ : null;
+    }
+
+    @Override
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
         return 10;
     }
@@ -77,8 +92,7 @@ public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if(this.isMaxAge(state)) {
             BlockEntity tileentity = worldIn.getBlockEntity(pos);
-            if (tileentity instanceof ElementCrystalTileEntity) {
-                ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
+            if (tileentity instanceof ElementCrystalTileEntity tile) {
                 tile.dropItem();
             }
             worldIn.setBlockAndUpdate(pos, defaultBlockState());

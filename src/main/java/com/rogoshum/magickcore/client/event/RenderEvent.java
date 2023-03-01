@@ -92,6 +92,18 @@ public class RenderEvent {
     }
 
     @SubscribeEvent
+    public void onOverlayRender(RenderGameOverlayEvent.Post event) {
+        if (Minecraft.getInstance().player == null) {
+            return;
+        }
+        EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+            ManaBarHUD manaBarGUI = new ManaBarHUD(event.getMatrixStack(), state);
+            manaBarGUI.render();
+        }
+    }
+
+    @SubscribeEvent
     public void renderEntity(RenderWorldEvent.RenderMagickEvent event) {
         PoseStack matrixStackIn = event.getMatrixStack();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
@@ -218,7 +230,8 @@ public class RenderEvent {
     }
 
     public static void clearParticle() {
-        particles.keySet().forEach(key -> particles.put(key, Queues.newConcurrentLinkedQueue()));
+        particles.values().forEach(list -> list.forEach(LitParticle::remove));
+        particles.values().forEach(Collection::clear);
     }
 
     @SubscribeEvent

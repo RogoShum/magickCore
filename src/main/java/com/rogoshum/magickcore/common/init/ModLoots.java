@@ -2,31 +2,29 @@ package com.rogoshum.magickcore.common.init;
 
 import com.google.gson.JsonObject;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.item.MaterialJarItemRenderer;
+import com.rogoshum.magickcore.common.item.BaseItem;
+import com.rogoshum.magickcore.common.item.EntityRendererBlockItem;
+import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.util.LootUtil;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD, modid = MagickCore.MOD_ID)
 public class ModLoots {
-    public static final GlobalLootModifierSerializer<?> RandomLoots = new Serializer().setRegistryName("random_loots");
-
-    @SubscribeEvent
-    public static void registerRecipes(final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-        event.getRegistry().registerAll(
-                RandomLoots
-        );
-    }
-
+    public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOTS = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MagickCore.MOD_ID);
+    public static final RegistryObject<GlobalLootModifierSerializer<?>> RANDOM_LOOTS = LOOTS.register("random_loots", Serializer::new);
     public static class Serializer extends GlobalLootModifierSerializer<RandomLootModifier>{
 
         @Override

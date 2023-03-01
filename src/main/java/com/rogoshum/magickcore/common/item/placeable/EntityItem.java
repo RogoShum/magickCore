@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
+import com.rogoshum.magickcore.common.block.MagickCraftingBlock;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -22,7 +23,7 @@ public abstract class EntityItem extends BaseItem {
         if (!context.canPlace()) {
             return InteractionResult.FAIL;
         } else {
-            if (!context.getLevel().isEmptyBlock(context.getClickedPos())) {
+            if (!context.getLevel().isEmptyBlock(context.getClickedPos()) && !(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof MagickCraftingBlock)) {
                 return InteractionResult.FAIL;
             } else {
                 placeEntity(context);

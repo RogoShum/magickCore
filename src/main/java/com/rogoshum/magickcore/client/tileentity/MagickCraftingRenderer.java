@@ -29,7 +29,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 
 public class MagickCraftingRenderer implements BlockEntityRenderer<MagickCraftingTileEntity> {
     private static final RenderType TYPE = RenderType.create(MagickCore.MOD_ID + "_lines", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256
-            ,false, false, RenderType.CompositeState.builder().setTransparencyState(new RenderStateShard.TransparencyStateShard("magick_translucent_transparency", () -> {
+            ,false, false, RenderType.CompositeState.builder().setLayeringState(RenderHelper.VIEW_OFFSET_Z_LAYERING).setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader)).setTransparencyState(new RenderStateShard.TransparencyStateShard("magick_translucent_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);

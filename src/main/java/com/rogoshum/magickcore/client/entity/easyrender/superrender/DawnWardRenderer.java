@@ -31,7 +31,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         if(!RenderHelper.isRenderingShader()) {
             RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
                     , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                    , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.5f)
+                    , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.3f)
                     , 16);
         }
         matrixStackIn.scale(1.01f, 1.01f, 1.01f);
@@ -49,7 +49,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         matrixStackIn.scale(0.99f, 0.99f, 0.99f);
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                , new RenderHelper.VertexContext(entity.getHitReactions(),0.5f)
+                , new RenderHelper.VertexContext(entity.getHitReactions(),0.3f)
                 , 16);
     }
 

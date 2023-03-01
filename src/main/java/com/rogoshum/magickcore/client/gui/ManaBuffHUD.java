@@ -78,7 +78,7 @@ public class ManaBuffHUD extends GuiComponent {
         for(String key : buffHashMap.keySet()) {
             if(!buffTexture.containsKey(key)) continue;
             ManaBuff manaBuff = buffHashMap.get(key);
-            minecraft.getTextureManager().bindForSetup(AbstractContainerScreen.INVENTORY_LOCATION);
+            RenderSystem.setShaderTexture(0, AbstractContainerScreen.INVENTORY_LOCATION);
             int k = this.width;
             int l = 52;
             if (minecraft.isDemo()) {
@@ -109,7 +109,7 @@ public class ManaBuffHUD extends GuiComponent {
             int j1 = k;
             int k1 = l;
             float f1 = f;
-            minecraft.getTextureManager().bindForSetup(buffTexture.get(key));
+            RenderSystem.setShaderTexture(0, buffTexture.get(key));
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f1);
             blit(matrixStack, j1 + 2, k1 + 2, this.getBlitOffset(), 0, 0, 8, 8, 9, 9);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

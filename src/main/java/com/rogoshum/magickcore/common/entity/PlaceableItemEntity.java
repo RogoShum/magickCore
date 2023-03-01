@@ -136,6 +136,7 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                         MatrixInventory matrixInventory = new MatrixInventory(matrix);
                         Optional<SpiritCraftingRecipe> optional = level.getRecipeManager().getRecipeFor(SpiritCraftingRecipe.SPIRIT_CRAFTING, matrixInventory, level);
                         if(optional.isPresent()) {
+                            level.broadcastEntityEvent(this, (byte) 14);
                             workbench.getCraftingMatrix().getMatrix().values().forEach(entity -> {
                                 entity.noDrops = true;
                                 entity.remove(RemovalReason.DISCARDED);
@@ -145,7 +146,6 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
                             ItemEntity itemEntity = new ItemEntity(player.level, vec.x, vec.y, vec.z, stack1);
                             player.level.addFreshEntity(itemEntity);
                             this.playSound(SoundEvents.BEACON_POWER_SELECT, 0.5f, 2.0f);
-                            level.broadcastEntityEvent(this, (byte) 14);
                         }
                     }
                 }

@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
@@ -9,7 +10,10 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
@@ -96,25 +100,32 @@ public class SpellSwapBoxGUI extends Screen{
         poseStack.scale(5, 5, 0);
         minecraft.getItemRenderer().renderGuiItem(heldItem, width / 12, height / 16);
         poseStack.popPose();
-        drawCenteredString(matrixStack, this.font, heldItem.getHoverName(), this.width / 2, (int) (this.height * 0.7), 0xFFFFFF);
         boolean hover = false;
-        for (Widget button : renderables) {
-            if(button instanceof ItemStackButton) {
-                ItemStackButton itemStackButton = (ItemStackButton) button;
+        List<? extends GuiEventListener> children = children();
+        for (GuiEventListener button : children) {
+            if(button instanceof ItemStackButton itemStackButton) {
                 if(isSlotSelected(itemStackButton, mouseX, mouseY)) {
                     hoverItem = itemStackButton.stack;
                     hover = true;
                 }
             }
         }
+
+
+        for (GuiEventListener button : children) {
+            if(button instanceof ItemStackButton itemStackButton) {
+                itemStackButton.render(matrixStack, mouseX, mouseY, partialTicks);
+            }
+        }
+        drawCenteredString(matrixStack, this.font, heldItem.getHoverName(), this.width / 2, (int) (this.height * 0.7), 0xFFFFFF);
         if(hover) {
             renderHoveredTooltip(matrixStack, mouseX, mouseY);
         }
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        hoverItem = ItemStack.EMPTY;
     }
 
     protected void renderHoveredTooltip(PoseStack matrixStack, int x, int y) {
-        if (this.minecraft.player.getInventory().getSelected().isEmpty() && this.hoverItem != null && !this.hoverItem.isEmpty()) {
+        if (this.hoverItem != null && !this.hoverItem.isEmpty()) {
             this.renderTooltip(matrixStack, hoverItem, x, y);
         }
     }

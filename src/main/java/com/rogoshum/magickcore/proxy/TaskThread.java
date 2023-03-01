@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 
 import java.util.List;
+import java.util.Timer;
 import java.util.Vector;
 
 public class TaskThread extends Thread{

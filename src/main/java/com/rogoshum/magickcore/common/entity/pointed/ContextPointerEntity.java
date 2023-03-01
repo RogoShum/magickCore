@@ -97,7 +97,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         List<Entity> items = this.findEntity((entity -> (entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem)));
 
         items.forEach(entity -> {
-            if(entity.isAlive() && entity.tickCount > 20) {
+            if(entity.isAlive() && ((entity.tickCount > 20 && entity.level.isClientSide()) || (entity.tickCount > 25 && !entity.level.isClientSide()))) {
                 ItemEntity item = (ItemEntity) entity;
                 Vec3 relativeVec = relativeVec(item);
                 ItemStack stack = item.getItem().copy();

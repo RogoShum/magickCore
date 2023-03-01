@@ -284,7 +284,7 @@ public class ClientProxy implements IProxy {
 		BlockEntityRenderers.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
-		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.translucent());
+		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}

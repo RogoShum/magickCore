@@ -90,6 +90,7 @@ public class MagickCore {
         ModVillager.POI_TYPES.register(eventBus);
         ModVillager.VILLAGER_PROFESSIONS.register(eventBus);
         ModVillager.SENSOR_TYPES.register(eventBus);
+        ModLoots.LOOTS.register(eventBus);
         ModVillager.init();
         ModBuffs.initBuff();
         ManaMaterials.init();

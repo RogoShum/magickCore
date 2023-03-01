@@ -97,7 +97,7 @@ public class ManaSphereEntity extends ManaPointEntity {
         Vec3 me = this.position().add(0, this.getBbHeight() * 0.5, 0);
         Vec3 it = entityIn.position().add(0, entityIn.getBbHeight() * 0.5, 0);
         if (!entityIn.isVehicle()) {
-            Vec3 force = me.subtract(it);
+            Vec3 force = me.subtract(it).scale(0.01);
             entityIn.push(force.x, force.y, force.z);
         }
     }

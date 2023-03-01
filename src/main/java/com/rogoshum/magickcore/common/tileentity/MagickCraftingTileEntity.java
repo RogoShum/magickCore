@@ -92,7 +92,7 @@ public class MagickCraftingTileEntity extends BlockEntity{
             MagickCore.addMagickParticle(par);
 
         }
-        List<ItemEntity> list = level.getEntitiesOfClass(ItemEntity.class, new AABB(me.worldPosition).inflate(0.5), null);
+        List<ItemEntity> list = level.getEntitiesOfClass(ItemEntity.class, new AABB(me.worldPosition).inflate(0.5), Entity::isAlive);
         for (ItemEntity item : list) {
             Container inventory = new SimpleContainer(item.getItem());
             Optional<MagickWorkbenchRecipe> optional = level.getRecipeManager().getRecipeFor(MagickWorkbenchRecipe.MAGICK_WORKBENCH, inventory, level);

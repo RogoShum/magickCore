@@ -12,14 +12,14 @@ public class VectorHitReaction {
 
     public VectorHitReaction(Vec3 vector) {
         this.vec = vector;
-        this.hitReaction = 1f;
-        this.reactionDecline = 0.2f;
+        this.hitReaction = 0.5f;
+        this.reactionDecline = 0.1f;
     }
 
     public VectorHitReaction(Vec3 vector, float hitReaction, float reactionDecline) {
         this.vec = vector;
-        this.maxReaction = hitReaction;
-        this.reactionDecline = reactionDecline;
+        this.maxReaction = hitReaction*0.25f;
+        this.reactionDecline = reactionDecline*0.25f;
     }
 
     public VectorHitReaction touch() {
@@ -39,6 +39,7 @@ public class VectorHitReaction {
             this.hitReaction -= this.reactionDecline;
     }
 
+    /*
     public float IsHit(Vec3 vector) {
         Vec3 sub = vector.normalize().subtract(this.vec);
         float reaction = 0f;
@@ -52,6 +53,19 @@ public class VectorHitReaction {
         }
 
         return reaction;
+    }
+
+     */
+
+    public float IsHit(Vec3 vector) {
+        double uMagnitude = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
+        double vMagnitude = Math.sqrt(this.vec.x*this.vec.x + this.vec.y*this.vec.y + this.vec.z*this.vec.z);
+
+        double dotProduct = vector.x*this.vec.x + vector.y*this.vec.y + vector.z*this.vec.z;
+
+        float similarity = (float) ((dotProduct / (uMagnitude * vMagnitude) + 1) / 2);
+
+        return similarity < 0.9f ? 0 : similarity * this.hitReaction;
     }
 
     public float getHitReaction() {

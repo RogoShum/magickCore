@@ -157,31 +157,14 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
             return;
         }
 
-        Vec3 vec = new Vec3(this.getX() - entityIn.getX(), (this.getY() + this.getBbHeight() / 2) - (entityIn.getY() + entityIn.getBbHeight() / 2), this.getZ() - entityIn.getZ());
+        Vec3 vec = new Vec3(entityIn.getX() - this.getX(), entityIn.getZ() - this.getZ(), (this.getY() + this.getBbHeight() * 0.5) - (entityIn.getY() + entityIn.getBbHeight() * 0.5));
         hitReactions.put(entityIn.getId(), new VectorHitReaction(vec.normalize()));
-        double d0 = entityIn.getX() - this.getX();
-        double d1 = entityIn.getZ() - this.getZ();
-        double d2 = Mth.absMax(d0, d1);
-        if (d2 >= (double)0.01F) {
-            d2 = (double)Mth.sqrt((float) d2);
-            d0 = d0 / d2;
-            d1 = d1 / d2;
-            double d3 = 1.0D / d2;
-            if (d3 > 1.0D) {
-                d3 = 1.0D;
-            }
-            d0 *= d3;
-            d1 *= d3;
-            d0 *= (double)0.05F;
-            d1 *= (double)0.05F;
-            if (!this.isVehicle()) {
-                this.push(-d0, 0.0D, -d1);
-            }
-
-            if (!entityIn.isVehicle()) {
-                entityIn.push(d0, 0.0D, d1);
-                this.playSound(SoundEvents.SLIME_BLOCK_FALL, 2.0F, 1.0F - this.random.nextFloat());
-            }
+        Vec3 me = this.position().add(0, this.getBbHeight() * 0.5, 0);
+        Vec3 it = entityIn.position().add(0, entityIn.getBbHeight() * 0.5, 0);
+        if (!entityIn.isVehicle()) {
+            Vec3 force = it.subtract(me);
+            entityIn.push(force.x, force.y, force.z);
+            this.playSound(SoundEvents.SLIME_BLOCK_FALL, 2.0F, 1.0F - this.random.nextFloat());
         }
     }
 

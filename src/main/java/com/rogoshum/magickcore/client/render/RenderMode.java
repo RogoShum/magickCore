@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.render;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -12,23 +13,27 @@ public class RenderMode {
     public final RenderType renderType;
     public final ShaderList useShader;
     public final boolean originRender;
+    public final int hashCode;
 
     public RenderMode(RenderType renderType) {
         this.renderType = renderType;
         this.useShader = ShaderList.create();
         this.originRender = false;
+        hashCode = Objects.hash(renderType.toString().hashCode(), useShader.hashCode(), false);
     }
 
     private RenderMode() {
         this.renderType = null;
         this.useShader = ShaderList.create();
         this.originRender = true;
+        hashCode = Objects.hash(0, useShader.hashCode(), true);
     }
 
     public RenderMode(RenderType renderType, ShaderList shader) {
         this.renderType = renderType;
         this.useShader = shader;
         this.originRender = false;
+        hashCode = Objects.hash(renderType.toString().hashCode(), useShader.hashCode(), false);
     }
 
     @Override
@@ -36,12 +41,12 @@ public class RenderMode {
         if (this == o) return true;
         if (!(o instanceof RenderMode)) return false;
         RenderMode that = (RenderMode) o;
-        return originRender == that.originRender && Objects.equals(renderType, that.renderType) && useShader.equals(that.useShader);
+        return originRender == that.originRender && renderType.toString().equals(that.renderType.toString()) && useShader.equals(that.useShader);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(renderType, useShader, originRender);
+        return hashCode;
     }
 
     public static class DrawMode {
