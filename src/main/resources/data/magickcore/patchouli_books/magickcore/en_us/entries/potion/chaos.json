@@ -2,7 +2,7 @@
   "name": "Chaos Theorem Potion",
   "advancement": "magickcore:learn/mana_chaos",
   "icon": "minecraft:potion{Potion:\"magickcore:chaos_theorem\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

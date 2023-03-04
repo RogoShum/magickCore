@@ -2,7 +2,7 @@
   "name": "魔弹法杖",
   "advancement": "magickcore:learn/orb_staff",
   "icon": "magickcore:orb_staff",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "spotlight",

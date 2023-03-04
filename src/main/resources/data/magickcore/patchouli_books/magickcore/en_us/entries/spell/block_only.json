@@ -2,7 +2,7 @@
   "name": "Miniature Block",
   "advancement": "magickcore:learn/condition_block",
   "icon": "magickcore:condition_block",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

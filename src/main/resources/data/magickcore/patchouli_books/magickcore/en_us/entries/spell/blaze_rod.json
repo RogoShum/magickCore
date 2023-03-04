@@ -2,7 +2,7 @@
   "name": "Mana Range",
   "advancement": "magickcore:learn/mana_blaze",
   "icon": "magickcore:mana_energy{item_extra_data:{RANGE:10.0f}}",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

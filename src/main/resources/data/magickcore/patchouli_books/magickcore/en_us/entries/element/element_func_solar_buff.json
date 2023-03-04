@@ -2,7 +2,7 @@
   "name": "§6Solar §7Buff",
   "advancement": "magickcore:learn/trigger_element_func_solar_buff",
   "icon": "magickcore:solar",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

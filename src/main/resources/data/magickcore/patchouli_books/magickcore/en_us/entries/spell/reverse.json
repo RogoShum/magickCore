@@ -2,7 +2,7 @@
   "name": "Inferior Gold",
   "advancement": "magickcore:learn/reverse",
   "icon": "magickcore:reverse",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

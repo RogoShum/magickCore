@@ -2,7 +2,7 @@
   "name": "Wither",
   "advancement": "magickcore:learn/wither",
   "icon": "magickcore:wither",
-  "category": "element",
+  "category": "magickcore:element",
   "sortnum": 0,
   "pages": [
     {

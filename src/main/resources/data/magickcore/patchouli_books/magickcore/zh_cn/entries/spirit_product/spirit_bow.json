@@ -2,7 +2,7 @@
   "name": "灵魂木弓",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:spirit_bow",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

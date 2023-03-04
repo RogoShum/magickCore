@@ -2,7 +2,7 @@
   "name": "§5Void §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_void_diffusion",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

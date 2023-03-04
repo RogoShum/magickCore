@@ -2,7 +2,7 @@
   "name": "Taken",
   "advancement": "magickcore:learn/taken",
   "icon": "magickcore:taken",
-  "category": "element",
+  "category": "magickcore:element",
   "sortnum": 0,
   "pages": [
     {

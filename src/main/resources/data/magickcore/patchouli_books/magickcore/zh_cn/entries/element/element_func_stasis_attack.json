@@ -2,7 +2,7 @@
   "name": "§3冰影§7攻击",
   "advancement": "magickcore:learn/trigger_element_func_stasis_attack",
   "icon": "magickcore:stasis",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

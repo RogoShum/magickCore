@@ -2,7 +2,7 @@
   "name": "材料罐",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:material_jar",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

@@ -2,7 +2,7 @@
   "name": "Mana Powder",
   "advancement": "magickcore:learn/mana_powder",
   "icon": "magickcore:mana_gunpowder",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

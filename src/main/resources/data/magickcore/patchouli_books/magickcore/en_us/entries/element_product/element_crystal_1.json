@@ -2,7 +2,7 @@
   "name": "Element Crystal with Element",
   "advancement": "magickcore:learn/element_crystal_1",
   "icon": "magickcore:element_crystal{ELEMENT:\"arc\"}",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	{
       "type": "spotlight",

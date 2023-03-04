@@ -2,7 +2,7 @@
   "name": "Laser Staff",
   "advancement": "magickcore:learn/laser_staff",
   "icon": "magickcore:laser_staff",
-  "category": "spirit_product",
+  "category": "magickcore:magickcore:spirit_product",
   "pages": [
 	{
       "type": "spotlight",

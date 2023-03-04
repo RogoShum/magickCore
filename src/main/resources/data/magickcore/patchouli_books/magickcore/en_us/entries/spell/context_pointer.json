@@ -2,7 +2,7 @@
   "name": "Context Pointer I Context Pointer",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:context_pointer",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
     {
       "type": "magickcore:magick_recipe",

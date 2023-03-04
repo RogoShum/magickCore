@@ -2,7 +2,7 @@
   "name": "Super Spawner",
   "advancement": "magickcore:learn/ender_dragon_material",
   "icon": "magickcore:super_spawner",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

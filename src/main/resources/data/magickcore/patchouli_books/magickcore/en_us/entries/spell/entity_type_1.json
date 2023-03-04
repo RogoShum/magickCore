@@ -2,7 +2,7 @@
   "name": "Context Pointer II Spell Form",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:context_pointer",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
     {
       "type": "spotlight",

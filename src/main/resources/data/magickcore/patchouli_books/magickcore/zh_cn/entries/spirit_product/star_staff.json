@@ -2,7 +2,7 @@
   "name": "零星法杖",
   "advancement": "magickcore:learn/star_staff",
   "icon": "magickcore:star_staff",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "spotlight",

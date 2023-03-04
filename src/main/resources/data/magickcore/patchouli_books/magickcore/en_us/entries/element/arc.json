@@ -2,7 +2,7 @@
   "name": "Arc",
   "advancement": "magickcore:learn/arc",
   "icon": "magickcore:arc",
-  "category": "element",
+  "category": "magickcore:element",
   "sortnum": 0,
   "pages": [
     {

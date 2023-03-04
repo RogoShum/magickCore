@@ -2,7 +2,7 @@
   "name": "Spirit Sword",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:spirit_sword",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

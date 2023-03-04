@@ -3,6 +3,9 @@ package com.rogoshum.magickcore.common.integration.curios;
 import com.rogoshum.magickcore.common.item.SpiritCrystalRingItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ public class CuriosHelper {
 
     @Nullable
     public static ItemStack getSpiritRing(LivingEntity entity) {
-        /*
+
         List<ItemStack> spellContext = new ArrayList<ItemStack>();
 
         CuriosApi.getCuriosHelper().getCuriosHandler(entity).ifPresent(handler -> {
@@ -40,8 +43,5 @@ public class CuriosHelper {
         });
 
         return spellContext.isEmpty() ? null : spellContext.get(0);
-
-         */
-        return ItemStack.EMPTY;
     }
 }

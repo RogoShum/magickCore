@@ -2,7 +2,7 @@
   "name": "Magick Trace Potion",
   "advancement": "magickcore:learn/mana_disc",
   "icon": "minecraft:potion{Potion:\"magickcore:trace\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

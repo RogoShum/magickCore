@@ -2,7 +2,7 @@
   "name": "魔力蜘蛛眼",
   "advancement": "magickcore:learn/mana_spider_eye",
   "icon": "magickcore:mana_spider_eye",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

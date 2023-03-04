@@ -1,16 +1,23 @@
 package com.rogoshum.magickcore.client.integration.patchouli;
 
 import com.google.gson.annotations.SerializedName;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -29,6 +36,7 @@ public class MagickRecipeComponent implements ICustomComponent {
     public int stack = 0;
     private transient SpiritCraftingRecipe recipe;
     private transient int x, y;
+    private PoseStack poseStack;
     @Override
     public void build(int componentX, int componentY, int pageNum) {
         this.x = componentX;
@@ -43,11 +51,11 @@ public class MagickRecipeComponent implements ICustomComponent {
         poseStack.pushPose();
         poseStack.mulPoseMatrix(ms.last().pose());
         poseStack.translate(this.x+50, this.y+50, 150);
-        //poseStack.rotate((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f, 0, 1, 0);
-        //poseStack.rotate(-20f, 1, 0, 0);
+        poseStack.mulPose(Vector3f.YP.rotationDegrees((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f));
+        poseStack.mulPose(Vector3f.XN.rotationDegrees(-20));
         if(stack <= 0) {
             float scale1 = 128f / Math.max(this.recipe.getRecipeY(), Math.max(this.recipe.getRecipeX(), this.recipe.getRecipeZ()));
-            poseStack.translate(0, recipe.length*scale1 * 0.15f, 0);
+            poseStack.mulPoseMatrix(Matrix4f.createTranslateMatrix(0, recipe.length*scale1 * 0.15f, 0));
             int width = Math.max(this.recipe.getRecipeZ(), this.recipe.getRecipeX());
             for (int y = 0; y < this.recipe.getRecipeY(); ++y){
                 for (int x = 0; x < this.recipe.getRecipeX(); ++x){
@@ -59,7 +67,7 @@ public class MagickRecipeComponent implements ICustomComponent {
                 }
             }
         } else if(recipe.length >= stack){
-            poseStack.translate(0, 8, 0);
+            poseStack.mulPoseMatrix(Matrix4f.createTranslateMatrix(0, 8, 0));
             float scale1 = 128f / Math.max(this.recipe.getRecipeY(), Math.max(this.recipe.getRecipeX(), this.recipe.getRecipeZ()));
             int width = Math.max(this.recipe.getRecipeZ(), this.recipe.getRecipeX());
             for (int x = 0; x < this.recipe.getRecipeX(); ++x){
@@ -71,6 +79,7 @@ public class MagickRecipeComponent implements ICustomComponent {
             }
         }
         poseStack.popPose();
+        RenderSystem.applyModelViewMatrix();
     }
 
     public void renderItem(Item item, float scale1, int x, int y, int z, int width) {
@@ -78,10 +87,13 @@ public class MagickRecipeComponent implements ICustomComponent {
         float scale = 0.5f * scale1;
         PoseStack poseStack = RenderSystem.getModelViewStack();
         poseStack.pushPose();
-        RenderSystem.setShaderColor(1.0F, -1.0F, 1.0F, 1.0f);
+
+        poseStack.scale(1.0F, -1.0F, 1.0F);
         poseStack.translate((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
-        RenderSystem.setShaderColor(scale1, scale1, scale1, 1.0f);
-        MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        poseStack.scale(scale1, scale1, scale1);
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
         Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new PoseStack(), renderTypeBuffer, 0);
         renderTypeBuffer.endBatch();
         poseStack.popPose();

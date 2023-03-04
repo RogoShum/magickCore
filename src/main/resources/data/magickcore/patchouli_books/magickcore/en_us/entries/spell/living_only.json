@@ -2,7 +2,7 @@
   "name": "Miniature Living",
   "advancement": "magickcore:learn/condition_living",
   "icon": "magickcore:condition_living",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

@@ -2,7 +2,7 @@
   "name": "§5虚空§7增益",
   "advancement": "magickcore:learn/trigger_element_func_void_buff",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

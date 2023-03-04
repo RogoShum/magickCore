@@ -2,7 +2,7 @@
   "name": "Mana Tick Potion",
   "advancement": "magickcore:learn/mana_tick",
   "icon": "minecraft:potion{Potion:\"magickcore:mana_tick\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

@@ -2,7 +2,7 @@
   "name": "Mana Nether Wart",
   "advancement": "magickcore:learn/mana_wart",
   "icon": "magickcore:mana_nether_wart",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

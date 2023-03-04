@@ -2,7 +2,7 @@
   "name": "Spirit Crystal Staff",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:spirit_crystal_staff",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

@@ -2,7 +2,7 @@
   "name": "Element String",
   "advancement": "magickcore:learn/element_string",
   "icon": "magickcore:element_string",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
     {
       "title": "Element String",

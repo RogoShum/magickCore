@@ -2,7 +2,7 @@
   "name": "Element Creature",
   "advancement": "magickcore:learn/element_creature",
   "icon": "minecraft:shield",
-  "category": "intro",
+  "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",

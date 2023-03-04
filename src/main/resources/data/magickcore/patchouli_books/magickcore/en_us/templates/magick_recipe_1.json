@@ -1,16 +1,16 @@
 {
   "components": [
     {
-      "type": "frame"
+      "type": "patchouli:frame"
     },
     {
-      "type": "custom",
+      "type": "patchouli:custom",
       "class": "com.rogoshum.magickcore.client.integration.patchouli.MagickRecipeComponent",
       "magick_recipe": "#magick_recipe",
       "stack": 1
     },
     {
-      "type": "text",
+      "type": "patchouli:text",
       "text": "#text",
       "y": 120
     }

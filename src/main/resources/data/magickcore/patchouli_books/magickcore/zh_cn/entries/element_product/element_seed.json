@@ -2,7 +2,7 @@
   "name": "元素种子",
   "advancement": "magickcore:learn/element_seeds",
   "icon": "magickcore:element_crystal_seeds",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
     {
       "title": "电弧元素种子",

@@ -2,7 +2,7 @@
   "name": "Stasis",
   "advancement": "magickcore:learn/stasis",
   "icon": "magickcore:stasis",
-  "category": "element",
+  "category": "magickcore:element",
   "sortnum": 0,
   "pages": [
     {

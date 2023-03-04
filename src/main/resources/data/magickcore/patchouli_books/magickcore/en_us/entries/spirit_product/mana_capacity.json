@@ -2,7 +2,7 @@
   "name": "Mana Capacity",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:magick_container",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

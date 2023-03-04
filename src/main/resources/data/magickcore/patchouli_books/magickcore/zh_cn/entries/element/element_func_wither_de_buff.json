@@ -2,7 +2,7 @@
   "name": "§2枯萎§7减益",
   "advancement": "magickcore:learn/trigger_element_func_wither_de_buff",
   "icon": "magickcore:wither",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

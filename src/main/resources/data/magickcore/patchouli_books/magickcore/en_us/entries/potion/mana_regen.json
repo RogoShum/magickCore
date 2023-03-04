@@ -2,7 +2,7 @@
   "name": "Mana Recovery Potion",
   "advancement": "magickcore:learn/mana_nautilus",
   "icon": "minecraft:potion{Potion:\"magickcore:mana_regen\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

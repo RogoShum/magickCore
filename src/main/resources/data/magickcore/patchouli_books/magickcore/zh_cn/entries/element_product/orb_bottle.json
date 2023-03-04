@@ -2,7 +2,7 @@
   "name": "元素容器",
   "advancement": "magickcore:learn/orb_bottle",
   "icon": "magickcore:orb_bottle{ELEMENT:\"arc\"}",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	{
 	  "title": "空的元素容器",

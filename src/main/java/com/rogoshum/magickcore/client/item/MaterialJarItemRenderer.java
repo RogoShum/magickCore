@@ -17,7 +17,10 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import com.mojang.math.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     public MaterialJarItemRenderer() {

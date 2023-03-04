@@ -2,7 +2,7 @@
   "name": "§5Void §7Agglomerate",
   "advancement": "magickcore:learn/trigger_element_func_void_agglomerate",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

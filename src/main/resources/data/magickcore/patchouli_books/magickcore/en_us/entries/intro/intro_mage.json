@@ -1,7 +1,7 @@
 {
   "name": "Wandering mage",
   "icon": "magickcore:entity_type{item_extra_data:{CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}}}}",
-  "category": "intro",
+  "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",

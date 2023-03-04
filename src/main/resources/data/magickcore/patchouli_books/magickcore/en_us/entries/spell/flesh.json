@@ -2,7 +2,7 @@
   "name": "Mana Flesh",
   "advancement": "magickcore:learn/mana_flesh",
   "icon": "magickcore:mana_flesh",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

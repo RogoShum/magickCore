@@ -2,7 +2,7 @@
   "name": "灵魂水晶戒指",
   "advancement": "magickcore:learn/ring",
   "icon": "magickcore:spirit_crystal_ring",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

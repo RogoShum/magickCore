@@ -2,7 +2,7 @@
   "name": "盾容药水",
   "advancement": "magickcore:learn/mana_scute",
   "icon": "minecraft:potion{Potion:\"magickcore:shield_value\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

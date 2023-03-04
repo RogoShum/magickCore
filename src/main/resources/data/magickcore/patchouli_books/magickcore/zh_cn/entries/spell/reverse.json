@@ -2,7 +2,7 @@
   "name": "劣质金粒",
   "advancement": "magickcore:learn/reverse",
   "icon": "magickcore:reverse",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

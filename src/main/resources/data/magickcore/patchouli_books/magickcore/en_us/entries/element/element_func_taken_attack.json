@@ -2,7 +2,7 @@
   "name": "§8Taken §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_taken_attack",
   "icon": "magickcore:taken",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

@@ -2,7 +2,7 @@
   "name": "Element Bottle",
   "advancement": "magickcore:learn/orb_bottle",
   "icon": "magickcore:orb_bottle{ELEMENT:\"arc\"}",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	  {
       "title": "Empty Element Bottle",

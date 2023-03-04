@@ -2,7 +2,7 @@
   "name": "Material Jar",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:material_jar",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

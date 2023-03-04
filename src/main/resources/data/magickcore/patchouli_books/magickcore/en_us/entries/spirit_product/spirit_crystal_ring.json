@@ -2,7 +2,7 @@
   "name": "Spirit Crystal Ring",
   "advancement": "magickcore:learn/ring",
   "icon": "magickcore:spirit_crystal_ring",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

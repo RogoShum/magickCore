@@ -1,23 +1,29 @@
 package com.rogoshum.magickcore.client.integration.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -29,33 +35,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SpiritCraftingRecipeCategory{
-    /*
-     implements IRecipeCategory<SpiritCraftingRecipe>
-    public static final ResourceLocation UID = new ResourceLocation(MagickCore.MOD_ID, "spirit");
+public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraftingRecipe>{
     private final IDrawableStatic background;
     private final IDrawable icon;
-    private final String localizedName;
+    private final Component localizedName;
+    public static final RecipeType<SpiritCraftingRecipe> RECIPE_TYPE = RecipeType.create(MagickCore.MOD_ID, "spirit", SpiritCraftingRecipe.class);
 
     public SpiritCraftingRecipeCategory(IGuiHelper guiHelper) {
         ResourceLocation location = new ResourceLocation(MagickCore.MOD_ID, "textures/gui/spirit_crafting.png");
         background = guiHelper.createDrawable(location, 0, 0, 100, 120);
-        icon = guiHelper.createDrawableIngredient(new ItemStack(ModItems.SPIRIT_CRYSTAL.get()));
-        localizedName = new TranslatableComponent("gui.magickcore.category.magick_crafting").getString();
+        icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SPIRIT_CRYSTAL.get()));
+        localizedName = new TranslatableComponent("gui.magickcore.category.magick_crafting");
+    }
+
+    @Override
+    public RecipeType<SpiritCraftingRecipe> getRecipeType() {
+        return RECIPE_TYPE;
     }
 
     @Override
     public ResourceLocation getUid() {
-        return UID;
+        return getRecipeType().getUid();
     }
 
     @Override
     public Class<? extends SpiritCraftingRecipe> getRecipeClass() {
-        return SpiritCraftingRecipe.class;
+        return getRecipeType().getRecipeClass();
     }
 
     @Override
-    public String getTitle() {
+    public Component getTitle() {
         return localizedName;
     }
 
@@ -70,30 +79,16 @@ public class SpiritCraftingRecipeCategory{
     }
 
     @Override
-    public void setIngredients(SpiritCraftingRecipe inbtRecipe, IIngredients iIngredients) {
-        NonNullList<Ingredient>[] ingredientList = inbtRecipe.getIngredientList();
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < ingredientList.length; ++i) {
-            NonNullList<Ingredient> ingredients = ingredientList[i];
-            ingredients.forEach(ingredient -> {
-                if(!ingredient.isEmpty())
-                    stacks.addAll(Arrays.asList(ingredient.getItems()));
-            });
-        }
-        iIngredients.setInputs(VanillaTypes.ITEM, stacks);
-        iIngredients.setOutput(VanillaTypes.ITEM, inbtRecipe.getResultItem());
-    }
-
-    @Override
-    public void draw(SpiritCraftingRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(SpiritCraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         NonNullList<Ingredient>[] ingredientList = recipe.getIngredientList();
-        RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.last().pose());
-        RenderSystem.translatef(50, 40, 150);
-        RenderSystem.rotatef((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f, 0, 1, 0);
-        RenderSystem.rotatef(-20f, 1, 0, 0);
+        PoseStack poseStack = RenderSystem.getModelViewStack();
+        poseStack.pushPose();
+        poseStack.mulPoseMatrix(matrixStack.last().pose());
+        poseStack.translate(50, 40, 150);
+        poseStack.mulPose(Vector3f.YP.rotationDegrees((MagickCore.proxy.getRunTick() % 201) * 0.005f * 360f));
+        poseStack.mulPose(Vector3f.XN.rotationDegrees(20f));
         float scale1 = 128f / Math.max(recipe.getRecipeY(), Math.max(recipe.getRecipeX(), recipe.getRecipeZ()));
-        RenderSystem.translatef(0, ingredientList.length*scale1 * 0.15f, 0);
+        poseStack.translate(0, ingredientList.length*scale1 * 0.15f, 0);
         int width = Math.max(recipe.getRecipeZ(), recipe.getRecipeX());
         for (int y = 0; y < recipe.getRecipeY(); ++y){
             for (int x = 0; x < recipe.getRecipeX(); ++x){
@@ -104,27 +99,27 @@ public class SpiritCraftingRecipeCategory{
                 }
             }
         }
-        RenderSystem.popMatrix();
+        poseStack.popPose();
+        RenderSystem.applyModelViewMatrix();
     }
 
     public void renderItem(Item item, float scale1, int x, int y, int z, int width) {
         float widthF = width * 0.25f;
         float scale = 0.5f * scale1;
-        RenderSystem.pushMatrix();
-        RenderSystem.setShaderColor(1.0F, -1.0F, 1.0F);
-        RenderSystem.translatef((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
-        RenderSystem.setShaderColor(scale1, scale1, scale1);
+        PoseStack poseStack = RenderSystem.getModelViewStack();
+        poseStack.pushPose();
+        poseStack.scale(1.0F, -1.0F, 1.0F);
+        poseStack.translate((x - widthF) * scale, (y - widthF) * scale, (z - widthF) * scale);
+        poseStack.scale(scale1, scale1, scale1);
+        RenderSystem.applyModelViewMatrix();
         MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new PoseStack(), renderTypeBuffer);
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(item), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, new PoseStack(), renderTypeBuffer, 0);
         renderTypeBuffer.endBatch();
-        RenderSystem.popMatrix();
+        poseStack.popPose();
     }
 
     @Override
-    public void setRecipe(IRecipeLayout iRecipeLayout, SpiritCraftingRecipe inbtRecipe, IIngredients iIngredients) {
-        iRecipeLayout.getItemStacks().init(0, false, 41, 98);
-        iRecipeLayout.getItemStacks().set(0, inbtRecipe.getResultItem());
+    public void setRecipe(IRecipeLayoutBuilder iRecipeLayout, SpiritCraftingRecipe inbtRecipe, IFocusGroup iIngredients) {
+        iRecipeLayout.addSlot(RecipeIngredientRole.OUTPUT, 41, 98).addItemStack(inbtRecipe.getResultItem());
     }
-
-     */
 }

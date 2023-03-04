@@ -2,7 +2,7 @@
   "name": "§2Wither §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_wither_diffusion",
   "icon": "magickcore:wither",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

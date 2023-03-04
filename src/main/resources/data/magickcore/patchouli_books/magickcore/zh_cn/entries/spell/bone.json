@@ -2,7 +2,7 @@
   "name": "魔力骨头",
   "advancement": "magickcore:learn/mana_bone",
   "icon": "magickcore:mana_bone",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

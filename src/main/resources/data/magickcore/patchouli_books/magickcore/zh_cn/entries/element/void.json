@@ -2,7 +2,7 @@
   "name": "虚空元素",
   "advancement": "magickcore:learn/void",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "sortnum": 0,
   "pages": [
     {

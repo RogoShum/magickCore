@@ -174,8 +174,8 @@ dependencies {
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
     compileOnly fg.deobf("mezz.jei:jei-1.18.2:9.7.2.281:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.7.2.281")
-    //compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api")
-    //runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1")
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-72-SNAPSHOT:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-72-SNAPSHOT")
     // Examples using mod jars from ./libs

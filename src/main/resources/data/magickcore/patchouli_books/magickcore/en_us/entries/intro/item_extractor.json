@@ -2,7 +2,7 @@
   "name": "Item Extractor",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:item_extractor",
-  "category": "intro",
+  "category": "magickcore:intro",
   "pages": [
 	{
       "type": "spotlight",

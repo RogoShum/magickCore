@@ -2,7 +2,7 @@
   "name": "§5Void §7Buff",
   "advancement": "magickcore:learn/trigger_element_func_void_buff",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

@@ -2,7 +2,7 @@
   "name": "Context Core",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:context_core",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
     {
       "type": "spotlight",

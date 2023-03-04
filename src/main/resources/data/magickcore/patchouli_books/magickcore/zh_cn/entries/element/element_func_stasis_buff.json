@@ -2,7 +2,7 @@
   "name": "§3冰影§7增益",
   "advancement": "magickcore:learn/trigger_element_func_stasis_buff",
   "icon": "magickcore:stasis",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

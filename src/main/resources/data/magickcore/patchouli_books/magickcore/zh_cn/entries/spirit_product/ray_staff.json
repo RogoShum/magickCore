@@ -2,7 +2,7 @@
   "name": "光线法杖",
   "advancement": "magickcore:learn/ray_staff",
   "icon": "magickcore:ray_staff",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "spotlight",

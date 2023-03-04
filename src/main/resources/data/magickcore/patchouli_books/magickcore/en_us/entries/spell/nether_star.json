@@ -2,7 +2,7 @@
   "name": "§9Nether Heart",
   "advancement": "magickcore:learn/nether_star_material",
   "icon": "magickcore:nether_star_material",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
     "type": "spotlight",

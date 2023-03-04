@@ -9,14 +9,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.fml.DistExecutor;
 
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class EntityRendererBlockItem extends BlockItem {
     private BlockEntityWithoutLevelRenderer renderProperties;
-    public EntityRendererBlockItem(Block p_40565_, Properties p_40566_, Supplier<BlockEntityWithoutLevelRenderer> renderProperties) {
+    public EntityRendererBlockItem(Block p_40565_, Properties p_40566_, Supplier<Callable<BlockEntityWithoutLevelRenderer>> renderProperties) {
         super(p_40565_, p_40566_);
-        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> this.renderProperties = renderProperties.get());
+        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> this.renderProperties = renderProperties.get().call());
     }
 
     @Override

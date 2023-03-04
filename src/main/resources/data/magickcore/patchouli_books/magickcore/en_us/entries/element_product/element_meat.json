@@ -2,7 +2,7 @@
   "name": "Element Meat",
   "advancement": "magickcore:learn/element_meat",
   "icon": "magickcore:element_meat",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	{
       "type": "spotlight",

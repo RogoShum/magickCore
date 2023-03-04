@@ -2,7 +2,7 @@
   "name": "Position Memory",
   "advancement": "magickcore:learn/position_memory",
   "icon": "magickcore:position_memory",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

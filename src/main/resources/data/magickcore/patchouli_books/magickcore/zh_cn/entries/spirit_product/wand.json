@@ -2,7 +2,7 @@
   "name": "魔棒",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:wand",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "spotlight",

@@ -23,11 +23,11 @@ public class ModItems {
     public static final RegistryObject<Item> MAGE_EGG = ITEMS.register("mage_spawn_egg", () -> new ForgeSpawnEggItem(ModEntities.MAGE::get, 0xff0000, 0xffe700, new Item.Properties().tab(ModGroups.ITEM_GROUP)));
     //block items
     public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new EntityRendererBlockItem(ModBlocks.MATERIAL_JAR.get()
-            , BaseItem.properties(), MaterialJarItemRenderer::new));
+            , BaseItem.properties(), () -> MaterialJarItemRenderer::new));
     public static final RegistryObject<Item> SPIRIT_ORE = ITEMS.register(LibItem.SPIRIT_ORE, () -> new BlockItem(ModBlocks.SPIRIT_ORE.get()
             , BaseItem.properties()));
     public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new EntityRendererBlockItem(ModBlocks.ITEM_EXTRACTOR.get()
-            , BaseItem.properties(), ItemExtractorRenderer::new));
+            , BaseItem.properties(), () -> ItemExtractorRenderer::new));
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_CRYSTAL = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties(), 0.4f, 0.4f));
     public static final RegistryObject<Item> MAGICK_CONTAINER = ITEMS.register("magick_container", ManaCapacityItem::new);

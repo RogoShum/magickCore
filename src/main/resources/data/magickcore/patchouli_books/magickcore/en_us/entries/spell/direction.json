@@ -2,7 +2,7 @@
   "name": "Direction Memory",
   "advancement": "magickcore:learn/direction_memory",
   "icon": "magickcore:direction_memory",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

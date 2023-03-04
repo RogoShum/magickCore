@@ -2,7 +2,7 @@
   "name": "Shield Recovery Potion",
   "advancement": "magickcore:learn/mana_shulker",
   "icon": "minecraft:potion{Potion:\"magickcore:shield_regen\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

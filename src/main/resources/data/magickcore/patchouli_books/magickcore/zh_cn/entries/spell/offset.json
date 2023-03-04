@@ -2,7 +2,7 @@
   "name": "偏移记忆",
   "advancement": "magickcore:learn/offset_memory",
   "icon": "magickcore:offset_memory",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

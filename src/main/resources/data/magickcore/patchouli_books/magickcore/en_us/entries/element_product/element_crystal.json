@@ -2,7 +2,7 @@
   "name": "Element Crystal",
   "advancement": "magickcore:learn/element_crystal",
   "icon": "magickcore:element_crystal",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	{
       "type": "spotlight",

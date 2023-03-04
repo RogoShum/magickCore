@@ -2,7 +2,7 @@
   "name": "Tracking Energy",
   "advancement": "magickcore:learn/mana_dragon_b",
   "icon": "magickcore:mana_dragon_breath",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

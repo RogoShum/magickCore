@@ -2,7 +2,7 @@
   "name": "Inferior Diamond",
   "advancement": "magickcore:learn/self",
   "icon": "magickcore:completely_self",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

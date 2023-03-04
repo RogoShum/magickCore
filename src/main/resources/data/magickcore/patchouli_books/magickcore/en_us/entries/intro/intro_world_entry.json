@@ -1,7 +1,7 @@
 {
   "name": "Change of World",
   "icon": "minecraft:grass",
-  "category": "intro",
+  "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",

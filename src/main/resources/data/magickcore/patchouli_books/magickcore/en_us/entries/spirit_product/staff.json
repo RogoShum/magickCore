@@ -2,7 +2,7 @@
   "name": "Spirit Wood Staff",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:staff",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",

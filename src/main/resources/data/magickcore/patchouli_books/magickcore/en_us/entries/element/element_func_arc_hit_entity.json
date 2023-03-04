@@ -2,7 +2,7 @@
   "name": "§bArc §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_arc_hit_entity",
   "icon": "magickcore:arc",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

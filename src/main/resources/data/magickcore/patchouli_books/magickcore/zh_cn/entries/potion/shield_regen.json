@@ -2,7 +2,7 @@
   "name": "护盾恢复药水",
   "advancement": "magickcore:learn/mana_shulker",
   "icon": "minecraft:potion{Potion:\"magickcore:shield_regen\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

@@ -2,7 +2,7 @@
   "name": "§5虚空§7触碰实体",
   "advancement": "magickcore:learn/trigger_element_func_void_hit_entity",
   "icon": "magickcore:void",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

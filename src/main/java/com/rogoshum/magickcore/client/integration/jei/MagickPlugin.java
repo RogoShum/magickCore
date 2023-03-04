@@ -26,7 +26,6 @@ public class MagickPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
         return ID;
     }
-    /*
 
     @Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
@@ -45,12 +44,12 @@ public class MagickPlugin implements IModPlugin {
         Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(MagickWorkbenchRecipe.MAGICK_WORKBENCH).forEach(
                 magickWorkbenchRecipeBuilder::add
         );
-        registration.addRecipes(magickWorkbenchRecipeBuilder.build(), MagickItemRecipeCategory.UID);
+        registration.addRecipes(MagickItemRecipeCategory.RECIPE_TYPE, magickWorkbenchRecipeBuilder.build());
         ImmutableList.Builder<SpiritCraftingRecipe> spiritCraftingRecipeBuilder = ImmutableList.builder();
         Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(SpiritCraftingRecipe.SPIRIT_CRAFTING).forEach(
                 spiritCraftingRecipeBuilder::add
         );
-        registration.addRecipes(spiritCraftingRecipeBuilder.build(), SpiritCraftingRecipeCategory.UID);
+        registration.addRecipes(SpiritCraftingRecipeCategory.RECIPE_TYPE, spiritCraftingRecipeBuilder.build());
     }
 
     @Override
@@ -59,6 +58,4 @@ public class MagickPlugin implements IModPlugin {
         registration.useNbtForSubtypes(ModItems.ELEMENT_WOOL.get());
         registration.useNbtForSubtypes(ModItems.ELEMENT_STRING.get());
     }
-
-     */
 }

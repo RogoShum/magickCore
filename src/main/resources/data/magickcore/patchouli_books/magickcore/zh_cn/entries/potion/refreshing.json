@@ -2,7 +2,7 @@
   "name": "清爽水",
   "advancement": "magickcore:learn/orb_bottle",
   "icon": "minecraft:potion{Potion:\"magickcore:refreshing\"}",
-  "category": "potion",
+  "category": "magickcore:potion",
   "pages": [
 	{
       "type": "spotlight",

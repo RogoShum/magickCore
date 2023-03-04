@@ -2,7 +2,7 @@
   "name": "法术构造",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:context_core",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
     {
       "type": "spotlight",

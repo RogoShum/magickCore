@@ -2,7 +2,7 @@
   "name": "§9Ender Core",
   "advancement": "magickcore:learn/ender_dragon_material",
   "icon": "magickcore:ender_dragon_material",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

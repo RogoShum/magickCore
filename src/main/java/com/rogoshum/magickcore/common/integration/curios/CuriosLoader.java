@@ -21,6 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import top.theillusivec4.curios.api.SlotTypeMessage;
 
 public class CuriosLoader extends AdditionLoader {
     public static boolean press = false;
@@ -39,7 +40,7 @@ public class CuriosLoader extends AdditionLoader {
 
     @Override
     public void inter(InterModEnqueueEvent event) {
-        //InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, ()-> new SlotTypeMessage.Builder("spirit_crystal_ring").build());
+        InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, ()-> new SlotTypeMessage.Builder("spirit_crystal_ring").build());
     }
 
     @Override

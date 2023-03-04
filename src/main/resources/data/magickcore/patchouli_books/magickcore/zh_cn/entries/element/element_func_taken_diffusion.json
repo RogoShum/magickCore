@@ -2,7 +2,7 @@
   "name": "§8夺魂§7漫散",
   "advancement": "magickcore:learn/trigger_element_func_taken_diffusion",
   "icon": "magickcore:taken",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

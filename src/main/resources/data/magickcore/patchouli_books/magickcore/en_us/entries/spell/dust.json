@@ -2,7 +2,7 @@
   "name": "Mana Force",
   "advancement": "magickcore:learn/mana_dust",
   "icon": "magickcore:mana_energy{item_extra_data:{FORCE:10.0f}}",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

@@ -2,7 +2,7 @@
   "name": "非生命缩影",
   "advancement": "magickcore:learn/condition_non_living",
   "icon": "magickcore:condition_non_living",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

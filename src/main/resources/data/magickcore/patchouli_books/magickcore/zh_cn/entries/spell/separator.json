@@ -2,7 +2,7 @@
   "name": "劣质燧石",
   "advancement": "magickcore:learn/form_separator",
   "icon": "magickcore:form_separator",
-  "category": "spell",
+  "category": "magickcore:spell",
   "pages": [
 	{
       "type": "spotlight",

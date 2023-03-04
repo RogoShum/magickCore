@@ -2,7 +2,7 @@
   "name": "§bArc §7Buff",
   "advancement": "magickcore:learn/trigger_element_func_arc_buff",
   "icon": "magickcore:arc",
-  "category": "element",
+  "category": "magickcore:element",
   "pages": [
     {
       "type": "text",

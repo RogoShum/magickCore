@@ -2,7 +2,7 @@
   "name": "人造生命",
   "advancement": "magickcore:learn/wand",
   "icon": "magickcore:artificial_life",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "spotlight",

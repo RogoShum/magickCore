@@ -2,7 +2,7 @@
   "name": "元素水晶",
   "advancement": "magickcore:learn/element_crystal",
   "icon": "magickcore:element_crystal",
-  "category": "element_product",
+  "category": "magickcore:element_product",
   "pages": [
 	{
       "type": "spotlight",

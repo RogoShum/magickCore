@@ -2,7 +2,7 @@
   "name": "释放法术",
   "advancement": "magickcore:learn/magick_core",
   "icon": "magickcore:magick_context",
-  "category": "intro",
+  "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",

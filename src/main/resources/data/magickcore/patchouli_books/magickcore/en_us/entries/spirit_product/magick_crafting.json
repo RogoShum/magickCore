@@ -2,7 +2,7 @@
   "name": "Magick Workbench",
   "advancement": "magickcore:learn/magick_crafting",
   "icon": "magickcore:spirit_crystal",
-  "category": "spirit_product",
+  "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "text",
