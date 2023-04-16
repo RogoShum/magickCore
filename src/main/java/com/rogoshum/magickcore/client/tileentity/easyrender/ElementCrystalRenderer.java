@@ -10,7 +10,6 @@ import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import net.minecraft.world.level.block.CropBlock;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -61,18 +60,18 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
     @Override
     public void update() {
         super.update();
-        int age = tile.getLevel().getBlockState(tile.getBlockPos()).getValue(CropBlock.AGE);
-        ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + Integer.toString(age) + ".png");
-        TYPE = RenderHelper.getTexedOrbGlow(crystal);
+        ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + tile.age + ".png");
+        TYPE = RenderHelper.getTexedEntityGlowNoise(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);
         if(element != null)
-            color = element.getRenderer().getColor();
+            color = element.getRenderer().getPrimaryColor();
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE), this::render);
+        if(TYPE != null)
+            map.put(new RenderMode(TYPE), this::render);
         return map;
     }
 }

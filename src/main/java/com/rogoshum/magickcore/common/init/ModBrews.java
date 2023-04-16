@@ -1,14 +1,17 @@
 package com.rogoshum.magickcore.common.init;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import net.minecraft.world.item.crafting.Ingredient.Value;
@@ -32,7 +35,7 @@ public class ModBrews {
             String name = item.getRegistryName().toString();
             Ingredient ingredient = Ingredient.of(item);
             if(name.contains("spirit_crystal"))
-                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(Items.POTION), Ingredient.of(item), PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
+                BrewingRecipeRegistry.addRecipe(new BrewingRecipe(PotionIngredient.of(Items.POTION), ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.NOTHING.get())));
             else if(name.contains("dragon_breath"))
                 BrewingRecipeRegistry.addRecipe(new BrewingRecipe(nothing, ingredient, PotionUtils.setPotion(new ItemStack(Items.POTION), ModEffects.TRACE_P.get())));
             else if(name.contains("shulker"))
@@ -81,6 +84,14 @@ public class ModBrews {
     public static class PotionIngredient extends Ingredient {
         protected PotionIngredient(Stream<? extends Value> itemLists) {
             super(itemLists);
+        }
+
+        public static PotionIngredient of(ItemLike... item) {
+            return new PotionIngredient(Arrays.stream(item).map(ItemStack::new).filter((p_43944_) -> !p_43944_.isEmpty()).map(Ingredient.ItemValue::new));
+        }
+
+        public static PotionIngredient of(ItemStack... item) {
+            return new PotionIngredient(Arrays.stream(item).filter((p_43944_) -> !p_43944_.isEmpty()).map(Ingredient.ItemValue::new));
         }
 
         @Override

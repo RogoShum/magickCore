@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.client.tileentity.easyrender.ElementCrystalRenderer;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModItems;
@@ -28,6 +29,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class ElementCrystalTileEntity extends BlockEntity implements ILightSourceEntity {
     public String eType = LibElements.ORIGIN;
@@ -59,6 +61,10 @@ public class ElementCrystalTileEntity extends BlockEntity implements ILightSourc
 
     public List<ItemStack> getDrops() {
         age = level.getBlockState(getBlockPos()).getValue(CropBlock.AGE);
+        return getDrops(age);
+    }
+
+    public List<ItemStack> getDrops(int age) {
         if(this.level.isClientSide || age != 7) return Collections.emptyList();
         ArrayList<ItemStack> stacks = new ArrayList<>();
         ItemStack stack = new ItemStack(ModItems.ELEMENT_CRYSTAL.get());
@@ -141,7 +147,9 @@ public class ElementCrystalTileEntity extends BlockEntity implements ILightSourc
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, ElementCrystalTileEntity me) {
-        me.age = level.getBlockState(pos).getValue(CropBlock.AGE);
+        if(level != me.level) return;
+        Optional<Integer> age = state.getOptionalValue(CropBlock.AGE);
+        age.ifPresent(integer -> me.age = integer);
         if(!level.isClientSide) return;
 
         float scale = me.age / 100f;
@@ -188,12 +196,12 @@ public class ElementCrystalTileEntity extends BlockEntity implements ILightSourc
 
     @Override
     public Color getColor() {
-        return MagickCore.proxy.getElementRender(this.eType).getColor();
+        return MagickCore.proxy.getElementRender(this.eType).getPrimaryColor();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        //MagickCore.proxy.addRenderer(new ElementCrystalRenderer(this));
+        MagickCore.proxy.addRenderer(() -> new ElementCrystalRenderer(this));
     }
 }

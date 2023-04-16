@@ -1,12 +1,13 @@
 package com.rogoshum.magickcore.common.init;
 
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModConfig {
+public class CommonConfig {
+    public static ForgeConfigSpec.BooleanValue ENTITY_LIGHTING;
     public static ForgeConfigSpec COMMON_CONFIG;
     public static ForgeConfigSpec.DoubleValue ORIGIN_FORCE;
     public static ForgeConfigSpec.DoubleValue ORIGIN_RANGE;
@@ -22,9 +23,19 @@ public class ModConfig {
 
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> ELEMENT_BAN;
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> FORM_BAN;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> ELEMENT_MOB;
+
+    public static ForgeConfigSpec.IntValue ELEMENT_STRING_DURATION;
 
     static {
         ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+        COMMON_BUILDER.push("Entity Lighting settings");
+        ENTITY_LIGHTING = COMMON_BUILDER.define("enabled", true);
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.push("Element String durability");
+        ELEMENT_STRING_DURATION = COMMON_BUILDER.defineInRange("duration", 400, 0, 10000);
+        COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("Mana Material settings").push("Origin Material");
         ORIGIN_FORCE = COMMON_BUILDER.comment("Origin material force limit").defineInRange("force", 5, 0, 15d);
@@ -52,6 +63,28 @@ public class ModConfig {
         COMMON_BUILDER.comment("Spell Form Ban list").push("Spell form");
         FORM_BAN = COMMON_BUILDER.comment("Spell form that disabled, example: \n" +
                 "[\"magickcore:charge\", \"magickcore:multi_release\"]").defineList("list", new ArrayList<>(), (o -> o instanceof String));
+        COMMON_BUILDER.pop();
+
+        COMMON_BUILDER.comment("Element Mob Option").push("Element Mob List");
+        ArrayList<String> list = new ArrayList<>();
+        list.add(EntityType.ENDERMAN.getRegistryName()+"_1.0_0.05_void");
+        list.add(EntityType.CREEPER.getRegistryName()+"_0.2_0.2_arc");
+        list.add(EntityType.BLAZE.getRegistryName()+"_0.5_0.4_solar");
+        list.add(EntityType.CAVE_SPIDER.getRegistryName()+"_1.0_0.4_wither");
+        list.add(EntityType.SPIDER.getRegistryName()+"_0.07_0.15_wither");
+        list.add(EntityType.SHULKER.getRegistryName()+"_0.5_0.02_void");
+        list.add(EntityType.MAGMA_CUBE.getRegistryName()+"_0.5_0.2_solar");
+        list.add(EntityType.EVOKER.getRegistryName()+"_1.0_0.2_taken");
+        list.add(EntityType.VEX.getRegistryName()+"_0.5_0.2_taken");
+        list.add(EntityType.PHANTOM.getRegistryName()+"_1.0_0.1_arc");
+        list.add(EntityType.SNOW_GOLEM.getRegistryName()+"_0.005_0.1_taken");
+        list.add(EntityType.IRON_GOLEM.getRegistryName()+"_0.05_0.3_taken");
+        list.add(EntityType.PUFFERFISH.getRegistryName()+"_0.5_0.5_wither");
+        list.add(EntityType.BEE.getRegistryName()+"_0.2_0.3_wither");
+        list.add(EntityType.STRAY.getRegistryName()+"_0.2_0.5_stasis");
+
+        ELEMENT_MOB = COMMON_BUILDER.comment("Mob that get element when they are spawn. The first value is the mob id, the second value is the probability of generation, the third value is the probability of generating element shield, and the fourth value is the element id, example: \n" +
+                "[\"minecraft:creeper_0.2_0.05_arc\", \"minecraft:enderman_1.0_0.05_void\", \"minecraft:phantom_0.5_0.05_arc\"]").defineList("list", list, (o -> o instanceof String));
         COMMON_BUILDER.pop();
 
         COMMON_CONFIG = COMMON_BUILDER.build();

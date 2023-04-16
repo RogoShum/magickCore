@@ -1,0 +1,15 @@
+{
+    "targets": [
+        "magickcore:bits_final",
+        "magickcore:bits_swap"
+    ],
+    "passes": [{
+        "name": "magickcore:bits",
+        "intarget": "magickcore:bits_final",
+        "outtarget": "magickcore:bits_swap"
+    }, {
+        "name": "blit",
+        "intarget": "magickcore:bits_swap",
+        "outtarget": "magickcore:bits_final"
+    }]
+}

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Mana Chain is a point-type spell form, it is possible to bind a target and a post spell form. The length of the chain can be determined based on the mana range. The resilience of the chain is linked to the force of the spell, with lower force making it easier to break."
+      "text": "The Mana Chain is a point-type spell form, it is possible to bind a target and a post spell form. $(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Force of the form can increase the profit)$(li2)$(#00CED1)Force$(/t)$()$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:The force of functional spells is unaffected)$(li2)$(#00CED1)Force：1.0$(/t)$()$(t:The range of functional spells is unaffected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:The duration of functional spells is unaffected)$(li2)$(#FFB90F)Duration：1.0$(/t)$()$(br2)The length of the chain can be determined based on the mana range. The resilience of the chain is linked to the force of the spell, with lower force making it easier to break."
     },{
       "type": "text",
       "text": "Without a post spell form, the chain seems to be fixed in place with the space, completely still, and the target can only move within the range. When there is a post spell form and the mana chain does not have a trace attribute, the chain is fixed based on the post spell form. When there is a post spell form and the mana chain has a trace attribute, the chain is fixed based on the target."

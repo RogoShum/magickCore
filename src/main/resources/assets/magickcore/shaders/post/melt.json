@@ -1,0 +1,37 @@
+{
+    "targets": [
+        "magickcore:melt_swap",
+        "magickcore:melt_final"
+    ],
+    "passes": [{
+        "name": "magickcore:melt",
+        "intarget": "magickcore:melt_final",
+        "outtarget": "magickcore:melt_swap",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [2, 0.0]
+        }, {
+            "name": "Radius",
+            "values": [6.0]
+        }]
+    },{
+        "name": "magickcore:melt",
+        "intarget": "magickcore:melt_swap",
+        "outtarget": "magickcore:melt_final",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [0.0, 2]
+        }, {
+            "name": "Radius",
+            "values": [6.0]
+        }]
+    },{
+        "name": "blit",
+        "intarget": "magickcore:melt_final",
+        "outtarget": "magickcore:melt_swap"
+    },{
+        "name": "magickcore:bits",
+        "intarget": "magickcore:melt_swap",
+        "outtarget": "magickcore:melt_final"
+    }]
+}

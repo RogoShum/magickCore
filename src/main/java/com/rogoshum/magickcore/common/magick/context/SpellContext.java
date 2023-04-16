@@ -3,10 +3,12 @@ package com.rogoshum.magickcore.common.magick.context;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.context.child.ChildContext;
+import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
@@ -89,23 +91,27 @@ public class SpellContext {
         this.force += context.force;
         if(context.applyType != ApplyType.NONE)
             this.applyType = context.applyType;
-        context.childContexts.values().forEach((child) -> this.childContexts.put(child.getName(), child));
+        context.childContexts.values().forEach((child) -> this.childContexts.put(child.getType().name(), child));
         return (T) this;
     }
 
     public <T extends SpellContext> T addChild(ChildContext child) {
-        childContexts.put(child.getName(), child);
+        childContexts.put(child.getType().name(), child);
         return (T) this;
     }
 
     public <T extends SpellContext> T replenishChild(ChildContext child) {
-        if(!containChild(child.getName()))
-            childContexts.put(child.getName(), child);
+        if(!containChild(child.getType().name()))
+            childContexts.put(child.getType().name(), child);
         return (T) this;
     }
 
     public boolean containChild(String s) {
         return childContexts.containsKey(s);
+    }
+
+    public boolean containChild(ChildContext.Type<?> s) {
+        return childContexts.containsKey(s.name());
     }
 
     public void removeChild(String s) {
@@ -114,6 +120,10 @@ public class SpellContext {
 
     public <T extends ChildContext> T getChild(String s) {
         return (T) childContexts.get(s);
+    }
+
+    public <T extends ChildContext> T getChild(ChildContext.Type<T> s) {
+        return (T) childContexts.get(s.name());
     }
 
     public boolean valid() {
@@ -144,7 +154,7 @@ public class SpellContext {
         childContexts.forEach((s, child) -> {
             CompoundTag childTag = new CompoundTag();
             child.serialize(childTag);
-            childTags.put(child.getName(), childTag);
+            childTags.put(child.getType().name(), childTag);
         });
         tag.put("CHILD_CONTEXT", childTags);
 
@@ -178,117 +188,87 @@ public class SpellContext {
 
     @Override
     public String toString() {
-        ToolTipHelper toolTip = new ToolTipHelper();
-        if(element != ModElements.ORIGIN)
-            toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != ApplyType.NONE)
-            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(force > 0)
-            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-        if(range > 0)
-            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-        if(tick > 0)
-            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-
-        childContexts.values().forEach((context) -> {
-            //toolTip.push();
-            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-            //toolTip.pop();
-        });
-
-        if(postContext != null) {
-            if(applyType.isForm())
-                toolTip.builder.append(postContext.getString(1));
-            else
-                toolTip.builder.append(postContext.getString(0));
-        }
-
-        return toolTip.getString();
+        return getString(false);
     }
 
     public String toStringSample() {
+        return ToolTipHelper.DEEP_GREY + new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString() + getString(true);
+    }
+
+    public String getString(boolean simple) {
         ToolTipHelper toolTip = new ToolTipHelper();
-        toolTip.builder.append(ToolTipHelper.DEEP_GREY).append(new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString());
-        if(element != ModElements.ORIGIN)
-            toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != ApplyType.NONE)
-            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+        int lightTab = applyType == null ? 0 : applyType.isForm() ? 0 : 1;
+        int progressiveTab = lightTab + 1;
+        toolTip.tab = lightTab;
+        if(containChild(LibContext.SPAWN)) {
+            toolTip.nextLine();
+            toolTip.prefix();
+            ChildContext context = getChild(LibContext.SPAWN);
+            toolTip.builder.append("§5◈ ");
+            toolTip.builder.append(ToolTipHelper.PURPLE+ToolTipHelper.UNDERLINE).append(new TranslatableComponent(MagickCore.MOD_ID + ".description." + context.getType().name()).getString()).append(": ").append(ToolTipHelper.GREY_UNDERLINE).append(context.getString(toolTip.tab));
+            toolTip.tab = progressiveTab;
+        }
+
+        if(element != ModElements.ORIGIN && applyType != ApplyType.NONE && !applyType.isForm()){
+            toolTip.nextTrans(LibItem.FUNCTION, new TranslatableComponent(MagickCore.MOD_ID + ".function." + element.type() + "." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+            if(element != ModElements.ORIGIN) {
+                toolTip.builder.append("§l · ");
+                toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString());
+            }
+            if(applyType != ApplyType.NONE && !applyType.isForm()) {
+                toolTip.builder.append(" ");
+                toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString());
+            }
+        }
+        else {
+            if(element != ModElements.ORIGIN)
+                toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+            if(applyType != ApplyType.NONE && !applyType.isForm())
+                toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+        }
+
+        toolTip.tab = progressiveTab;
+        if(!simple) {
+            if(force > 0 || range > 0 || tick > 0) {
+                toolTip.nextLine();
+                toolTip.builder.append(ToolTipHelper.GREY);
+                for(int i = 0; i < toolTip.tab; i++) {
+                    if(i == 0) {
+                        toolTip.builder.append("|  ");
+                    } else {
+                        toolTip.builder.append("  ◇");
+                    }
+                }
+            }
+            boolean prefix = false;
+            if(force > 0) {
+                prefix = true;
+                toolTip.trans(LibItem.FORCE, force, ToolTipHelper.BLUE, ToolTipHelper.GREY);
+            }
+
+            if(range > 0) {
+                if(!prefix) {
+                    prefix = true;
+                } else
+                    toolTip.builder.append(" ");
+                toolTip.trans(LibItem.RANGE, range, ToolTipHelper.BLUE, ToolTipHelper.GREY);
+            }
+            if(tick > 0) {
+                if(prefix)
+                    toolTip.builder.append(" ");
+                toolTip.trans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
+            }
+        }
 
         childContexts.values().forEach((context) -> {
-            if(context.getLinkType() == applyType) {
-                //toolTip.push();
-                toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-                //toolTip.pop();
+            if((!simple || context.getLinkType() == applyType) && !(context instanceof SpawnContext)) {
+                toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getType().name(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
             }
         });
 
         if(postContext != null) {
-            if(applyType.isForm())
-                toolTip.builder.append(postContext.getStringSample(1));
-            else
-                toolTip.builder.append(postContext.getStringSample(0));
+            toolTip.builder.append(postContext.getString(simple));
         }
-
-        return toolTip.getString();
-    }
-
-    public String getString(int tab) {
-        ToolTipHelper toolTip = new ToolTipHelper();
-        toolTip.tab = tab;
-        toolTip.nextLine("{");
-        if(element != ModElements.ORIGIN)
-            toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != ApplyType.NONE)
-            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(force > 0)
-            toolTip.nextTrans(LibItem.FORCE, force, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-        if(range > 0)
-            toolTip.nextTrans(LibItem.RANGE, range, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-        if(tick > 0)
-            toolTip.nextTrans(LibItem.TICK, tick / 20f, ToolTipHelper.BLUE, ToolTipHelper.GREY);
-
-        childContexts.values().forEach((context) -> {
-            //toolTip.push();
-            toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-            //toolTip.pop();
-        });
-
-        if(postContext != null) {
-            if(applyType.isForm())
-                toolTip.builder.append(postContext.getString(tab + 1));
-            else
-                toolTip.builder.append(postContext.getString(tab));
-        }
-
-        toolTip.nextLine("}");
-        return toolTip.getString();
-    }
-
-    public String getStringSample(int tab) {
-        ToolTipHelper toolTip = new ToolTipHelper();
-        toolTip.tab = tab;
-        toolTip.nextLine("{");
-        if(element != ModElements.ORIGIN)
-            toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-        if(applyType != ApplyType.NONE)
-            toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-
-        childContexts.values().forEach((context) -> {
-            if(context.getLinkType() == applyType) {
-                //toolTip.push();
-                toolTip.nextTrans(MagickCore.MOD_ID + ".description." + context.getName(), context.getString(toolTip.tab), ToolTipHelper.PURPLE, ToolTipHelper.GREY);
-                //toolTip.pop();
-            }
-        });
-
-        if(postContext != null) {
-            if(applyType.isForm())
-                toolTip.builder.append(postContext.getStringSample(tab + 1));
-            else
-                toolTip.builder.append(postContext.getStringSample(tab));
-        }
-
-        toolTip.nextLine("}");
         return toolTip.getString();
     }
 

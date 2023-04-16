@@ -30,6 +30,16 @@ public class ManaBoneItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
+    public boolean typeMaterial() {
+        return true;
+    }
+
+    @Override
+    public boolean singleMaterial() {
+        return true;
+    }
+
+    @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         data.spellContext().applyType(ApplyType.AGGLOMERATE);
         return true;

@@ -1,17 +1,14 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.client.item.ContextPointerRenderer;
 import com.rogoshum.magickcore.common.block.MagickCraftingBlock;
 import com.rogoshum.magickcore.client.item.SpiritCrystalItemRenderer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
-import com.rogoshum.magickcore.common.item.material.ManaEnergyItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;

@@ -2,10 +2,8 @@ package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
-import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.RedStoneRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.projectile.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
@@ -28,7 +26,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Supplier;
 
@@ -115,12 +112,12 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }

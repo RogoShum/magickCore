@@ -21,19 +21,17 @@ public class GlowAirTileEntity extends BlockEntity {
         super(ModTileEntities.GLOW_AIR_TILE_ENTITY.get(), pos, state);
     }
 
-    public static void tick(Level level, BlockPos p_155254_, BlockState p_155255_, GlowAirTileEntity me) {
-        if(level.isClientSide) return;
+    public static void tick(Level level, BlockPos pos, BlockState state, GlowAirTileEntity me) {
         if(me.light != null && me.light.alive()) {
             BlockPos lightPos = EntityLightSourceManager.entityPos(me.light);
-            if(!lightPos.equals(me.worldPosition)) {
+            if(!lightPos.equals(pos)) {
                 me.awayTick++;
-                //EntityLightSourceHandler.tryAddLightSource(light, lightPos);
-                //if(awayTick > 20)
-                me.convertToDefault();
-            }
+                if(me.awayTick > 10)
+                    me.convertToDefault();
+            } else
+                me.awayTick=0;
         } else
             me.convertToDefault();
-        //MagickCore.LOGGER.info(world.getBlockState(pos));
     }
 
     private void convertToDefault() {

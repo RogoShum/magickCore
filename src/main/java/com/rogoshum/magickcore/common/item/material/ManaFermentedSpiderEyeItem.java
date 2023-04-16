@@ -25,6 +25,16 @@ public class ManaFermentedSpiderEyeItem extends BaseItem implements IManaMateria
     }
 
     @Override
+    public boolean typeMaterial() {
+        return true;
+    }
+
+    @Override
+    public boolean singleMaterial() {
+        return true;
+    }
+
+    @Override
     public int getManaNeed(ItemStack stack) {
         return 400;
     }

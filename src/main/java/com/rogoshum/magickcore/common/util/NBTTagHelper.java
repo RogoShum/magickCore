@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.init.CommonConfig;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.world.entity.Entity;
@@ -201,7 +202,7 @@ public class NBTTagHelper {
 
     public static void putElementOnTool(ItemStack stack, String element) {
         CompoundTag tag = getToolElementTable(stack);
-        tag.putInt(element, 300);
+        tag.putInt(element, CommonConfig.ELEMENT_STRING_DURATION.get());
         CompoundTag nbt = getStackTag(stack);
         nbt.put(LibElementTool.TOOL_ELEMENT, tag);
         stack.setTag(nbt);

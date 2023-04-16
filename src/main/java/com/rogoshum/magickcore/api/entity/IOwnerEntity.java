@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface IOwnerEntity {
-    public void setOwner(@Nullable Entity entityIn);
-    public void setOwnerUUID(UUID uuid) ;
-    public Entity getOwner();
+    public void setCaster(@Nullable Entity entityIn);
+    public void setCasterUUID(UUID uuid) ;
+    public Entity getCaster();
 }

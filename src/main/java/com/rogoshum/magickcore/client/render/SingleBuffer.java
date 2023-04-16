@@ -1,6 +1,9 @@
 package com.rogoshum.magickcore.client.render;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.rogoshum.magickcore.mixin.AccessorRenderType;
+import com.rogoshum.magickcore.mixin.AccessorTexture;
+import com.rogoshum.magickcore.mixin.AccessorTextureState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
 
@@ -43,26 +46,19 @@ public class SingleBuffer implements MultiBufferSource {
             return GlintBuffer;
         }
 
-        Class<RenderType> clazz = null;
         RenderType temp = null;
         if(useDefaultTexture) {
             temp = type.apply(this.texture);
         } else {
             try {
-                clazz = (Class<RenderType>) Class.forName("net.minecraft.client.renderer.RenderType$CompositeRenderType");
-                if(p_getBuffer_1_.getClass().equals(clazz)) {
-                    Object o = ObfuscationReflectionHelper.getPrivateValue(clazz, p_getBuffer_1_, "state");
-                    if(o instanceof RenderType.CompositeState) {
-                        RenderType.CompositeState state = (RenderType.CompositeState) o;
-                        RenderStateShard.TextureStateShard textureState = ObfuscationReflectionHelper.getPrivateValue(RenderType.CompositeState.class, state, "textureState");
-                        Optional<ResourceLocation> texture = ObfuscationReflectionHelper.getPrivateValue(RenderStateShard.TextureStateShard.class, textureState, "texture");
-                        if(texture.isPresent()) {
-                            temp = type.apply(texture.get());
-                        } else
-                            temp = type.apply(this.texture);
-                    }
-                }
-            } catch (Exception I) {
+                RenderType.CompositeState state = ((AccessorRenderType)p_getBuffer_1_).getState();
+                RenderStateShard.EmptyTextureStateShard textureState = ((AccessorTextureState)(Object)state).getTextureState();
+                Optional<ResourceLocation> texture = ((AccessorTexture)textureState).getTexture();
+                if(texture.isPresent()) {
+                    temp = type.apply(texture.get());
+                } else
+                    temp = type.apply(this.texture);
+            } catch (Exception ignored) {
 
             }
         }

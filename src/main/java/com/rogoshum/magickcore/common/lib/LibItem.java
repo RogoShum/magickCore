@@ -29,9 +29,11 @@ public class LibItem {
     public static final String WITHER = "wither";
     public static final String TAKEN = "taken";
     public static final String AIR = "air";
+    public static final String BOTANIA = "botania";
     public static final String MANA_ENERGY = "mana_energy";
 
     public static final String ELEMENT = MagickCore.MOD_ID + ".description.element";
+    public static final String FUNCTION = MagickCore.MOD_ID + ".description.function";
     public static final String FORCE = MagickCore.MOD_ID + ".description.force";
     public static final String RANGE = MagickCore.MOD_ID + ".description.range";
     public static final String MANA = MagickCore.MOD_ID + ".description.mana";

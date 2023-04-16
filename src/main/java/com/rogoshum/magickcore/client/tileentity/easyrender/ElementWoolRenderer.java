@@ -38,7 +38,7 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
         super.update();
         MagickElement element = MagickRegistry.getElement(tile.eType);
         if(element != null)
-            color = element.getRenderer().getColor();
+            color = element.getRenderer().getPrimaryColor();
     }
 
     public void renderLight(RenderParams params) {

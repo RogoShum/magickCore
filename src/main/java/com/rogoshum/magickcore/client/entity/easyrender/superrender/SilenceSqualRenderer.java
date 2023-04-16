@@ -10,7 +10,6 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.SilenceSquallEntity;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -53,10 +52,10 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
 
         matrixStackIn.scale(1.0f, 3.6f, 1.0f);
         RenderHelper.renderParticle(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , new RenderHelper.RenderContext(alpha, renderer.getColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(alpha, renderer.getPrimaryColor(), RenderHelper.renderLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
         RenderHelper.renderParticle(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , new RenderHelper.RenderContext(0.5f * alpha, renderer.getColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(0.5f * alpha, renderer.getSecondaryColor(), RenderHelper.renderLight));
     }
 
     public void render(RenderParams params) {
@@ -67,7 +66,7 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(7.0f, 4.0f, 2
                 , 4f, 16
-                , 0.0f, 0.8f * alpha, 0.8f, renderer.getColor());
+                , 0.0f, 0.8f * alpha, 0.8f, renderer.getPrimaryColor());
 
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, SPHERE)
                 , context);
@@ -76,8 +75,8 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE), this::renderCore);
-        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.SLIME_SHADER), this::render);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SHADER), this::renderCore);
+        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.SLIME_SMALL_SHADER), this::render);
         return map;
     }
 }

@@ -6,7 +6,6 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.ManaSphereEntity;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.math.Vector3f;
 
@@ -29,14 +28,16 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         params.matrixStack.scale(scale, scale, scale);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
 
-        if(!RenderHelper.isRenderingShader() && SPHERE_DISTORTION != null)
+        /*
+                if(!RenderHelper.isRenderingShader() && SPHERE_DISTORTION != null)
             RenderHelper.renderSphere(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.DISTORTION_MID_SHADER)
                 , SPHERE);
         params.matrixStack.scale(1.02f, 1.02f, 1.02f);
+         */
         if(SPHERE != null)
             RenderHelper.renderSphere(
-                    BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SHADER)
+                    BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.BITS_SHADER)
                     , SPHERE);
     }
 
@@ -52,10 +53,12 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         if(entity.spellContext().tick <= entity.tickCount)
             scale = 0;
 
-        SPHERE = RenderHelper.drawSphere(12, new RenderHelper.RenderContext(0.5f, entity.spellContext().element.color(), RenderHelper.renderLight)
+        SPHERE = RenderHelper.drawSphere(12, new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getId(), 2.10f));
+/*
         SPHERE_DISTORTION = RenderHelper.drawSphere(12, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(), true, "MANA_SPHERE"+entity.getId(), 2.10f));
+ */
     }
 
     @Override

@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class ItemContext extends ChildContext{
+    public static final Type<ItemContext> TYPE = new Type<>(LibContext.ITEM);
     public ItemStack itemStack = ItemStack.EMPTY;
 
     public static ItemContext create(ItemStack stack) {
@@ -30,8 +31,8 @@ public class ItemContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.ITEM;
+    public Type<? extends ItemContext> getType() {
+        return TYPE;
     }
 
     @Override

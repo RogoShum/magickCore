@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Taken of the De-buff can make the bewitched target become a puppet of the caster. No effect on Boss. The attribute of having mana gain is force and duration."
+      "text": "Taken of the De-buff can make the bewitched target become a puppet of the caster. No effect on Boss. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()"
     }
   ]
 }

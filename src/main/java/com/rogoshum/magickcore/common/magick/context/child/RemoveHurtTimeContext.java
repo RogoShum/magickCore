@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.nbt.CompoundTag;
 
 public class RemoveHurtTimeContext extends ChildContext{
+    public static final Type<RemoveHurtTimeContext> TYPE = new Type<>(LibContext.REMOVE_HURT_TIME);
     public static RemoveHurtTimeContext create() {
         return new RemoveHurtTimeContext();
     }
@@ -24,8 +25,8 @@ public class RemoveHurtTimeContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.REMOVE_HURT_TIME;
+    public Type<RemoveHurtTimeContext> getType() {
+        return TYPE;
     }
 
     @Override

@@ -3,13 +3,10 @@ package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -17,7 +14,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
@@ -60,25 +56,23 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.color(), RenderHelper.renderLight), 6);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 6);
     }
 
     public void renderSphereDistortion(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.color(), RenderHelper.renderLight), 6);
+        matrixStackIn.scale(1.2f, 1.2f, 1.2f);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 6);
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(BLANK, RenderMode.ShaderList.SLIME_SHADER), this::renderSphereSlime);
+        //map.put(new RenderMode(BLANK, RenderMode.ShaderList.BITS_SHADER), this::renderSphereSlime);
         map.put(new RenderMode(SPHERE, RenderMode.ShaderList.OPACITY_SHADER), this::renderSphereOpacity);
-        if(!RenderHelper.isRenderingShader()) {
-            map.put(new RenderMode(SPHERE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderSphereDistortion);
-        }
+        map.put(new RenderMode(SPHERE, RenderMode.ShaderList.DISTORTION_MID_SHADER), this::renderSphereDistortion);
         return map;
     }
 }

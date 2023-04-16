@@ -32,7 +32,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -135,7 +134,7 @@ public class ChargeEntity extends ManaEntity {
             if(pass) {
                 MagickContext context = MagickContext.create(this.level, spellContext().postContext)
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
-                        .caster(getOwner()).projectile(this)
+                        .caster(getCaster()).projectile(this)
                         .victim(living).noCost();
                 MagickReleaseHelper.releaseMagick(beforeCast(context));
             }

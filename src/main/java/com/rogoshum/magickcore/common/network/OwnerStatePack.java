@@ -39,7 +39,7 @@ public class OwnerStatePack extends EntityPack{
             return;
         if(entity instanceof IOwnerEntity) {
             IOwnerEntity iOwnerEntity = (IOwnerEntity) entity;
-            iOwnerEntity.setOwnerUUID(uuid);
+            iOwnerEntity.setCasterUUID(uuid);
         }
     }
 }

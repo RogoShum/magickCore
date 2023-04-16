@@ -9,7 +9,6 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.magick.context.child.ExtraManaFactorContext;
 import com.rogoshum.magickcore.common.magick.context.child.RemoveHurtTimeContext;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -73,8 +71,8 @@ public class MultiReleaseEntity extends ManaEntity {
         Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        } else if (getOwner() != null) {
-            direction = getOwner().getLookAngle().normalize();
+        } else if (getCaster() != null) {
+            direction = getCaster().getLookAngle().normalize();
         } else
             direction = getLookAngle();
 
@@ -88,14 +86,14 @@ public class MultiReleaseEntity extends ManaEntity {
                         .replenishChild(RemoveHurtTimeContext.create())
                         .replenishChild(ExtraManaFactorContext.create(getManaFactor()))
                         .<MagickContext>replenishChild(DirectionContext.create(dir))
-                        .caster(getOwner()).projectile((Entity) this)
+                        .caster(getCaster()).projectile((Entity) this)
                         .victim(target).noCost();
                 MagickReleaseHelper.releaseMagick(beforeCast(context));
             }
         } else {
             MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                     .<MagickContext>replenishChild(DirectionContext.create(direction))
-                    .caster(getOwner()).projectile((Entity) this)
+                    .caster(getCaster()).projectile((Entity) this)
                     .victim(target).noCost();
             MagickReleaseHelper.releaseMagick(beforeCast(context));
         }

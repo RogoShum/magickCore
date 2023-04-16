@@ -82,7 +82,7 @@ public class MagickContext extends SpellContext {
         if(noCost)
             toolTip.nextTrans("noCost", ToolTipHelper.PINK);
 
-        toolTip.builder.append(getString(1));
+        toolTip.builder.append(getString(false));
         return super.toString();
     }
 }

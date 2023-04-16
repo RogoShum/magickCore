@@ -74,7 +74,12 @@ public class RenderMode {
 
     public static class ShaderList {
         public static final ShaderList EMPTY = RenderMode.ShaderList.create();
+        public static final ShaderList BITS_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.BITS);
+        public static final ShaderList BITS_SMALL_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.BITS_SMALL);
+        public static final ShaderList BLOOM_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.BLOOM);
+        public static final ShaderList MELT_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.MELT);
         public static final ShaderList SLIME_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.SLIME);
+        public static final ShaderList SLIME_SMALL_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.SLIME_SMALL);
         public static final ShaderList OPACITY_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.OPACITY);
         public static final ShaderList DISTORTION_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.DISTORTION);
         public static final ShaderList DISTORTION_MID_SHADER = RenderMode.ShaderList.create().addShader(LibShaders.DISTORTION_MID);

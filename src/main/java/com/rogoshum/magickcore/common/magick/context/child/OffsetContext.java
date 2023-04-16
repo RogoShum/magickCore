@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 
 public class OffsetContext extends ChildContext{
+    public static final Type<OffsetContext> TYPE = new Type<>(LibContext.OFFSET);
     public Vec3 direction = Vec3.ZERO;
 
     public static OffsetContext create(Vec3 pos) {
@@ -36,8 +37,8 @@ public class OffsetContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.OFFSET;
+    public Type<OffsetContext> getType() {
+        return TYPE;
     }
 
     @Override

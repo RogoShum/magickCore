@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.render.SingleBuffer;
 import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
+import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
@@ -22,6 +24,8 @@ public class PhantomRenderer extends EasyRenderer<PhantomEntity> {
         baseOffset(params.matrixStack);
         params.matrixStack.translate(0, -entity.getBbHeight() * 0.5, 0);
         float f = Mth.lerp(params.partialTicks, entity.getEntity().yRotO, entity.getEntity().getYRot());
+        Color color = entity.getColor();
+        RenderSystem.setShaderColor(color.r(), color.g(), color.b(), 0.5f);
         Minecraft.getInstance().getEntityRenderDispatcher().render(entity.getEntity(), 0, 0, 0
                 , f, params.partialTicks, params.matrixStack, renderTypeBuffer, RenderHelper.halfLight);
         renderTypeBuffer.finish();

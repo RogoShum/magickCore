@@ -10,7 +10,7 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.init.ModSounds;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
@@ -23,6 +23,7 @@ import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
@@ -40,7 +41,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -274,8 +274,17 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if(source.msgId.equals(DamageSource.FALL.msgId)) return false;
+        if(!(source.getEntity() instanceof Player)) return false;
         return super.hurt(source, amount);
+    }
+
+    @Override
+    public void die(DamageSource p_21014_) {
+        super.die(p_21014_);
+        if(!level.isClientSide()) {
+            ItemStack stack = new ItemStack(ModItems.ARTIFICIAL_LIFE.get());
+            level.addFreshEntity(new ItemEntity(level, this.position().x, this.position().y+0.5, this.position().z, stack));
+        }
     }
 
     public void spawnSupplierParticle(Entity supplier) {

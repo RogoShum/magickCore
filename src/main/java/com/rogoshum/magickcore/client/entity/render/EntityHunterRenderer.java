@@ -6,14 +6,9 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.entity.model.EntityHunterModel;
 import com.rogoshum.magickcore.common.entity.pointed.EntityHunterEntity;
 import com.rogoshum.magickcore.common.magick.Color;
-import net.minecraft.client.model.SlimeModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -38,8 +33,9 @@ public class EntityHunterRenderer extends EntityRenderer<EntityHunterEntity> {
 		matrixStackIn.pushPose();
 		matrixStackIn.scale(entityIn.getBbWidth(), entityIn.getBbHeight(), entityIn.getBbWidth());
 		matrixStackIn.translate(0, -0.5, 0);
-		Color color = entityIn.spellContext().element.color();
+		Color color = entityIn.spellContext().element.primaryColor();
 		this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedEntityGlow(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
+
 		matrixStackIn.popPose();
 	}
 

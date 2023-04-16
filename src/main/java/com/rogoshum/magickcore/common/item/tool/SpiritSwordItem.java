@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.client.item.SpiritBowRenderer;
 import com.rogoshum.magickcore.client.item.SpiritSwordRenderer;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -21,7 +20,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 
-import net.minecraft.world.item.Item.Properties;
 import net.minecraftforge.client.IItemRenderProperties;
 
 import java.util.function.Consumer;

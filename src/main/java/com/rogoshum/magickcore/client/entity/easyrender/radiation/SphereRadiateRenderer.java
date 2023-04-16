@@ -26,7 +26,7 @@ public class SphereRadiateRenderer extends EasyRenderer<SphereEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderSphere(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SHADER)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
                 , 12);
     }
 
@@ -44,7 +44,7 @@ public class SphereRadiateRenderer extends EasyRenderer<SphereEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE), this::render);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::render);
         return map;
     }
 }

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.nbt.CompoundTag;
 
 public class SelfContext extends ChildContext{
+    public static final Type<SelfContext> TYPE = new Type<>(LibContext.SELF);
     public static SelfContext create() {
         return new SelfContext();
     }
@@ -24,8 +25,8 @@ public class SelfContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.SELF;
+    public Type<SelfContext> getType() {
+        return TYPE;
     }
 
     @Override

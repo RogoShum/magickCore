@@ -1,0 +1,37 @@
+{
+    "targets": [
+        "magickcore:slime_small_swap",
+        "magickcore:slime_small_final"
+    ],
+    "passes": [{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:slime_small_final",
+        "outtarget": "magickcore:slime_small_swap",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [1.5, 0.0]
+        }, {
+            "name": "Radius",
+            "values": [3.0]
+        }]
+    },{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:slime_small_swap",
+        "outtarget": "magickcore:slime_small_final",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [0.0, 1.5]
+        }, {
+            "name": "Radius",
+            "values": [3.0]
+        }]
+    },{
+        "name": "magickcore:bits",
+        "intarget": "magickcore:slime_small_final",
+        "outtarget": "magickcore:slime_small_swap"
+    },{
+        "name": "blit",
+        "intarget": "magickcore:slime_small_swap",
+        "outtarget": "magickcore:slime_small_final"
+    }]
+}

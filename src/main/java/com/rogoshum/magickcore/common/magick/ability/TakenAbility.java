@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
@@ -11,7 +10,6 @@ import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ExtraApplyTypeContext;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -146,13 +144,12 @@ public class TakenAbility{
             }
         }
 
-        if(context.victim instanceof Animal) {
-            Animal animal = (Animal) context.victim;
+        if(context.victim instanceof Animal animal) {
             if(context.caster instanceof Player)
                 animal.setInLove((Player) context.caster);
             else
                 animal.setInLove(null);
-            animal.setInLoveTime(context.tick);
+            animal.setInLoveTime(context.tick * 20);
             return true;
         }
 

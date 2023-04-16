@@ -38,7 +38,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
     public void update() {
         super.update();
         if(Minecraft.getInstance().crosshairPickEntity != entity) return;
-        color = entity.spellContext().element.color();
+        color = entity.spellContext().element.primaryColor();
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         shapes.clear();
         posSet.clear();

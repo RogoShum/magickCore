@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Attack can cause solar magic damage to the target, and the damage is higher when the target is on fire. The attribute of having mana gain is force."
+      "text": "Solar of the Attack can cause solar magic damage to the target, and the damage is higher when the target is on fire. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
     }
   ]
 }

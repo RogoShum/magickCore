@@ -19,6 +19,8 @@ import com.rogoshum.magickcore.proxy.ClientProxy;
 import com.rogoshum.magickcore.proxy.IProxy;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -52,7 +54,9 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
             TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-
-        return MagickReleaseHelper.releaseMagick(context);
+        boolean did = MagickReleaseHelper.releaseMagick(context);
+        if(did && playerIn instanceof Player)
+            ((Player) playerIn).getCooldowns().addCooldown(this, 10);
+        return did;
     }
 }

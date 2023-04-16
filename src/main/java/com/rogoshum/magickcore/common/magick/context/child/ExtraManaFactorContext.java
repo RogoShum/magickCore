@@ -1,12 +1,11 @@
 package com.rogoshum.magickcore.common.magick.context.child;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import net.minecraft.nbt.CompoundTag;
 
 public class ExtraManaFactorContext extends ChildContext{
+    public static final Type<ExtraManaFactorContext> TYPE = new Type<>(LibContext.MANA_FACTOR);
     public ManaFactor manaFactor = ManaFactor.DEFAULT;
 
     public static ExtraManaFactorContext create(ManaFactor manaFactor) {
@@ -33,8 +32,8 @@ public class ExtraManaFactorContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.MANA_FACTOR;
+    public Type<ExtraManaFactorContext> getType() {
+        return TYPE;
     }
 
     @Override

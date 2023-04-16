@@ -11,7 +11,6 @@ import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -48,11 +47,6 @@ public class MagickContextItem extends ManaItem {
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
-        /*
-                if(stack.hasTag() && playerIn instanceof PlayerEntity) {
-            MagickCore.LOGGER.info(stack.getTag().toString());
-        }
-         */
         return false;
     }
 

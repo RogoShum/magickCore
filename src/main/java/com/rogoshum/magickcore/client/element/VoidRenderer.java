@@ -12,7 +12,7 @@ public class VoidRenderer extends ElementRenderer {
     private ResourceLocation[] mist = new ResourceLocation[3];
 
     public VoidRenderer() {
-        super(ModElements.VOID_COLOR);
+        super(ModElements.VOID);
 
         mist[0] = mist_0;
         mist[1] = mist_1;

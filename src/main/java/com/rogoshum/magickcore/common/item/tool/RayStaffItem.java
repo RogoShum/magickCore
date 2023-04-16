@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.item.tool;
 
-import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -21,7 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class RayStaffItem extends ManaItem{
+public class RayStaffItem extends ManaItem {
     public RayStaffItem() {
         super(properties().stacksTo(1));
     }
@@ -29,18 +28,11 @@ public class RayStaffItem extends ManaItem{
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
-        MagickElement element = data.spellContext().element;
-        MagickContext context = magickContext.caster(playerIn).element(element);
-        SpawnContext spawnContext = SpawnContext.create(ModEntities.RAY.get());
-        context.tick(Math.max(context.tick, 100));
-        context.addChild(spawnContext);
-        context.post(data.spellContext().copy().element(element));
-        if(context.postContext.containChild(LibContext.TRACE)) {
-            TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
+        MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).caster(playerIn);
+        if(context.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-        context.applyType(ApplyType.SPAWN_ENTITY);
         return MagickReleaseHelper.releaseMagick(context);
     }
 

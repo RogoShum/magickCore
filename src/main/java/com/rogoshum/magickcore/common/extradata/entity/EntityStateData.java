@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.extradata.entity;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
@@ -11,6 +12,7 @@ import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.MinecraftForge;
@@ -155,7 +157,7 @@ public class EntityStateData extends EntityExtraData {
 
     public void tick(Entity entity) {
         updateTick++;
-        if(updateTick % updateRate == 0) {
+        if(updateTick >= updateRate) {
             updateTick = 0;
         } else
             return;
@@ -170,7 +172,7 @@ public class EntityStateData extends EntityExtraData {
             manaCoolDown = cEvent_m.getCooldown();
 
         if(shieldCoolDown > 0)
-            shieldCoolDown--;
+            shieldCoolDown-=updateRate;
 
 
         if(getElementShieldMana() < getMaxElementShieldMana() && shieldCoolDown <= 0) {
@@ -185,12 +187,14 @@ public class EntityStateData extends EntityExtraData {
         } else
             this.setElementShieldMana(Math.min(this.getMaxElementShieldMana(), this.getElementShieldMana()));
 
-        EntityEvents.ShieldCapacityEvent shield_value = new EntityEvents.ShieldCapacityEvent((LivingEntity) entity);
-        MinecraftForge.EVENT_BUS.post(shield_value);
-        this.setMaxElementShieldMana(shield_value.getCapacity() + finalMaxShieldValue);
+        if(!entity.getLevel().isClientSide()) {
+            EntityEvents.ShieldCapacityEvent shield_value = new EntityEvents.ShieldCapacityEvent((LivingEntity) entity);
+            MinecraftForge.EVENT_BUS.post(shield_value);
+            this.setMaxElementShieldMana(shield_value.getCapacity() + finalMaxShieldValue);
+        }
 
         if(manaCoolDown > 0)
-            manaCoolDown--;
+            manaCoolDown-=updateRate;
 
         if(manaCoolDown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
             float manaRegen = updateRate;

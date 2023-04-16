@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 
 public class DirectionContext extends ChildContext{
+    public static final Type<DirectionContext> TYPE = new Type<>(LibContext.DIRECTION);
     public Vec3 direction = Vec3.ZERO;
 
     public static DirectionContext create(Vec3 pos) {
@@ -31,8 +32,8 @@ public class DirectionContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.DIRECTION;
+    public Type<DirectionContext> getType() {
+        return TYPE;
     }
 
     @Override

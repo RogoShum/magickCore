@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.RadianceWellLaserRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.RadianceWellRenderer;
@@ -65,9 +64,9 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public boolean releaseMagick() {
         if(!initial) return false;
-        List<Entity> livings = findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(this.getOwner(), living));
+        List<Entity> livings = findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(this.getCaster(), living));
         livings.forEach(living -> {
-            MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);
+            MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);
             MagickReleaseHelper.releaseMagick(context);
         });
         return true;

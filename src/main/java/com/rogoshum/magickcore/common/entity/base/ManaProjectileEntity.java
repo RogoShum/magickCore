@@ -4,13 +4,13 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileRenderer;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.Color;
+import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.*;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
@@ -19,13 +19,10 @@ import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.nbt.CompoundTag;
@@ -54,7 +51,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -66,6 +62,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     public Entity victim;
     public double maxMotion;
     private boolean released = false;
+    private int shootCount;
 
     public ManaProjectileEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
@@ -83,13 +80,13 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     public void refreshDimensions() {
-        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
+        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "f_19815_");
         Pose pose = this.getPose();
         EntityDimensions entitysize1 = this.getDimensions(pose);
         net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "f_19815_");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "f_19816_");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
         this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
@@ -162,15 +159,15 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void setOwner(Entity entityIn) {
+    public void setCaster(Entity entityIn) {
         super.setOwner(entityIn);
         if (entityIn != null)
-            this.setOwnerUUID(entityIn.getUUID());
+            this.setCasterUUID(entityIn.getUUID());
     }
 
     @Nullable
     @Override
-    public Entity getOwner() {
+    public Entity getCaster() {
         Entity entity = super.getOwner();
         UUID uuid = getOwnerUUID();
         if(uuid == MagickCore.emptyUUID) return entity;
@@ -179,7 +176,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
             while (it.hasNext()) {
                 Entity entity1 = it.next();
                 if(entity1 != null && entity1.getUUID().equals(uuid)) {
-                    setOwner(entity1);
+                    setCaster(entity1);
                     return entity1;
                 }
             }
@@ -187,8 +184,75 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         return entity;
     }
 
+    protected void shootCheck() {
+        if(spellContext().containChild(LibContext.TRACE) && this.getCaster() != null)
+            shoot(getCaster());
+        else {
+            double range = 8 + 4 * spellContext().range;
+            List<LivingEntity> livings = level.getEntitiesOfClass(LivingEntity.class, this.boundingBox().inflate(range), (entity -> entity.isAlive() && entity != this.getCaster()));
+            Optional<LivingEntity> living = livings.stream().filter((entity) -> entity.hasLineOfSight(this)).min(Comparator.comparing((entity -> entity.distanceToSqr(this))));
+            living.ifPresent(this::shoot);
+        }
+    }
+
+    protected void shoot(Entity entity) {
+        MagickContext context = MagickContext.create(level, spellContext()).caster(this.getCaster()).victim(entity).projectile(this).noCost()
+                .applyType(ApplyType.SPAWN_ENTITY).tick(spellContext().tick).force(spellContext().force * 0.2f).range(spellContext().range * 0.2f);
+        context.removeChild(LibContext.SELF);
+        context.addChild(PositionContext.create(this.positionVec()));
+        context.addChild(ExtraManaFactorContext.create(ManaFactor.create(0.2f, 0.2f, 0.25f)));
+        context.addChild(DirectionContext.create(IManaEntity.super.getPostDirection(entity)));
+        context.addChild(TraceContext.create(entity));
+        MagickReleaseHelper.releaseMagick(context);
+    }
+
     @Override
     public void tick() {
+        if(spellContext().containChild(LibContext.SELF)) {
+            baseTick();
+            float height = 0.3f;
+            if(getBbHeight() != height)
+                this.setHeight(height);
+            float width = 0.3f;
+            if(getBbWidth() != width)
+                this.setWidth(width);
+
+            if(this.getCaster() != null) {
+                Vec3 rota = Vec3.directionFromRotation(getId() + (tickCount % 180) * 2, 90);
+                Vec3 dire = this.getCaster().position().add(0, getCaster().getBbHeight() * 0.5, 0)
+                        .subtract(rota.x * getCaster().getBbWidth() * 1.5, 0, rota.y * getCaster().getBbWidth() * 1.5).subtract(this.positionVec()).scale(0.2);
+                this.setDeltaMovement(dire);
+                Vec3 pos = getDeltaMovement().add(this.position());
+                this.setPos(pos.x, pos.y, pos.z);
+            }
+
+            if(!level.isClientSide()) {
+                int force = Math.max(5, (80 - (int)spellContext().force*5));
+                if(this.tickCount == 1 || this.tickCount % force == 0) {
+                    shootCount+=1;
+                }
+
+                if(tickCount % 5 == 0 && shootCount > 0) {
+                    shootCount--;
+                    shootCheck();
+                }
+            } else {
+                float scale = Math.max(this.getBbWidth(), 0.3f) * 0.3f;
+                Vec3 pos =  new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getX()
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getY() + this.getBbHeight() / 2
+                        , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getZ());
+                LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                        , pos
+                        , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                par.setGlow();
+                par.setParticleGravity(0f);
+                par.setLimitScale();
+                par.setShakeLimit(15f);
+                MagickCore.addMagickParticle(par);
+            }
+
+            return;
+        }
         victim = null;
         super.tick();
         normalCollision();
@@ -291,7 +355,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     @Override
     public Color getColor() {
-        return this.spellContext().element.color();
+        return this.spellContext().element.primaryColor();
     }
 
     protected void makeSound() {
@@ -311,7 +375,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     @Override
-    public void setOwnerUUID(UUID uuid) {
+    public void setCasterUUID(UUID uuid) {
         this.getEntityData().set(dataUUID, Optional.of(uuid));
     }
 
@@ -377,7 +441,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         super.readAdditionalSaveData(compound);
         if (compound.hasUUID("Owner")) {
             UUID ownerUUID = compound.getUUID("Owner");
-            this.setOwnerUUID(ownerUUID);
+            this.setCasterUUID(ownerUUID);
         }
         spellContext().deserialize(compound);
     }
@@ -385,8 +449,8 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if (this.getOwner() != null) {
-            compound.putUUID("Owner", this.getOwner().getUUID());
+        if (this.getCaster() != null) {
+            compound.putUUID("Owner", this.getCaster().getUUID());
         }
         spellContext().serialize(compound);
     }
@@ -399,7 +463,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                 condition = spellContext().getChild(LibContext.CONDITION);
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(condition != null) {
-                if(!condition.test(this.getOwner(), p_213868_1_.getEntity()))
+                if(!condition.test(this.getCaster(), p_213868_1_.getEntity()))
                     pass.set(false);
             }
             if(pass.get()) {
@@ -427,12 +491,12 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 

@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
@@ -17,7 +16,6 @@ import com.rogoshum.magickcore.common.lib.LibBuff;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -76,7 +74,7 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     public float getSourceLight() {
-        return 8;
+        return 10;
     }
 
     @Override
@@ -86,7 +84,7 @@ public class ManaSphereEntity extends ManaPointEntity {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
 
-                if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && !ModBuffs.hasBuff(entity, LibBuff.FREEZE))
+                if(!MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity) && !ModBuffs.hasBuff(entity, LibBuff.FREEZE))
                     this.push(entity);
             }
         }

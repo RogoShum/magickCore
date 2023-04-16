@@ -2,7 +2,6 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.DawnWardRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
@@ -20,7 +19,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -148,9 +146,9 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     public void push(Entity entityIn) {
-        if(MagickReleaseHelper.sameLikeOwner(this.getOwner(), entityIn)) {
+        if(MagickReleaseHelper.sameLikeOwner(this.getCaster(), entityIn)) {
             if(entityIn instanceof LivingEntity) {
-                MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
+                MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entityIn).tick(300).force(5).applyType(ApplyType.BUFF);
                 MagickReleaseHelper.releaseMagick(context);
                 ((LivingEntity) entityIn).addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 20, 8));
             }

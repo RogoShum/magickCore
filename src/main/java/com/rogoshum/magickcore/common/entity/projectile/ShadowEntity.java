@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.client.Minecraft;
@@ -89,6 +90,7 @@ public class ShadowEntity extends ManaProjectileEntity {
             par.setParticleGravity(0f);
             par.setShakeLimit(15f);
             par.setLimitScale();
+            par.useShader(LibShaders.BITS);
             MagickCore.addMagickParticle(par);
         }
     }

@@ -6,8 +6,17 @@
   "pages": [
     {
       "type": "text",
+      "title": "The three major categories of spell forms",
+      "text": "If you have already digested the previous knowledge, I will now introduce you to the three main categories of spell forms: the most basic projectile type, the radiation type for releasing range spells, and the point-type form that works stably and continuously."
+    },
+    {
+      "type": "text",
       "title": "Projectile spell forms",
       "text": "Projectile spell forms are highly efficient at transferring mana because only projectile spells can freely move around the world. This means that projectile spell forms can carry post spells to other locations and release them when they touch blocks or entities, which are treated as targets for the post spell. The range attribute of a spell slightly increases the size of the projectile spell."
+    },
+    {
+      "type": "text",
+      "text": "Projectile spell forms usually have a high force magic effect, which can well preserve the force value that functional spells should have, which is its advantage. If the projectile form is constructed using the \"Target is Caster\" attribute provided by the inferior diamond, then it will become an elemental spirit that follows the caster and shoot itself at surrounding creatures based on its force and range attributes."
     },
     {
       "type": "text",
@@ -25,7 +34,8 @@
     },
     {
       "type": "text",
-      "text": "Regarding mana benefits of spell forms: Although almost all spell forms can pass on post spells, there are some differences in their efficiency. $(br2)For example, if a spell form has mana benefits of force: half, range: normal, and duration: half, then the force and duration of the spell type following it will be reduced to half of the normal value when it is released, regardless of whether it is an attack type, buff type, or spell form type."
+      "title": "Form collocation",
+      "text": "Each of the three types of spell forms has its own characteristics, and we can use these characteristics to combine and leverage their respective strengths. For point-shaped and radiation-shaped forms, we can add a projectile form in front of them to use the projectile form to move ourselves to other positions. For the projectile form, we can also add a radiation form in front of it to release the projectile object to each entity within the radiation range."
     },
     {
       "type": "spotlight",

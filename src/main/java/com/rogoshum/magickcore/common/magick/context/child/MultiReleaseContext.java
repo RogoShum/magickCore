@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.nbt.CompoundTag;
 
 public class MultiReleaseContext extends ChildContext{
+    public static final Type<MultiReleaseContext> TYPE = new Type<>(LibContext.MULTI_RELEASE);
     public static MultiReleaseContext create() {
         return new MultiReleaseContext();
     }
@@ -24,8 +25,8 @@ public class MultiReleaseContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.MULTI_RELEASE;
+    public Type<MultiReleaseContext> getType() {
+        return TYPE;
     }
 
     @Override

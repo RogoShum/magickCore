@@ -4,11 +4,9 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
+import com.rogoshum.magickcore.common.extradata.entity.*;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
@@ -18,30 +16,27 @@ import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -49,133 +44,70 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 
-import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.monster.CaveSpider;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Evoker;
-import net.minecraft.world.entity.monster.MagmaCube;
-import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.monster.Spider;
-import net.minecraft.world.entity.monster.Vex;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RegisterEvent {
-    private static final HashMap<Class<? extends Entity>, LivingElementTable> spawnElementMap = new HashMap<>();
-    private static final HashMap<String, LivingElementTable> spawnElementMap_dimension = new HashMap<>();
-    private static final HashMap<String, LivingElementTable> spawnElementMap_biome = new HashMap<>();
-    private static final List<EntityType<?>> element_animal = new ArrayList<>();
+    private static final HashMap<EntityType<?>, LivingElementTable> MOB_ELEMENT_MAP = new HashMap<>();
+    private static final HashMap<BiPredicate<Level, Holder<Biome>>, ElementTable> DIMENSION_ELEMENT_MAP = new HashMap<>();
+    private static boolean INIT = false;
 
     @SubscribeEvent
     public void entityExtraData(ExtraDataEvent.Entity event) {
         event.add(LibEntityData.ENTITY_STATE, EntityStateData::new);
         event.add(LibEntityData.ELEMENT_TOOL, ElementToolData::new);
         event.add(LibEntityData.TAKEN_ENTITY, TakenEntityData::new);
+        event.add(LibEntityData.PLAYER_TRADE, PlayerTradeUnlock::new);
+        event.add(LibEntityData.LEECH_ENTITY, LeechEntityData::new);
     }
 
     public static void initElementMap() {
-        spawnElementMap.put(EnderMan.class, new LivingElementTable(1, 50, LibElements.VOID));
-        spawnElementMap.put(Blaze.class, new LivingElementTable(2, 50, LibElements.SOLAR));
-        spawnElementMap.put(CaveSpider.class, new LivingElementTable(1, 5, LibElements.WITHER));
-        spawnElementMap.put(Spider.class, new LivingElementTable(15, 50, LibElements.WITHER));
-        spawnElementMap.put(Shulker.class, new LivingElementTable(2, 200, LibElements.VOID));
-        spawnElementMap.put(MagmaCube.class, new LivingElementTable(2, 7, LibElements.SOLAR));
-        spawnElementMap.put(Evoker.class, new LivingElementTable(1, 10, LibElements.TAKEN));
-        spawnElementMap.put(Vex.class, new LivingElementTable(2, 10, LibElements.TAKEN));
-        spawnElementMap.put(Creeper.class, new LivingElementTable(5, 50, LibElements.ARC));
-        spawnElementMap.put(Phantom.class, new LivingElementTable(1, 50, LibElements.ARC));
-        spawnElementMap.put(SnowGolem.class, new LivingElementTable(10, 20, LibElements.TAKEN));
-        spawnElementMap.put(IronGolem.class, new LivingElementTable(1, 10, LibElements.TAKEN));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> level.dimension() == Level.END), new ElementTable(0.1f, 0.2f, LibElements.VOID));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> level.dimension() == Level.NETHER), new ElementTable(0.1f, 0.2f, LibElements.SOLAR));
 
-        spawnElementMap_dimension.put(LevelStem.END.location().toString(), new LivingElementTable(5, 70, LibElements.VOID));
-        spawnElementMap_dimension.put(LevelStem.NETHER.location().toString(), new LivingElementTable(7, 70, LibElements.SOLAR));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> Biome.getBiomeCategory(biomeHolder) == Biome.BiomeCategory.SWAMP), new ElementTable(0.25f, 0.15f, LibElements.WITHER));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> Biome.getBiomeCategory(biomeHolder) == Biome.BiomeCategory.ICY), new ElementTable(0.25f, 0.15f, LibElements.STASIS));
 
-        spawnElementMap_biome.put(Biome.BiomeCategory.SWAMP.getSerializedName(), new LivingElementTable(4, 30, LibElements.WITHER));
-        spawnElementMap_biome.put(Biome.BiomeCategory.ICY.getSerializedName(), new LivingElementTable(4, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.BiomeCategory.MESA.getSerializedName(), new LivingElementTable(6, 30, LibElements.STASIS));
-        spawnElementMap_biome.put(Biome.BiomeCategory.EXTREME_HILLS.getSerializedName(), new LivingElementTable(5, 30, LibElements.STASIS));
-
-        element_animal.add(EntityType.COW);
-        element_animal.add(EntityType.SHEEP);
-        element_animal.add(EntityType.CHICKEN);
-        element_animal.add(EntityType.PIG);
-    }
-
-    public static boolean containAnimalType(EntityType<?> type)
-    {
-        return element_animal.contains(type);
-    }
-
-    public static boolean registerAnimalTypeElementTable(EntityType<?> type) {
-        if(element_animal.contains(type))
-            return false;
-
-        element_animal.add(type);
-        return true;
-    }
-
-    public static boolean registerBiomeElementTable(String s, LivingElementTable table) {
-        if(spawnElementMap_biome.containsKey(s))
-            return false;
-
-        spawnElementMap_biome.put(s, table);
-        return true;
-    }
-
-    public static boolean registerDimensionElementTable(String s, LivingElementTable table) {
-        if(spawnElementMap_dimension.containsKey(s))
-            return false;
-
-        spawnElementMap_dimension.put(s, table);
-        return true;
-    }
-
-    public static boolean registerLivingElementTable(Class clazz, LivingElementTable table) {
-        if(spawnElementMap.containsKey(clazz))
-            return false;
-
-        spawnElementMap.put(clazz, table);
-        return true;
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> level.isNight()), new ElementTable(0.0075f, 1.0f, LibElements.TAKEN));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> level.isThundering() && biomeHolder.value().getPrecipitation() == Biome.Precipitation.RAIN), new ElementTable(0.07f, 1.0f, LibElements.ARC));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> biomeHolder.value().getBaseTemperature() < 0.7), new ElementTable(0.1f, 0.5f, LibElements.STASIS));
+        DIMENSION_ELEMENT_MAP.put(((level, biomeHolder) -> level.isRaining() && biomeHolder.value().getBaseTemperature() < 0.7), new ElementTable(0.25f, 1.0f, LibElements.STASIS));
     }
 
     @SubscribeEvent
     public void onDrops(LivingDropsEvent event) {
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
             if(!event.getEntityLiving().level.isClientSide) {
-                /*
-                if(!state.getElement().type().equals(LibElements.ORIGIN) && state.getIsDeprived()) {
-                    ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.element_orb.get(), event.getEntityLiving().world);
-                    Vector3d vec = event.getEntityLiving().getPositionVec();
-                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                    orb.spellContext().element(state.getElement());
-                    orb.spellContext().tick(200);
-                    orb.setShooter(event.getEntityLiving());
-                    event.getEntityLiving().world.addEntity(orb);
-                }
-                else {
-                    ManaPowerEntity orb = new ManaPowerEntity(ModEntities.mana_power.get(), event.getEntityLiving().world);
-                    Vector3d vec = event.getEntityLiving().getPositionVec();
-                    orb.setPosition(vec.x, vec.y + event.getEntityLiving().getHeight() / 2, vec.z);
-                    orb.spellContext().tick(100);
-                    orb.setMana(event.getEntityLiving().getMaxHealth() / 2);
-                    event.getEntityLiving().world.addEntity(orb);
+                int chance = state.getElement() != ModElements.ORIGIN ? 15 : 100;
+                if(event.getSource().getEntity() instanceof Player) {
+                    PlayerTradeUnlock lock = ExtraDataUtil.playerTradeData((Player) event.getSource().getEntity());
+                    if(lock.getUnLock().size() < 5)
+                        chance /= 2;
                 }
 
-                 */
-                ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
-                Vec3 vec = event.getEntityLiving().position();
-                orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
-                orb.spellContext().element(state.getElement());
-                orb.setOrbType(true);
-                orb.manaCapacity().setMana(event.getEntityLiving().getMaxHealth());
-                orb.spellContext().tick(200);
-                orb.setOwner(event.getEntityLiving());
-                event.getEntityLiving().level.addFreshEntity(orb);
+                if(event.getEntityLiving().level.random.nextInt(chance) == 0) {
+                    ItemStack stack = ModVillager.getEntityTypeItem(ModVillager.getRandomType());
+                    ItemEntity entity = new ItemEntity(event.getEntityLiving().level, event.getEntityLiving().getX(), event.getEntityLiving().getY() + 0.5f, event.getEntityLiving().getZ(), stack);
+                    if(!event.getEntityLiving().level.isClientSide)
+                        event.getEntityLiving().level.addFreshEntity(entity);
+                } else {
+                    ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
+                    Vec3 vec = event.getEntityLiving().position();
+                    orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
+                    orb.spellContext().element(state.getElement());
+                    orb.setOrbType(true);
+                    orb.manaCapacity().setMana(event.getEntityLiving().getMaxHealth());
+                    orb.spellContext().tick(200);
+                    orb.setCaster(event.getEntityLiving());
+                    event.getEntityLiving().level.addFreshEntity(orb);
+                }
             }
         });
-
 
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
             if (!state.getElement().type().equals(LibElements.ORIGIN) && !event.getEntityLiving().level.isClientSide) {
@@ -215,21 +147,8 @@ public class RegisterEvent {
         });
     }
 
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
-        /*
-        if(event.getSource().getTrueSource() == event.getSource().getImmediateSource() && event.getSource().getTrueSource() instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) event.getSource().getTrueSource()).getHeldItemMainhand();
-            if(EnchantmentHelper.getEnchantmentLevel(ModEnchantments.ELEMENT_DEPRIVATION.get(), stack) > 0) {
-                ExtraDataHelper.entityStateData(event.getEntityLiving(), EntityStateData::setDeprived);
-            }
-        }
-
-         */
-    }
-
     public static float getShieldCapacity(LivingEntity livingEntity) {
-        return MagickCore.rand.nextInt(Math.max(1,  (int)(livingEntity.getHealth() * 0.3f))) + livingEntity.getHealth() * 0.4f;
+        return MagickCore.rand.nextInt(Math.max(1,  (int)(livingEntity.getHealth() * 0.6f))) + livingEntity.getHealth() * 0.4f;
     }
 
 
@@ -249,58 +168,124 @@ public class RegisterEvent {
         testIfElement(event.getEntityLiving());
     }
 
-    public static boolean testIfElement(LivingEntity living) {
-        if(!living.isAlive() || living.level.isClientSide) return false;
+    public static void testIfElement(LivingEntity living) {
+        if(!living.isAlive() || living.level.isClientSide) return;
+        if(!INIT) {
+            INIT = true;
+            List<?> list = CommonConfig.ELEMENT_MOB.get();
+            for(Object o : list) {
+                LivingElementTable table = LivingElementTable.fromString(o.toString());
+                if(table != null) {
+                    MOB_ELEMENT_MAP.put(table.getMobType(), table);
+                }
+            }
+        }
         EntityStateData state = ExtraDataUtil.entityStateData(living);
-        if(state == null) return false;
+        if(state == null) return;
         if(!state.allowElement())
-            return state.getElement() != ModElements.ORIGIN;
-        if(!living.canChangeDimensions())
-            state.setElemented();
+            return;
 
-        if(spawnElementMap.containsKey(living.getClass())) {
-            transEntityElement(living, state, spawnElementMap.get(living.getClass()));
+        if(MOB_ELEMENT_MAP.containsKey(living.getType())) {
+            transEntityElement(living, state, MOB_ELEMENT_MAP.get(living.getType()));
         }
 
-        String dimension_name = living.level.dimension().location().toString();
-        if(living instanceof Enemy && spawnElementMap_dimension.containsKey(dimension_name)) {
-            transEntityElement(living, state, spawnElementMap_dimension.get(dimension_name));
+        Level level = living.level;
+        Holder<Biome> biome = level.getBiome(living.blockPosition());
+        if(living instanceof Enemy) {
+            for(BiPredicate<Level, Holder<Biome>> predicate : DIMENSION_ELEMENT_MAP.keySet()) {
+                if(predicate.test(level, biome)) {
+                    transEntityElement(living, state, DIMENSION_ELEMENT_MAP.get(predicate));
+                }
+            }
         }
-
-        String biome_type = living.level.getBiome(living.blockPosition()).value().getRegistryName().toString();
-        if(living instanceof Enemy && spawnElementMap_biome.containsKey(biome_type)) {
-            transEntityElement(living, state, spawnElementMap_biome.get(biome_type));
-        }
-        return state.getElement() != ModElements.ORIGIN;
+        state.setElemented();
     }
 
-    public static void transEntityElement(LivingEntity living, EntityStateData state, LivingElementTable table) {
-        boolean testMod = testIfGenerateShield(living);
-        if(state.allowElement() && (MagickCore.rand.nextInt(table.getElementChance()) == 0 || testMod)) {
-            state.setElement(MagickRegistry.getElement(table.element));
-
-            if(MagickCore.rand.nextInt(table.getShieldChance()) == 0 || testMod) {
+    public static void transEntityElement(LivingEntity living, EntityStateData state, ElementTable table) {
+        //boolean testMod = testIfGenerateShield(living);
+        if(state.allowElement() && (MagickCore.rand.nextFloat() <= table.getElementChance())) {
+            state.setElement(MagickRegistry.getElement(table.getType()));
+            state.setElemented();
+            if(MagickCore.rand.nextFloat() <= table.getShieldChance()) {
                 state.setFinalMaxElementShield(getShieldCapacity(living));
                 state.setMaxManaValue(state.getFinalMaxElementShield());
             }
         }
-
-        state.setElemented();
     }
 
-    public static class LivingElementTable{
-        private final int chanceShield;
-        private final int chanceElement;
+    public static class LivingElementTable extends ElementTable {
+        private final EntityType<?> type;
+        private final String string;
+        private LivingElementTable(@Nonnull EntityType<?> mob, float chanceElement, float chanceShield, String element) {
+            super(chanceElement, chanceShield, element);
+            this.type = mob;
+            this.string = type.getDescriptionId()+"_"+chanceElement+"_"+chanceShield+"_"+element;
+        }
+
+        @Nullable
+        public static LivingElementTable fromString(String s) {
+            String[] item = s.split("_");
+            if(item.length != 4) return null;
+            String type = item[0];
+            ResourceLocation res = new ResourceLocation(type);
+            if(!ForgeRegistries.ENTITIES.containsKey(res))
+                return null;
+            EntityType<?> mob = ForgeRegistries.ENTITIES.getValue(res);
+            if(mob == null)
+                return null;
+            String element = item[3];
+            if(!ModElements.elements.contains(element))
+                return null;
+            float chanceElement = Float.parseFloat(item[1]);
+            float chanceShield = Float.parseFloat(item[2]);
+            if(Float.isNaN(chanceElement) || Float.isNaN(chanceShield))
+                return null;
+            return new LivingElementTable(mob, Mth.clamp(chanceElement, 0.0f, 1.0f), Mth.clamp(chanceShield, 0.0f, 1.0f), element);
+        }
+
+        protected EntityType<?> getMobType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+    }
+
+    public static class ElementTable{
+        private final float chanceShield;
+        private final float chanceElement;
         private final String element;
-        protected LivingElementTable(int chanceElement, int chanceShield, String element) {
+        private final String string;
+        private ElementTable(float chanceElement, float chanceShield, String element) {
             this.chanceShield = chanceShield;
             this.chanceElement = chanceElement;
             this.element = element;
+            this.string = chanceElement+"_"+chanceShield+"_"+element;
         }
 
-        protected int getShieldChance(){return this.chanceShield;}
-        protected int getElementChance(){return this.chanceElement;}
+        @Nullable
+        public static ElementTable fromString(String s) {
+            String[] item = s.split("_");
+            if(item.length != 3) return null;
+            String element = item[2];
+            if(!ModElements.elements.contains(element))
+                return null;
+            float chanceElement = Float.parseFloat(item[0]);
+            float chanceShield = Float.parseFloat(item[1]);
+            if(Float.isNaN(chanceElement) || Float.isNaN(chanceShield))
+                return null;
+            return new ElementTable(Mth.clamp(chanceElement, 0.0f, 1.0f), Mth.clamp(chanceShield, 0.0f, 1.0f), element);
+        }
+
+        protected float getShieldChance(){return this.chanceShield;}
+        protected float getElementChance(){return this.chanceElement;}
         protected String getType(){return this.element;}
+        @Override
+        public String toString() {
+            return string;
+        }
     }
 
     @SubscribeEvent

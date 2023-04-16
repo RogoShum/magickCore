@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -26,21 +27,13 @@ public class LaserStaffItem extends ManaItem {
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
-        ExtraDataUtil.itemManaData(stack, data -> {
-            MagickElement element = data.spellContext().element;
-            MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).<MagickContext>applyType(ApplyType.SPAWN_ENTITY).caster(playerIn).element(element);
-            SpawnContext spawnContext = SpawnContext.create(ModEntities.MANA_LASER.get());
-            context.addChild(spawnContext);
-            context.tick(Math.max(context.tick, 100));
-            context.post(data.spellContext().copy().element(element));
-            if(context.postContext.containChild(LibContext.TRACE)) {
-                TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
-                traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
-            }
-            MagickReleaseHelper.releaseMagick(context);
-        });
-
-        return true;
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).caster(playerIn);
+        if(context.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.getChild(LibContext.TRACE);
+            traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
+        }
+        return MagickReleaseHelper.releaseMagick(context);
     }
 
     @Override

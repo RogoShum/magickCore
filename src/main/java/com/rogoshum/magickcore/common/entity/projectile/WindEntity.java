@@ -2,11 +2,9 @@ package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.projectile.LeafRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.WindRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
-import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -74,7 +72,7 @@ public class WindEntity extends ManaProjectileEntity {
 
     @Override
     public float getSourceLight() {
-        return 3;
+        return 6;
     }
 
     @Override

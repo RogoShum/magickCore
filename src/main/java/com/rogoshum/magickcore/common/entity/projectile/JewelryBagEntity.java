@@ -6,14 +6,12 @@ import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.projectile.BubbleRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.JewelryBagRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -21,7 +19,6 @@ import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.ProjectileUtil;
 import net.minecraft.world.level.block.Block;
@@ -138,7 +135,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 traceContext.entity = entity;
             }
         } else
-            entity = getOwner();
+            entity = getCaster();
 
         if(entity != null && entity.isAlive()) {
             Vec3 goal = new Vec3(entity.getX(), entity.getY() + entity.getBbHeight() / 1.5f, entity.getZ());
@@ -227,7 +224,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 condition = spellContext().getChild(LibContext.CONDITION);
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(condition != null) {
-                if(!condition.test(this.getOwner(), p_213868_1_.getEntity()))
+                if(!condition.test(this.getCaster(), p_213868_1_.getEntity()))
                     pass.set(false);
             }
             if(pass.get()) {
@@ -246,7 +243,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
 
     @Override
     public boolean hitEntityRemove(EntityHitResult entityRayTraceResult) {
-        if(spellContext().containChild(LibContext.ITEM) && entityRayTraceResult.getEntity() == getOwner())
+        if(spellContext().containChild(LibContext.ITEM) && entityRayTraceResult.getEntity() == getCaster())
             return true;
         if(entityRayTraceResult.getEntity() instanceof ItemEntity) {
             if(spellContext().containChild(LibContext.ITEM)) {
@@ -261,7 +258,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
             return false;
         } else if(entityRayTraceResult.getEntity() instanceof JewelryBagEntity) {
             return false;
-        } else if (suitableEntity(entityRayTraceResult.getEntity()) && (getOwner() == null || (getOwner() != null && getOwner() != entityRayTraceResult.getEntity()))) {
+        } else if (suitableEntity(entityRayTraceResult.getEntity()) && (getCaster() == null || (getCaster() != null && getCaster() != entityRayTraceResult.getEntity()))) {
             return false;
         }
         return super.hitEntityRemove(entityRayTraceResult);

@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
+import com.rogoshum.magickcore.common.integration.botania.BotaniaAbility;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -10,12 +11,16 @@ import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.network.EntityStatePack;
 import com.rogoshum.magickcore.common.network.Networking;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.PacketDistributor;
+import vazkii.botania.api.mana.ManaItemHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +38,7 @@ public class ModBuffs {
 
         putBuff(LibBuff.SLOW, LibElements.STASIS, false, (e, force) -> {
             force = Math.max(force, 1);
-            e.setDeltaMovement(e.getDeltaMovement().scale(1d/(force + 0.5d)));
+            e.setDeltaMovement(e.getDeltaMovement().scale(1d/(force + 1d)*1.5d));
         } , true);
 
         putBuff(LibBuff.WITHER, LibElements.WITHER, false, (e, force) -> {
@@ -58,9 +63,9 @@ public class ModBuffs {
         putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e, force) -> {
             if(e instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity) e;
-                living.heal(living.getMaxHealth() * 0.05f * force);
+                living.heal(living.getMaxHealth() * 0.02f * force);
                 if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
-                    living.setAbsorptionAmount(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f * force);
+                    living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f * force, living.getMaxHealth()));
                 }
                 living.hurtTime = 0;
             }
@@ -105,6 +110,13 @@ public class ModBuffs {
                 }
             }
         }, true);
+
+        putBuff(LibBuff.BOTAN, LibElements.BOTANIA, true, (e, force) -> {
+            if(e instanceof Player) {
+                ManaItemHandler.instance().dispatchManaExact(BotaniaAbility.SAMPLE, (Player) e, (int) (force * 20), true);
+            }
+        }, true);
+        putBuff(LibBuff.THORNS, LibElements.BOTANIA, false, (e, force) ->{}, true);
     }
 
     protected static void putBuff(String s, String element, boolean beneficial, BiConsumer<? super Entity, Float> func, boolean canRefreshBuff) {

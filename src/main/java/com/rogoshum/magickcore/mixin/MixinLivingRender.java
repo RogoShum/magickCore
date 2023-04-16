@@ -56,7 +56,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
             ManaBuff buff = buffMap.get(it.next());
             if(buff.isBeneficial()) {
                 it.remove();
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor());
+                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getPrimaryColor());
             }
         }
         matrixStackIn.pushPose();
@@ -75,11 +75,11 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
 
         if(buffMap.containsKey(LibBuff.FREEZE)) {
             buffMap.remove(LibBuff.FREEZE);
-            renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(LibElements.STASIS).getColor(), RenderHelper.CYLINDER_ROTATE);
+            renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(LibElements.STASIS).getPrimaryColor(), RenderHelper.CYLINDER_ROTATE);
         }
 
         for(ManaBuff buff : buffMap.values()) {
-            renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getColor(), RenderHelper.RES_ITEM_GLINT);
+            renderBuffLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getPrimaryColor(), RenderHelper.RES_ITEM_GLINT);
         }
         matrixStackIn.popPose();
     }
@@ -99,7 +99,7 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
             ManaBuff buff = buffMap.get(it.next());
             if(buff.isBeneficial()) {
                 it.remove();
-                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getColor());
+                color = getColorBlender(time++, color, MagickCore.proxy.getElementRender(buff.getElement()).getPrimaryColor());
             }
         }
         matrixStackIn.pushPose();
@@ -118,11 +118,11 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
 
         if(buffMap.containsKey(LibBuff.FREEZE)) {
             buffMap.remove(LibBuff.FREEZE);
-            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(LibElements.STASIS).getColor(), RenderHelper.CYLINDER_ROTATE);
+            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(LibElements.STASIS).getPrimaryColor(), RenderHelper.CYLINDER_ROTATE);
         }
 
         for(ManaBuff buff : buffMap.values()) {
-            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getColor(), RenderHelper.RES_ITEM_GLINT);
+            renderBuffLayerLayer(entityIn, partialTicks, matrixStackIn, bufferIn, packedLightIn, MagickCore.proxy.getElementRender(buff.getElement()).getPrimaryColor(), RenderHelper.RES_ITEM_GLINT);
         }
         matrixStackIn.popPose();
     }

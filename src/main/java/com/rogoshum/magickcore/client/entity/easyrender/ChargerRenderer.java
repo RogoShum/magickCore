@@ -44,7 +44,7 @@ public class ChargerRenderer extends EasyRenderer<ChargeEntity> {
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(entity.tickCount % 60 * 6));
         params.matrixStack.scale(scale, scale, scale);
         BufferContext bufferContext = BufferContext.create(params.matrixStack, params.buffer, TYPE);
-        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight);
+        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderStaticParticle(bufferContext, renderContext);
         params.matrixStack.popPose();

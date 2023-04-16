@@ -62,14 +62,14 @@ public class ItemStackUtil {
     }
 
     public static int getItemEntityAge(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "age");
+        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "f_31985_");
     }
 
     public static int getItemEntityPickupDelay(ItemEntity entity) {
-        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "pickupDelay");
+        return ObfuscationReflectionHelper.getPrivateValue(ItemEntity.class, entity, "f_31986_");
     }
 
     public static void setItemEntityAge(ItemEntity entity, int age) {
-        ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, age, "age");
+        ObfuscationReflectionHelper.setPrivateValue(ItemEntity.class, entity, age, "f_31985_");
     }
 }

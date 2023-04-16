@@ -49,7 +49,7 @@ public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserTop(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_TOP)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -58,7 +58,7 @@ public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserMid(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_MID)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -67,7 +67,7 @@ public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserBottom(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_BOTTOM)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -75,9 +75,9 @@ public class ManaLaserRenderer extends EasyRenderer<ManaLaserEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_TOP)), this::renderTop);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_MID)), this::renderMid);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_BOTTOM)), this::renderBottom);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_TOP), RenderMode.ShaderList.BITS_SHADER), this::renderTop);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_MID), RenderMode.ShaderList.BITS_SHADER), this::renderMid);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_BOTTOM), RenderMode.ShaderList.BITS_SHADER), this::renderBottom);
         return map;
     }
 }

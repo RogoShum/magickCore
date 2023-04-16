@@ -30,6 +30,11 @@ public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMateri
         return 0;
     }
 
+    @Override
+    public boolean singleMaterial() {
+        return true;
+    }
+
     public void addPosition(ItemStack stack, Vec3 vec) {
         if(stack.hasTag()) {
             if(NBTTagHelper.hasVectorDouble(stack.getTag(), "position")) {

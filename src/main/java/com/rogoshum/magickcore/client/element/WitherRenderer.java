@@ -24,7 +24,7 @@ public class WitherRenderer extends ElementRenderer {
     private ResourceLocation[] particle = new ResourceLocation[3];
 
     public WitherRenderer() {
-        super(ModElements.WITHER_COLOR);
+        super(ModElements.WITHER);
         mist[0] = mist_0;
         mist[1] = mist_1;
         mist[2] = mist_2;

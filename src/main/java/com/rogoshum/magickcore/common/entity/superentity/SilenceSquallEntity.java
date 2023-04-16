@@ -115,18 +115,18 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         for (Entity entity : entities) {
             if(entity == null)
                 continue;
-            if(!MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)) {
+            if(!MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity)) {
                 if(cloest == null || this.distanceTo(entity) < this.distanceTo(cloest))
                     cloest = entity;
                 if(this.distanceTo(entity) <= 9.5) {
-                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(4f).applyType(ApplyType.HIT_ENTITY);
+                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(200).force(4f).applyType(ApplyType.HIT_ENTITY);
                     MagickReleaseHelper.releaseMagick(context);
                 }
                 if(this.distanceTo(entity) <= 3) {
-                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(200).force(1f).applyType(ApplyType.DE_BUFF);
+                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(200).force(1f).applyType(ApplyType.DE_BUFF);
                     MagickReleaseHelper.releaseMagick(context);
                     if(this.tickCount % 20 == 0) {
-                        context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(20).force(1f).applyType(ApplyType.ATTACK);
+                        context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(20).force(1f).applyType(ApplyType.ATTACK);
                         MagickReleaseHelper.releaseMagick(context);
                         entity.invulnerableTime = 0;
                     }
@@ -139,9 +139,9 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
             Vec3 vec = cloest.position().add(0, 2, 0).subtract(this.position());
             this.setDeltaMovement(vec.normalize().scale(0.1));
         }
-        else if(this.getOwner() != null)
+        else if(this.getCaster() != null)
         {
-            Vec3 vec = this.getOwner().position().add(0, 2, 0).subtract(this.position());
+            Vec3 vec = this.getCaster().position().add(0, 2, 0).subtract(this.position());
             this.setDeltaMovement(vec.normalize().scale(0.1));
         }
         this.xo = this.getX();

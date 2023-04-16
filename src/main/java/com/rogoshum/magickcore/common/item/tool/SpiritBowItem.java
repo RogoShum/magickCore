@@ -3,7 +3,6 @@ package com.rogoshum.magickcore.common.item.tool;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.client.item.SpiritBowRenderer;
-import com.rogoshum.magickcore.client.item.StaffRenderer;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import net.minecraft.world.item.Item.Properties;
 import net.minecraftforge.client.IItemRenderProperties;
 
 import java.util.function.Consumer;

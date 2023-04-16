@@ -9,8 +9,10 @@ import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
-import com.rogoshum.magickcore.common.init.ModConfig;
+import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.init.CommonConfig;
 import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.*;
@@ -21,11 +23,10 @@ import com.rogoshum.magickcore.common.init.ModEffects;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
@@ -75,9 +76,27 @@ public class MagickReleaseHelper {
             baseMana *= 1.2f;
         if(context.containChild(LibContext.SPAWN)) {
             EntityType<?> type = context.<SpawnContext>getChild(LibContext.SPAWN).entityType;
-            baseMana += (type.getHeight() + type.getWidth()) * 30;
+            if(type.getCategory() != MobCategory.MISC && type.getCategory() != MobCategory.AMBIENT)
+                baseMana += (type.getHeight() + type.getWidth()) * 200;
+            else
+                baseMana += (type.getHeight() + type.getWidth()) * 30;
+        }
+        if(context.containChild(PsiSpellContext.TYPE)) {
+            PsiSpellContext spellContext = context.getChild(PsiSpellContext.TYPE);
+            baseMana += spellContext.manaCost;
         }
         return baseMana;
+    }
+
+    public static boolean consumePlayerMana(LivingEntity player, float mana) {
+        EntityEvents.MagickPreReleaseEvent event = new EntityEvents.MagickPreReleaseEvent(MagickContext.create(player.level).caster(player), mana);
+        MinecraftForge.EVENT_BUS.post(event);
+        return !event.isCanceled();
+    }
+
+    public static void addPlayerMana(LivingEntity player, float mana) {
+        EntityStateData data = ExtraDataUtil.entityStateData(player);
+        data.setManaValue(data.getManaValue()+mana);
     }
 
     public static EntityEvents.MagickPreReleaseEvent preReleaseMagickEvent(MagickContext context) {
@@ -99,6 +118,7 @@ public class MagickReleaseHelper {
                     , MagickCore.getNegativeToOne() + entity.getY() + entity.getBbHeight() * 0.5
                     , MagickCore.getNegativeToOne() + entity.getZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
         }
+        entity.level.playSound(null, entity, ModSounds.horror_effect.get(), SoundSource.PLAYERS, 0.5f, MagickCore.rand.nextFloat());
     }
 
     public static boolean releaseMagick(MagickContext context, ManaFactor manaFactor) {
@@ -190,7 +210,7 @@ public class MagickReleaseHelper {
         if(spawnContext.entityType == null)
             return false;
 
-        if(ModConfig.FORM_BAN.get().contains(spawnContext.entityType.getRegistryName().toString())) {
+        if(CommonConfig.FORM_BAN.get().contains(spawnContext.entityType.getRegistryName().toString())) {
             return false;
         }
 
@@ -213,7 +233,7 @@ public class MagickReleaseHelper {
         }
 
         if(pro instanceof IOwnerEntity) {
-            ((IOwnerEntity) pro).setOwner(context.caster);
+            ((IOwnerEntity) pro).setCaster(context.caster);
         }
 
         if(pro instanceof ISpellContext) {
@@ -293,7 +313,7 @@ public class MagickReleaseHelper {
                 while (postForm != null) {
                     if(postForm.applyType.isForm()) {
                         preForm.postContext = null;
-                        MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(context.projectile).victim(context.victim).separator(pro);
+                        MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(context.projectile).victim(context.victim).separator(pro).noCost();
                         if(traceContext != null)
                             magickContext.replenishChild(traceContext);
                         magickContext.replenishChild(PositionContext.create(pro.position()));
@@ -432,7 +452,7 @@ public class MagickReleaseHelper {
                 return true;
         }
 
-        if (other instanceof IOwnerEntity && ownerFunction(owner, ((IOwnerEntity) other)::getOwner))
+        if (other instanceof IOwnerEntity && ownerFunction(owner, ((IOwnerEntity) other)::getCaster))
             return true;
 
         if (other instanceof Projectile && ownerFunction(owner, ((Projectile) other)::getOwner))

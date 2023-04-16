@@ -34,8 +34,8 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         Vec3 dir = Vec3.ZERO;
         if(entity.spellContext().containChild(LibContext.DIRECTION))
             dir = entity.spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize().scale(-1);
-        else if (entity.getOwner() != null)
-            dir = entity.getOwner().getLookAngle().normalize();
+        else if (entity.getCaster() != null)
+            dir = entity.getCaster().getLookAngle().normalize();
         Vec2 rota = getRotationFromVector(dir);
         float scale = 0.25f;
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
@@ -58,7 +58,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserTop(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_TOP)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -67,7 +67,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserMid(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_MID)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -76,7 +76,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserBottom(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_BOTTOM)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }
@@ -84,9 +84,9 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_TOP)), this::renderTop);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_MID)), this::renderMid);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_BOTTOM)), this::renderBottom);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_TOP), RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderTop);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_MID), RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderMid);
+        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_BOTTOM), RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderBottom);
         return map;
     }
 }

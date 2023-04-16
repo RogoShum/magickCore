@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.ManaCapacityRenderer;
 import com.rogoshum.magickcore.client.item.OrbBottleRenderer;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
+import com.rogoshum.magickcore.common.item.material.ElementItem;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -44,10 +44,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class OrbBottleItem extends PlaceableEntityItem {
+public class OrbBottleItem extends ElementContainerItem {
 
     public OrbBottleItem() {
-        super(properties().stacksTo(64), 0.4f, 0.4f);
+        super(properties().stacksTo(64));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class OrbBottleItem extends PlaceableEntityItem {
     public InteractionResult interactLivingEntity(ItemStack stack, Player playerIn, LivingEntity target, InteractionHand hand) {
         if(!playerIn.level.isClientSide) {
             CompoundTag tag = NBTTagHelper.getStackTag(stack);
-            if (tag.contains("ELEMENT") && (RegisterEvent.containAnimalType(target.getType()) || target instanceof Animal)) {
+            if (tag.contains("ELEMENT") && target instanceof Animal) {
                 EntityStateData state = ExtraDataUtil.entityStateData(target);
                 state.setElement(MagickRegistry.getElement(tag.getString("ELEMENT")));
                 ItemStack copy = stack.copy();

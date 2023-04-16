@@ -15,8 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 
-import net.minecraft.world.item.Item.Properties;
-
 public class ElementMeatItem extends ElementContainerItem{
     public ElementMeatItem(Properties builder) {
         super(builder);

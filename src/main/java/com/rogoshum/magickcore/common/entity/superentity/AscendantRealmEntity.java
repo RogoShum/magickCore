@@ -27,7 +27,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -94,10 +93,10 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
             if(!(living instanceof Mob))
                 continue;
             TakenEntityData state = ExtraDataUtil.takenEntityData(living);
-            if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), living)) {
-                MagickContext context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.HIT_ENTITY);
+            if(living.isAlive() && !state.getOwnerUUID().equals(this.getOwnerUUID()) && !MagickReleaseHelper.sameLikeOwner(this.getCaster(), living)) {
+                MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(5).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(this.level).noCost().caster(this.getOwner()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(7.5f).applyType(ApplyType.ATTACK);
+                context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(living).tick((int) (this.spellContext().tick * 0.5)).force(7.5f).applyType(ApplyType.ATTACK);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }

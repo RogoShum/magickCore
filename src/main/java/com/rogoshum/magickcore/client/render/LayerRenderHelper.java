@@ -127,7 +127,7 @@ public class LayerRenderHelper extends LivingEntityRenderer {
         }
 
         if(renderer instanceof LivingEntityRenderer) {
-            List<RenderLayer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingEntityRenderer.class, (LivingEntityRenderer)renderer, "layers");
+            List<RenderLayer> layerRenderers = ObfuscationReflectionHelper.getPrivateValue(LivingEntityRenderer.class, (LivingEntityRenderer)renderer, "f_115291_");
             for (int cc = 0; cc < layerRenderers.size(); ++cc) {
                 RenderLayer layerrenderer = layerRenderers.get(cc);
                 layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);

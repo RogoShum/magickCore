@@ -1,22 +1,15 @@
 package com.rogoshum.magickcore.common.integration.curios;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.network.EntityPack;
-import com.rogoshum.magickcore.common.network.Networking;
-import com.rogoshum.magickcore.common.network.SSpellSwapPack;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;

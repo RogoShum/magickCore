@@ -43,6 +43,16 @@ public class ElementItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
+    public boolean singleMaterial() {
+        return true;
+    }
+
+    @Override
+    public boolean elementMaterial() {
+        return true;
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
     }
@@ -54,7 +64,7 @@ public class ElementItem extends BaseItem implements IManaMaterial {
 
     @Override
     public boolean disappearAfterRead() {
-        return true;
+        return false;
     }
 
     @Override

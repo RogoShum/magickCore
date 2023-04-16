@@ -27,7 +27,6 @@ void main()
     gl_TexCoord[2] = gl_TextureMatrix[2] * gl_MultiTexCoord2;
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     //gl_Position = ftransform();
-    gl_FrontColor = gl_Color;
     lcolor = vec4(0, 0, 0, 1.0f);
     dist2Obj = length(gl_Position);
 
@@ -43,7 +42,7 @@ void main()
         Light l = lights[i];
         float radius = l.radius;
         if(radius < 0.0)
-            radius = -radius;
+        radius = -radius;
         float intensity = pow(max(0, 1.0f - distance(l.position, position) / radius), 2);
         if(l.radius < 0.0 && intensity > 0.0) {
             float dark = 1.0f-intensity;
@@ -57,7 +56,7 @@ void main()
         Light l = lights[i];
         float radius = l.radius;
         if(radius < 0.0)
-            radius = -radius;
+        radius = -radius;
         float intensity = pow(max(0, 1.0f - distance(l.position, position) / radius), 2);
         sumR += l.color.r * (intensity / totalIntens) * l.color.a;
         sumG += l.color.g * (intensity / totalIntens) * l.color.a;

@@ -79,8 +79,8 @@ public class SectorEntity extends ManaRadiateEntity {
         Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        } else if (getOwner() != null) {
-            direction = getOwner().getLookAngle().normalize();
+        } else if (getCaster() != null) {
+            direction = getCaster().getLookAngle().normalize();
         }
         if(direction == null) return;
 
@@ -109,8 +109,8 @@ public class SectorEntity extends ManaRadiateEntity {
         Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        } else if (getOwner() != null) {
-            direction = getOwner().getLookAngle().normalize();
+        } else if (getCaster() != null) {
+            direction = getCaster().getLookAngle().normalize();
         }
         if(direction == null) return false;
         //boolean inCone = (this.getPositionVec().subtract(vec).normalize().dotProduct(direction) + 1) <= 0.2 * getRange();

@@ -39,7 +39,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     public float getSourceLight() {
-        return 3;
+        return 7;
     }
 
     @Override

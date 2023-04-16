@@ -5,11 +5,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.init.ModShaders;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -89,14 +87,10 @@ public class ShaderEvent {
         try {
             RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.NEW_ENTITY));
             RenderHelper.setPositionTextureShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_tex"), DefaultVertexFormat.POSITION_TEX));
-        } catch (Exception e){
+            RenderHelper.setRendertypeEntityTranslucentNoiseShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_noise"), DefaultVertexFormat.NEW_ENTITY));
+            RenderHelper.setPositionColorTexLightmapShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        try {
-            LightShaderManager.init();
-        } catch (IOException | JsonSyntaxException e) {
-            MagickCore.LOGGER.warn("Failed to load shader: {}", "LightShaderManager", e);
         }
     }
 

@@ -36,6 +36,12 @@ public class WandSelectionRenderer extends EasyRenderer<Player> {
     @Override
     public void update() {
         super.update();
+        color = RenderHelper.getRGB();
+    }
+
+    @Override
+    public void updatePosition() {
+        super.updatePosition();
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         shapes.clear();
         posSet.clear();
@@ -45,7 +51,6 @@ public class WandSelectionRenderer extends EasyRenderer<Player> {
                 addPos(vec, cam);
             }
         }
-        color = RenderHelper.getRGB();
     }
 
     public void addPos(Vec3 vec, Vec3 cam) {

@@ -2,10 +2,16 @@ buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
+        maven {
+            name "sponge-repo"
+            url "https://repo.spongepowered.org/repository/maven-public/"
+            content { includeGroup "org.spongepowered" }
+        }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -14,9 +20,13 @@ plugins {
     id 'maven-publish'
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 
+mixin {
+    add sourceSets.main, "magickcore.refmap.json"
+}
 
-version = 'forge-1.18.2-0.8.4.2'
+version = 'forge-1.18.2-0.8.8'
 group = 'com.rogoshum.magickcore' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'MagickCore'
 
@@ -61,10 +71,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'magickcore'
 
             mods {
-                examplemod {
+                magickcore {
                     source sourceSets.main
                 }
             }
@@ -81,10 +91,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'magickcore'
 
             mods {
-                examplemod {
+                magickcore {
                     source sourceSets.main
                 }
             }
@@ -112,10 +122,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'magickcore'
 
             mods {
-                examplemod {
+                magickcore {
                     source sourceSets.main
                 }
             }
@@ -129,10 +139,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'magickcore', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                examplemod {
+                magickcore {
                     source sourceSets.main
                 }
             }
@@ -151,6 +161,9 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+    flatDir {
+        dir 'libs'
+    }
     maven { url 'https://maven.blamejared.com' }
     maven {
         // location of the maven that hosts JEI files
@@ -172,12 +185,18 @@ dependencies {
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     compileOnly fg.deobf("mezz.jei:jei-1.18.2:9.7.2.281:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.7.2.281")
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.18.2-5.0.7.1")
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-72-SNAPSHOT:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-72-SNAPSHOT")
+    compileOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
+    runtimeOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
+    implementation fg.deobf("blank:Psi+1.18.2:98")
+
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
@@ -192,9 +211,9 @@ jar {
         attributes([
                 "Specification-Title": "MagickCore",
                 "Specification-Vendor": "RogoShum",
-                "Specification-Version": "0.8.4.2",
+                "Specification-Version": "0.8.8",
                 "Implementation-Title": "MagickCore",
-                "Implementation-Version": "0.8.4.2",
+                "Implementation-Version": "0.8.8",
                 "Implementation-Vendor" :"RogoShum",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConnector": "com.rogoshum.magickcore.mixin.MixinConnector"

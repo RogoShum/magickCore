@@ -8,17 +8,19 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
+    "MixinVillager",
     "MixinWorld"
   ],
   "minVersion": "0.8.1",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "magickcore.refmap.json",
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "MixinChunkRenderer",
-    "MixinClientProfiler",
+    "AccessorRenderType",
+    "AccessorTexture",
+    "AccessorTextureState",
     "MixinClientWorld",
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",

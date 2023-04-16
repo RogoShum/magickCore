@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.integration.psi.PsiAbility;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -63,7 +64,6 @@ public class ModRegistry {
                     functions.add(ApplyType.HIT_ENTITY, StasisAbility::hitEntity);
                     functions.add(ApplyType.DE_BUFF, StasisAbility::applyDebuff);
                     functions.add(ApplyType.HIT_BLOCK, StasisAbility::hitBlock);
-                    functions.add(ApplyType.ELEMENT_TOOL, StasisAbility::applyToolElement);
                     functions.add(ApplyType.SUPER, StasisAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, StasisAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, StasisAbility::agglomerate);
@@ -107,6 +107,7 @@ public class ModRegistry {
         childContexts.register(LibContext.SEPARATOR, SeparatorContext::new);
         childContexts.register(LibContext.MANA_FACTOR, ExtraManaFactorContext::new);
         childContexts.register(LibContext.REMOVE_HURT_TIME, RemoveHurtTimeContext::new);
+        childContexts.register(LibContext.PSI_SPELL, PsiSpellContext::new);
 
         ObjectRegistry<Callable<Condition<?>>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);

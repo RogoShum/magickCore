@@ -9,7 +9,6 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.GravityLiftEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
@@ -37,13 +36,13 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         RenderType laser = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f);
-        map.put(new RenderMode(laser, RenderMode.ShaderList.SLIME_SHADER), this::renderLaser);
+        map.put(new RenderMode(laser, RenderMode.ShaderList.BLOOM_SHADER), this::renderLaser);
 
         RenderType inner = RenderHelper.getTexedCylinderGlint(wind, height, 0f);
-        map.put(new RenderMode(inner, RenderMode.ShaderList.SLIME_SHADER), this::renderInner);
+        map.put(new RenderMode(inner, RenderMode.ShaderList.BLOOM_SHADER), this::renderInner);
 
         RenderType base = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
-        map.put(new RenderMode(base, RenderMode.ShaderList.OPACITY_SHADER), this::renderBase);
+        map.put(new RenderMode(base, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderBase);
 
         return map;
     }
@@ -68,11 +67,11 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
 
         INNER_CYLINDER = new RenderHelper.CylinderContext(0.3f, 0.1f, 2f
                 , height, 16
-                , 0.0f, 1.0f, 0.3f, entity.spellContext().element.color());
+                , 0.0f, 1.0f, 0.3f, entity.spellContext().element.secondaryColor());
 
         BASE_CYLINDER = new RenderHelper.CylinderContext(2f, 2f, 2f
                 , 0.5f, 16
-                , 0.0f, 0.8f, 0.1f, entity.spellContext().element.color());
+                , 0.0f, 0.8f, 0.1f, entity.spellContext().element.primaryColor());
 
         c = entity.tickCount % 30;
         Queue<RenderHelper.CylinderContext> cylinders = Queues.newArrayDeque();
@@ -82,7 +81,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
                 radius += 0.3f * Math.sin(c / 29 * Math.PI);
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 2f
                     , 0.7f, 16
-                    , 0.0f, 1.0f, 0.6f, entity.spellContext().element.color());
+                    , 0.0f, 1.0f, 0.6f, entity.spellContext().element.primaryColor());
 
             cylinders.add(context);
         }
@@ -96,8 +95,8 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         matrixStackIn.scale(0.25f, 0.25f, 0.25f);
         RenderHelper.renderLaserParticle(
                 BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f))
-                , new RenderHelper.RenderContext(0.5f, entity.spellContext().element.color())
-                , RenderHelper.EmptyVertexContext
+                , new RenderHelper.RenderContext(0.5f, entity.spellContext().element.secondaryColor())
+                , RenderHelper.EMPTY_VERTEX_CONTEXT
                 , height * 4.0f);
     }
 

@@ -26,6 +26,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
 public class PotionContext extends ChildContext{
+    public static final Type<PotionContext> TYPE = new Type<>(LibContext.POTION);
     private static final MutableComponent NO_EFFECT = (new TranslatableComponent("effect.none")).withStyle(ChatFormatting.GRAY);
     public List<MobEffectInstance> effectInstances = new ArrayList<>();
 
@@ -75,8 +76,8 @@ public class PotionContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.POTION;
+    public Type<PotionContext> getType() {
+        return TYPE;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.nbt.CompoundTag;
 
 public class ReverseContext extends ChildContext{
+    public static final Type<ReverseContext> TYPE = new Type<>(LibContext.REVERSE);
     public static ReverseContext create() {
         return new ReverseContext();
     }
@@ -24,8 +25,8 @@ public class ReverseContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.REVERSE;
+    public Type<ReverseContext> getType() {
+        return TYPE;
     }
 
     @Override

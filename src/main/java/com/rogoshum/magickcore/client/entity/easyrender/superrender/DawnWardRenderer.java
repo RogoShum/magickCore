@@ -7,7 +7,6 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.common.entity.superentity.DawnWardEntity;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.math.Vector3f;
 
@@ -28,15 +27,13 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         baseOffset(matrixStackIn);
         matrixStackIn.scale(scale, scale, scale);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
-        if(!RenderHelper.isRenderingShader()) {
-            RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
-                    , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
-                    , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.3f)
-                    , 16);
-        }
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
+                , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
+                , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.3f)
+                , 16);
         matrixStackIn.scale(1.01f, 1.01f, 1.01f);
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(RenderMode.ShaderList.SLIME_SHADER)
-                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getId(), 0.3f)
                 , 16);
     }
@@ -48,7 +45,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.scale(0.99f, 0.99f, 0.99f);
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                , new RenderHelper.RenderContext(0.3f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(),0.3f)
                 , 16);
     }

@@ -5,7 +5,6 @@ import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
@@ -56,7 +55,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
             AtomicReference<Boolean> pass = new AtomicReference<>(true);
             if(spellContext().containChild(LibContext.CONDITION)) {
                 ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                if(!context.test(this.getOwner(), entity))
+                if(!context.test(this.getCaster(), entity))
                     pass.set(false);
             }
             if(pass.get()) {

@@ -1,26 +1,17 @@
 package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.ManaItem;
-import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,13 +28,10 @@ import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class PotionTypeItem extends ManaItem implements IManaMaterial {
-
     public PotionTypeItem() {
         super(properties());
     }
@@ -56,6 +44,11 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
                 return new ManaEnergyRenderer();
             }
         });
+    }
+
+    @Override
+    public boolean typeMaterial() {
+        return true;
     }
 
     @Override

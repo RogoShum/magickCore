@@ -16,19 +16,17 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
+import com.rogoshum.magickcore.common.magick.context.child.PsiSpellContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -38,7 +36,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 
 import java.util.HashMap;
@@ -48,20 +45,16 @@ import java.util.Queue;
 public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation TAKEN = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
+    protected static final ResourceLocation PSI = new ResourceLocation(MagickCore.MOD_ID + ":textures/items/spell_bullet.png");
     private static final HashMap<ApplyType, ResourceLocation> APPLY_TYPE_TEXTURES = new HashMap<>();
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphere(blank);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlow(TAKEN, 1, 0);
-    private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.15f, ModElements.ORIGIN_COLOR, RenderHelper.halfLight);
-    private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.15f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
-    private static final RenderHelper.RenderContext RENDER_CONTEXT_2 = new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.halfLight);
-    static {
-        RENDER_CONTEXT_0.alpha = 0.15f;
-        RENDER_CONTEXT_1.alpha = 0.15f;
-        RENDER_CONTEXT_2.alpha = 0.15f;
-    }
-    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_1 = RenderHelper.drawSphere(6, RENDER_CONTEXT_1 , RenderHelper.EmptyVertexContext);
-    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_2 = RenderHelper.drawSphere(6, RENDER_CONTEXT_2 , RenderHelper.EmptyVertexContext);
-    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_0 = RenderHelper.drawSphere(6, RENDER_CONTEXT_0 , RenderHelper.EmptyVertexContext);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedSphereItem(blank);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedSphereGlowItem(TAKEN, 1, 0);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.15f, Color.GREY_COLOR, RenderHelper.halfLight);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.15f, Color.GREY_COLOR, RenderHelper.halfLight);
+    private static final RenderHelper.RenderContext RENDER_CONTEXT_2 = new RenderHelper.RenderContext(0.15f, Color.GREY_COLOR, RenderHelper.halfLight);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_1 = RenderHelper.drawSphere(6, RENDER_CONTEXT_1 , RenderHelper.EMPTY_VERTEX_CONTEXT);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_2 = RenderHelper.drawSphere(6, RENDER_CONTEXT_2 , RenderHelper.EMPTY_VERTEX_CONTEXT);
+    private static final Queue<Queue<RenderHelper.VertexAttribute>> INNER_SPHERE_0 = RenderHelper.drawSphere(6, RENDER_CONTEXT_0 , RenderHelper.EMPTY_VERTEX_CONTEXT);
     private static final HashSet<EntityType<?>> ERROR_TYPE = new HashSet<>();
 
     public ManaEnergyRenderer() {
@@ -79,19 +72,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.translate(0.5, 0.5, 0.5);
         ItemManaData itemManaData = ExtraDataUtil.itemManaData(stack);
         SpellContext spellContext = itemManaData.spellContext();
-        if(stack.getItem() instanceof ContextCoreItem) {
-            RenderType RENDER_TYPE = RenderHelper.getTexedEntity(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
-            for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
-                float[] vertex = RenderHelper.vertex_list[i];
-                matrixStack.pushPose();
-                matrixStack.translate(vertex[0] * 0.6, vertex[1] * 0.6, vertex[2] * 0.6);
-                matrixStack.scale(0.25f, 0.25f, 0.25f);
-                matrixStack.mulPose(Vector3f.XP.rotationDegrees(270));
-                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
-                        , new RenderHelper.RenderContext(0.3f, Color.ORIGIN_COLOR, combinedLight));
-                matrixStack.popPose();
-            }
-        }
+
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         renderSingleEnergy(matrixStack, bufferIn, buffer, spellContext, combinedLight, stack);
         SpellContext post = spellContext.postContext;
@@ -112,6 +93,21 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStack.popPose();
             post = post.postContext;
         }
+
+        if(stack.getItem() instanceof ContextCoreItem) {
+            RenderType RENDER_TYPE = RenderHelper.getTexedOrbItem(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png"));
+            for (int i = 0; i < RenderHelper.vertex_list.length; ++i) {
+                float[] vertex = RenderHelper.vertex_list[i];
+                matrixStack.pushPose();
+                matrixStack.translate(vertex[0] * 0.6, vertex[1] * 0.6, vertex[2] * 0.6);
+                matrixStack.scale(0.25f, 0.25f, 0.25f);
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(270));
+                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
+                        , new RenderHelper.RenderContext(0.3f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+                matrixStack.popPose();
+            }
+        }
+
         matrixStack.popPose();
     }
 
@@ -120,6 +116,39 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         int tick = spellContext.tick;
         int orbStack = tick / 20;
         float last = (tick % 20) / 20f;
+
+        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().level);
+        if(entity instanceof ContextCreatorEntity)
+            renderMaterial(((ContextCreatorEntity) entity).getInnerManaData(), matrixStack, bufferIn, combinedLight);
+        else if(entity instanceof IMaterialLimit)
+            renderMaterial((IMaterialLimit) entity, matrixStack, bufferIn, combinedLight);
+        else if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+            Material material = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
+            renderMaterial(material, matrixStack, bufferIn, combinedLight);
+        }
+
+        if(spellContext.containChild(LibContext.SPAWN)) {
+            SpawnContext spawnContext = spellContext.getChild(LibContext.SPAWN);
+            if(spawnContext.entityType != null) {
+                renderEntity(spawnContext.entityType, matrixStack, bufferIn, combinedLight);
+            }
+        }
+
+        if(spellContext.containChild(PsiSpellContext.TYPE)) {
+            matrixStack.pushPose();
+            BufferContext bufferContext = BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(PSI));
+            float alpha = 1.0f;
+            float scale = 0.4f;
+            matrixStack.scale(scale, scale, scale);
+            matrixStack.mulPose(Vector3f.YN.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.XN.rotationDegrees(30));
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
+            RenderHelper.renderStaticParticle(bufferContext, new RenderHelper.RenderContext(alpha, Color.GREY_COLOR, RenderHelper.renderLight));
+            matrixStack.popPose();
+        }
+
+        if(bufferIn instanceof MultiBufferSource.BufferSource)
+            ((MultiBufferSource.BufferSource) bufferIn).endBatch();
 
         matrixStack.pushPose();
         float angle = MagickCore.proxy.getRunTick() % 60;
@@ -144,23 +173,6 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             renderEnergy(matrixStack, combinedLight, 2, orbStack, last);
         matrixStack.popPose();
 
-        if(spellContext.containChild(LibContext.SPAWN)) {
-            SpawnContext spawnContext = spellContext.getChild(LibContext.SPAWN);
-            if(spawnContext.entityType != null) {
-                renderEntity(spawnContext.entityType, matrixStack, bufferIn, combinedLight);
-            }
-        }
-
-        Entity entity = NBTTagHelper.createEntityByItem(stack, Minecraft.getInstance().level);
-        if(entity instanceof ContextCreatorEntity)
-            renderMaterial(((ContextCreatorEntity) entity).getInnerManaData(), matrixStack, bufferIn, combinedLight);
-        else if(entity instanceof IMaterialLimit)
-            renderMaterial((IMaterialLimit) entity, matrixStack, bufferIn, combinedLight);
-        else if(stack.hasTag() && stack.getTag().contains("mana_material")) {
-            Material material = ManaMaterials.getMaterial(stack.getTag().getString("mana_material"));
-            renderMaterial(material, matrixStack, bufferIn, combinedLight);
-        }
-
         matrixStack.pushPose();
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         if(spellContext.containChild(LibContext.POTION)) {
@@ -168,24 +180,23 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             int color = PotionUtils.getColor(potionContext.effectInstances);
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1)
                     , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, Color.create(color), combinedLight)
-                            , RenderHelper.EmptyVertexContext));
-        } else if(spellContext.element.color().equals(Color.ORIGIN_COLOR)) {
+                            , RenderHelper.EMPTY_VERTEX_CONTEXT));
+        } else if(spellContext.element.primaryColor().equals(Color.ORIGIN_COLOR)) {
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
-                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.1f, spellContext.element.color(), combinedLight)
-                            , RenderHelper.EmptyVertexContext));
+                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.12f, spellContext.element.primaryColor(), combinedLight)
+                            , RenderHelper.EMPTY_VERTEX_CONTEXT));
         } else {
             RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_0)
-                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, spellContext.element.color(), combinedLight)
-                            , RenderHelper.EmptyVertexContext));
+                    , RenderHelper.drawSphere(6, new RenderHelper.RenderContext(0.3f, spellContext.element.primaryColor(), combinedLight)
+                            , RenderHelper.EMPTY_VERTEX_CONTEXT));
         }
-
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         if(stack.getItem() instanceof MagickContextItem) {
             if(!APPLY_TYPE_TEXTURES.containsKey(spellContext.applyType))
                 RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RENDER_TYPE_1), INNER_SPHERE_1);
             else {
                 ResourceLocation res = APPLY_TYPE_TEXTURES.get(spellContext.applyType);
-                RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphereGlow(res, 1, 0)), INNER_SPHERE_2);
+                RenderHelper.renderSphere(BufferContext.create(matrixStack, buffer, RenderHelper.getTexedSphereGlowItem(res, 1, 0)), INNER_SPHERE_2);
             }
         }
         else
@@ -247,7 +258,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.pushPose();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.scale(scale, scale, scale);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityItem(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(alpha, color, combinedLight));
         matrixStack.popPose();
         scale = 1.5f;
@@ -256,7 +267,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.mulPose(Vector3f.ZP.rotation(45));
     }
 
-    public void renderEntity(EntityType<?> entityType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
+    public static void renderEntity(EntityType<?> entityType, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
         Entity entity = entityType.create(Minecraft.getInstance().level);
         if(entity == null) return;
 
@@ -267,17 +278,15 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             if(icon == null)
                 icon = IManaEntity.orbTex;
 
-            BufferContext bufferContext = BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbGlow(icon));
-            Color color = manaEntity.spellContext().element.color();
-            Matrix4f matrix4f = matrixStack.last().pose();
-            float alpha = 0.5f;
+            BufferContext bufferContext = BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(icon));
+            float alpha = 1.0f;
             float scale = 0.4f;
             matrixStack.scale(scale, scale, scale);
             matrixStack.mulPose(Vector3f.YN.rotationDegrees(45));
             matrixStack.mulPose(Vector3f.XN.rotationDegrees(30));
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-            RenderHelper.renderStaticParticle(bufferContext, new RenderHelper.RenderContext(alpha, color, RenderHelper.renderLight));
-        } else if(!ERROR_TYPE.contains(entity.getType())){
+            RenderHelper.renderStaticParticle(bufferContext, new RenderHelper.RenderContext(alpha, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+        } else if(!ERROR_TYPE.contains(entity.getType())) {
             float scale = 0.4f;
             double xSize = entity.getBoundingBoxForCulling().getXsize();
             double ySize = entity.getBoundingBoxForCulling().getYsize();
@@ -290,9 +299,11 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
 
             matrixStack.translate(0, -ySize / 2, 0);
             try {
+                MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
                 Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0, 0, 0, 0
                         , 0, matrixStack
                         , bufferIn, combinedLight);
+                renderTypeBuffer.endBatch();
             } catch (Exception e) {
                 ERROR_TYPE.add(entity.getType());
             }

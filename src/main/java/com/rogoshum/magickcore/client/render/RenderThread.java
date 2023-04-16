@@ -4,6 +4,7 @@ import com.google.common.collect.Queues;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -16,61 +17,71 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 public class RenderThread extends Thread {
-    private HashMap<RenderMode, Queue<Consumer<RenderParams>>> glFunction = new HashMap<>();
-    private final ConcurrentLinkedQueue<IEasyRender> renderer = new ConcurrentLinkedQueue<>();
+    private HashMap<RenderMode, Queue<Consumer<RenderParams>>> GL_FUNCTIONS = new HashMap<>();
+    private final ConcurrentLinkedQueue<IEasyRender> RENDERERS = new ConcurrentLinkedQueue<>();
 
-    private volatile boolean needUpdate = false;
+    private volatile boolean NEED_UPDATE = false;
+    private static int LAST_TICK;
 
-    private Frustum clippinghelper;
+    private Frustum CLIPPING_HELPER;
 
     public RenderThread(String name) {
         super(name);
     }
 
     public void addRenderer(IEasyRender renderer) {
-        this.renderer.add(renderer);
+        this.RENDERERS.add(renderer);
     }
 
     public ConcurrentLinkedQueue<IEasyRender> getRenderer() {
-        return renderer;
+        return RENDERERS;
     }
 
 
     //renderWorldLastEvent invoke 1
     //render
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction() {
-        return glFunction;
+        return GL_FUNCTIONS;
     }
 
     //renderWorldLastEvent invoke 2
     public void update() {
-        needUpdate = true;
+        NEED_UPDATE = true;
     }
 
     public void setClippingHelper(Frustum clippingHelper) {
-        clippinghelper = clippingHelper;
+        CLIPPING_HELPER = clippingHelper;
     }
 
     @Override
     public void run() {
         while (!isInterrupted()) {
             if(Minecraft.getInstance().level == null) {
-                renderer.clear();
+                RENDERERS.clear();
             }
-            if(needUpdate && clippinghelper != null) {
+            if(NEED_UPDATE && CLIPPING_HELPER != null) {
                 HashMap<RenderMode, Queue<Consumer<RenderParams>>> function = new HashMap<>();
-                Iterator<IEasyRender> it = renderer.iterator();
-                double scale = Math.max((renderer.size() * 0.002d), 1d);
+                boolean shouldTick = MagickCore.proxy.getRunTick() > LAST_TICK+1;
+                if(shouldTick) {
+                    LAST_TICK = MagickCore.proxy.getRunTick();
+                }
+
+                Iterator<IEasyRender> it = RENDERERS.iterator();
+                double scale = Math.max((RENDERERS.size() * 0.002d), 1d);
                 try {
                     while (it.hasNext()) {
                         IEasyRender renderer = it.next();
+                        if(!shouldTick) {
+                            renderer.updatePosition();
+                            continue;
+                        }
                         if(!renderer.alive()) {
                             renderer.setShouldRender(false);
                             it.remove();
                             continue;
                         }
                         if(!renderer.forceRender()) {
-                            if(!clippinghelper.isVisible(renderer.boundingBox())) {
+                            if(!CLIPPING_HELPER.isVisible(renderer.boundingBox())) {
                                 renderer.setShouldRender(false);
                                 continue;
                             }
@@ -116,26 +127,28 @@ public class RenderThread extends Thread {
                     }
                 } catch (Exception e) {
                     clearFunction();
-                    glFunction = function;
-                    needUpdate = false;
+                    GL_FUNCTIONS = function;
+                    NEED_UPDATE = false;
                     this.interrupt();
                     MagickCore.LOGGER.warn("Something wrong when render the entity!");
                     e.printStackTrace();
                 }
-                glFunction = function;
-                needUpdate = false;
+
+                if(shouldTick)
+                    GL_FUNCTIONS = function;
+                NEED_UPDATE = false;
             }
         }
     }
 
     public void clearFunction() {
-        glFunction.keySet().forEach(renderMode -> glFunction.put(renderMode, Queues.newArrayDeque()));
+        GL_FUNCTIONS.keySet().forEach(renderMode -> GL_FUNCTIONS.put(renderMode, Queues.newArrayDeque()));
     }
 
     @Override
     public void interrupt() {
         super.interrupt();
-        renderer.clear();
+        RENDERERS.clear();
         clearFunction();
     }
 }

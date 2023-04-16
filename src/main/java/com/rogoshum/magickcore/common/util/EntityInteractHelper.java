@@ -26,7 +26,7 @@ public class EntityInteractHelper {
                             new BlockPos(entity.position()),
                             false
                     ));
-            ObfuscationReflectionHelper.setPrivateValue(BlockPlaceContext.class, blockItemUseContext, false, "replaceClicked");
+            ObfuscationReflectionHelper.setPrivateValue(BlockPlaceContext.class, blockItemUseContext, false, "f_43628_");
             return ((BlockItem) stack.getItem()).place(blockItemUseContext);
         } else if(stack.getItem() instanceof EntityItem) {
             Vec3 vector3d = player.getLookAngle();
@@ -37,7 +37,7 @@ public class EntityInteractHelper {
                             new BlockPos(entity.position()),
                             false
                     ));
-            ObfuscationReflectionHelper.setPrivateValue(BlockPlaceContext.class, blockItemUseContext, false, "replaceClicked");
+            ObfuscationReflectionHelper.setPrivateValue(BlockPlaceContext.class, blockItemUseContext, false, "f_43628_");
             return ((EntityItem) stack.getItem()).tryPlace(blockItemUseContext);
         }
         return InteractionResult.PASS;

@@ -99,22 +99,22 @@ public class ItemSpellContext extends SpellContext {
         this.force += context.force;
         if(context.applyType != ApplyType.NONE)
             this.applyType = context.applyType;
-        context.childContexts.values().forEach((child) -> this.childContexts.put(child.getName(), child));
+        context.childContexts.values().forEach((child) -> this.childContexts.put(child.getType().name(), child));
         save();
         return this;
     }
 
     @Override
     public ItemSpellContext addChild(ChildContext child) {
-        this.childContexts.put(child.getName(), child);
+        this.childContexts.put(child.getType().name(), child);
         save();
         return this;
     }
 
     @Override
     public ItemSpellContext replenishChild(ChildContext child) {
-        if(!containChild(child.getName()))
-            this.childContexts.put(child.getName(), child);
+        if(!containChild(child.getType().name()))
+            this.childContexts.put(child.getType().name(), child);
         return this;
     }
 

@@ -28,18 +28,11 @@ public class StarStaffItem extends ManaItem {
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
-        MagickElement element = data.spellContext().element;
-        MagickContext context = magickContext.caster(playerIn).element(element);
-        context.tick(Math.max(context.tick, 100));
-        SpawnContext spawnContext = SpawnContext.create(ModEntities.MANA_STAR.get());
-        context.addChild(spawnContext);
-        context.post(data.spellContext().copy().element(element));
-        if(context.postContext.containChild(LibContext.TRACE)) {
-            TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
+        MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).caster(playerIn);
+        if(context.containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-        context.applyType(ApplyType.SPAWN_ENTITY);
         return MagickReleaseHelper.releaseMagick(context);
     }
 

@@ -1,8 +1,6 @@
 package com.rogoshum.magickcore.api.enums;
 
-import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import net.minecraft.resources.ResourceLocation;
 

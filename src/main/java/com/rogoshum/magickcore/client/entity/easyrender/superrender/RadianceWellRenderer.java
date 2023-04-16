@@ -8,7 +8,6 @@ import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -106,20 +105,18 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         packedLightIn = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(entity, Minecraft.getInstance().getFrameTime());
         alphaS = Math.min(1f, (float)entity.tickCount / 5f);
         alphaC = Math.min(1f, (float) entity.tickCount / 20f);
-        RENDER_5 = new RenderHelper.RenderContext(
-                RenderHelper.isRenderingShader() ? 0.15f * alphaS : 0.5f * alphaS
-                , entity.spellContext().element.color(), packedLightIn);
-        RENDER_6 = new RenderHelper.RenderContext(
-                RenderHelper.isRenderingShader() ? 0.2f * alphaS : 0.6f * alphaS
+        RENDER_5 = new RenderHelper.RenderContext(0.5f * alphaS
+                , entity.spellContext().element.primaryColor(), packedLightIn);
+        RENDER_6 = new RenderHelper.RenderContext(0.6f * alphaS
                 , Color.ORIGIN_COLOR, packedLightIn);
 
         if(entity.initial) {
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, RenderHelper.isRenderingShader() ? 0.1f * alphaC : 0.8f * alphaC, RenderHelper.isRenderingShader() ? 0.2f: 1.5f, ModElements.ORIGIN.getRenderer().getColor());
+                    , 0, 0.8f * alphaC, 1.5f, ModElements.ORIGIN.getRenderer().getSecondaryColor());
             CYLINDER_INNER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
 
             context = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, RenderHelper.isRenderingShader() ? 0.25f * alphaC : alphaC, RenderHelper.isRenderingShader() ? 0.1f: 1f, entity.spellContext().element.getRenderer().getColor());
+                    , 0, alphaC, 1f, entity.spellContext().element.getRenderer().getPrimaryColor());
             CYLINDER_OUTER = RenderHelper.drawCylinder(context, entity.getHitReactions(), 0.2f);
         }
     }
@@ -128,10 +125,10 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::renderSword);
-        map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderSphere);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SHADER), this::renderSphere);
         if(entity.initial) {
-            map.put(new RenderMode(INNER_TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderInnerLight);
-            map.put(new RenderMode(OUTER_TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderOuterLight);
+            map.put(new RenderMode(INNER_TYPE, RenderMode.ShaderList.BITS_SHADER), this::renderInnerLight);
+            map.put(new RenderMode(OUTER_TYPE, RenderMode.ShaderList.BITS_SHADER), this::renderOuterLight);
         }
         return map;
     }

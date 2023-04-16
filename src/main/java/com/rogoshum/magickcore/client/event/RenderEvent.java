@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.event;
 
 import com.google.common.collect.Queues;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
@@ -50,12 +51,16 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL20;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
@@ -78,16 +83,16 @@ public class RenderEvent {
         if (Minecraft.getInstance().player == null) {
             return;
         }
+
         EntityStateData state = ExtraDataUtil.entityStateData(Minecraft.getInstance().player);
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
             ManaBarHUD manaBarGUI = new ManaBarHUD(event.getMatrixStack(), state);
             manaBarGUI.render();
-        } else if(event.getOverlay() == ForgeIngameGui.POTION_ICONS_ELEMENT) {
-            ManaBuffHUD manaBuffHUD = new ManaBuffHUD(event.getMatrixStack(), state);
-            manaBuffHUD.render();
         } else if(event.getOverlay() == ForgeIngameGui.HELMET_ELEMENT) {
             ElementShieldHUD elementShieldGUI = new ElementShieldHUD(state);
             elementShieldGUI.render();
+            ManaBuffHUD manaBuffHUD = new ManaBuffHUD(event.getMatrixStack(), state);
+            manaBuffHUD.render();
         }
     }
 
@@ -149,6 +154,8 @@ public class RenderEvent {
             matrixStackIn.popPose();
         }
 
+        //RenderSystem.setShaderTexture(3, RenderHelper.RED_AND_BLUE);
+        //RenderSystem.setShaderGameTime(MagickCore.proxy.getRunTick() * 100L, 0);
         for (RenderMode bufferMode : particles.keySet()) {
             Queue<LitParticle> particleQueue = particles.get(bufferMode);
             BufferContext context = BufferContext.create(matrixStackIn, builder, bufferMode.renderType);
@@ -170,6 +177,7 @@ public class RenderEvent {
             RenderHelper.finish(context);
             RenderHelper.end(context);
         }
+        //RenderSystem.setShaderGameTime(Minecraft.getInstance().level.getGameTime(), Minecraft.getInstance().getFrameTime());
 
         Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double d0 = vec.x();
@@ -187,7 +195,7 @@ public class RenderEvent {
     public void addRenderer(EntityEvents.EntityAddedToWorldEvent event) {
         if(event.getEntity() instanceof LivingEntity)
             MagickCore.proxy.addRenderer(() -> new ElementShieldRenderer((LivingEntity) event.getEntity()));
-        if(event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem() instanceof IManaData)
+        if(event.getEntity() instanceof ItemEntity)
             MagickCore.proxy.addRenderer(() -> new ManaItemDurationBarRenderer((ItemEntity) event.getEntity()));
         if(event.getEntity() == Minecraft.getInstance().player)
             MagickCore.proxy.addRenderer(() -> new WandSelectionRenderer(Minecraft.getInstance().player));
@@ -250,6 +258,7 @@ public class RenderEvent {
             applyAnimalParticle(entity, state.getElement().getRenderer(), Minecraft.getInstance().level);
         }
 
+        /*
         float value = state.getElementShieldMana();
         if(value > 0) {
             float alpha = value / ((LivingEntity)entity).getMaxHealth();
@@ -269,6 +278,7 @@ public class RenderEvent {
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
         }
+         */
     }
 
     public static void applyBuffParticle(Entity entity, ElementRenderer render, Level world) {
@@ -308,6 +318,7 @@ public class RenderEvent {
         par.setParticleGravity(0f);
         par.setShakeLimit(15.0f);
         par.addMotion(MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15);
+        par.setColor(render.getPrimaryColor());
         MagickCore.addMagickParticle(par);
 
         LitParticle litPar = new LitParticle(world, render.getParticleTexture()
@@ -317,6 +328,7 @@ public class RenderEvent {
                 , entity.getBbWidth() / 3f, entity.getBbWidth() / 3f, 0.8f * MagickCore.rand.nextFloat(), 20, render);
         litPar.setGlow();
         litPar.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
+        litPar.setColor(render.getPrimaryColor());
         MagickCore.addMagickParticle(litPar);
     }
 }

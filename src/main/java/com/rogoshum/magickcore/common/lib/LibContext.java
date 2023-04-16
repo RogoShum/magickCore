@@ -16,4 +16,5 @@ public class LibContext {
     public static final String SEPARATOR = "separator";
     public static final String MANA_FACTOR = "mana_factor";
     public static final String REMOVE_HURT_TIME = "remove_hurt_time";
+    public static final String PSI_SPELL = "psi_spell";
 }

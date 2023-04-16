@@ -54,6 +54,11 @@ public abstract class EasyTileRenderer<T extends BlockEntity>implements IEasyRen
 
     @Override
     public void update() {
+
+    }
+
+    @Override
+    public void updatePosition() {
         Vec3 vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
         x = vec.x;
         y = vec.y;

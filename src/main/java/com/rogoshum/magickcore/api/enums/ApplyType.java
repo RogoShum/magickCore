@@ -18,6 +18,7 @@ public class ApplyType {
     public static final ApplyType AGGLOMERATE = new ApplyType("agglomerate", Beneficial.HARMLESS, false, true);
     public static final ApplyType SUPER = new ApplyType("super", Beneficial.BENEFICIAL, true, false);
     public static final ApplyType POTION = new ApplyType("potion", Beneficial.HARMLESS, false, true);
+    public static final ApplyType CAST = new ApplyType("cast", Beneficial.HARMLESS, false, false);
 
     private final String label;
     private final Beneficial beneficial;

@@ -8,26 +8,33 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class MagickElement {
     private final String type;
-    private final Color color;
+    private final Color primaryColor;
+    private final Color secondaryColor;
     private final DamageSource damage;
     private final float cardinality;
 
-    public MagickElement(String type, Color color, DamageSource damage) {
+    public MagickElement(String type, Color primaryColor, Color secondaryColor, DamageSource damage) {
         this.type = type;
-        this.color = color;
+        this.primaryColor = primaryColor;
+        this.secondaryColor = secondaryColor;
         this.damage = damage;
         this.cardinality = 1.0f;
     }
 
-    public MagickElement(String type, Color color, DamageSource damage, float cardinality) {
+    public MagickElement(String type, Color primaryColor, Color secondaryColor, DamageSource damage, float cardinality) {
         this.type = type;
-        this.color = color;
+        this.primaryColor = primaryColor;
+        this.secondaryColor = secondaryColor;
         this.damage = damage;
         this.cardinality = cardinality;
     }
 
-    public Color color() {
-        return color;
+    public Color primaryColor() {
+        return primaryColor;
+    }
+
+    public Color secondaryColor() {
+        return secondaryColor;
     }
 
     public DamageSource damageType() {

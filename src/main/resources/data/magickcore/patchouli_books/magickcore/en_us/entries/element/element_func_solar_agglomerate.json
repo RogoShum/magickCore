@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Agglomerate recovery caster's health. The attribute of having mana gain is force. When the height position of the spell is greater than 192 blocks, it will change the current weather to clear."
+      "text": "Solar of the Agglomerate recovery caster's health. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(br2) When the height position of the spell is greater than 192 blocks, it will change the current weather to clear."
     }
   ]
 }

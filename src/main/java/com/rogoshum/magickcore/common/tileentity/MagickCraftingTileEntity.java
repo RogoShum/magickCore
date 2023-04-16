@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.common.tileentity;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.client.tileentity.easyrender.MagickCraftingRenderer;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.item.material.PotionTypeItem;
@@ -28,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.Vec3i;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class MagickCraftingTileEntity extends BlockEntity{
     public int ticksExisted;
@@ -36,8 +38,20 @@ public class MagickCraftingTileEntity extends BlockEntity{
     private final HashSet<PlaceableItemEntity> craftingSides = new HashSet<>();
     private final CraftingMatrix craftingMatrix = CraftingMatrix.make(this);
 
+    private static final List<Function<ItemStack, ItemStack>> additionTransform = new ArrayList<>();
+
     public MagickCraftingTileEntity(BlockPos pos, BlockState state) {
         super(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), pos, state);
+    }
+
+    public static void addAdditionTransform(Function<ItemStack, ItemStack> function) {
+        additionTransform.add(function);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        MagickCore.proxy.addRenderer(() -> new MagickCraftingRenderer(this));
     }
 
     public CraftingMatrix getCraftingMatrix() {
@@ -102,6 +116,13 @@ public class MagickCraftingTileEntity extends BlockEntity{
             if(stack.isEmpty() || stack.equals(item.getItem(), false)) {
                 if(PotionTypeItem.canTransform(item.getItem())) {
                     stack = PotionTypeItem.transformToType(item.getItem());
+                }
+                for(Function<ItemStack, ItemStack> transform : additionTransform) {
+                    ItemStack result = transform.apply(item.getItem());
+                    if(!result.isEmpty() && !result.equals(item.getItem(), false)) {
+                        stack = result;
+                        break;
+                    }
                 }
             }
             if(!stack.isEmpty() && !stack.equals(item.getItem(), false)) {

@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 
 public class PositionContext extends ChildContext{
+    public static final Type<PositionContext> TYPE = new Type<>(LibContext.POSITION);
     public Vec3 pos = Vec3.ZERO;
 
     public static PositionContext create(Vec3 pos) {
@@ -31,8 +32,8 @@ public class PositionContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.POSITION;
+    public Type<PositionContext> getType() {
+        return TYPE;
     }
 
     @Override

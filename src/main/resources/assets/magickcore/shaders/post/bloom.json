@@ -1,0 +1,29 @@
+{
+    "targets": [
+        "magickcore:bloom_swap",
+        "magickcore:bloom_final"
+    ],
+    "passes": [{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:bloom_final",
+        "outtarget": "magickcore:bloom_swap",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [1.5, 0.0]
+        }, {
+            "name": "Radius",
+            "values": [6.0]
+        }]
+    },{
+        "name": "magickcore:slime",
+        "intarget": "magickcore:bloom_swap",
+        "outtarget": "magickcore:bloom_final",
+        "uniforms": [{
+            "name": "BlurDir",
+            "values": [0.0, 1.5]
+        }, {
+            "name": "Radius",
+            "values": [6.0]
+        }]
+    }]
+}

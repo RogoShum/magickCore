@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Mana Spin is a type of point spell form that will determine its size and expansion range based on the spell range. The center part does not produce collision, and the surrounding block particles are the colliding part. When the range expands, the force and mana benefits of the post spells will decrease."
+      "text": "The Mana Spin is a type of point spell form that will determine its size and expansion range based on the spell range. The center part does not produce collision, and the surrounding block particles are the colliding part. $(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(li2)$(#00CED1)Force：Decreases as Range increases$()$(t:The range of functional spells is unaffected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:The duration of functional spells is unaffected)$(li2)$(#FFB90F)Duration：1.0$(/t)"
     }
   ]
 }

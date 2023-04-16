@@ -7,8 +7,6 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -44,7 +42,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.color(), lightmap));
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), lightmap));
     }
 
     public void renderCapacity(RenderParams params) {
@@ -56,9 +54,9 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         matrixStackIn.scale(scale, scale, scale);
         for (int i = 0; i < 2; ++i) {
             if(entity.getMode())
-                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), lightmap));
+                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), lightmap));
             else
-                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.color(), lightmap));
+                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), lightmap));
             matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
         }
     }

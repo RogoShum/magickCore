@@ -1,10 +1,8 @@
 package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.ContextCreatorRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.ChaosReachLaserRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.superrender.AscendantRealmRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.ChaosReachRenderer;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
@@ -29,7 +27,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -73,13 +70,13 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     @Override
     public boolean releaseMagick() {
         if(!initial) return false;
-        List<Entity> livings = findEntity(entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity));
+        List<Entity> livings = findEntity(entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity) && MagickReleaseHelper.canEntityTraceAnother(this, entity));
         boolean makeSound = false;
         for (Entity entity : livings) {
             makeSound = true;
-            MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(50).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.DE_BUFF);
+            MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(50).force(5).applyType(ApplyType.DE_BUFF);
             MagickReleaseHelper.releaseMagick(context);
-            context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(10).force(ManaLimit.FORCE.getValue()).applyType(ApplyType.ATTACK);
+            context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(10).force(2.5f).applyType(ApplyType.ATTACK);
             MagickReleaseHelper.releaseMagick(context);
         }
 

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Void of the Agglomerate can make the caster in a state of low presence, and will not be targeted by some creatures unless you want to kiss it. The attribute of having mana gain is duration. Void of the Agglomerate can also mine blocks, the attribute of having mana gain is duration."
+      "text": "Void of the Agglomerate can make the caster in a state of low presence, and will not be targeted by some creatures unless you want to kiss it. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()$(br)Void of the Agglomerate can also mine blocks."
     }
   ]
 }

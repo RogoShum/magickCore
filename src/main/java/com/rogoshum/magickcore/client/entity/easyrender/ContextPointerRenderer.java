@@ -7,7 +7,6 @@ import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
-import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
@@ -56,9 +55,13 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
             double x = item.prePos.x + (item.pos.x - item.prePos.x) * (double) partialTicks;
             double y = item.prePos.y + (item.pos.y - item.prePos.y) * (double) partialTicks;
             double z = item.prePos.z + (item.pos.z - item.prePos.z) * (double) partialTicks;
+            if(item.function)
+                y+=0.1;
             matrixStackIn.translate(x, y - entity.getBbHeight() / 2, z);
             float f3 = ((float)item.age + partialTicks) / 20.0F + item.hoverStart;
             matrixStackIn.mulPose(Vector3f.YP.rotation(f3));
+            if(item.function)
+                matrixStackIn.scale(0.5f, 0.5f, 0.5f);
             MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(params.buffer);
             Minecraft.getInstance().getItemRenderer().renderStatic(item.getItemStack(), ItemTransforms.TransformType.GROUND, RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, matrixStackIn, renderTypeBuffer, 0);
             renderTypeBuffer.endBatch();
@@ -71,11 +74,6 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
         matrixStackIn.mulPose(rotate);
-        RenderHelper.CylinderContext context =
-                new RenderHelper.CylinderContext(0.25f, 0.25f, 1
-                        , 0.2f + entity.getBbHeight(), 16
-                        , 0.5f * alpha, alpha, 0.3f, entity.spellContext().element.color());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE), context);
     }
 
     public void renderCylinder(RenderParams params) {
@@ -86,16 +84,14 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
 
         float height = entity.getBbHeight() - 0.2f;
         alpha = 1.0f;
-        matrixStackIn.translate(0, 0.2, 0);
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.3f, 1.5f
-                , height, 16
-                , 0.3f * alpha, alpha, 0.3f, entity.spellContext().element.color());
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.25f, 0.25f, 1.5f
+                , height, 8
+                , 0.5f * alpha, alpha*0.9f, 0.3f, entity.spellContext().element.primaryColor());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
-        matrixStackIn.translate(0, -0.2, 0);
-        context = new RenderHelper.CylinderContext(0.4f, 0.25f, 1.5f
-                , height, 16
-                , 0.2f * alpha, alpha, 0.3f, entity.spellContext().element.color());
+        context = new RenderHelper.CylinderContext(0.6f, 0.55f, 1.5f
+                , height, 8
+                , 0.4f * alpha, alpha, 0.3f, entity.spellContext().element.primaryColor());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
     }
@@ -106,7 +102,7 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         Vec3 offset = cam.subtract(x, y, z).normalize().scale(entity.getBbWidth() * 0.5);
         debugX = x - camX + offset.x;
-        debugY = y - camY + entity.getBbHeight() * 0.5 + offset.y;
+        debugY = y - camY + entity.getBbHeight() + offset.y;
         debugZ = z - camZ + offset.z;
 
         SpellContext context = SpellContext.create();
@@ -141,10 +137,7 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(RenderMode.ORIGIN_RENDER, this::renderItems);
-        map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SHADER), this::renderCyclone);
-        if(!RenderHelper.isRenderingShader()) {
-            map.put(new RenderMode(TYPE, RenderMode.ShaderList.OPACITY_SHADER), this::renderCylinder);
-        }
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SHADER), this::renderCylinder);
         return map;
     }
 }

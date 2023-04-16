@@ -9,7 +9,7 @@ public class Color {
     public final static Color RED_COLOR = Color.create(1, 0, 0);
     public final static Color GREEN_COLOR = Color.create(0, 1, 0);
     public final static Color BLACK_COLOR = Color.create(0, 0, 0);
-    public final static Color GREY_COLOR = Color.create(0, 0, 0);
+    public final static Color GREY_COLOR = Color.create(0.5f, 0.5f, 0.5f);
     public final static Color BROWN_COLOR = Color.create(0.4f, 0.3f, 0);
     private final float r;
     private final float g;

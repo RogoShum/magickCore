@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ConeEntity extends ManaRadiateEntity {
-    public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.2f, 1.0f, 1.0f);
+    public static final ManaFactor MANA_FACTOR = ManaFactor.create(0.25f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/cone.png");
     public final Predicate<Entity> inCone = (entity -> {
         Vec3 pos = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
@@ -75,8 +75,8 @@ public class ConeEntity extends ManaRadiateEntity {
         Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        } else if (getOwner() != null) {
-            direction = getOwner().getLookAngle().normalize();
+        } else if (getCaster() != null) {
+            direction = getCaster().getLookAngle().normalize();
         }
         if(direction == null) return;
         ParticleUtil.spawnImpactParticle(level, this.position(), range, direction, spellContext().element, ParticleType.PARTICLE);
@@ -117,8 +117,8 @@ public class ConeEntity extends ManaRadiateEntity {
         Vec3 direction = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        } else if (getOwner() != null) {
-            direction = getOwner().getLookAngle().normalize();
+        } else if (getCaster() != null) {
+            direction = getCaster().getLookAngle().normalize();
         }
 
         return direction != null && (this.position().subtract(vec).normalize().dot(direction) + 1) <= Math.toRadians(getRange() * 2.25);

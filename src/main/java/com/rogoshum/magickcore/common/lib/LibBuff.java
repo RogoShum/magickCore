@@ -18,4 +18,6 @@ public class LibBuff {
     public static final String DECAY = "decay";
     public static final String RADIANCE_WELL = "radiance_wall";
     public static final String PURE = "pure";
+    public static final String BOTAN = "botan";
+    public static final String THORNS = "thorns";
 }

@@ -12,8 +12,12 @@
     },
     {
       "type": "spotlight",
-      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f}}",
-      "text": "From previous study we can know, Spell Form as the special Apply Type, can carries post spells, and transfer target, direction, position etc. What would be happend if we use spell form to connect spell form? $(br2)For example, using a compound spell starting with a mana arrow on a spirit bow."
+      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},RANGE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:sphere\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:3.0f}}",
+      "text": "From previous study we can know, Spell Form as the special Apply Type, can carries post spells, and transfer target, direction, position etc. What would be happend if we use spell form to connect spell form? $(br2)For example, using a compound spell starting with a sphere radiation on a spirit bow."
+    },
+    {
+      "type": "text",
+      "text": "Sphere radiation is a form of radiation-type spell, which captures targets within its range and triggers the next stage of magick before disappearing.$(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:Functional spells will have their strength bonus reduced to 0.2)$(li2)$(#00CED1)Force：0.2$(/t)$()$(t:The range of functional spells is not affected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:The duration of functional spells is not affected)$(li2)$(#FFB90F)Duration：1.0$(/t)$()"
     },
     {
       "type": "text",
@@ -21,20 +25,28 @@
     },
     {
       "type": "text",
-      "text": "Now we can infer that: when using a compound spell with initial form of mana arrow on a spirit bow, the spirit bow itself will generate a mana arrow, and this mana arrow will trigger the production of mana arrows in the compound spell when it touches the target.$(br2)The second mana arrow will be generated at the location of the first mana arrow and inherit the direction of the first mana arrow. If the second mana arrow also touches the target, it will then pass on the attack apply type of the post spell."
+      "text": "We can now infer that using a sphere radiation as the starting point and a compound spell as the attack type on a Spirit Bow, the bow itself will generate a mana arrow, which will trigger the sphere radiation of the compound spell when it touches a target. $(br2)The sphere radiation is generated based on the position and direction of the mana arrow and delivers the attack spell to the entities within the radiation range."
     },
     {
       "type": "text",
-      "text": "Unfortunately, since the initial attack type of the compound spell is a mana arrow, the first mana arrow has no actual effect after triggering and is only used to generate another mana arrow. It is only after this that the attack spell can be passed on, wasting the mana needed to generate the first mana arrow. $(br2)In this case, we could try to fix the problem by reversing the order of the attack type and the mana arrow form in the initial spell, so that the attack type is followed by the mana arrow form and the second attack type. This way, it should be possible to use the spirit bow."
+      "text": "It is important to note that a spell form has the property of magical efficacy, which affects the attributes of functional spells. For example, the strength capability of a spherical radiation form is 0.2, which means that the intensity effect of the subsequent spell triggered by the functional spell carried by the spherical radiation form and connected to it will be multiplied by 0.2. This means that the spell strength of the spells connected to the spherical radiation will be reduced."
+    },
+    {
+      "type": "text",
+      "text": "The magical efficacy of sphere radiation.$(br2)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:Functional spells will have their force bonus reduced to 0.2)$(li2)$(#00CED1)Force：0.2$(/t)$()$(t:The range of functional spells is not affected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:The duration of functional spells is not affected)$(li2)$(#FFB90F)Duration：1.0$(/t)$()"
     },
     {
       "type": "spotlight",
-      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{ELEMENT:\"origin\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f},CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
-      "text": "I'm sorry, but that would not work. After the first mana arrow causes the attack effect, it will immediately generate the second mana arrow. At this point, the target is still in a state of invincibility, and the second mana arrow is generated at the location where the first mana arrow disappears, immediately touching the target. At this point, it would not be possible to attack the target."
+      "item": "magickcore:spirit_bow{item_extra_data:{APPLY_TYPE:\"spawn_entity\",CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:sphere\"}},ELEMENT:\"origin\",FORCE:0.0f,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:50000.0f},POST:{APPLY_TYPE:\"spawn_entity\",CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:mana_orb\"}},ELEMENT:\"origin\",FORCE:5.0f,POST:{APPLY_TYPE:\"attack\",CHILD_CONTEXT:{},ELEMENT:\"origin\",FORCE:5.0f,POST:{},RANGE:0.0f,TICK:0},RANGE:0.0f,TICK:120},RANGE:3.0f,TICK:120,disable:0b,haveMagickContext:0b}}",
+      "text": "However, we can avoid the side effect of lowering spell force by linking with a high strength spell form. For example, if we link the Mana Orb form after the Sphere Radiation form and use it to release the attack spell, according to the Mana Orb's force of 1.0, it can perfectly transmit the attack spell's force of 5.0."
     },
     {
       "type": "text",
-      "text": "To fix this compound spell, you could try changing the post spell of the second mana arrow to a de-buff type, or simply remove the second mana arrow form and use a de-buff type to directly connect to the attack type. This way, one mana arrow could achieve two effects.$(br2)Of course, this is just one way of using projectile spells. In this world, there are three different types of spell forms: radiation, projectile, and point-type."
+      "text": "Mana Orb is a kind of projectile-type form。$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:The force of functional spells is not affected)$(li2)$(#00CED1)Force：1.0$(/t)$()$(t:The range of functional spells is not affected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:The duration of functional spells is not affected)$(li2)$(#FFB90F)Duration：1.0$(/t)$()$(br2)"
+    },
+    {
+      "type": "text",
+      "text": "One more thing to note is that increasing some attributes of the form spell can provide additional benefits. For example, increasing the range attributes of the radiation form can increase the radiation range. Increasing the range attributes of the mana arrow can increase the speed of the magic arrow.$(br)Growth Needs for Mana Arrow。$(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br2)The range attribute affects the maximum speed value of the mana arrow."
     }
   ]
 }

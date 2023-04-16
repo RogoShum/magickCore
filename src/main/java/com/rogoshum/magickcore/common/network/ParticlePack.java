@@ -2,10 +2,8 @@ package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.client.element.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.registry.MagickRegistry;

@@ -53,7 +53,7 @@ public class ElementCrystalBlock extends CropBlock implements EntityBlock {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalTileEntity::tick);
+        return createTickerHelper(type, ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalTileEntity::tick);
     }
 
     @Nullable
@@ -73,7 +73,7 @@ public class ElementCrystalBlock extends CropBlock implements EntityBlock {
         BlockEntity tileentity = builder.getLevel().getBlockEntity(new BlockPos(pos));
         if (tileentity instanceof ElementCrystalTileEntity) {
             ElementCrystalTileEntity tile = (ElementCrystalTileEntity)tileentity;
-            return tile.getDrops();
+            return tile.getDrops(getAge(state));
         }
         return super.getDrops(state, builder);
     }

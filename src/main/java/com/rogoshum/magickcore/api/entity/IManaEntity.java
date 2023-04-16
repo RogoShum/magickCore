@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.api.entity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
@@ -21,7 +20,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public interface IManaEntity extends ISpellContext, IOwnerEntity {
@@ -65,7 +63,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
             if(pass) {
                 MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
-                        .caster(getOwner()).projectile((Entity) this)
+                        .caster(getCaster()).projectile((Entity) this)
                         .victim(living).noCost();
                 if(MagickReleaseHelper.releaseMagick(beforeCast(context)))
                     released = true;
@@ -80,7 +78,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
         if(spellContext().postContext != null)
             applyType = spellContext().postContext.applyType;
 
-        boolean sameLikeOwner = MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity);
+        boolean sameLikeOwner = MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity);
         if(applyType.getBeneficial() == ApplyType.Beneficial.HARMFUL && sameLikeOwner) {
             return false;
         }

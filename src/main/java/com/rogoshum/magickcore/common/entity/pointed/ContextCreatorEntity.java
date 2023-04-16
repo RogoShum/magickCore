@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.common.entity.pointed;
 
+import com.mojang.datafixers.kinds.App;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
@@ -11,13 +13,18 @@ import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
+import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
+import com.rogoshum.magickcore.common.init.ModSounds;
+import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -59,11 +66,21 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
     private final SpellContext spellContext = SpellContext.create();
     private int coolDown = 40;
     private boolean dead = false;
+    private EntityType<?> entityType = null;
 
     public ContextCreatorEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         this.spellContext().tick(-1);
     }
+
+    public void setEntityType(EntityType<?> entityType) {
+        this.entityType = entityType;
+    }
+
+    public EntityType<?> getEntityType() {
+        return this.entityType;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
@@ -105,21 +122,37 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         List<ItemEntity> items = this.level.getEntities(EntityType.ITEM, this.getBoundingBox().inflate(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && ((item.tickCount > 10 && item.level.isClientSide()) || (item.tickCount > 15 && !item.level.isClientSide())) && item.position().distanceToSqr(this.position()) <= 2.5) {
+            if(item.isAlive() && !item.level.isClientSide() && item.tickCount > 15 && item.position().distanceToSqr(this.position()) <= 2.5) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
-                if(material.upgradeManaItem(item.getItem(), innerManaData)) {
-                    Vec3 relativeVec = relativeVec(item);
-                    ItemStack stack = item.getItem().copy();
-                    stack.setCount(1);
-                    PosItem posItem = new PosItem(relativeVec, stack, new Random(itemCount++));
-                    posItem.motion = item.getDeltaMovement();
-                    posItem.hoverStart = item.bobOffs;
-                    posItem.age = item.tickCount;
-                    if(!material.disappearAfterRead())
-                        stacks.add(posItem);
-                    Vec3 vec = new Vec3(item.getX() - this.getX(), (item.getY() + item.getBbHeight() / 2) - (this.getY() + this.getBbHeight() / 2), item.getZ() - this.getZ());
-                    hitReactions.put(item.getId(), new VectorHitReaction(vec.normalize(), 0.2f, 0.02f));
-                    item.getItem().shrink(1);
+                boolean creatorAndNotType = !material.typeMaterial() || getEntityType() == null;
+                boolean singleItem = material.singleMaterial();
+                boolean anotherType = getInnerManaData().spellContext().applyType != ApplyType.NONE && material.typeMaterial();
+                boolean anotherElement = getInnerManaData().spellContext().element != ModElements.ORIGIN && material.elementMaterial();
+                if(singleItem) {
+                    singleItem = false;
+                    for (PosItem posItem : stacks) {
+                        if(posItem.itemStack.getItem() == material)
+                            singleItem = true;
+                    }
+                }
+
+                if(creatorAndNotType && !singleItem && !anotherType && !anotherElement) {
+                    if(material.upgradeManaItem(item.getItem(), innerManaData)) {
+                        Vec3 relativeVec = relativeVec(item);
+                        ItemStack stack = item.getItem().copy();
+                        stack.setCount(1);
+                        PosItem posItem = new PosItem(relativeVec, stack, new Random(itemCount++));
+                        posItem.motion = item.getDeltaMovement();
+                        posItem.hoverStart = item.bobOffs;
+                        posItem.age = item.tickCount;
+                        if(!material.disappearAfterRead())
+                            stacks.add(posItem);
+                        Vec3 vec = new Vec3(item.getX() - this.getX(), (item.getY() + item.getBbHeight() / 2) - (this.getY() + this.getBbHeight() / 2), item.getZ() - this.getZ());
+                        hitReactions.put(item.getId(), new VectorHitReaction(vec.normalize(), 0.2f, 0.02f));
+                        item.getItem().shrink(1);
+                        playSound(ModSounds.cruise_ship.get(), 0.5f, 0.5f*random.nextFloat());
+                        doNetworkUpdate();
+                    }
                 }
             }
         });
@@ -162,6 +195,14 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         //MagickCore.LOGGER.debug(suppliers);
         super.doClientTask();
         stacks.forEach(PosItem::tick);
+        if(this.getEntityType() != null) {
+            for (PosItem posItem : stacks) {
+                LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element.getRenderer().getParticleTexture()
+                        , this.position().add(0, this.getBbHeight() / 2 + 0.2, 0).add(posItem.pos), 0.1f, 0.1f, 0.5f, 10, innerManaData.spellContext().element.getRenderer());
+                par.setGlow();
+                MagickCore.addMagickParticle(par);
+            }
+        }
         AtomicBoolean hasEnergy = new AtomicBoolean(false);
 
         if(hasEnergy.get()) {
@@ -256,6 +297,12 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             if(player.getMainHandItem().getItem() instanceof WandItem) {
                 ItemStack stack = new ItemStack(ModItems.MAGICK_CORE.get());
                 ExtraDataUtil.itemManaData(stack).spellContext().copy(innerManaData.spellContext());
+                for(PosItem posItem : getStacks()) {
+                    if(posItem.itemStack.getItem() instanceof ManaMaterialItem) {
+                        ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + (this.getBbWidth() / 2), this.getZ(), posItem.itemStack);
+                        level.addFreshEntity(entity);
+                    }
+                }
                 getStacks().clear();
                 ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + (this.getBbWidth() / 2), this.getZ(), stack);
                 level.addFreshEntity(entity);
@@ -304,11 +351,13 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
+        this.innerManaData.spellContext.clear();
         this.innerManaData.spellContext.deserialize(compound);
         if(compound.contains("MATERIAL"))
             this.innerManaData.setMaterial(ManaMaterials.getMaterial(compound.getString("MATERIAL")));
         if(compound.contains("STACKS")) {
             CompoundTag tag = compound.getCompound("STACKS");
+            this.stacks.clear();
             tag.getAllKeys().forEach(key -> {
                 CompoundTag stack = tag.getCompound(key);
                 PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, new Random(itemCount++));
@@ -317,6 +366,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                     this.stacks.add(posItem);
             });
         }
+        Optional<EntityType<?>> entityType = EntityType.byString(compound.getString("spell_entity_type"));
+        entityType.ifPresent(this::setEntityType);
     }
 
     @Override
@@ -331,6 +382,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             tag.put(String.valueOf(i), stack);
         }
         compound.put("STACKS", tag);
+        if(getEntityType() != null)
+            compound.putString("spell_entity_type", EntityType.getKey(getEntityType()).toString());
     }
 
     public void dropItem() {
@@ -345,6 +398,10 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         getInnerManaData().spellContext().clear();
         coolDown = 40;
         getStacks().clear();
+        if(getEntityType() != null) {
+            getInnerManaData().spellContext().applyType(ApplyType.SPAWN_ENTITY);
+            getInnerManaData().spellContext().addChild(SpawnContext.create(getEntityType()));
+        }
     }
 
     @Override
@@ -352,11 +409,21 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         dropItem();
         if(!dead) {
             dead = true;
-            ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_CORE.get(), 1);
-            stack.getTag().putString("mana_material", this.innerManaData.material.getName());
-            ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + 0.5f, this.getZ(), stack);
-            if(!this.level.isClientSide)
-                level.addFreshEntity(entity);
+            if(getEntityType() == null) {
+                ItemStack stack = NBTTagHelper.createItemWithEntity(this, ModItems.CONTEXT_CORE.get(), 1);
+                stack.getTag().putString("mana_material", this.innerManaData.material.getName());
+                ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + 0.5f, this.getZ(), stack);
+                if(!this.level.isClientSide)
+                    level.addFreshEntity(entity);
+            } else {
+                ItemStack stack = new ItemStack(ModItems.ENTITY_TYPE.get());
+                ItemManaData data = ExtraDataUtil.itemManaData(stack);
+                data.spellContext().addChild(SpawnContext.create(entityType));
+                data.spellContext().applyType(ApplyType.SPAWN_ENTITY);
+                ItemEntity entity = new ItemEntity(level, this.getX(), this.getY() + 0.5f, this.getZ(), stack);
+                if(!this.level.isClientSide)
+                    level.addFreshEntity(entity);
+            }
         }
         super.remove(reason);
     }

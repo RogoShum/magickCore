@@ -5,10 +5,10 @@ import com.rogoshum.magickcore.api.entity.IExistTick;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.api.enums.TargetType;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
+import com.rogoshum.magickcore.common.lib.LibShaders;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -62,7 +62,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
                     AtomicReference<Boolean> pass = new AtomicReference<>(true);
                     if(spellContext().containChild(LibContext.CONDITION)) {
                         ConditionContext context = spellContext().getChild(LibContext.CONDITION);
-                        if(!context.test(this.getOwner(), entity))
+                        if(!context.test(this.getCaster(), entity))
                             pass.set(false);
                     }
                     if(pass.get()) {
@@ -75,7 +75,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
 
     @Override
     public float getSourceLight() {
-        return 10;
+        return 13;
     }
 
     @Override
@@ -105,12 +105,13 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
-                    , scale, scale * 1.2f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , scale, scale * 1.2f, 0.8f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setGlow();
             par.setParticleGravity(0f);
             par.addMotion(0, 0.1 * getBbWidth(), 0);
             par.setLimitScale();
             par.setShakeLimit(15f);
+            par.useShader(LibShaders.BITS);
             MagickCore.addMagickParticle(par);
         }
     }
@@ -127,12 +128,12 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getOwner()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getOwner()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }

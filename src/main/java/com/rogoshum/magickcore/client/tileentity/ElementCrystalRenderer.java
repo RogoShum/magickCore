@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Vector3f;
 
@@ -33,10 +32,10 @@ public class ElementCrystalRenderer implements BlockEntityRenderer<ElementCrysta
         if(!(state.getBlock() instanceof ElementCrystalBlock)) return;
         int age = state.getValue(CropBlock.AGE);
         ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + Integer.toString(age) + ".png");
-        RenderType TYPE = RenderHelper.getTexedOrbGlow(crystal);
+        RenderType TYPE = RenderType.eyes(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);
         if(element != null)
-            color = element.getRenderer().getColor();
+            color = element.getRenderer().getPrimaryColor();
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);

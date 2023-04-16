@@ -26,6 +26,11 @@ public class ReverseItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
+    public boolean singleMaterial() {
+        return true;
+    }
+
+    @Override
     public int getManaNeed(ItemStack stack) {
         return 0;
     }

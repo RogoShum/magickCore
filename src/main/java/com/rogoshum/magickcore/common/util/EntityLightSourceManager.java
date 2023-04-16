@@ -1,6 +1,9 @@
 package com.rogoshum.magickcore.common.util;
 
+import com.google.common.collect.Queues;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.common.init.CommonConfig;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import net.minecraft.world.level.block.Block;
@@ -16,21 +19,22 @@ import net.minecraftforge.fml.LogicalSide;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EntityLightSourceManager {
-    private static final List<ILightSourceEntity> lightList = new ArrayList<>();
+    private static final Queue<ILightSourceEntity> lightList = Queues.newConcurrentLinkedQueue();
 
-    public static void tick(LogicalSide side) {
-        if(side.isClient() && Minecraft.getInstance().level == null) return;
-
-        for (int i = 0; i < lightList.size(); ++i) {
-            ILightSourceEntity entity = lightList.get(i);
+    public static void tick() {
+        if(lightList.isEmpty()) return;
+        Iterator<ILightSourceEntity> it = lightList.iterator();
+        while (it.hasNext()) {
+            ILightSourceEntity entity = it.next();
             if(entity == null) {
                 continue;
             }
 
             if(!entity.alive()) {
-                lightList.remove(entity);
+                it.remove();
                 continue;
             }
 
@@ -53,41 +57,33 @@ public class EntityLightSourceManager {
 
     public static void tryAddLightSource(ILightSourceEntity entity, BlockPos pos) {
         if (!(entity.world() instanceof ServerLevel)) return;
+        BlockEntity tile = entity.world().getBlockEntity(pos);
+        if(tile instanceof GlowAirTileEntity) {
+            ((GlowAirTileEntity) tile).setLight(entity);
+            return;
+        }
         BlockState state = entity.world().getBlockState(pos);
         Block block = state.getBlock();
-        boolean done = false;
         if (block.equals(Blocks.AIR)) {
-            done = true;
             entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.CAVE_AIR)) {
-            done = true;
             entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_CAVE_AIR.get().withLight((int) entity.getSourceLight()));
         }
 
         if (block.equals(Blocks.WATER)) {
-            done = true;
             entity.world().setBlockAndUpdate(pos, ModBlocks.FAKE_WATER.get().withLightAndFluid((int) entity.getSourceLight(), entity.world().getBlockState(pos).getValue(LiquidBlock.LEVEL)));
-        }
-
-        if(done) {
-            BlockEntity tile = entity.world().getBlockEntity(pos);
-            if(tile instanceof GlowAirTileEntity) {
-                ((GlowAirTileEntity) tile).setLight(entity);
-                ((GlowAirTileEntity) tile).setState(state);
-            }
         }
     }
 
     public static void addLightSource(ILightSourceEntity entity) {
-        if(true)return;
-        if (!lightList.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
+        if (CommonConfig.ENTITY_LIGHTING.get() && !lightList.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
             lightList.add(entity);
         }
     }
 
-    public static List<ILightSourceEntity> getLightList() {
+    public static Queue<ILightSourceEntity> getLightList() {
         return lightList;
     }
 

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Arc of the Diffusion can extract the target's health and convert it into mana for the caster. When the diffuse arc touches the block, the energy of the block can be extracted to restore the mana of the caster. The attribute of having mana gain is force, range, and duration."
+      "text": "Arc of the Diffusion can extract the target's health and convert it into mana for the caster. When the diffuse arc touches the block, the energy of the block can be extracted to restore the mana of the caster. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Range can increase gains)$(li2)$(#EE6363)Range$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()$(br2)"
     }
   ]
 }

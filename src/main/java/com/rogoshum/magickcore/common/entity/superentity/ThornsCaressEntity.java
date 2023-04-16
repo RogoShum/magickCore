@@ -4,9 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.ThornsCaressLaserRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.superrender.ChaosReachRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
@@ -27,7 +25,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -51,11 +48,11 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     public boolean releaseMagick() {
         if(this.tickCount % 2 ==0) {
-            List<Entity> livings = this.findEntity((entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getOwner(), entity)));
+            List<Entity> livings = this.findEntity((entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity)));
             for (Entity entity : livings) {
-                MagickContext context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
+                MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
                 MagickReleaseHelper.releaseMagick(context);
-                context = new MagickContext(level).noCost().caster(this.getOwner()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
+                context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
             }
         }

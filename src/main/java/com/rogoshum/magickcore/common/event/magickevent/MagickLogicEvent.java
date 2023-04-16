@@ -15,13 +15,13 @@ import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
-import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
+import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
-import com.rogoshum.magickcore.common.entity.pointed.MultiReleaseEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
+import com.rogoshum.magickcore.common.extradata.entity.LeechEntityData;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
@@ -49,10 +49,7 @@ import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.schedule.Activity;
@@ -60,13 +57,13 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -83,12 +80,10 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagickLogicEvent {
-	private static final List<Entity> timeLords = new ArrayList<Entity>();
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ServerTickEvent event) {
 		if(event.phase == TickEvent.Phase.END) {
-			//EntityLightSourceManager.tick(event.side);
-			//MagickCore.proxy.tick(LogicalSide.SERVER);
+			EntityLightSourceManager.tick();
 		}
 	}
 
@@ -112,6 +107,7 @@ public class MagickLogicEvent {
 					EntityLightSourceManager.clear();
 					RenderEvent.clearParticle();
 					VertexShakerHelper.clear();
+					RenderHelper.GL_LIST_INDEX.clear();
 				}
 
 				VertexShakerHelper.tickGroup();
@@ -123,31 +119,8 @@ public class MagickLogicEvent {
 				VertexShakerHelper.clear();
 			});
 			MagickCore.proxy.tick(LogicalSide.CLIENT);
-			//EntityLightSourceManager.tick(LogicalSide.CLIENT);
 		}
 	}
-
-	/*
-	@SubscribeEvent
-	public void onExplosion(ExplosionEvent.Detonate event) {
-		if(event.getWorld().isRemote()) return;
-		List<Entity> list = event.getAffectedEntities();
-		for (int i = 0; i < list.size(); ++i) {
-			Entity entity = list.get(i);
-			if(entity instanceof ItemEntity) {
-				ItemStack originStack = ((ItemEntity)entity).getItem();
-				ItemStack output = ModRecipes.findExplosionOutput(originStack).copy();
-				if(output != ItemStack.EMPTY) {
-					output.setCount(originStack.getCount());
-					ManaItemEntity mana = new ManaItemEntity(event.getWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ(), output);
-					if(event.getWorld().addEntity(mana))
-						entity.remove();
-				}
-			}
-		}
-	}
-
-	 */
 
 	@SubscribeEvent
 	public void onStateCooldown(EntityEvents.StateCooldownEvent event) {
@@ -271,12 +244,17 @@ public class MagickLogicEvent {
 		if(event.getContext().containChild(LibContext.SPAWN)) {
 			EntityType<?> type = event.getContext().<SpawnContext>getChild(LibContext.SPAWN).entityType;
 			if(ModEntities.REPEATER.get().equals(type))
-				event.setMana(event.getMana() + 50);
+				event.setMana(event.getMana() + 200);
+			if(type.getCategory() != MobCategory.MISC && type.getCategory() != MobCategory.AMBIENT) {
+				event.getContext().noCost = false;
+				event.setMana(event.getMana() + MagickReleaseHelper.singleContextMana(event.getContext()));
+			}
 		}
 		if(event.getContext().containChild(LibContext.POSITION)) {
 			PositionContext positionContext = event.getContext().getChild(LibContext.POSITION);
 			event.setMana((float) (event.getMana() + positionContext.pos.distanceTo(event.getEntity().position())));
 		}
+
 		/*
 		if(!event.getContext().containChild(LibContext.MULTI_RELEASE))
 			if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MULTI_RELEASE.orElse(null))) {
@@ -350,7 +328,9 @@ public class MagickLogicEvent {
 
 			boolean flag = false;
 
-			ItemStack stack = ((LivingEntity) event.getEntity()).getUseItem();
+			ItemStack stack = ((LivingEntity) event.getEntity()).getMainHandItem();
+			if(!(stack.getItem() instanceof IManaData) || stack.getUseAnimation() == UseAnim.NONE)
+				stack = ((LivingEntity) event.getEntity()).getOffhandItem();
 
 			ItemManaData item = ExtraDataUtil.itemManaData(stack);
 			if(item.manaCapacity().getMana() >= event.getMana()) {
@@ -427,9 +407,9 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void HitEntity(EntityEvents.HitEntityEvent event) {
 		if(event.getEntity() instanceof ISpellContext) {
-			float force = 0;
-			float range = 0;
-			int tick = 0;
+			float force;
+			float range;
+			int tick;
 			SpellContext mana = ((ISpellContext) event.getEntity()).spellContext();
 			force = mana.force;
 			range = mana.range;
@@ -445,7 +425,7 @@ public class MagickLogicEvent {
 					.tick(tick).range(range).force(force).applyType(ApplyType.HIT_ENTITY);
 			if(event.getEntity() instanceof IOwnerEntity)
 				attribute = new MagickContext(event.getEntity().level).noCost()
-						.caster(((IOwnerEntity) event.getEntity()).getOwner()).projectile(event.getEntity()).victim(event.getVictim())
+						.caster(((IOwnerEntity) event.getEntity()).getCaster()).projectile(event.getEntity()).victim(event.getVictim())
 						.tick(tick).range(range).force(force).applyType(ApplyType.HIT_ENTITY);
 			MagickReleaseHelper.releaseMagick(attribute);
 		}
@@ -481,7 +461,10 @@ public class MagickLogicEvent {
 							new TakenStatePack(event.getEntity().getId(), takenState.getTime(), takenState.getOwnerUUID()));
 			}
 		}
-
+		LeechEntityData leechState = ExtraDataUtil.leechEntityData(event.getEntity());
+		if(leechState != null) {
+			leechState.tick(event.getEntityLiving());
+		}
 		if(state == null) return;
 
 		if(state.getElementShieldMana() < 0.0f)
@@ -589,6 +572,62 @@ public class MagickLogicEvent {
 
 		if(state != null && state.getBuffList().containsKey(LibBuff.HYPERMUTEKI))
 			event.setCanceled(true);
+
+
+		if(event.getSource().getEntity() != null && !MagickReleaseHelper.sameLikeOwner(event.getEntityLiving(), event.getSource().getEntity())) {
+			int level = 0;
+			for (ItemStack stack : event.getEntityLiving().getAllSlots()) {
+				if (stack != null && NBTTagHelper.hasElementOnTool(stack, LibElements.STASIS)) {
+					level+=2;
+					NBTTagHelper.consumeElementOnTool(stack, LibElements.STASIS);
+				}
+			}
+			if(level > 0) {
+				MagickContext context = MagickContext.create(event.getSource().getEntity().level)
+						.noCost().caster(event.getEntityLiving())
+						.victim(event.getSource().getEntity()).tick(100).force(level)
+						.applyType(ApplyType.DE_BUFF).element(ModElements.STASIS);
+				MagickReleaseHelper.releaseMagick(context);
+				context = MagickContext.create(event.getSource().getEntity().level)
+						.noCost().caster(event.getEntityLiving())
+						.victim(event.getSource().getEntity()).tick(20).force(7)
+						.applyType(ApplyType.DE_BUFF).element(ModElements.STASIS);
+				MagickReleaseHelper.releaseMagick(context);
+			}
+		}
+
+		if(entity instanceof LivingEntity || entity instanceof Enemy) {
+			ElementToolData tool = ExtraDataUtil.elementToolData(entity);
+
+			if (tool != null) {
+				event.setAmount(tool.applyAdditionDamage(event.getAmount()));
+			}
+
+			if(!(entity instanceof Player)) {
+				EntityStateData attacker = ExtraDataUtil.entityStateData(entity);
+				float manaNeed = event.getAmount();
+
+				if (attacker != null && !attacker.getElement().type().equals(LibElements.ORIGIN)) {
+					if(event.getEntityLiving() instanceof ServerPlayer)
+						AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getEntityLiving(), LibAdvancements.ELEMENT_CREATURE);
+					MagickContext attribute = new MagickContext(entity.level).noCost().caster(entity).projectile(event.getSource().getDirectEntity()).victim(event.getEntityLiving()).applyType(ApplyType.DE_BUFF).tick((int) manaNeed * 40).force(manaNeed);
+					MagickReleaseHelper.releaseMagick(attribute);
+				}
+			}
+
+			TakenEntityData taken = ExtraDataUtil.takenEntityData(event.getSource().getEntity());
+			if(event.getSource().getEntity() instanceof Mob && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0) {
+				if(entity.level instanceof ServerLevel) {
+					Entity entity1 = ((ServerLevel) entity.level).getEntity(taken.getOwnerUUID());
+					if(entity1 instanceof LivingEntity) {
+						EntityStateData ownerState = ExtraDataUtil.entityStateData(entity1);
+						if(ownerState != null && ownerState.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
+							event.setAmount(event.getAmount() * 1.1f * ownerState.getBuffList().get(LibBuff.TAKEN_KING).getForce());
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -692,41 +731,6 @@ public class MagickLogicEvent {
 		if(state != null) {
 			onDamage(event.getSource(), event, state, entity);
 		}
-
-		if(entity instanceof LivingEntity || entity instanceof Enemy) {
-			ElementToolData tool = ExtraDataUtil.elementToolData(entity);
-
-			if (tool != null) {
-				event.setAmount(tool.applyAdditionDamage(event.getAmount()));
-			}
-
-			if(!(entity instanceof Player)) {
-				EntityStateData attacker = ExtraDataUtil.entityStateData(entity);
-				float manaNeed = event.getAmount();
-
-				if (attacker != null && !attacker.getElement().type().equals(LibElements.ORIGIN)) {
-					if(event.getEntityLiving() instanceof ServerPlayer)
-						AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getEntityLiving(), LibAdvancements.ELEMENT_CREATURE);
-					if (attacker.getElementShieldMana() > 0) {
-						MagickContext attribute = new MagickContext(entity.level).noCost().caster(entity).projectile(event.getSource().getDirectEntity()).victim(event.getEntityLiving()).applyType(ApplyType.DE_BUFF).tick((int) manaNeed * 40).force(manaNeed);
-						MagickReleaseHelper.releaseMagick(attribute);
-					}
-				}
-			}
-
-			TakenEntityData taken = ExtraDataUtil.takenEntityData(event.getSource().getEntity());
-			if(event.getSource().getEntity() instanceof Mob && taken != null && !taken.getOwnerUUID().equals(MagickCore.emptyUUID) && taken.getTime() > 0) {
-				if(entity.level instanceof ServerLevel) {
-					Entity entity1 = ((ServerLevel) entity.level).getEntity(taken.getOwnerUUID());
-					if(entity1 instanceof LivingEntity) {
-						EntityStateData ownerState = ExtraDataUtil.entityStateData(entity1);
-						if(ownerState != null && ownerState.getBuffList().containsKey(LibBuff.TAKEN_KING)) {
-							event.setAmount(event.getAmount() * 1.1f * ownerState.getBuffList().get(LibBuff.TAKEN_KING).getForce());
-						}
-					}
-				}
-			}
-		}
 	}
 
 	@SubscribeEvent
@@ -742,6 +746,9 @@ public class MagickLogicEvent {
 			((RepeaterEntity) event.getMagickContext().projectile).setSpawnEntity(event.getEntity());
 		if(event.getMagickContext().projectile instanceof ChainEntity)
 			((ChainEntity) event.getMagickContext().projectile).setPostEntity(event.getEntity());
+		if(event.getEntity() instanceof ManaProjectileEntity && event.getMagickContext().containChild(LibContext.SELF)) {
+			((ManaProjectileEntity) event.getEntity()).spellContext().tick(((ManaProjectileEntity) event.getEntity()).spellContext().tick*4);
+		}
 	}
 
 	@SubscribeEvent
@@ -755,9 +762,7 @@ public class MagickLogicEvent {
 
 		if(state != null) {
 			onDamage(event.getSource(), event, state, event.getSource().getEntity());
-		}
 
-		if(state != null) {
 			if(event.getEntityLiving().invulnerableTime > 0.0f && state.getElementShieldMana() > 0.0f)
 				event.setCanceled(true);
 
@@ -780,6 +785,7 @@ public class MagickLogicEvent {
 			else {
 				damage = Math.min(event.getAmount(), 5.0f);
 			}
+
 			HandleElementShield(state, damage, event);
 		}
 
@@ -795,10 +801,10 @@ public class MagickLogicEvent {
 			if(MagickCore.rand.nextFloat() < chance) {
 				ModBuffs.applyBuff(event.getEntityLiving(), LibBuff.TAKEN, 100, 1, true);
 				MagickContext context = MagickContext.create(event.getSource().getEntity().level)
-						.caster(event.getSource().getEntity())
+						.caster(event.getSource().getEntity()).noCost()
 						.victim(event.getEntity()).tick(100).force(1)
 						.applyType(ApplyType.DE_BUFF).element(MagickRegistry.getElement(LibElements.TAKEN));
-				MagickReleaseHelper.releaseMagickEvent(context);
+				MagickReleaseHelper.releaseMagick(context);
 				event.getEntityLiving().setLastHurtMob(null);
 				event.getEntityLiving().setLastHurtByMob(null);
 				if(event.getEntityLiving() instanceof Mob)
@@ -808,7 +814,7 @@ public class MagickLogicEvent {
 	}
 
 	public static void HandleElementShield(EntityStateData state, float damage, LivingAttackEvent event) {
-		if(state.getElementShieldMana() >= damage) {
+		if(state.getElementShieldMana() > damage) {
 			state.hitElementShield();
 			state.setElementShieldMana(state.getElementShieldMana() - damage);
 			if(damage > 0.0f && event.getEntityLiving().invulnerableTime <= 10)
@@ -848,11 +854,11 @@ public class MagickLogicEvent {
 
 	@SubscribeEvent
 	public void manaEntityUpdate(EntityEvents.EntityUpdateEvent event) {
-		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getOwner() != null && event.getEntity().tickCount % 40 == 0) {
+		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getCaster() != null && event.getEntity().tickCount % 40 == 0) {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().isRemoved())
 				Networking.INSTANCE.send(
 						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-						new OwnerStatePack(event.getEntity().getId(), ((IOwnerEntity) event.getEntity()).getOwner().getUUID()));
+						new OwnerStatePack(event.getEntity().getId(), ((IOwnerEntity) event.getEntity()).getCaster().getUUID()));
 		}
 
 		if(event.getEntity() instanceof IManaCapacity) {

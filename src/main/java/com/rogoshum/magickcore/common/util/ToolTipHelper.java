@@ -4,10 +4,18 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 public class ToolTipHelper {
     public final static String GREY = "§7";
+    public final static String GREY_UNDERLINE = "§7§n";
     public final static String DEEP_GREY = "§8";
     public final static String PINK = "§d";
     public final static String PURPLE = "§5";
     public final static String BLUE = "§9";
+    public final static String BLUE_UNDERLINE = "§9§n";
+    public final static String RANDOM = "§k";
+    public final static String BOLD = "§l";
+    public final static String DELETE = "§m";
+    public final static String ITALIC = "§o";
+    public final static String UNDERLINE = "§n";
+
     public final StringBuilder builder = new StringBuilder();
     public int tab = 0;
 
@@ -47,6 +55,14 @@ public class ToolTipHelper {
             builder.append(prefix).append(new TranslatableComponent(s).getString());
     }
 
+    public void trans(String s, Object object, String prefix, String valuePrefix) {
+        String post = object.toString();
+        if(!post.isEmpty())
+            builder.append(prefix).append(new TranslatableComponent(s).getString()).append(": ").append(valuePrefix).append(post);
+        else
+            builder.append(prefix).append(new TranslatableComponent(s).getString());
+    }
+
     public void nextTrans(String s, String prefix) {
         nextLine();
         prefix();
@@ -75,7 +91,10 @@ public class ToolTipHelper {
     public void prefix() {
         builder.append(GREY);
         for(int i = 0; i < tab; i++) {
-            builder.append("-");
+            if(i == 0)
+                builder.append("|  ");
+            else
+                builder.append("-");
         }
     }
 }

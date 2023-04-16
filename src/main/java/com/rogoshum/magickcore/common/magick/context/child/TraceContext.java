@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class TraceContext extends ChildContext {
+    public static final Type<TraceContext> TYPE = new Type<>(LibContext.TRACE);
     public UUID uuid = MagickCore.emptyUUID;
     public Entity entity = null;
 
@@ -45,8 +46,8 @@ public class TraceContext extends ChildContext {
     }
 
     @Override
-    public String getName() {
-        return LibContext.TRACE;
+    public Type<TraceContext> getType() {
+        return TYPE;
     }
 
     @Override

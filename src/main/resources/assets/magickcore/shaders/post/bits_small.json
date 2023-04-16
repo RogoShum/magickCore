@@ -1,0 +1,19 @@
+{
+    "targets": [
+        "magickcore:bits_small_final",
+        "magickcore:bits_small_swap"
+    ],
+    "passes": [{
+        "name": "magickcore:bits",
+        "intarget": "magickcore:bits_small_final",
+        "outtarget": "magickcore:bits_small_swap",
+        "uniforms": [{
+            "name": "MosaicSize",
+            "values": [2.0]
+        }]
+    }, {
+        "name": "blit",
+        "intarget": "magickcore:bits_small_swap",
+        "outtarget": "magickcore:bits_small_final"
+    }]
+}

@@ -6,7 +6,11 @@
   "pages": [
     {
       "type": "text",
-      "text": "Multi Release is a type of point-type spell form. It has no collision itself, but can generate multiple post spells. The number of post spells changes with the spell's force and the angle of post spells changes with the range. It is important to note that the mana benefits of multi release decreases as the number increases, and if the post spell is a spell form, the mana benefits of the post form also decreases as the number increases."
+      "text": "Multi Release is a type of point-type spell form. It has no collision itself, but can generate multiple post spells. $(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Force of the form can increase the profit)$(li2)$(#00CED1)Force$(/t)$()$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(li2)$(#00CED1)Force：Decreases as form Force increases$()$(li2)$(#EE6363)Range：Decreases as form Force increases$()$(li2)$(#FFB90F)Duration：Decreases as form Force increases$()"
+    },
+    {
+      "type": "text",
+      "text": "The number of post spells changes with the spell's force and the angle of post spells changes with the range. It is important to note that the Magical Efficacy of multi release decreases as the number increases, and if the post spell is a spell form, the Magical Efficacy of the post form also decreases as the number increases."
     }
   ]
 }

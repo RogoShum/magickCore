@@ -7,8 +7,8 @@
         "name": "magickcore:opacity",
         "intarget": "magickcore:opacity_final",
         "outtarget": "magickcore:opacity_swap"
-    }, {
-        "name": "blit",
+    },{
+        "name": "magickcore:bits",
         "intarget": "magickcore:opacity_swap",
         "outtarget": "magickcore:opacity_final"
     }]

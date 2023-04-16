@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.client.item.ManaCapacityRenderer;
-import com.rogoshum.magickcore.client.item.SpiritCrystalItemRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ManaCapacityEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -44,7 +43,7 @@ public class ManaCapacityItem extends EntityItem {
             manaCapacity = (ManaCapacityEntity) createEntity;
         Vec3 pos = Vec3.atCenterOf(blockpos);
         manaCapacity.setPos(pos.x, pos.y - 0.5, pos.z);
-        manaCapacity.setOwner(playerentity);
+        manaCapacity.setCaster(playerentity);
         if (playerentity == null || !playerentity.getAbilities().instabuild) {
             itemstack.shrink(1);
         }

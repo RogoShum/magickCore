@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.magick.ability;
 
+import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
 import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
@@ -80,31 +81,6 @@ public class StasisAbility{
         return ModBuffs.applyBuff(context.victim, LibBuff.SLOW, context.tick, context.force, false);
     }
 
-    public static boolean applyToolElement(MagickContext context) {
-        int level = (int) context.force;
-        if(!(context.caster instanceof LivingEntity)) return false;
-        LivingEntity entity = (LivingEntity) context.caster;
-
-        boolean worked = false;
-        List<Entity> list = entity.level.getEntities(entity, entity.getBoundingBox().inflate(level * 2));
-        for (Entity entity1 : list) {
-            Vec3 dir = entity1.position().add(0, entity1.getBbHeight() * 0.5, 0).subtract(entity.position().add(0, entity.getBbHeight() * 0.5, 0)).normalize();
-
-            if(dir.dot(entity.getLookAngle()) > 0.3 && !MagickReleaseHelper.sameLikeOwner(entity, entity1)) {
-                entity1.setDeltaMovement(entity1.getDeltaMovement().scale(Math.pow(0.7, level)));
-                worked = true;
-            }
-        }
-
-        if(worked && entity.tickCount % 20 == 0) {
-            ElementToolData tool = ExtraDataUtil.elementToolData(entity);
-            if (tool != null) {
-                tool.consumeElementOnTool(entity, LibElements.STASIS);
-            }
-        }
-        return true;
-    }
-
     public static boolean superEntity(MagickContext context) {
         if(context.caster == null) return false;
         SpawnContext spawnContext = new SpawnContext();
@@ -126,9 +102,10 @@ public class StasisAbility{
                 ((ServerLevel)context.world).setWeatherParameters(0, 6000, true, false);
             }
         }
-        if(!(context.victim instanceof LivingEntity) || context.world.isClientSide) return false;
+
+        if(context.victim instanceof IManaEntity || context.world.isClientSide) return false;
         PhantomEntity phantom = new PhantomEntity(ModEntities.PHANTOM.get(), context.world);
-        phantom.setEntity((LivingEntity) context.victim);
+        phantom.setEntity(context.victim);
         phantom.setPos(context.victim.getX(), context.victim.getY(), context.victim.getZ());
         phantom.spellContext().tick(context.tick * 2);
         context.world.addFreshEntity(phantom);

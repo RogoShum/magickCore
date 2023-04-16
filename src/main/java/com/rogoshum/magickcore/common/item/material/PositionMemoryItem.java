@@ -12,7 +12,6 @@ import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
@@ -42,6 +41,11 @@ public class PositionMemoryItem extends BaseItem implements IManaMaterial {
     @Override
     public boolean disappearAfterRead() {
         return false;
+    }
+
+    @Override
+    public boolean singleMaterial() {
+        return true;
     }
 
     @Override

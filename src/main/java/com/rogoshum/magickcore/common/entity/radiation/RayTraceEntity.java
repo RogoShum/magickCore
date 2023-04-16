@@ -70,8 +70,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
             target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(direction.scale(0.5)), direction, getLength(), false);
-        } else if (getOwner() != null) {
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(getOwner().getLookAngle().scale(0.5)), getOwner().getLookAngle(), getLength(), false);
+        } else if (getCaster() != null) {
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(getCaster().getLookAngle().scale(0.5)), getCaster().getLookAngle(), getLength(), false);
         }
 
         List<Entity> list = new ArrayList<>();
@@ -90,8 +90,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
             result = this.world().clip(new ClipContext(this.position(), this.position().add(direction.normalize().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
-        } else if (getOwner() != null) {
-            result = this.world().clip(new ClipContext(this.position(), this.position().add(getOwner().getLookAngle().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+        } else if (getCaster() != null) {
+            result = this.world().clip(new ClipContext(this.position(), this.position().add(getCaster().getLookAngle().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         }
 
         if(result != null && result.getType() != HitResult.Type.MISS){
@@ -117,8 +117,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
         Vec3 dir = Vec3.ZERO;
         if(spellContext().containChild(LibContext.DIRECTION))
             dir = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-        else if (getOwner() != null)
-            dir = getOwner().getLookAngle().normalize();
+        else if (getCaster() != null)
+            dir = getCaster().getLookAngle().normalize();
         target = target.add(dir.scale(getLength()));
 
         Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.position(), dir, getLength());

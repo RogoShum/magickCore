@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.item.placeable;
 
 import com.rogoshum.magickcore.client.item.ContextPointerRenderer;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -47,7 +46,7 @@ public class ContextPointerItem extends EntityItem {
             contextPointer = (ContextPointerEntity) createEntity;
         Vec3 pos = Vec3.atCenterOf(blockpos);
         contextPointer.setPos(pos.x, pos.y - 0.5, pos.z);
-        contextPointer.setOwner(playerentity);
+        contextPointer.setCaster(playerentity);
         if (playerentity == null || !playerentity.getAbilities().instabuild) {
             itemstack.shrink(1);
         }

@@ -5,8 +5,11 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.client.entity.easyrender.projectile.ElementSoulRenderer;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
@@ -75,12 +78,16 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
 
     @Override
     public void update() {
+        if(RenderHelper.showDebug() && entity instanceof IManaEntity)
+            updateSpellContext();
+    }
+
+    @Override
+    public void updatePosition() {
         Vec3 vec = getEntityRenderVector(Minecraft.getInstance().getFrameTime());
         x = vec.x;
         y = vec.y;
         z = vec.z;
-        if(RenderHelper.showDebug() && entity instanceof IManaEntity)
-            updateSpellContext();
     }
 
     public void baseOffset(PoseStack matrixStackIn) {
@@ -91,6 +98,12 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender{
 
     @Override
     public boolean alive() {
+        if(entity instanceof ManaProjectileEntity
+            && ((ManaProjectileEntity) entity).spellContext().containChild(LibContext.SELF)
+            && !(this instanceof ElementSoulRenderer)) {
+            MagickCore.proxy.addRenderer(() -> new ElementSoulRenderer((ManaProjectileEntity) this.entity));
+            return false;
+        }
         return entity.isAlive() && entity.isAddedToWorld() && entity.level == Minecraft.getInstance().level;
     }
 

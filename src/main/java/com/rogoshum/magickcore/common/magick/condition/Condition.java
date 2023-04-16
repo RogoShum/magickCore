@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.magick.condition;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.TargetType;
 import net.minecraft.nbt.CompoundTag;
 

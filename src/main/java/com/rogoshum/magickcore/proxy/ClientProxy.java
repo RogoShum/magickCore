@@ -13,7 +13,6 @@ import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.render.RenderThread;
 import com.rogoshum.magickcore.client.element.*;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.client.shader.LightShaderManager;
 import com.rogoshum.magickcore.client.tileentity.*;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
@@ -33,20 +32,17 @@ import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.ParticleStatus;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-import java.awt.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -147,10 +143,16 @@ public class ClientProxy implements IProxy {
 
 	public void checkThread() {
 		if(magickThread == null || magickThread.isInterrupted() || !magickThread.isAlive() || magickThread.getState().equals(Thread.State.WAITING) || magickThread.getState().equals(Thread.State.BLOCKED)) {
-			if(magickThread != null && magickThread.isInterrupted())
-				MagickCore.LOGGER.info("Task Thread Interrupted");
-			if(magickThread != null && magickThread.getState().equals(Thread.State.BLOCKED))
-				MagickCore.LOGGER.info("Task Thread BLOCKED");
+			if(magickThread != null) {
+				if(magickThread.isInterrupted())
+					MagickCore.LOGGER.info("Task Thread Interrupted");
+				if(magickThread.getState().equals(Thread.State.BLOCKED))
+					MagickCore.LOGGER.info("Task Thread BLOCKED");
+				if(!magickThread.isAlive())
+					MagickCore.LOGGER.info("Task Thread Dead");
+				if(magickThread.getState().equals(Thread.State.WAITING))
+					MagickCore.LOGGER.info("Task Thread Waiting");
+			}
 			createThread();
 		}
 	}
@@ -170,7 +172,6 @@ public class ClientProxy implements IProxy {
 
 	public void registerHandlers() {
 		MinecraftForge.EVENT_BUS.register(new RenderEvent());
-		MinecraftForge.EVENT_BUS.register(new LightShaderManager());
 		MinecraftForge.EVENT_BUS.addListener(event::onSetupShaders);
 		MinecraftForge.EVENT_BUS.addListener(event::onRenderShaders);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
@@ -203,6 +204,8 @@ public class ClientProxy implements IProxy {
 		ManaBuffHUD.addBuffTexture(LibBuff.SLOW, new ResourceLocation("textures/mob_effect/slowness.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.RADIANCE_WELL, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/radiance_well.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
+		ManaBuffHUD.addBuffTexture(LibBuff.BOTAN, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/botan.png"));
+		ManaBuffHUD.addBuffTexture(LibBuff.THORNS, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/thorns.png"));
 	}
 
 	public void registerEntityRenderer(FMLClientSetupEvent event) {
@@ -252,7 +255,7 @@ public class ClientProxy implements IProxy {
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColor color = (stack, p_getColor_2_) -> {
 			if(NBTTagHelper.hasElement(stack)) {
-				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getColor().getDecimalColor();
+				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().getDecimalColor();
 			}
 			return 	16777215;
 		};
@@ -275,13 +278,13 @@ public class ClientProxy implements IProxy {
 	}
 
 	public void initBlockRenderer() {
-		BlockEntityRenderers.register(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
+		//BlockEntityRenderers.register(ModTileEntities.MAGICK_CRAFTING_TILE_ENTITY.get(), com.rogoshum.magickcore.client.tileentity.MagickCraftingRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.MAGICK_CRAFTING.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.SPIRIT_CRYSTAL_TILE_ENTITY.get(), SpiritCrystalRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
-		BlockEntityRenderers.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
+		//BlockEntityRenderers.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.cutout());
@@ -299,6 +302,9 @@ public class ClientProxy implements IProxy {
 		putElementRendererIn(LibElements.STASIS, new StasisRenderer());
 		putElementRendererIn(LibElements.WITHER, new WitherRenderer());
 		putElementRendererIn(LibElements.TAKEN, new TakenRenderer());
+
+		putElementRendererIn(LibElements.PSI, new PsiRenderer());
+		putElementRendererIn(LibElements.BOTANIA, new BotaniaRenderer());
 	}
 
 	public void addMagickParticle(LitParticle par) {

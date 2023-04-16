@@ -2,13 +2,9 @@ package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickElement;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
@@ -100,7 +96,7 @@ public class ChainEntity extends ManaPointEntity {
         super.tick();
 
         if(victimEntity == null && !level.isClientSide) {
-            List<Entity> entities = level.getEntities(this, getBoundingBox(), null);
+            List<Entity> entities = level.getEntities(this, getBoundingBox(), Entity::isAlive);
             for (Entity entity : entities) {
                 if(suitableEntity(entity)) {
                     victimEntity = entity;
@@ -237,7 +233,7 @@ public class ChainEntity extends ManaPointEntity {
         if(context.separator instanceof IManaEntity)
             victimEntity = context.separator;
         MagickContext magickContext = MagickContext.create(level, spellContext().postContext)
-                .caster(getOwner()).projectile(this)
+                .caster(getCaster()).projectile(this)
                 .victim(victimEntity).noCost();
         if(spellContext().containChild(LibContext.DIRECTION))
             magickContext.<MagickContext>replenishChild(spellContext().getChild(LibContext.DIRECTION));

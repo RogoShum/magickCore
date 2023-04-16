@@ -5,7 +5,19 @@ import net.minecraft.world.item.ItemStack;
 public interface IManaMaterial {
     boolean disappearAfterRead();
 
-    public int getManaNeed(ItemStack stack);
+    int getManaNeed(ItemStack stack);
 
-    public boolean upgradeManaItem(ItemStack stack, ISpellContext data);
+    boolean upgradeManaItem(ItemStack stack, ISpellContext data);
+
+    default boolean typeMaterial() {
+        return false;
+    }
+
+    default boolean elementMaterial() {
+        return false;
+    }
+
+    default boolean singleMaterial() {
+        return false;
+    }
 }

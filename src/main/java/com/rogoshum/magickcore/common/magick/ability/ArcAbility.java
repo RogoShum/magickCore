@@ -67,7 +67,7 @@ public class ArcAbility{
                     if(!context.victim.level.isClientSide) {
                         ManaStarEntity starEntity = new ManaStarEntity(ModEntities.MANA_STAR.get(), context.victim.level);
 
-                        starEntity.setOwner(context.caster);
+                        starEntity.setCaster(context.caster);
                         starEntity.setPos(context.victim.getX(), context.victim.getY() + context.victim.getBbHeight() / 2, context.victim.getZ());
                         Vec3 motion = entity1.position().add(0, entity1.getBbHeight() / 2, 0).subtract(starEntity.position()).normalize();
                         starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
@@ -118,7 +118,7 @@ public class ArcAbility{
                     if(applyTypeContext.applyType == ApplyType.DIFFUSION)
                         extract = true;
                 }
-                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 25;
+                int mana = (int) MagickReleaseHelper.singleContextMana(context) * 100;
                 if(!extract)
                     EnergyUtil.receiveEnergy(tile, mana);
                 else {

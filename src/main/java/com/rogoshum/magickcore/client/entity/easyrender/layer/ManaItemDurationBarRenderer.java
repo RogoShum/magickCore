@@ -11,6 +11,7 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.item.ItemEntity;
 import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
@@ -28,6 +29,11 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     }
 
     @Override
+    public boolean alive() {
+        return super.alive() && (entity.tickCount < 5 || entity.getItem().getItem() instanceof IManaData);
+    }
+
+    @Override
     public void baseOffset(PoseStack matrixStackIn) {
         super.baseOffset(matrixStackIn);
     }
@@ -36,13 +42,13 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
     public void update() {
         super.update();
 
-        if(RenderHelper.showDebug() && entity.getItem().getItem() instanceof IManaData)
-            updateSpellContext();
-        if(entity.getItem().getItem() instanceof IManaData && !entity.getItem().getItem().isBarVisible(entity.getItem())) {
+        if(entity.getItem().getItem() instanceof IManaData && entity.getItem().getItem().isBarVisible(entity.getItem())) {
             render = true;
             ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
-            color = data.spellContext().element.color();
+            color = data.spellContext().element.primaryColor();
             percentage = data.manaCapacity().getMana() / data.manaCapacity().getMaxMana();
+            if(RenderHelper.showDebug())
+                updateSpellContext();
         } else
             render = false;
     }
@@ -55,6 +61,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         RenderSystem.disableDepthTest();
         RenderSystem.disableTexture();
         RenderSystem.disableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
         matrixStackIn.translate(0, 0.5f, 0);

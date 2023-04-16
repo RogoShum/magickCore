@@ -11,6 +11,7 @@ public interface IEasyRender extends IPositionEntity {
     HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction();
     HashMap<RenderMode, Consumer<RenderParams>> getDebugFunction();
     void update();
+    void updatePosition();
     boolean alive();
 
     default boolean forceRender() {

@@ -9,6 +9,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.Optional;
 
 public class SpawnContext extends ChildContext {
+    public static final Type<SpawnContext> TYPE = new Type<>(LibContext.SPAWN);
     public EntityType<?> entityType = null;
 
     @Override
@@ -40,8 +41,8 @@ public class SpawnContext extends ChildContext {
     }
 
     @Override
-    public String getName() {
-        return LibContext.SPAWN;
+    public Type<SpawnContext> getType() {
+        return TYPE;
     }
 
     @Override

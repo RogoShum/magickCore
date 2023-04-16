@@ -11,10 +11,10 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 
 public class ConditionContext extends ChildContext{
+    public static final Type<ConditionContext> TYPE = new Type<>(LibContext.CONDITION);
     public HashSet<Condition<?>> conditions = new HashSet<>();
 
     public static ConditionContext create(Condition<?> condition) {
@@ -76,8 +76,8 @@ public class ConditionContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.CONDITION;
+    public Type<ConditionContext> getType() {
+        return TYPE;
     }
 
     @Override

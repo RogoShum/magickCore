@@ -6,8 +6,11 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.common.entity.pointed.ContextCreatorEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.init.ManaMaterials;
+import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.magick.ManaFactor;
@@ -18,9 +21,14 @@ import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.common.magick.context.child.SelfContext;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.common.magick.materials.Material;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -60,6 +68,48 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
                 return new ManaEnergyRenderer();
             }
         });
+    }
+
+    @Override
+    public boolean typeMaterial() {
+        return true;
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        if(entity.getThrower() != null && entity.level.getPlayerByUUID(entity.getThrower()) != null && entity.tickCount > 20) {
+            boolean upGround = true;
+            for (int i = 0; i < 2; ++i) {
+                if(entity.level.getBlockState(entity.blockPosition().offset(0, -i, 0)).canOcclude())
+                    upGround = false;
+            }
+            double speed = 0.043;
+            if(!upGround)
+                entity.push(0, speed, 0);
+            else {
+                entity.remove(Entity.RemovalReason.DISCARDED);
+                if(!entity.level.isClientSide) {
+                    ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.level);
+                    contextCreator.setPos(entity.getX(), entity.getY() - 0.5, entity.getZ());
+                    if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+                        String material = stack.getTag().getString("mana_material");
+                        Material manaMaterial = ManaMaterials.getMaterial(material);
+                        if(manaMaterial != ManaMaterials.NONE) {
+                            contextCreator.getInnerManaData().setMaterial(manaMaterial);
+                        }
+                    }
+                    upgradeManaItem(entity.getItem(), contextCreator.getInnerManaData());
+                    ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
+                    if(data.spellContext().containChild(LibContext.SPAWN)) {
+                        contextCreator.setEntityType(data.spellContext().<SpawnContext>getChild(LibContext.SPAWN).entityType);
+                    }
+                    entity.level.addFreshEntity(contextCreator);
+                    entity.playSound(SoundEvents.BEACON_ACTIVATE, 0.5f, 2.0f);
+                }
+            }
+        }
+
+        return false;
     }
 
     public static ManaFactor getBeneficialEnergy(EntityType<?> entityType) {
@@ -162,9 +212,29 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
         if(playerIn.level.isClientSide) return false;
-        if(playerIn instanceof Player && !((Player) playerIn).isCreative()) return false;
+        if(playerIn instanceof Player && !((Player) playerIn).isCreative()) {
+            ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(playerIn.level);
+            contextCreator.setPos(playerIn.getX(), playerIn.getY(), playerIn.getZ());
+            if(stack.hasTag() && stack.getTag().contains("mana_material")) {
+                String material = stack.getTag().getString("mana_material");
+                Material manaMaterial = ManaMaterials.getMaterial(material);
+                if(manaMaterial != ManaMaterials.NONE) {
+                    contextCreator.getInnerManaData().setMaterial(manaMaterial);
+                }
+            }
+            upgradeManaItem(stack, contextCreator.getInnerManaData());
+            ItemManaData data = ExtraDataUtil.itemManaData(stack);
+            if(data.spellContext().containChild(LibContext.SPAWN)) {
+                contextCreator.setEntityType(data.spellContext().<SpawnContext>getChild(LibContext.SPAWN).entityType);
+            }
+            if(playerIn.level.addFreshEntity(contextCreator)) {
+                playerIn.level.playSound(null, playerIn, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 2.0f);
+                stack.shrink(1);
+            }
+            return false;
+        }
         SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
-        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.level, item).caster(playerIn).tick(200).force(10.0f).range(10f).addChild(new TraceContext()));
+        MagickReleaseHelper.releaseMagick(MagickContext.create(playerIn.level, item).caster(playerIn).tick(200).force(10.0f).range(5f));
         return false;
     }
 
@@ -176,8 +246,11 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
             if(item.containChild(LibContext.SPAWN)) {
                 SpawnContext spawnContext = item.getChild(LibContext.SPAWN);
                 EntityType<?> type = spawnContext.entityType;
-                if(type.getRegistryName() != null) {
-                    AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, "entity_type_" + type.getRegistryName().getPath());
+                if(type != null) {
+                    ExtraDataUtil.playerTradeData((Player) entityIn).addUnlock(spawnContext.entityType);
+                    if(type.getRegistryName() != null) {
+                        AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, "entity_type_" + type.getRegistryName().getPath());
+                    }
                 }
             }
         }

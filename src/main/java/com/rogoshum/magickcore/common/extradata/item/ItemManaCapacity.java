@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 public class ItemManaCapacity extends ManaCapacity {
     private final ItemStack stack;
     public ItemManaCapacity(ItemStack stack) {
-        super(5000);
+        super(50000);
         this.stack = stack;
     }
 

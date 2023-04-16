@@ -129,7 +129,7 @@ public class PhantomEntity extends ManaProjectileEntity {
             this.setWidth(width);
     }
 
-    public void setEntity(LivingEntity entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 

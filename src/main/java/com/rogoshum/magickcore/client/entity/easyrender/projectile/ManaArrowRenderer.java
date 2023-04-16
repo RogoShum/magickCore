@@ -8,8 +8,6 @@ import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.ManaArrowEntity;
-import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
@@ -44,7 +42,7 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderLaserMid(BufferContext.create(params.matrixStack, params.buffer, TYPE)
-        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
+        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
         , 5);
     }
 
@@ -61,7 +59,7 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
         params.matrixStack.popPose();
 
         scale = 0.3f * entity.getBbWidth();
@@ -72,7 +70,7 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
     }
 
     @Override

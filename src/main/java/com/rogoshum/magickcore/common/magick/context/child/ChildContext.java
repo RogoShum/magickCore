@@ -8,10 +8,13 @@ public abstract class ChildContext {
     public abstract void deserialize(CompoundTag tag);
 
     public abstract boolean valid();
-    public abstract String getName();
+    public abstract Type<?> getType();
     public abstract String getString(int tab);
 
     public ApplyType getLinkType() {
         return ApplyType.NONE;
+    }
+
+    public record Type<T extends ChildContext>(String name) {
     }
 }

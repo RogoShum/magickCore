@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.function.Supplier;
 
 public class ManaOrbEntity extends ManaProjectileEntity {
-    private static final ManaFactor MANA_FACTOR = ManaFactor.create(0.5f, 1.0f, 1.0f);
+    private static final ManaFactor MANA_FACTOR = ManaFactor.create(1.0f, 1.0f, 1.0f);
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_orb.png");
     public ManaOrbEntity(EntityType<? extends ThrowableProjectile> type, Level worldIn) {
         super(type, worldIn);
@@ -44,7 +44,7 @@ public class ManaOrbEntity extends ManaProjectileEntity {
 
     @Override
     public float getSourceLight() {
-        return 3;
+        return 6;
     }
 
     @Override

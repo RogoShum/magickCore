@@ -15,6 +15,8 @@ public class ModDamages {
     private static final DamageSource stasis = new DamageSource(MagickCore.MOD_ID + "-stasis").bypassArmor().setMagic();
     private static final DamageSource wither = new DamageSource(MagickCore.MOD_ID + "-wither").bypassArmor().setMagic();
     private static final DamageSource taken = new DamageSource(MagickCore.MOD_ID + "-taken").bypassArmor().setMagic();
+    private static final DamageSource psi = new DamageSource(MagickCore.MOD_ID + "-psi").bypassArmor().damageHelmet().setMagic();
+    private static final DamageSource botania = new DamageSource(MagickCore.MOD_ID + "-botania").bypassArmor().setNoAggro().setMagic();
     private static final DamageSource air = new DamageSource(MagickCore.MOD_ID + "-air").bypassArmor().setMagic();
 
     public static DamageSource getArcDamage() { return arc; }
@@ -69,6 +71,24 @@ public class ModDamages {
             return new IndirectEntityDamageSource(taken.getMsgId(), projectile, entity).setProjectile().bypassArmor().setMagic();
         else
             return new IndirectEntityDamageSource(taken.getMsgId(), projectile, entity).bypassArmor().setMagic();
+    }
+
+    public static DamageSource getPsiDamage() { return psi; }
+    public static DamageSource applyEntityPsiDamage(Entity entity) { return new EntityDamageSource(psi.getMsgId(), entity).damageHelmet().bypassArmor().setMagic(); }
+    public static DamageSource applyProjectilePsiDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof Projectile)
+            return new IndirectEntityDamageSource(psi.getMsgId(), projectile, entity).damageHelmet().setProjectile().bypassArmor().setMagic();
+        else
+            return new IndirectEntityDamageSource(psi.getMsgId(), projectile, entity).damageHelmet().bypassArmor().setMagic();
+    }
+
+    public static DamageSource getBotaniaDamage() { return botania; }
+    public static DamageSource applyEntityBotaniaDamage(Entity entity) { return new EntityDamageSource(botania.getMsgId(), entity).setNoAggro().bypassArmor().setMagic(); }
+    public static DamageSource applyProjectileBotaniaDamage(Entity entity, Entity projectile) {
+        if(projectile instanceof Projectile)
+            return new IndirectEntityDamageSource(botania.getMsgId(), projectile, entity).setNoAggro().setProjectile().bypassArmor().setMagic();
+        else
+            return new IndirectEntityDamageSource(botania.getMsgId(), projectile, entity).setNoAggro().bypassArmor().setMagic();
     }
 
     public static DamageSource getAirDamage() { return air; }

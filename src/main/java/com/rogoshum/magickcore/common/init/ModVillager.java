@@ -2,13 +2,17 @@ package com.rogoshum.magickcore.common.init;
 
 import com.google.common.collect.ImmutableSet;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.entity.ai.sensor.VillagerHostilesSensor;
+import com.rogoshum.magickcore.common.extradata.entity.PlayerTradeUnlock;
 import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import net.minecraft.Util;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.sounds.SoundEvent;
@@ -17,9 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -35,47 +37,75 @@ public class ModVillager {
             () -> new VillagerProfession("mage", MAGE_POI.get(), ImmutableSet.of(), ImmutableSet.of(), (SoundEvent)null));
 
     public static final RegistryObject<SensorType<Sensor<? super LivingEntity>>> VILLAGER_HOSTILES = SENSOR_TYPES.register("villager_hostiles", () -> new SensorType<>(VillagerHostilesSensor::new));
-    private static final List<RegistryObject<?>> TradList = new ArrayList<>();
+    private static final List<EntityType<?>> TradList = new ArrayList<>();
 
     public static void init() {
         TradList.clear();
-        TradList.add(ModEntities.BUBBLE);
-        TradList.add(ModEntities.RAY_TRACE);
-        TradList.add(ModEntities.CONE);
-        TradList.add(ModEntities.SPHERE);
-        TradList.add(ModEntities.SQUARE);
-        TradList.add(ModEntities.SECTOR);
-        TradList.add(ModEntities.ENTITY_CAPTURE);
-        TradList.add(ModEntities.LEAF);
-        TradList.add(ModEntities.WIND);
-        TradList.add(ModEntities.RAY);
-        TradList.add(ModEntities.RED_STONE);
-        TradList.add(ModEntities.MANA_STAR);
-        TradList.add(ModEntities.MANA_LASER);
-        TradList.add(ModEntities.MANA_ORB);
-        TradList.add(ModEntities.BLOOD_BUBBLE);
-        TradList.add(ModEntities.GRAVITY_LIFT);
-        TradList.add(ModEntities.REPEATER);
-        TradList.add(ModEntities.JEWELRY_BAG);
-        TradList.add(ModEntities.SPIN);
-        TradList.add(ModEntities.CHAIN);
-        TradList.add(ModEntities.MANA_SPHERE);
-        TradList.add(ModEntities.SHADOW);
-        TradList.add(ModEntities.MULTI_RELEASE);
-        TradList.add(ModEntities.CHARGE);
+        TradList.add(ModEntities.BUBBLE.get());
+        TradList.add(ModEntities.RAY_TRACE.get());
+        TradList.add(ModEntities.CONE.get());
+        TradList.add(ModEntities.SPHERE.get());
+        TradList.add(ModEntities.SQUARE.get());
+        TradList.add(ModEntities.SECTOR.get());
+        TradList.add(ModEntities.ENTITY_CAPTURE.get());
+        TradList.add(ModEntities.LEAF.get());
+        TradList.add(ModEntities.WIND.get());
+        TradList.add(ModEntities.RAY.get());
+        TradList.add(ModEntities.RED_STONE.get());
+        TradList.add(ModEntities.MANA_STAR.get());
+        TradList.add(ModEntities.MANA_LASER.get());
+        TradList.add(ModEntities.MANA_ORB.get());
+        TradList.add(ModEntities.BLOOD_BUBBLE.get());
+        TradList.add(ModEntities.GRAVITY_LIFT.get());
+        TradList.add(ModEntities.REPEATER.get());
+        TradList.add(ModEntities.JEWELRY_BAG.get());
+        TradList.add(ModEntities.SPIN.get());
+        TradList.add(ModEntities.CHAIN.get());
+        TradList.add(ModEntities.MANA_SPHERE.get());
+        TradList.add(ModEntities.SHADOW.get());
+        TradList.add(ModEntities.MULTI_RELEASE.get());
+        TradList.add(ModEntities.CHARGE.get());
+        TradList.add(ModEntities.LAMP.get());
+        TradList.add(ModEntities.ARROW.get());
+    }
+
+    private static ItemStack CRYSTAL;
+
+    public static List<MerchantOffer> getPlayerTrades(Player player) {
+        List<MerchantOffer> offers = new ArrayList<>();
+        PlayerTradeUnlock lock = ExtraDataUtil.playerTradeData(player);
+        for(EntityType<?> type : lock.getUnLock()) {
+            if(TradList.contains(type))
+                offers.add(new MerchantOffer(getCrystal()
+                        , getEntityTypeItem(type)
+                        , 127, 5, 0.0f));
+        }
+        return offers;
+    }
+
+    public static ItemStack getCrystal() {
+        if(CRYSTAL == null)
+            CRYSTAL = Util.make(new ItemStack(ModItems.SPIRIT_CRYSTAL.get()), stack -> stack.setCount(5));
+        return CRYSTAL;
+    }
+
+    public static ItemStack getEntityTypeItem(EntityType<?> type) {
+        ItemStack entityType = new ItemStack(ModItems.ENTITY_TYPE.get());
+        ExtraDataUtil.itemManaData(entityType, itemManaData -> {
+            itemManaData.spellContext().applyType(ApplyType.SPAWN_ENTITY);
+            itemManaData.spellContext().addChild(SpawnContext.create(type));
+        });
+        return entityType;
+    }
+
+    public static EntityType<?> getRandomType() {
+        return TradList.get(MagickCore.rand.nextInt(TradList.size()));
     }
 
     public static class EntityTypeTrade implements VillagerTrades.ItemListing {
         @Override
         public MerchantOffer getOffer(Entity trader, Random rand) {
-            int count = rand.nextInt(3) + 1;
-            ItemStack entityType = new ItemStack(ModItems.ENTITY_TYPE.get());
-            ExtraDataUtil.itemManaData(entityType, itemManaData -> {
-                itemManaData.spellContext().addChild(SpawnContext.create((EntityType<?>) TradList.get(rand.nextInt(TradList.size())).get()));
-            });
-            ItemStack crystal = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
-            crystal.setCount(count);
-            return new MerchantOffer(crystal, entityType, 127, rand.nextInt(15), 0.2f);
+            return new MerchantOffer(getCrystal(), getEntityTypeItem(getRandomType()), 127, rand.nextInt(15), 0.0f);
         }
     }
 }

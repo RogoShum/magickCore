@@ -24,7 +24,7 @@ public class SolarRenderer extends ElementRenderer {
     private ResourceLocation[] particle_sprite = new ResourceLocation[3];
 
     public SolarRenderer() {
-        super(ModElements.SOLAR_COLOR);
+        super(ModElements.SOLAR);
         fire[0] = fire_0;
         fire[1] = fire_1;
         fire[2] = fire_2;

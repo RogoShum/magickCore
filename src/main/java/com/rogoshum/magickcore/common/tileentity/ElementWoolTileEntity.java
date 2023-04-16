@@ -22,7 +22,6 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,7 +127,7 @@ public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEn
 
     @Override
     public Color getColor() {
-        return MagickCore.proxy.getElementRender(this.eType).getColor();
+        return MagickCore.proxy.getElementRender(this.eType).getPrimaryColor();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.rogoshum.magickcore.common.tileentity;
 
+import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.client.tileentity.easyrender.MaterialJarRenderer;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import net.minecraft.core.BlockPos;
@@ -30,6 +32,12 @@ public class MaterialJarTileEntity extends BlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         extractTag(tag);
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        MagickCore.proxy.addRenderer(() -> new MaterialJarRenderer(this));
     }
 
     @Override

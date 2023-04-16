@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.rogoshum.magickcore.common.magick.MagickElement;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class ElementRenderer {
@@ -46,10 +46,12 @@ public abstract class ElementRenderer {
     private ResourceLocation[] wave = new ResourceLocation[3];
     private ResourceLocation[] laser = new ResourceLocation[2];
     private ResourceLocation[] wind = new ResourceLocation[4];
-    protected Color color = Color.create(1, 1, 1);
+    protected Color primaryColor = Color.create(1, 1, 1);
+    protected Color secondaryColor = Color.create(1, 1, 1);
 
-    public ElementRenderer(Color color) {
-        this.color = color;
+    public ElementRenderer(MagickElement element) {
+        this.primaryColor = element.primaryColor();
+        this.secondaryColor = element.secondaryColor();
         ring[0] = ring_0;
         ring[1] = ring_1;
         ring[2] = ring_2;
@@ -73,7 +75,7 @@ public abstract class ElementRenderer {
     }
 
     public void renderLaserParticle(PoseStack matrix, BufferBuilder bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
-        RenderHelper.renderLaserParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedLaserGlint(res, laserScale)), new RenderHelper.RenderContext(alpha, this.color), RenderHelper.EmptyVertexContext, length);
+        RenderHelper.renderLaserParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedLaserGlint(res, laserScale)), new RenderHelper.RenderContext(alpha, this.primaryColor), RenderHelper.EMPTY_VERTEX_CONTEXT, length);
     }
 
     public ResourceLocation getRingTexture() {
@@ -113,8 +115,11 @@ public abstract class ElementRenderer {
 
     public void tickParticle(LitParticle particle) {}
 
-    public Color getColor() {
-        return this.color;
+    public Color getPrimaryColor() {
+        return this.primaryColor;
+    }
+    public Color getSecondaryColor() {
+        return this.secondaryColor;
     }
 
     public float getParticleGravity()

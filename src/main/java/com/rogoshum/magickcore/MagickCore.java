@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore;
 
+import com.rogoshum.magickcore.client.init.ClientConfig;
 import com.rogoshum.magickcore.client.init.ModKeyBind;
 import com.rogoshum.magickcore.client.integration.jei.RecipeCollector;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -91,12 +92,12 @@ public class MagickCore {
         ModVillager.VILLAGER_PROFESSIONS.register(eventBus);
         ModVillager.SENSOR_TYPES.register(eventBus);
         ModLoots.LOOTS.register(eventBus);
-        ModVillager.init();
         ModBuffs.initBuff();
         ManaMaterials.init();
-        ModRegistry.init();
         Networking.registerMessage();
         modCompatibility.put("curios", "com.rogoshum.magickcore.common.integration.curios.CuriosLoader");
+        modCompatibility.put("psi", "com.rogoshum.magickcore.common.integration.psi.PsiLoader");
+        modCompatibility.put("botania", "com.rogoshum.magickcore.common.integration.botania.BotaniaLoader");
         FMLLoader.getLoadingModList().getMods().forEach( modInfo -> {
             modCompatibility.forEach( (key, value) -> {
                 if(modInfo.getModId().equals(key)) {
@@ -109,7 +110,9 @@ public class MagickCore {
             });
         });
         modLoader.values().forEach(additionLoader -> additionLoader.onLoad(eventBus));
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, com.rogoshum.magickcore.common.init.ModConfig.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
+        ModRegistry.init();
         //GeckoLib.initialize();
     }
 
@@ -134,6 +137,7 @@ public class MagickCore {
             RegisterEvent.registerOres();
             LivingLootsEvent.init();
             modLoader.values().forEach(additionLoader -> additionLoader.setup(event));
+            ModVillager.init();
         });
     }
 

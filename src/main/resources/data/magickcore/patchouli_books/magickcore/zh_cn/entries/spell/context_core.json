@@ -8,7 +8,7 @@
       "type": "spotlight",
       "title": "法术核心",
       "item": "magickcore:context_core",
-      "text": "法术核心是制作法术的关键所在，将一个法术核心丢到地上之后，核心会上升几格高度，随后展开。之后我们需要往里面丢一些魔力材料的掉落物，而法术的属性就取决于材料的种类和数量，但是法术的基础属性不会超过法术核心属性的数值。"
+      "text": "法术核心是制作法术的关键所在，将一个法术核心丢到地上之后，核心会上升几格高度，随后展开。之后我们需要往里面丢一些魔力材料的掉落物，而法术的属性就取决于材料的种类和数量，但是$(#ff0000)法术的基础属性不会超过法术核心属性的数值。"
     },
     {
       "type": "image",
@@ -24,38 +24,63 @@
     },
     {
       "type": "text",
-      "text": "一些生物掉落物或者自然材料都具有提升法术属性的能力，不过需要先转换成魔力材料。像腐肉、骨头、蜘蛛眼、火药、萤石粉、红石粉、烈焰棒、地狱疣等材料都可以拿来用。"
+      "text": "一些生物掉落物或者自然材料都具有提升法术属性的能力，不过需要先在工作台处转换成魔力材料。像腐肉、骨头、蜘蛛眼、火药、萤石粉、红石粉、烈焰棒、地狱疣等材料都可以拿来用。"
     },
     {
       "type": "text",
       "text": "在进行法术构造前，我们需要先了解魔力材料对法术的属性都有什么影响，这些知识可以让我们更好的去制作和完善一个法术。$(br2)在魔力从生命体内释放出来的时候，会经过附着在生命身上的各种装备，在经过魔力材料时可以改变魔力的属性，从而变化成各种形态。"
     },
     {
-      "type": "text",
+      "type": "spotlight",
+      "item": "magickcore:mana_energy{item_extra_data:{APPLY_TYPE:\"none\",CHILD_CONTEXT:{},ELEMENT:\"origin\",FORCE:1.0f,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:50000.0f},POST:{},RANGE:1.0f,TICK:20,disable:0b,haveMagickContext:0b}}",
       "text": "一些材料可以改变魔力的功能、一些材料可以改变魔力的基础属性、一些材料可以提供额外的附着属性。$(br2)萤石粉可以转换为强度魔力能量，增幅魔力的基础强度；红石粉可以转换为持续时间能量，提高魔力的持续时间；烈焰粉和烈焰棒可以转换为魔力的范围，增加魔力的触及范围。这些都属于魔力的基础属性。"
     },
     {
-      "type": "text",
+      "type": "spotlight",
+      "item": "magickcore:mana_spider_eye",
       "text": "之后我们还需要改变魔力的功能，魔力的功能由两部分组成：元素属性和施加类型。$(br2)元素属性决定了魔力的功能偏向，每种元素都有擅长的方面，比如烈焰元素擅长燃烧和恢复，电弧元素擅长调整能量和速度。施加类型决定了魔力的作用类型，魔力蜘蛛眼提供减益作用、魔力地狱疣提供攻击作用。"
     },
     {
-      "type": "text",
-      "text": "其中比较特殊的施加类型是法术形态，法术形态不提供任何作用效果，而是改变法术的运作方式，让法术以投掷物、点状物等形式生成在世界中。法术形态也是施加类型的一种，单个法术是无法同时实现形态和攻击、增益、减益等施加类型的结合的。"
+      "type": "spotlight",
+      "title": "法术的基础属性和法术功能",
+      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"arc\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:120,RANGE:0.0f}}",
+      "text": "比如我想做一个电弧元素的攻击法术，我们可以往里面丢一个电弧核心(法术为电弧元素)、魔力地狱疣（法术类型转换为攻击）、一些魔力能量，就可以做出来一个电弧攻击法术。$(br2)成型的法术也叫做完备法术，完备法术是承载了各种材料的结晶，没法单独使用，但是可以利用工具引导出魔法。"
     },
     {
       "type": "text",
-      "text": "总的来说，我们在构造法术之前需要先想清楚法术都需要什么属性，然后拿到相应材料，把这些材料丢到展开的法术核心中，这样子就完成了法术的完整构造。$(br2)等到核心里面的材料达到我们满意的程度之后，我们可以用魔棒右键核心，完成这一次的核心编译，核心会被压缩回原来的大小，变成完备法术。"
+      "text": "$(br)法术分为功能法术和形态法术。功能法术可以起到攻击、增益、减益等效果。形态法术不提供任何作用效果，而是改变法术的运作方式，让法术以投掷物、点状物等形式生成在世界中。通常来讲我们需要使用形态法术衔接功能法术，利用魔力投掷物来传递功能。"
+    },
+    {
+      "type": "spotlight",
+      "title": "魔力箭形态",
+      "item": "magickcore:entity_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},APPLY_TYPE:\"none\",TICK:0,RANGE:0.0f}}",
+      "text": "魔力箭就是一种法术形态，可以被制作为形态法术，只需要右键使用或者把它丢在地上，就会展开形态法术的制作范围，我们也可以往里面丢一些材料进去，定义形态的属性。"
+    },
+    {
+      "type": "image",
+      "images": ["magickcore:textures/book_image/entity_type.png"],
+      "text": "展开后的法术形态",
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "text": "魔力箭是一种投掷类魔法形态。$(br)$(t:提高形态的这些数值可以增加收益)$(li)$(#6C7B8B)成长需求：$(/t)$(t:提高形态的范围可以增加收益)$(li2)$(#EE6363)范围$(/t)$()$(br)$(t:法术数值对功能法术的影响)$(li)$(#6C7B8B)魔法效益：$(/t)$(t:功能法术的强度跟随魔力箭的飞行速度而变化。)$(li2)$(#00CED1)强度：跟随飞行速度变化$(/t)$()$(t:功能法术的范围不受影响)$(li2)$(#EE6363)范围：1.0$(/t)$()$(t:功能法术的持续时间不受影响)$(li2)$(#FFB90F)持续时间：1.0$(/t)$()$(br2)范围属性会影响魔力箭的最大速度值。"
+    },
+    {
+      "type": "spotlight",
+      "title": "魔力箭形态",
+      "item": "magickcore:magick_context{item_extra_data:{APPLY_TYPE:\"spawn_entity\",CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}},ELEMENT:\"origin\",FORCE:0.0f,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:50000.0f},POST:{APPLY_TYPE:\"attack\",CHILD_CONTEXT:{},ELEMENT:\"arc\",FORCE:5.0f,POST:{},RANGE:0.0f,TICK:0},RANGE:3.0f,TICK:120,disable:0b,haveMagickContext:0b}}",
+      "text": "接着我们就可以利用法术指针把做好的形态法术和功能法术结合在一起。这个法术的效果是释放一个魔力箭，被魔力箭触碰到的方块或者实体会被施加电弧攻击效果。将法术核心压缩成完备法术是一个不可逆的操作，想要实现其他效果需要重新消耗材料制作完备法术。"
+    },
+    {
+      "type": "text",
+      "text": "总的来说，我们在构造法术之前需要先想清楚法术都需要什么属性，然后拿到相应材料，把这些材料丢到展开的法术核心中，这样子就完成了法术的属性填充。$(br2)等到核心里面的材料达到我们满意的程度之后，我们可以用魔棒右键核心，完成这一次的核心编译，核心会被压缩回原来的大小，变成完备法术。"
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/context_core_full.png"],
+      "text": "一个装满了材料的法术核心，按下F3可以查看详细属性。",
       "border": "true"
-    },
-    {
-      "type": "spotlight",
-      "title": "完备法术",
-      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,POST:{},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"buff\",TICK:120,RANGE:0.0f}}",
-      "text": "比如这个法术的效果就是施加6秒的增益效果，但是强度值为0，所以说法术虽然会生效，但是实际上并没有什么用处，而将法术核心压缩成完备法术是一个不可逆的操作，想要实现增益效果需要重新消耗材料制作完备法术。$(br2)完备法术是承载了各种材料的结晶，魔力会经过完备法术的引导最终成型。"
     }
   ]
 }

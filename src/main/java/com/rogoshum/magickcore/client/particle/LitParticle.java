@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.particle;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
@@ -15,11 +16,9 @@ import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -27,7 +26,6 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class LitParticle implements ILightSourceEntity, IEasyRender {
     public boolean render = true;
@@ -80,7 +78,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         this.setPosition(position.x, position.y, position.z);
         this.maxAge = Math.max(maxAge, 2);
         this.alpha = alpha;
-        this.color = renderer.getColor();
+        this.color = renderer.getSecondaryColor();
         this.particleGravity = renderer.getParticleGravity();
         this.canCollide = renderer.getParticleCanCollide();
         this.renderer = renderer;
@@ -333,7 +331,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public RenderMode getRenderMode() {
-        type = isGlow ? RenderHelper.getTexedParticleGlow(texture) : RenderHelper.getTexedParticle(texture);
+        type = isGlow ? RenderHelper.getTexedParticleGlow(texture, 0) : RenderHelper.getTexedParticle(texture, 0);
         return new RenderMode(type, shader);
     }
 
@@ -348,12 +346,13 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-        if(shakeLimit <= 0.0f) {
+
+        if(shakeLimit <= 0) {
             RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
         } else if(quad != null && color != null) {
             Matrix4f matrix4f = matrixStackIn.last().pose();
             BufferBuilder buffer = renderParams.buffer;
-            BufferContext context = BufferContext.create(matrixStackIn, buffer, type);
+            BufferContext context = BufferContext.create(matrixStackIn, buffer, type).useShader(shader);
             RenderHelper.begin(context);
             try {
                 buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(1.0f, 1.0f)
@@ -370,6 +369,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
             RenderHelper.finish(context);
         }
+
         matrixStackIn.popPose();
     }
 
@@ -377,7 +377,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     public void update() {
         if (this.texture == null) return;
 
-        renderAlpha = RenderHelper.isRenderingShader() ? getAlpha(this.alpha) * 0.1f : getAlpha(this.alpha);
+        renderAlpha = getAlpha(this.alpha);
         Vec3[] QuadVector = RenderHelper.QuadVector;
         Vec3 V0 = QuadVector[0];
         Vec3 V1 = QuadVector[1];
@@ -400,14 +400,16 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         Quad[0] = V0; Quad[1] = V1; Quad[2] = V2; Quad[3] = V3;
         quad = Quad;
         renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
+    }
 
+    @Override
+    public void updatePosition() {
         float partialTicks = Minecraft.getInstance().getFrameTime();
         if(Minecraft.getInstance().isPaused()) {
             partialTicks = 0;
         }
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-
         double x = this.lPosX + (this.posX - this.lPosX) * partialTicks;
         double y = this.lPosY + (this.posY - this.lPosY) * partialTicks;
         double z = this.lPosZ + (this.posZ - this.lPosZ) * partialTicks;
@@ -451,7 +453,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     @Override
     public Color getColor() {
-        return renderer.getColor();
+        return renderer.getPrimaryColor();
     }
 
     @Override

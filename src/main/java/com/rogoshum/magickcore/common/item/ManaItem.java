@@ -1,11 +1,8 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
-import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
@@ -13,7 +10,6 @@ import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.TooltipFlag;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,9 +28,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import net.minecraft.world.item.Item.Properties;
 
 public abstract class ManaItem extends BaseItem implements IManaData {
     public ManaItem(Properties properties) {
@@ -64,9 +57,9 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Override
     public int getBarColor(ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        Color color = data.spellContext().element.getRenderer().getColor();
+        Color color = data.spellContext().element.getRenderer().getPrimaryColor();
         if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
-            color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().color();
+            color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().primaryColor();
         }
         return color.getDecimalColor();
     }
@@ -74,7 +67,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Override
     public int getBarWidth(ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        return (int) (13 * (1f - data.manaCapacity().getMana() / data.manaCapacity().getMaxMana()));
+        return (int) (13 * (data.manaCapacity().getMana() / data.manaCapacity().getMaxMana()));
     }
 
     @Override

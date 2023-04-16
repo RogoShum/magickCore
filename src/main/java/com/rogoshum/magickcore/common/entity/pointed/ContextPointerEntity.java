@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
+import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ContextPointerRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
@@ -38,6 +39,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.*;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -97,26 +99,42 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         List<Entity> items = this.findEntity((entity -> (entity instanceof ItemEntity && ((ItemEntity) entity).getItem().getItem() instanceof MagickContextItem)));
 
         items.forEach(entity -> {
-            if(entity.isAlive() && ((entity.tickCount > 20 && entity.level.isClientSide()) || (entity.tickCount > 25 && !entity.level.isClientSide()))) {
+            if(entity.isAlive() && !entity.level.isClientSide() && entity.tickCount > 25) {
                 ItemEntity item = (ItemEntity) entity;
                 Vec3 relativeVec = relativeVec(item);
                 ItemStack stack = item.getItem().copy();
                 stack.setCount(1);
-                PosItem posItem = new PosItem(relativeVec, stack, getStacks().size());
+                boolean isFunc = isFuncType(stack);
+                PosItem posItem = new PosItem(relativeVec, stack, getLastItemSequence(isFunc), isFuncType(stack), relativeVec.normalize());
                 posItem.motion = item.getDeltaMovement();
                 posItem.hoverStart = item.bobOffs;
                 posItem.age = item.tickCount;
                 stacks.add(posItem);
                 item.getItem().shrink(1);
+                doNetworkUpdate();
             }
         });
 
         return false;
     }
 
+    public int getLastItemSequence(boolean isFuncType) {
+        if(getStacks().size() < 1) return 0;
+        PosItem posItem = getStacks().get(getStacks().size() - 1);
+        int sequence = posItem.sequence;
+        if(!isFuncType)
+            sequence++;
+        return sequence;
+    }
+
+    public boolean isFuncType(ItemStack stack) {
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        return !data.spellContext().applyType.isForm();
+    }
+
     @Override
     public void reSize() {
-        float height = stacks.size() + this.getType().getHeight();
+        float height = getLastItemSequence(false)*0.5f + this.getType().getHeight();
         if(this.getBbHeight() > height)
             this.setHeight(getBbHeight() - 0.1f);
         if(this.getBbHeight() < height)
@@ -165,13 +183,19 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     protected void doClientTask() {
         //MagickCore.LOGGER.debug(suppliers);
         super.doClientTask();
-        stacks.forEach(PosItem::tick);
+        for(PosItem posItem : stacks) {
+            posItem.tick(this.tickCount);
+            if(tickCount % 5 == 0 && posItem.function)
+                posItem.spawnParticle(level, spellContext().element, this.position());
+        }
     }
 
     @Override
     protected void doServerTask() {
         super.doServerTask();
-        stacks.forEach((PosItem::tick));
+        for(PosItem posItem : stacks) {
+            posItem.tick(this.tickCount);
+        }
     }
 
     public void spawnSupplierParticle(Entity supplier) {
@@ -288,12 +312,19 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                                 post.postContext = null;
                                 coreData.spellContext().copy(post);
                                 CompoundTag tag = item.serialize(new CompoundTag());
-                                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size());
+                                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size(), true, Vec3.ZERO);
                                 CompoundTag posTag = tag.getCompound("PosItem");
                                 posTag.put("ITEM", newCore.save(new CompoundTag()));
                                 posItem.deserialize(tag);
+                                boolean isFunc = isFuncType(newCore);
+                                int s = getLastItemSequence(isFunc);
+                                Vec3 randomVec = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
+                                posItem.function = isFunc;
+                                posItem.sequence = s;
+                                posItem.offset = randomVec;
                                 stacks.add(posItem);
                             }
+
                             data.spellContext().postContext = null;
                             data.spellContext().copy(data.spellContext());
                             playSound(SoundEvents.PORTAL_AMBIENT, 0.5f, 2.0f);
@@ -337,9 +368,10 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     protected void readAdditionalSaveData(CompoundTag compound) {
         if(compound.contains("STACKS")) {
             CompoundTag tag = compound.getCompound("STACKS");
+            this.stacks.clear();
             tag.getAllKeys().forEach(key -> {
                 CompoundTag stack = tag.getCompound(key);
-                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size());
+                PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size(), false, Vec3.ZERO);
                 posItem.deserialize(stack);
                 if(!posItem.itemStack.isEmpty())
                     this.stacks.add(posItem);
@@ -418,25 +450,48 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         public Vec3 prePos;
         public Vec3 motion = Vec3.ZERO;
         private ItemStack itemStack;
-        private final int sequence;
+        private int sequence;
         public int age;
         public float hoverStart;
+        private Vec3 offset = Vec3.ZERO;
+        private Vec2 rotation = null;
+        public boolean function;
 
-        public PosItem(Vec3 pos, ItemStack stack, int sequence) {
+        public PosItem(Vec3 pos, ItemStack stack, int sequence, boolean function, Vec3 offset) {
             this.pos = pos;
             this.prePos = pos;
             this.itemStack = stack;
             this.sequence = sequence;
+            this.function = function;
+            this.offset = offset == Vec3.ZERO ? new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne()) : offset;
         }
 
-        public void tick() {
+        public void tick(int tick) {
             this.motion = pos;
-            this.motion = this.motion.subtract(0, 0.5 + sequence, 0);
+            if(function) {
+                if(rotation == null) {
+                    rotation = EasyRenderer.getRotationFromVector(offset);
+                }
+                Vec3 rota = Vec3.directionFromRotation(rotation.x + tick, rotation.y);
+                this.motion = this.motion.subtract(rota.x * 0.5, 0, rota.y * 0.5);
+            }
 
+            this.motion = this.motion.subtract(0, 0.5 + sequence*0.5, 0);
             this.motion = this.motion.scale(0.1);
+
             this.prePos = pos;
             this.pos = this.pos.subtract(this.motion);
             age++;
+        }
+
+        public void spawnParticle(Level level, MagickElement element, Vec3 origin) {
+            Vec3 pos = origin.add(this.pos);
+            LitParticle par = new LitParticle(level, element.getRenderer().getParticleTexture()
+                    , new Vec3(pos.x, pos.y+0.2, pos.z), 0.05f, 0.05f, 0.5f, 30, element.getRenderer());
+            par.setParticleGravity(0);
+            par.setLimitScale();
+            par.setGlow();
+            MagickCore.addMagickParticle(par);
         }
 
         public ItemStack getItemStack() {
@@ -450,6 +505,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
             posItem.put("ITEM", itemStack.save(new CompoundTag()));
             posItem.putInt("AGE", age);
             posItem.putFloat("HOVER", hoverStart);
+            posItem.putBoolean("FUNCTION", function);
+            posItem.putInt("SEQUENCE", sequence);
+            NBTTagHelper.putVectorDouble(posItem, "OFFSET", offset);
             tag.put("PosItem", posItem);
             return tag;
         }
@@ -468,6 +526,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                 this.age = tag.getInt("AGE");
             if(tag.contains("HOVER"))
                 this.hoverStart = tag.getFloat("HOVER");
+            if(tag.contains("FUNCTION"))
+                this.function = tag.getBoolean("FUNCTION");
+            if(tag.contains("OFFSET"))
+                this.offset = NBTTagHelper.getVectorFromNBT(tag, "OFFSET");
+            if(tag.contains("SEQUENCE"))
+                this.sequence = tag.getInt("SEQUENCE");
         }
     }
 }

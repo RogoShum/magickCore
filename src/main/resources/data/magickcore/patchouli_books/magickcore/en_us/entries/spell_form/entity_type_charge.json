@@ -6,7 +6,11 @@
   "pages": [
     {
       "type": "text",
-      "text": "Charge is a type of point-type spell form, with no collision of its own, and the target of the spell is the target acquired by the previous form. $(br2)In its default state, Charging inherits the mana benefits of the previous spell form, and as the duration and force of the spell increases, it increases its own mana benefits. $(br2)When the force and duration of the spell are high enough, it can increase the mana benefits to 3-4 times or more."
+      "text": "Charge is a type of point-type spell form, with no collision of its own, and the target of the spell is the target acquired by the previous form.$(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Force of the form can increase the profit)$(li2)$(#00CED1)Force$(/t)$()$(t:Increasing the Range of the form can increase the profit)$(li2)$(#FFB90F)Duration$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(li2)$(#00CED1)Increases with charge time$()$(li2)$(#EE6363)Increases with charge time$()$(li2)$(#FFB90F)Increases with charge time$()$(br2)"
+    },
+    {
+      "type": "text",
+      "text": "In its default state, Charging inherits the Magical Efficacy of the previous spell form, and as the duration and force of the spell increases, it increases its own Magical Efficacy. $(br2)When the force and duration of the spell are high enough, it can increase the Magical Efficacy to 3-4 times or more."
     }
   ]
 }

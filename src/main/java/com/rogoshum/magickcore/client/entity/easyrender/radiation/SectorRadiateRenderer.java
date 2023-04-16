@@ -40,7 +40,7 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
         if(!vector3dList.isEmpty())
             RenderHelper.renderPoint(
                     BufferContext.create(params.matrixStack, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.color(), RenderHelper.renderLight)
+                    , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
                     , vector3dList);
     }
 
@@ -69,7 +69,7 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE), this::render);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::render);
         return map;
     }
 }

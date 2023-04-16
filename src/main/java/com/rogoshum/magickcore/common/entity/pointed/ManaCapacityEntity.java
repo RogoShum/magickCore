@@ -5,7 +5,6 @@ import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.client.entity.easyrender.GravityLiftRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -38,7 +37,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
@@ -62,7 +60,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/mana_capacity.png");
     private static final EntityDataAccessor<Boolean> TRANS = SynchedEntityData.defineId(ManaCapacityEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> MODE = SynchedEntityData.defineId(ManaCapacityEntity.class, EntityDataSerializers.BOOLEAN);
-    private final ManaCapacity manaCapacity = ManaCapacity.create(20000);
+    private final ManaCapacity manaCapacity = ManaCapacity.create(500000);
     private boolean dead = false;
     private BlockPos blockPos;
     public ManaCapacityEntity(EntityType<?> entityTypeIn, Level worldIn) {
@@ -171,7 +169,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     float saturation = item.getItem().getItem().getFoodProperties().getSaturationModifier();
                     boolean meat = item.getItem().getItem().getFoodProperties().isMeat();
 
-                    float mana = meat ? (healing * 20 + saturation * 10) * 1.5f : healing * 10 + saturation * 5;
+                    float mana = meat ? (healing * 120 + saturation * 100) * 1.5f : healing * 60 + saturation * 50;
                     if(manaCapacity().getMana() + mana <= manaCapacity().getMaxMana()) {
                         manaCapacity().receiveMana(mana);
                         item.getItem().shrink(1);
@@ -186,12 +184,12 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                 level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
         for (Entity entity : list) {
             ItemEntity item = (ItemEntity)entity;
-            float manaTrans = this.manaCapacity().extractMana(5);
+            float manaTrans = this.manaCapacity().extractMana(30);
             float lost = ExtraDataUtil.itemManaData(item.getItem()).manaCapacity().receiveMana(manaTrans);
             this.manaCapacity().receiveMana(lost);
         }
-        if(this.getOwner() instanceof LivingEntity) {
-            LivingEntity player = (LivingEntity) this.getOwner();
+        if(this.getCaster() instanceof LivingEntity) {
+            LivingEntity player = (LivingEntity) this.getCaster();
             AtomicReference<EntityStateData> state = new AtomicReference<>();
             ExtraDataUtil.entityData(player).<EntityStateData>execute(LibEntityData.ENTITY_STATE, (data) -> {
                 this.spellContext().element(data.getElement());
@@ -208,7 +206,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     return false;
                 }
 
-                int manaTrans = 5;
+                int manaTrans = 25;
                 if(!getMode()) {
                     if(manaCapacity().getMana() < manaCapacity().getMaxMana() && state.get().getManaValue() >= manaTrans)
                         state.get().setManaValue(state.get().getManaValue() - manaTrans + manaCapacity().receiveMana(manaTrans));
@@ -221,9 +219,9 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                         elementOrb.setPos(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ());
                         elementOrb.spellContext().element(spellContext().element);
                         elementOrb.spellContext().tick(200);
-                        elementOrb.spellContext().addChild(TraceContext.create(getOwner()));
+                        elementOrb.spellContext().addChild(TraceContext.create(getCaster()));
                         elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
-                        elementOrb.setDeltaMovement(getOwner().position().subtract(elementOrb.position()).normalize());
+                        elementOrb.setDeltaMovement(getCaster().position().subtract(elementOrb.position()).normalize());
                         level.addFreshEntity(elementOrb);
                     }
                 }
@@ -297,8 +295,8 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
             return EntityInteractHelper.placeBlock(player, hand, heldItem, this);
         }
         if (!player.level.isClientSide && hand == InteractionHand.MAIN_HAND) {
-            this.setOwner(player);
-            if (this.getOwner() == player) {
+            this.setCaster(player);
+            if (this.getCaster() == player) {
                 if(player.getMainHandItem().getItem() == ModItems.WAND.get())
                     this.switchMode();
                 else

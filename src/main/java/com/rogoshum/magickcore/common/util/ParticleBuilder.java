@@ -38,7 +38,7 @@ public class ParticleBuilder {
         this.alpha = alpha;
         this.maxAge = maxAge;
         this.element = element;
-        this.color = MagickRegistry.getElement(element).color();
+        this.color = MagickRegistry.getElement(element).primaryColor();
         this.world = world;
     }
 

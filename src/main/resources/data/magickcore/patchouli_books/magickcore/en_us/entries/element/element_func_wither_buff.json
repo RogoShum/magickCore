@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Wither of the Buff can be cleared from the caster: potion effects etc. amplifier lower than potion effects that buff amplifier. The attribute of having mana gain is force and duration."
+      "text": "Wither of the Buff can be cleared from the caster: potion effects etc. amplifier lower than potion effects that buff amplifier. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)"
     }
   ]
 }

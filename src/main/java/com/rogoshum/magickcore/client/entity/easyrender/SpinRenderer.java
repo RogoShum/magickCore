@@ -8,9 +8,7 @@ import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.render.BufferContext;
 import com.rogoshum.magickcore.client.render.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.render.SingleBuffer;
 import com.rogoshum.magickcore.common.entity.pointed.SpinEntity;
-import com.rogoshum.magickcore.common.entity.projectile.PhantomEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.Minecraft;
@@ -59,7 +57,7 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.5f, 0.25f, 2
                 , 0.5f, 6
-                , 0.1f, 1.0f, 0.3f, renderer.getColor());
+                , 0.1f, 1.0f, 0.3f, renderer.getPrimaryColor());
 
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, RenderHelper.getLineStripGlow(5.0f))
                 , context);
@@ -84,15 +82,15 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
         double camX = cam.x, camY = cam.y, camZ = cam.z;
         Vec3 pos = entity.getHitPoint();
         params.matrixStack.translate(pos.x - camX, pos.y - camY + entity.getBbHeight() * 0.5, pos.z - camZ);
-        RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getLineStripGlow(2.0)), new RenderHelper.RenderContext(1.0f, renderer.getColor(), RenderHelper.renderLight));
+        RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getLineStripGlow(2.0)), new RenderHelper.RenderContext(1.0f, renderer.getPrimaryColor(), RenderHelper.renderLight));
     }
 
     public void renderMid(RenderParams params) {
         offsetLaser(params);
         RenderHelper.renderLaserParticle(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getLinesGlow(2.0)),
-                new RenderHelper.RenderContext(0.1f, entity.spellContext().element.color(), RenderHelper.renderLight),
-                RenderHelper.EmptyVertexContext, length
+                new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
+                RenderHelper.EMPTY_VERTEX_CONTEXT, length
         );
     }
 
@@ -100,7 +98,7 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
         offsetLaser(params);
         RenderHelper.renderLaserBottom(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_BOTTOM)),
-                new RenderHelper.RenderContext(0.1f, entity.spellContext().element.color(), RenderHelper.renderLight),
+                new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
                 length
         );
     }

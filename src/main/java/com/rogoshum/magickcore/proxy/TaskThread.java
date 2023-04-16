@@ -67,7 +67,7 @@ public class TaskThread extends Thread{
                     taskList.clear();
                 } catch (Exception e) {
                     MagickCore.LOGGER.info(getName() + " Crashed!");
-                    MagickCore.LOGGER.debug(e);
+                    e.printStackTrace();
                     taskList.clear();
                     interrupt();
                 }

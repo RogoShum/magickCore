@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.common.item.BaseItem;
@@ -33,6 +32,11 @@ public class CompletelySelfItem extends BaseItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         data.spellContext().addChild(SelfContext.create());
+        return true;
+    }
+
+    @Override
+    public boolean singleMaterial() {
         return true;
     }
 

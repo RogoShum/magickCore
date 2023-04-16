@@ -32,40 +32,52 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.1901, 0.5);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+
+        if(stack.hasTag()) {
+            CompoundTag blockTag = NBTTagHelper.getBlockTag(stack.getTag());
+            if(blockTag.contains("stack")) {
+                ItemStack stack1 = ItemStack.of(blockTag.getCompound("stack"));
+                if(!stack1.isEmpty()) {
+                    matrixStackIn.pushPose();
+                    matrixStackIn.pushPose();
+                    if(transformType != ItemTransforms.TransformType.FIXED)
+                        matrixStackIn.translate(0, 0.15, 0);
+                    else
+                        matrixStackIn.translate(0, 0.4, 0);
+                    if(transformType != ItemTransforms.TransformType.FIXED)
+                        matrixStackIn.scale(0.01f, 0.01f, .01f);
+                    else
+                        matrixStackIn.scale(0.02f, 0.02f, .02f);
+                    matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(180));
+                    String count = String.valueOf(blockTag.getInt("count"));
+                    Minecraft.getInstance().font.draw(matrixStackIn, count, -count.length()*3, 2, 0);
+                    matrixStackIn.popPose();
+                    matrixStackIn.translate(0, -0.12f, 0);
+                    if(transformType != ItemTransforms.TransformType.FIXED)
+                        matrixStackIn.scale(0.5f, 0.5f, .5f);
+                    BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack1, null, null, 0);
+                    MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                    Minecraft.getInstance().getItemRenderer().render(stack1, ItemTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
+                    renderTypeBuffer.endBatch();
+                    matrixStackIn.popPose();
+                }
+            }
+        }
+
         matrixStackIn.pushPose();
-        matrixStackIn.scale(0.3f, 0.42f, 0.3f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        if(transformType != ItemTransforms.TransformType.FIXED)
+            matrixStackIn.scale(0.3f, 0.42f, 0.3f);
+        else {
+            matrixStackIn.translate(0.0, 0.25, 0.0);
+            matrixStackIn.scale(1.0f, 1.4f, 1.0f);
+        }
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
+        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(RenderHelper.blankTex))
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.popPose();
 
-        if(!stack.hasTag()) {
-            matrixStackIn.popPose();
-            return;
-        }
-        CompoundTag blockTag = NBTTagHelper.getBlockTag(stack.getTag());
-        if(!blockTag.contains("stack")) {
-            matrixStackIn.popPose();
-            return;
-        }
-        ItemStack stack1 = ItemStack.of(blockTag.getCompound("stack"));
-        if(!stack1.isEmpty()) {
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, 0.15, 0);
-            matrixStackIn.scale(0.01f, 0.01f, .01f);
-            matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(180));
-            String count = String.valueOf(blockTag.getInt("count"));
-            Minecraft.getInstance().font.draw(matrixStackIn, count, -count.length()*3, 2, 0);
-            matrixStackIn.popPose();
-            matrixStackIn.translate(0, -0.12f, 0);
-            matrixStackIn.scale(0.5f, 0.5f, .5f);
-            BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack1, null, null, 0);
-            MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-            Minecraft.getInstance().getItemRenderer().render(stack1, ItemTransforms.TransformType.GROUND, false, matrixStackIn, renderTypeBuffer, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
-            renderTypeBuffer.endBatch();
-        }
 
         matrixStackIn.popPose();
     }

@@ -52,10 +52,10 @@ public class ContextCoreItem extends BaseItem{
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if(entity.tickCount > 20) {
+        if(entity.getThrower() != null && entity.level.getPlayerByUUID(entity.getThrower()) != null && entity.tickCount > 20) {
             boolean upGround = true;
             for (int i = 0; i < 2; ++i) {
-                if(!entity.level.isEmptyBlock(entity.blockPosition().offset(0, -i, 0)))
+                if(entity.level.getBlockState(entity.blockPosition().offset(0, -i, 0)).canOcclude())
                     upGround = false;
             }
             double speed = 0.043;

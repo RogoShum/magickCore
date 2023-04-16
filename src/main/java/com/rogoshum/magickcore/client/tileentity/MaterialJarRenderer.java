@@ -19,8 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Vector3f;
 
 public class MaterialJarRenderer implements BlockEntityRenderer<MaterialJarTileEntity> {
-    protected static final ResourceLocation cylinder_bloom = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
-
     public MaterialJarRenderer(BlockEntityRendererProvider.Context p_173554_) {
     }
 
@@ -28,24 +26,6 @@ public class MaterialJarRenderer implements BlockEntityRenderer<MaterialJarTileE
     public void render(MaterialJarTileEntity tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.5, 0.5);
-
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(0.6f, 0.99f, 0.6f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrb(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLightIn));
-        matrixStackIn.popPose();
-
-/*
-        matrixStackIn.push();
-        matrixStackIn.translate(0, 0.5, 0.0);
-        matrixStackIn.scale(0.3f, 0.1f, 0.3f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tessellator.getInstance().getBuffer(), RenderHelper.getTexedOrbSolid(RenderHelper.blankTex))
-                , new RenderHelper.RenderContext(1.0f, Color.create(0.4f, 0.3f, 0), combinedLightIn));
-        matrixStackIn.pop();
- */
 
         if(!tile.getStack().isEmpty()) {
             matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());

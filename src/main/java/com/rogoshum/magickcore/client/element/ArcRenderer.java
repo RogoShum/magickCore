@@ -21,7 +21,7 @@ public class ArcRenderer extends ElementRenderer {
     private ResourceLocation[] mist = new ResourceLocation[8];
 
     public ArcRenderer() {
-        super(ModElements.ARC_COLOR);
+        super(ModElements.ARC);
         mist[0] = elec_0;
         mist[1] = elec_1;
         mist[2] = elec_2;

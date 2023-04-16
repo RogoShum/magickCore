@@ -62,7 +62,7 @@ public class RepeaterEntity extends ManaPointEntity {
             this.playSound(ModSounds.thunder.get(), 0.15F, 1.0F - this.random.nextFloat());
             MagickContext context = MagickContext.create(this.level, spellContext().postContext)
                     .<MagickContext>replenishChild(PositionContext.create(this.position()))
-                    .caster(getOwner()).projectile(this).noCost();
+                    .caster(getCaster()).projectile(this).noCost();
 
             if(spellContext().containChild(LibContext.TRACE)) {
                 TraceContext traceContext = spellContext().getChild(LibContext.TRACE);

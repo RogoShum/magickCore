@@ -3,7 +3,6 @@ package com.rogoshum.magickcore.common.entity.base;
 import com.rogoshum.magickcore.api.IConditionOnlyBlock;
 import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IExistTick;
-import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick {
@@ -69,14 +67,14 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
             if(!suitableEntity(living)) continue;
             boolean pass = true;
              if(condition != null) {
-                 if(!condition.test(this.getOwner(), living))
+                 if(!condition.test(this.getCaster(), living))
                      pass = false;
              }
             if(pass) {
                 MagickContext context = MagickContext.create(this.level, spellContext().postContext)
                         .replenishChild(DirectionContext.create(living.position().add(0, living.getBbHeight() * 0.5, 0).subtract(this.position())))
                         .<MagickContext>replenishChild(PositionContext.create(this.position()))
-                        .caster(getOwner()).projectile(this)
+                        .caster(getCaster()).projectile(this)
                         .victim(living).noCost();
                 boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
                 if(success)
@@ -98,7 +96,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                 MagickContext context = MagickContext.create(this.level, spellContext().postContext).doBlock()
                         .replenishChild(DirectionContext.create(this.position().subtract(Vec3.atCenterOf(pos))))
                         .<MagickContext>replenishChild(PositionContext.create(Vec3.atLowerCornerOf(pos)))
-                        .caster(getOwner()).projectile(this).noCost();
+                        .caster(getCaster()).projectile(this).noCost();
                 if (spellContext().postContext != null)
                     context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
                 boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));

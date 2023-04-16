@@ -10,4 +10,6 @@ public class LibElements {
     public static final String STASIS = "stasis";
     public static final String WITHER = "wither";
     public static final String TAKEN = "taken";
+    public static final String BOTANIA = "botania";
+    public static final String PSI = "psi";
 }

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class ExtraApplyTypeContext extends ChildContext{
+    public static final Type<ExtraApplyTypeContext> TYPE = new Type<>(LibContext.APPLY_TYPE);
     public ApplyType applyType = ApplyType.NONE;
 
     public static ExtraApplyTypeContext create(ApplyType applyType) {
@@ -31,8 +32,8 @@ public class ExtraApplyTypeContext extends ChildContext{
     }
 
     @Override
-    public String getName() {
-        return LibContext.APPLY_TYPE;
+    public Type<ExtraApplyTypeContext> getType() {
+        return TYPE;
     }
 
     @Override

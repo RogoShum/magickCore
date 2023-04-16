@@ -3,10 +3,8 @@ package com.rogoshum.magickcore.common.entity.base;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.api.render.IEasyRender;
 import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.base.ManaEntityRenderer;
-import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.magick.MagickElement;
@@ -34,8 +32,6 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import net.minecraft.world.entity.Entity;
@@ -79,13 +75,13 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     public void refreshDimensions() {
-        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "dimensions");
+        EntityDimensions entitysize = ObfuscationReflectionHelper.getPrivateValue(Entity.class, this, "f_19815_");
         Pose pose = this.getPose();
         EntityDimensions entitysize1 = this.getDimensions(pose);
         net.minecraftforge.event.entity.EntityEvent.Size sizeEvent = net.minecraftforge.event.ForgeEventFactory.getEntitySizeForge(this, pose, entitysize, entitysize1, this.getEyeHeight(pose, entitysize1));
         entitysize1 = sizeEvent.getNewSize();
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "dimensions");
-        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "eyeHeight");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, entitysize1,  "f_19815_");
+        ObfuscationReflectionHelper.setPrivateValue(Entity.class, this, sizeEvent.getNewEyeHeight(),  "f_19816_");
         double d0 = (double)entitysize1.width * 0.5;
         //double d1 = (entitysize1.height - entitysize.height) * 0.5;
         this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0, this.getY() + (double)entitysize1.height, this.getZ() + d0));
@@ -135,11 +131,11 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void setOwner(@Nullable Entity entityIn) {
+    public void setCaster(@Nullable Entity entityIn) {
         if (entityIn != null) {
             this.owner_uuid = entityIn.getUUID();
             this.owner_id = entityIn.getId();
-            this.setOwnerUUID(entityIn.getUUID());
+            this.setCasterUUID(entityIn.getUUID());
         }
     }
 
@@ -159,7 +155,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     @Nullable
-    public Entity getOwner() {
+    public Entity getCaster() {
         if (this.owner_uuid != null && this.level instanceof ServerLevel) {
             return ((ServerLevel)this.level).getEntity(this.owner_uuid);
         } else if(this.level instanceof ServerLevel){
@@ -232,7 +228,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     @Override
-    public void setOwnerUUID(UUID uuid) {
+    public void setCasterUUID(UUID uuid) {
         this.getEntityData().set(dataUUID, Optional.of(uuid));
     }
 
@@ -327,7 +323,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     protected void readAdditionalSaveData(CompoundTag compound) {
         if (compound.hasUUID("Owner")) {
             this.owner_uuid = compound.getUUID("Owner");
-            this.setOwnerUUID(this.owner_uuid);
+            this.setCasterUUID(this.owner_uuid);
         }
         spellContext().deserialize(compound);
     }
@@ -360,7 +356,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public float getSourceLight() {
-        return this.getBbWidth() * 1.5f;
+        return this.getBbWidth() * 2f;
     }
 
     @Override
@@ -390,7 +386,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public Color getColor() {
-        return this.spellContext().element.color();
+        return this.spellContext().element.primaryColor();
     }
 
     @Override
