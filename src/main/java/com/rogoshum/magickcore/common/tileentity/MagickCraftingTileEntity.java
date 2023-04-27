@@ -184,7 +184,7 @@ public class MagickCraftingTileEntity extends BlockEntity{
         par.setGlow();
         par.setParticleGravity(0f);
         par.setColor(Color.BLUE_COLOR);
-        par.setShakeLimit(15f);
+        par.setShakeLimit(5f);
         MagickCore.addMagickParticle(par);
     }
 

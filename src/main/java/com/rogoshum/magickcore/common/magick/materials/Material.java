@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.magick.materials;
 
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 

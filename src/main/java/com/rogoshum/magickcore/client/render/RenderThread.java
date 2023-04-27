@@ -2,9 +2,9 @@ package com.rogoshum.magickcore.client.render;
 
 import com.google.common.collect.Queues;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -123,6 +123,16 @@ public class RenderThread extends Thread {
                                     function.get(bufferMode).add(render.get(bufferMode));
                                 }
                             }
+                        }
+
+                        if(RenderHelper.enableColorLighting()) {
+                            render = renderer.getLightFunction();
+                            if(render != null)
+                                for (RenderMode bufferMode : render.keySet()) {
+                                    if(!function.containsKey(bufferMode))
+                                        function.put(bufferMode, Queues.newArrayDeque());
+                                    function.get(bufferMode).add(render.get(bufferMode));
+                                }
                         }
                     }
                 } catch (Exception e) {

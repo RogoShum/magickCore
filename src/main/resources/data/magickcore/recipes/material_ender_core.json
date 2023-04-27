@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:chorus_fruit"
+  },
+  "result":{
+    "item":"magickcore:ender_dragon_material",
+    "count":1
+  }
+}

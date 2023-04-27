@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.common.extradata.EntityExtraData;
-import com.rogoshum.magickcore.common.extradata.ItemExtraData;
+import com.rogoshum.magickcore.api.extradata.EntityExtraData;
+import com.rogoshum.magickcore.api.extradata.ItemExtraData;
 import net.minecraftforge.eventbus.api.GenericEvent;
 
 import java.util.HashMap;

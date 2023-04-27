@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.ParticleSamplePack;
 import net.minecraft.core.Direction;
@@ -95,6 +95,52 @@ public class ParticleUtil {
             vector[i] = forward.add(rotate).subtract(center).normalize().scale(length).add(center);//
         }
         return vector;
+    }
+
+    public static Vec3[] drawSphere(int n, int m) {
+        List<Vec3> vectors = new ArrayList<>();
+        // generate sphere vertices
+        Vec3[][] vertices = new Vec3[n+1][m+1];
+        for (int i = 0; i <= m; i++) {
+            double lat = Math.PI * i / m;
+            double sinLat = Math.sin(lat);
+            double cosLat = Math.cos(lat);
+            for (int j = 0; j <= n; j++) {
+                double lon = 2 * Math.PI * j / n;
+                double sinLon = Math.sin(lon);
+                double cosLon = Math.cos(lon);
+                Vec3 v = new Vec3(cosLon * sinLat, cosLat, sinLon * sinLat);
+                vertices[j][i] = v;
+                vectors.add(v);
+            }
+        }
+
+        // generate sphere triangles
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int i1 = i;
+                int i2 = i + 1;
+                int j1 = j;
+                int j2 = j + 1;
+                Vec3 v1 = vertices[j1][i1];
+                Vec3 v2 = vertices[j1][i2];
+                Vec3 v3 = vertices[j2][i2];
+                Vec3 v4 = vertices[j2][i1];
+                /*
+                gl.glBegin(GL.GL_TRIANGLES);
+                gl.glNormal3fv(normalize(cross(sub(v2, v1), sub(v3, v2))), 0);
+                gl.glVertex3fv(v1.toArray(), 0);
+                gl.glVertex3fv(v2.toArray(), 0);
+                gl.glVertex3fv(v3.toArray(), 0);
+                gl.glNormal3fv(normalize(cross(sub(v4, v3), sub(v1, v4))), 0);
+                gl.glVertex3fv(v3.toArray(), 0);
+                gl.glVertex3fv(v4.toArray(), 0);
+                gl.glVertex3fv(v1.toArray(), 0);
+                gl.glEnd();
+                 */
+            }
+        }
+        return vectors.toArray(new Vec3[0]);
     }
 
     public static Vec3[] drawCircle(Vec3 center, Vec3 direction, double degrees, int frequency) {

@@ -1,13 +1,42 @@
 package com.rogoshum.magickcore.common.util;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PlayerHeadItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.util.Objects;
 
 public class ItemStackUtil {
+    public static void dropItem(Level level, ItemStack stack, BlockPos pos) {
+        dropItem(level, stack, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5);
+    }
+
+    public static void dropItem(Level level, ItemStack stack, Vec3 vec3) {
+        dropItem(level, stack, vec3.x, vec3.y, vec3.z);
+    }
+
+    public static void dropItem(Level level, ItemStack stack, double x, double y, double z) {
+        ItemEntity item = new ItemEntity(level, x, y, z, stack);
+        if(!level.isClientSide())
+            level.addFreshEntity(item);
+    }
+
+    public static void storeTEInStack(ItemStack stack, BlockEntity te) {
+        CompoundTag compoundnbt = te.saveWithId();
+        if (stack.getItem() instanceof PlayerHeadItem && compoundnbt.contains("SkullOwner")) {
+            CompoundTag compoundnbt2 = compoundnbt.getCompound("SkullOwner");
+            stack.getOrCreateTag().put("SkullOwner", compoundnbt2);
+        } else {
+            stack.addTagElement("BlockEntityTag", compoundnbt);
+        }
+    }
 
     public static void mergeItemEntity(ItemEntity item, ItemEntity other) {
         ItemStack itemstack = item.getItem();

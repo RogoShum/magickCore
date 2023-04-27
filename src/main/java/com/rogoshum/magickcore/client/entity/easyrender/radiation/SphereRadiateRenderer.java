@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.radiation.SphereEntity;
 import net.minecraft.client.renderer.RenderType;
@@ -38,7 +38,7 @@ public class SphereRadiateRenderer extends EasyRenderer<SphereEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.spellContext().range * 2;
+        scale = entity.getRange()*2;
     }
 
     @Override

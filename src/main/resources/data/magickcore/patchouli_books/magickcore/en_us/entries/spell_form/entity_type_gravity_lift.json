@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The eruption point is a point-type spell form. Persists and acts on entities within the eruption range. $(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:Functional spells will have their force bonus reduced to 0.2)$(li2)$(#00CED1)Force：0.2$(/t)$()$(t:The range of functional spells is unaffected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:Functional spells will have their duration bonus reduced to 0.2)$(li2)$(#FFB90F)Duration：0.2$(/t)$()$(br2)"
+      "text": "The eruption point is a point-type spell form. Persists and acts on entities within the eruption range. $(br)$(t:Raising these values of the form can increase the profit)$(li)$(#6C7B8B)Growth Needs：$(/t)$(t:Increasing the Range of the form can increase the profit)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Effect of Spell Attributes on Functional Spells)$(li)$(#6C7B8B)Magical Efficacy：$(/t)$(t:Functional spells will have their force bonus reduced to 0.3)$(li2)$(#00CED1)Force：0.3$(/t)$()$(t:The range of functional spells is unaffected)$(li2)$(#EE6363)Range：1.0$(/t)$()$(t:Functional spells will have their duration bonus reduced to 0.3)$(li2)$(#FFB90F)Duration：0.3$(/t)$()$(br2)"
     }
   ]
 }

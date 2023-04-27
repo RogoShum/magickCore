@@ -1,11 +1,10 @@
 package com.rogoshum.magickcore.common.integration.psi;
 
-import com.mojang.datafixers.util.Either;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.PsiSpellContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.PsiSpellContext;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +36,8 @@ public class PsiAbility {
             return ItemCAD.cast(context.world, player, data, psiSpell.itemStack, cad, 40, 25, 0.5F, (ctx) -> {
                 ctx.castFrom = InteractionHand.OFF_HAND;
                 ctx.customData.put("magick_context", context);
+                if(context.projectile != null)
+                    ctx.setFocalPoint(context.projectile);
             }).isPresent();
         }
         return false;

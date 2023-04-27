@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.ElementCrystalRenderer;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
@@ -11,7 +11,7 @@ import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.CropBlock;

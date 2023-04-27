@@ -2,8 +2,8 @@ package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.entity.pointed.ContextPointerEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;

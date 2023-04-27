@@ -1,19 +1,12 @@
 package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.child.OffsetContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.OffsetContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class OffsetMemoryItem extends DirectionMemoryItem implements IManaMaterial {
     public OffsetMemoryItem() {

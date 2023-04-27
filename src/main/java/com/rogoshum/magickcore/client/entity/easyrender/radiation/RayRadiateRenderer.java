@@ -2,14 +2,14 @@ package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.radiation.RayTraceEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -51,7 +51,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
     @Override
     public void update() {
         super.update();
-        length = entity.spellContext().range * 20;
+        length = entity.getRange() * 4;
     }
 
     public void renderTop(RenderParams params) {

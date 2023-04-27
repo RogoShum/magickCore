@@ -2,10 +2,11 @@ package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
@@ -52,6 +53,13 @@ public abstract class EasyTileRenderer<T extends BlockEntity>implements IEasyRen
         return positionVec();
     }
 
+    public static Vec3 getEntityRenderVector(Entity entity, float partialTicks) {
+        double x = entity.xOld + (entity.getX() - entity.xOld) * (double) partialTicks;
+        double y = entity.yOld + (entity.getY() - entity.yOld) * (double) partialTicks;
+        double z = entity.zOld + (entity.getZ() - entity.zOld) * (double) partialTicks;
+        return new Vec3(x, y, z);
+    }
+
     @Override
     public void update() {
 
@@ -88,6 +96,11 @@ public abstract class EasyTileRenderer<T extends BlockEntity>implements IEasyRen
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getDebugFunction() {
+        return null;
+    }
+
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
         return null;
     }
 }

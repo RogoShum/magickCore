@@ -4,50 +4,50 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.entity.*;
+import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.api.entity.IExistTick;
-import com.rogoshum.magickcore.api.entity.IOwnerEntity;
-import com.rogoshum.magickcore.api.entity.ISuperEntity;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
-import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
+import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
-import com.rogoshum.magickcore.common.extradata.entity.LeechEntityData;
+import com.rogoshum.magickcore.api.extradata.entity.LeechEntityData;
 import com.rogoshum.magickcore.common.init.*;
-import com.rogoshum.magickcore.common.extradata.entity.ElementToolData;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.api.extradata.entity.ElementToolData;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
 import com.rogoshum.magickcore.common.lib.*;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.child.*;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.child.*;
 import com.rogoshum.magickcore.common.network.*;
 import com.rogoshum.magickcore.common.magick.MagickPoint;
-import com.rogoshum.magickcore.common.magick.ManaCapacity;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.magick.ManaCapacity;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.tileentity.RadianceCrystalTileEntity;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -64,6 +64,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -88,6 +90,14 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
+	public void unloadRadiancePlayer(PlayerEvent.PlayerChangedDimensionEvent event) {
+		if(RadianceCrystalTileEntity.RADIANCE_PLAYER.containsKey(event.getPlayer())) {
+			Set<RadianceCrystalTileEntity> set = RadianceCrystalTileEntity.RADIANCE_PLAYER.get(event.getPlayer());
+			set.removeIf(crystal -> !event.getTo().equals(crystal.getLevel().dimension()));
+		}
+	}
+
+	@SubscribeEvent
 	public void entityJoinWorld(EntityJoinWorldEvent evt) {
 		/*
 			Entity entity = evt.getEntity();
@@ -106,17 +116,13 @@ public class MagickLogicEvent {
 				if(RenderHelper.getPlayer() == null) {
 					EntityLightSourceManager.clear();
 					RenderEvent.clearParticle();
-					VertexShakerHelper.clear();
 					RenderHelper.GL_LIST_INDEX.clear();
 				}
-
-				VertexShakerHelper.tickGroup();
 				RenderEvent.tickParticle();
 				MagickPoint.points.forEach(MagickPoint::tick);
 			}, () -> {
 				EntityLightSourceManager.clear();
 				RenderEvent.clearParticle();
-				VertexShakerHelper.clear();
 			});
 			MagickCore.proxy.tick(LogicalSide.CLIENT);
 		}
@@ -172,6 +178,11 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
+	public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+		RadianceCrystalTileEntity.RADIANCE_PLAYER.remove(event.getPlayer());
+	}
+
+	@SubscribeEvent
 	public void voidElement(ItemAttributeModifierEvent event) {
 		if(event.getSlotType() == EquipmentSlot.MAINHAND) {
 			if(NBTTagHelper.hasElementOnTool(event.getItemStack(), LibElements.VOID)) {
@@ -214,7 +225,7 @@ public class MagickLogicEvent {
 	}
 
 	@SubscribeEvent
-	public void onMagickRelease(EntityEvents.MagickReleaseEvent event) {
+	public void onMagickRelease(EntityEvents.MagickPreReleaseEvent event) {
 		if(event.getContext().containChild(LibContext.SPAWN)) {
 			SpawnContext spawnContext = event.getContext().getChild(LibContext.SPAWN);
 			Entity spawnEntity = spawnContext.entityType.create(event.getContext().world);
@@ -237,10 +248,26 @@ public class MagickLogicEvent {
 		}
 	}
 
+	@SubscribeEvent
+	public void onEntityJoin(EntityJoinWorldEvent event) {
+		if(RadianceCrystalTileEntity.RADIANCE_CRYSTALS.containsKey(event.getWorld().dimension())) {
+			List<RadianceCrystalTileEntity> list = RadianceCrystalTileEntity.RADIANCE_CRYSTALS.get(event.getWorld().dimension());
+			for(RadianceCrystalTileEntity tile : list) {
+				if(tile.getBlockPos().distToCenterSqr(event.getEntity().position()) <= RadianceCrystalTileEntity.workRange() * RadianceCrystalTileEntity.workRange()) {
+					if(tile.getElement() == ModElements.TAKEN && tile.getApplyType() == ApplyType.RADIANCE) {
+						ParticleUtil.spawnBlastParticle(event.getWorld(), event.getEntity().position().add(0, event.getEntity().getBbHeight() * 0.5, 0), 2, ModElements.TAKEN, ParticleType.PARTICLE);
+						event.getEntity().setPos(Vec3.atCenterOf(tile.getBlockPos()));
+					}
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void preMagickRelease(EntityEvents.MagickPreReleaseEvent event) {
+	public void preMagickRelease(EntityEvents.MagickReleaseCheckEvent event) {
 		if(!(event.getEntity() instanceof LivingEntity))
 			return;
+
 		if(event.getContext().containChild(LibContext.SPAWN)) {
 			EntityType<?> type = event.getContext().<SpawnContext>getChild(LibContext.SPAWN).entityType;
 			if(ModEntities.REPEATER.get().equals(type))
@@ -255,24 +282,6 @@ public class MagickLogicEvent {
 			event.setMana((float) (event.getMana() + positionContext.pos.distanceTo(event.getEntity().position())));
 		}
 
-		/*
-		if(!event.getContext().containChild(LibContext.MULTI_RELEASE))
-			if(((LivingEntity)event.getEntity()).getActivePotionMap().containsKey(ModEffects.MULTI_RELEASE.orElse(null))) {
-				int amplifier = ((LivingEntity)event.getEntity()).getActivePotionEffect(ModEffects.MULTI_RELEASE.orElse(null)).getAmplifier() + 1;
-				amplifier = Math.min(2, amplifier);
-				event.getContext().addChild(MultiReleaseContext.create());
-				for (int i = 0; i < amplifier; ++i) {
-					MagickContext copy = MagickContext.create(event.getContext().world, event.getContext());
-					copy.caster(event.getContext().caster).victim(event.getContext().victim).projectile(event.getContext().projectile);
-					if(event.getContext().noCost)
-						copy.noCost();
-
-					MagickReleaseHelper.releaseMagick(copy);
-				}
-			}
-
-
-		 */
 		float level = 0;
 		for (ItemStack stack : event.getEntity().getAllSlots()) {
 			if(NBTTagHelper.hasElementOnTool(stack, LibElements.ORIGIN)) {
@@ -832,6 +841,7 @@ public class MagickLogicEvent {
 			event.setCanceled(true);
 			if(damage > 0.0f)
 				spawnParticle(state.getElement().type(), event.getEntity());
+			EntityCompoundTagPack.updateEntity(event.getEntityLiving());
 		}
 	}
 

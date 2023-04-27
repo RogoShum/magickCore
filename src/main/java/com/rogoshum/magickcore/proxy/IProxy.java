@@ -1,9 +1,9 @@
 package com.rogoshum.magickcore.proxy;
 
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraftforge.fml.LogicalSide;

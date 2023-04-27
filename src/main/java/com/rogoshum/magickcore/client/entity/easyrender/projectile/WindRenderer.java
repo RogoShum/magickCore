@@ -1,10 +1,10 @@
 package com.rogoshum.magickcore.client.entity.easyrender.projectile;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.projectile.WindEntity;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -26,7 +26,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
     public void update() {
         super.update();
         c = entity.tickCount % 30;
-        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
+        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f, 0.2f, 10.0f);
     }
 
     public void renderOpacity(RenderParams params) {
@@ -37,7 +37,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getBbWidth() * 0.5f, entity.getBbWidth() * 0.5f, 1
                 , 0.2f + entity.getBbHeight(), 16
-                , 0.1f * alpha, alpha, 0.3f, entity.spellContext().element.primaryColor());
+                , 0.1f * alpha, alpha, 0.3f, entity.spellContext().element.secondaryColor());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
     }
@@ -53,7 +53,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
 
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(entity.getBbWidth() * 2f, entity.getBbWidth() * 0.25f, 2f
                 , height , 16
-                , 0, 0.9f, 0.8f, entity.spellContext().element.primaryColor());
+                , 0, 0.9f, 0.8f, entity.spellContext().element.secondaryColor());
         RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
                 , context);
     }

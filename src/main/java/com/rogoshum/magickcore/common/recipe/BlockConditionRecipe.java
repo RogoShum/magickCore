@@ -1,19 +1,15 @@
 package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.item.MagickContextItem;
-import com.rogoshum.magickcore.common.item.material.ConditionItem;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.condition.BlockOnlyCondition;
-import com.rogoshum.magickcore.common.magick.condition.Condition;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.magick.condition.BlockOnlyCondition;
+import com.rogoshum.magickcore.api.magick.condition.Condition;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;

@@ -1,16 +1,13 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.common.event.AdvancementsEvent;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.integration.curios.CuriosHelper;
-import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 

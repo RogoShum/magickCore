@@ -2,9 +2,10 @@
   "required": true,
   "package": "com.rogoshum.magickcore.mixin",
   "mixins": [
+    "AccessorLevelChunk",
+    "MixinChunkGenerator",
     "MixinEntity",
     "MixinItemStack",
-    "MixinLevelChunk",
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
@@ -18,13 +19,19 @@
     "defaultRequire": 1
   },
   "client": [
+    "AccessorBufferBuilder",
     "AccessorRenderType",
+    "AccessorShaderShard",
+    "AccessorShaderState",
     "AccessorTexture",
     "AccessorTextureState",
     "MixinClientWorld",
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
     "MixinLivingRender",
+    "MixinShaderInstance",
+    "MixinShaderInstance$MixinBufferUploader",
+    "MixinShaderInstance$MixinVertexBuffer",
     "MixinWorldRender"
   ]
 }

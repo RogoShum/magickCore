@@ -2,14 +2,13 @@ package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaSphereRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibBuff;
@@ -47,8 +46,16 @@ public class ManaSphereEntity extends ManaPointEntity {
     @Override
     protected void doClientTask() {
         super.doClientTask();
-        Vec3 rand = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.3F, 0.07F));
+    }
+
+    @Override
+    public void reSize() {
+        float height = getType().getHeight() + spellContext().range * 0.3f;
+        if(getBbHeight() != height)
+            this.setHeight(height);
+        float width = getType().getWidth() + spellContext().range * 0.3f;
+        if(getBbWidth() != width)
+            this.setWidth(width);
     }
 
     @Override
@@ -79,7 +86,7 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     protected void collideWithNearbyEntities() {
-        List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(1.2));
+        List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(1.4));
         if (!list.isEmpty()) {
             for(int l = 0; l < list.size(); ++l) {
                 Entity entity = list.get(l);
@@ -110,7 +117,7 @@ public class ManaSphereEntity extends ManaPointEntity {
                 , 0.5f * MagickCore.getRandFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
-        litPar.setShakeLimit(15.0f);
+        litPar.setShakeLimit(5.0f);
         litPar.setCanCollide(false);
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
         MagickCore.addMagickParticle(litPar);
@@ -125,7 +132,7 @@ public class ManaSphereEntity extends ManaPointEntity {
             par.setGlow();
             par.setParticleGravity(0f);
             par.setLimitScale();
-            par.setShakeLimit(15f);
+            par.setShakeLimit(5f);
             MagickCore.addMagickParticle(par);
         }
     }

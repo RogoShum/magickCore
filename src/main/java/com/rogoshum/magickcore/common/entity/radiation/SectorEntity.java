@@ -1,14 +1,14 @@
 package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiation.SectorRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -53,7 +53,7 @@ public class SectorEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 1.5f;
+        return spellContext().range * 2.5f;
     }
 
     @Nonnull

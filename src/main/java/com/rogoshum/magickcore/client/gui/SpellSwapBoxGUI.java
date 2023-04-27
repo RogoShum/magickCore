@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.init.ModKeyBind;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
 import com.rogoshum.magickcore.common.network.Networking;
@@ -51,7 +51,6 @@ public class SpellSwapBoxGUI extends Screen {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.setShaderGameTime(MagickCore.proxy.getRunTick() * 50L, 0);
         float fog = RenderSystem.getShaderFogStart();
         RenderSystem.setShaderFogStart(0.0025f);
         RenderSystem.setShader(RenderHelper::getPositionColorTexLightmapShader);
@@ -74,7 +73,6 @@ public class SpellSwapBoxGUI extends Screen {
         RenderSystem.setShaderFogStart(fog);
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
-        RenderSystem.setShaderGameTime(Minecraft.getInstance().level.getGameTime(), Minecraft.getInstance().getFrameTime());
     }
 
     @Override

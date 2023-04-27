@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.mixin;
 
-import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.api.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.util.TakenTargetUtil;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;

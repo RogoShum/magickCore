@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.entity.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.entity.model.EntityHunterModel;
 import com.rogoshum.magickcore.common.entity.pointed.EntityHunterEntity;
 import com.rogoshum.magickcore.common.magick.Color;

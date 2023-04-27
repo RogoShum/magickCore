@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.init.ModGroups;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,8 +16,6 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
-
-import net.minecraft.world.item.Item.Properties;
 
 public class ElementContainerItem extends BaseItem{
     public ElementContainerItem(Properties properties) {

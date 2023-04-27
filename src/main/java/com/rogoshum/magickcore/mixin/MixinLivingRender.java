@@ -6,11 +6,11 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.render.SingleBuffer;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -131,14 +131,14 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
         RenderType rendertype = RenderHelper.getLayerEntityGlint(texture, 1.0f, 10f);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
         int i = LivingEntityRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
-        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.3F);
     }
 
     public void renderBuffLayerSolid(T entityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, Color color, ResourceLocation texture) {
         RenderType rendertype = RenderHelper.getLayerEntityGlintSolid(texture, 1.5f, 10f);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
         int i = LivingEntityRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
-        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 1.0F);
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.3F);
     }
 
     public void renderBuffLayerLayer(T entityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, Color color, ResourceLocation texture) {

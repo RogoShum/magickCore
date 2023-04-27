@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.entity.base;
 
-import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickElement;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;

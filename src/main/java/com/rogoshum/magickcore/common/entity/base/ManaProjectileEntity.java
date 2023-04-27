@@ -5,18 +5,18 @@ import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.ManaProjectileRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.ManaProjectileRenderer;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.*;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.*;
 import com.rogoshum.magickcore.common.util.EntityLightSourceManager;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import net.minecraft.world.entity.*;
@@ -247,7 +247,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                 par.setGlow();
                 par.setParticleGravity(0f);
                 par.setLimitScale();
-                par.setShakeLimit(15f);
+                par.setShakeLimit(5f);
                 MagickCore.addMagickParticle(par);
             }
 
@@ -275,7 +275,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
             Vec3 vector3d = this.getDeltaMovement();
             vector3d = vector3d.normalize().scale(getBbWidth() * 0.5);
             Level world = this.level;
-            Vec3 vector3d1 = this.position();
+            Vec3 vector3d1 = this.position().add(0, this.getBbHeight()*0.5, 0);
             Vec3 vector3d2 = vector3d1.add(vector3d);
             EntityHitResult raytraceResult = ProjectileUtil.getEntityHitResult(world, this, vector3d1, vector3d2, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), Entity::isAlive);
             if (raytraceResult != null) {
@@ -431,7 +431,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                 , 0.5f * this.getBbWidth(), 0.5f * this.getBbWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
-        litPar.setShakeLimit(15.0f);
+        litPar.setShakeLimit(5.0f);
         litPar.setLimitScale();
         MagickCore.addMagickParticle(litPar);
     }
@@ -538,7 +538,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
                         , 0.125f, 0.125f, MagickCore.rand.nextFloat(), 80, spellContext().element.getRenderer());
                 par.setGlow();
-                par.setShakeLimit(15.0f);
+                par.setShakeLimit(5.0f);
                 par.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
                 MagickCore.addMagickParticle(par);
             }
@@ -550,7 +550,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                         , this.getBbWidth() * 0.5f, this.getBbWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
                 litPar.setGlow();
                 litPar.setParticleGravity(0f);
-                litPar.setShakeLimit(15.0f);
+                litPar.setShakeLimit(5.0f);
                 litPar.addMotion(MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15, MagickCore.getNegativeToOne() / 15);
                 MagickCore.addMagickParticle(litPar);
             }

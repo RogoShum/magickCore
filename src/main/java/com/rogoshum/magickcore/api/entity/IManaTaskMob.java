@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.entity;
 
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.HashMap;

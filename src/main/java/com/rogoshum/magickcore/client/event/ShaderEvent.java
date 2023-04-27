@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.init.ModShaders;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
@@ -17,6 +17,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -85,10 +86,13 @@ public class ShaderEvent {
             }
         });
         try {
-            RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.NEW_ENTITY));
+            RenderHelper.setRendertypeEntityFogShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.POSITION_COLOR));
+            RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_dist"), DefaultVertexFormat.NEW_ENTITY));
             RenderHelper.setPositionTextureShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_tex"), DefaultVertexFormat.POSITION_TEX));
             RenderHelper.setRendertypeEntityTranslucentNoiseShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_noise"), DefaultVertexFormat.NEW_ENTITY));
             RenderHelper.setPositionColorTexLightmapShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
+            RenderHelper.setPositionColorTexLightmapDistShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap_dist"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
+            RenderHelper.setRendertypeEntityQuadrantShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_quadrant"), DefaultVertexFormat.NEW_ENTITY));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,11 +100,19 @@ public class ShaderEvent {
 
     @SubscribeEvent
     public void onSetupShaders(RenderWorldEvent.PreRenderMagickEvent event) {
+        RenderHelper.setProjectionMatrix4f(event.getProjectionMatrix());
+        PoseStack myPoseStack = new PoseStack();
+        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        myPoseStack.mulPoseMatrix(event.getMatrixStack().last().pose());
+        myPoseStack.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);
+        RenderHelper.setViewMatrix(myPoseStack);
+        RenderHelper.setModelMatrix(new PoseStack());
         if(Minecraft.useShaderTransparency()) {
             PoseStack poseStack = RenderSystem.getModelViewStack();
             poseStack.popPose();
             RenderSystem.applyModelViewMatrix();
         }
+        RenderHelper.checkRenderingShader();
         if(RenderHelper.stopShader()) return;
         Minecraft mc = Minecraft.getInstance();
 
@@ -116,8 +128,11 @@ public class ShaderEvent {
         shaders.forEach( (shader, shaderGroup) -> {
             RenderTarget framebuffer = shaderGroup.getTempTarget(Objects.requireNonNull(getShaderFrameName(shader)));
             framebuffer.clear(Minecraft.ON_OSX);
+            framebuffer.copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
         });
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        RenderSystem.setShaderTexture(4, Minecraft.getInstance().getMainRenderTarget().getDepthTextureId());
+        RenderSystem.setShaderTexture(5, Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
     }
 
     @SubscribeEvent

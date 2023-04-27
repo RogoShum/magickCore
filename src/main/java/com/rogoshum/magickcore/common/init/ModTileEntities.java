@@ -13,6 +13,10 @@ public class ModTileEntities {
             , () -> BlockEntityType.Builder.of(MagickCraftingTileEntity::new
                     , ModBlocks.MAGICK_CRAFTING.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<RadianceCrystalTileEntity>> RADIANCE_CRYSTAL_TILE_ENTITY = TILE_ENTITY.register("radiance_crystal_tile_entity"
+            , () -> BlockEntityType.Builder.of(RadianceCrystalTileEntity::new
+                    , ModBlocks.RADIANCE_CRYSTAL.get()).build(null));
+
     public static RegistryObject<BlockEntityType<SpiritCrystalTileEntity>> SPIRIT_CRYSTAL_TILE_ENTITY = TILE_ENTITY.register("spirit_crystal_tile_entity"
             , () -> BlockEntityType.Builder.of(SpiritCrystalTileEntity::new
                     , ModBlocks.SPIRIT_CRYSTAL.get()).build(null));

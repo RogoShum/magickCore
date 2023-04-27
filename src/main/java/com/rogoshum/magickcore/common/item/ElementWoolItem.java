@@ -1,12 +1,11 @@
 package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.ContextPointerRenderer;
 import com.rogoshum.magickcore.common.tileentity.ElementWoolTileEntity;
 import com.rogoshum.magickcore.client.item.ElementWoolRenderer;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModGroups;
@@ -29,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ElementWoolItem extends BlockItem{
+public class ElementWoolItem extends BlockItem {
     public ElementWoolItem() {
         super(ModBlocks.ELEMENT_WOOL.get(), BaseItem.properties().stacksTo(64));
     }

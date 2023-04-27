@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.init;
 
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.registry.ObjectRegistry;
-import com.rogoshum.magickcore.common.registry.elementmap.ElementFunctions;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.registry.ObjectRegistry;
+import com.rogoshum.magickcore.api.registry.elementmap.ElementFunctions;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -42,7 +42,7 @@ public class ModElements {
     public static final MagickElement STASIS = new MagickElement(LibElements.STASIS, STASIS_COLOR, STASIS_COLOR_SEC, ModDamages.getStasisDamage());
     public static final MagickElement WITHER = new MagickElement(LibElements.WITHER, WITHER_COLOR, WITHER_COLOR_SEC, ModDamages.getWitherDamage());
     public static final MagickElement TAKEN = new MagickElement(LibElements.TAKEN, TAKEN_COLOR, TAKEN_COLOR_SEC, ModDamages.getTakenDamage());
-    public static final MagickElement PSI = new MagickElement(LibElements.PSI, PSI_COLOR, PSI_COLOR_SEC, ModDamages.getPsiDamage());
+    public static final MagickElement PSI = new MagickElement(LibElements.PSI, PSI_COLOR, PSI_COLOR_SEC, ModDamages.getPsiDamage(), true);
     public static final MagickElement BOTANIA = new MagickElement(LibElements.BOTANIA, BOTANIA_COLOR, BOTANIA_COLOR_SEC, ModDamages.getBotaniaDamage());
 
     public static final List<String> elements = new ArrayList<>();

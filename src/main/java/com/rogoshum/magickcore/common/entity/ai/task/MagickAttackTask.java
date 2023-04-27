@@ -3,11 +3,11 @@ package com.rogoshum.magickcore.common.entity.ai.task;
 import com.google.common.collect.ImmutableMap;
 import com.rogoshum.magickcore.api.entity.IManaTaskMob;
 
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;

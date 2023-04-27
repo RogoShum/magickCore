@@ -1,11 +1,11 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.common.entity.superentity.DawnWardEntity;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.math.Vector3f;
@@ -24,7 +24,7 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
 
     public void renderOuter(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
-        baseOffset(matrixStackIn);
+        baseOffset(params.matrixStack);
         matrixStackIn.scale(scale, scale, scale);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_1)
@@ -32,8 +32,8 @@ public class DawnWardRenderer extends EasyRenderer<DawnWardEntity> {
                 , new RenderHelper.VertexContext(entity.getHitReactions(), true, "DAWN_WARD" + entity.getId(), 0.3f)
                 , 16);
         matrixStackIn.scale(1.01f, 1.01f, 1.01f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(RenderMode.ShaderList.SLIME_SHADER)
-                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE_0).useShader(RenderMode.ShaderList.BITS_SHADER)
+                , new RenderHelper.RenderContext(0.4f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
                 , new RenderHelper.VertexContext(entity.getHitReactions(),true, "DAWN_WARD"+entity.getId(), 0.3f)
                 , 16);
     }

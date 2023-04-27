@@ -2,16 +2,14 @@ package com.rogoshum.magickcore.common.entity.projectile;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.client.entity.easyrender.PhantomRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.projectile.RayRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
@@ -106,7 +104,7 @@ public class PhantomEntity extends ManaProjectileEntity {
                 , 0.15f * this.getBbWidth(), 0.15f * this.getBbWidth(), 0.8f, 20, spellContext().element.getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
-        litPar.setShakeLimit(15.0f);
+        litPar.setShakeLimit(5.0f);
         litPar.setLimitScale();
         MagickCore.addMagickParticle(litPar);
     }

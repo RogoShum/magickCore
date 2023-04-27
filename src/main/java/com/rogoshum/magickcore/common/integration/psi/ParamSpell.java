@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.integration.psi;
 
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import net.minecraft.world.entity.Entity;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import vazkii.psi.api.spell.param.ParamSpecific;
 
 public class ParamSpell extends ParamSpecific<SpellContext> {

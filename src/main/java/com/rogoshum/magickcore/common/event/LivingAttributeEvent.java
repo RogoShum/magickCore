@@ -15,5 +15,7 @@ public class LivingAttributeEvent {
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.MAGE.get(), Villager.createAttributes().build());
         event.put(ModEntities.ARTIFICIAL_LIFE.get(), LivingEntity.createLivingAttributes().add(Attributes.MAX_HEALTH, 3.0D).build());
+        event.put(ModEntities.QUADRANT_CRYSTAL.get(), LivingEntity.createLivingAttributes().add(Attributes.MAX_HEALTH, 50.0D).build());
+        event.put(ModEntities.LIVING_ARGENT.get(), LivingEntity.createLivingAttributes().add(Attributes.MAX_HEALTH, 0.0D).build());
     }
 }

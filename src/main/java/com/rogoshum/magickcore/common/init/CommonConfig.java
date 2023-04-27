@@ -38,20 +38,20 @@ public class CommonConfig {
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("Mana Material settings").push("Origin Material");
-        ORIGIN_FORCE = COMMON_BUILDER.comment("Origin material force limit").defineInRange("force", 5, 0, 15d);
+        ORIGIN_FORCE = COMMON_BUILDER.comment("Origin material force limit").defineInRange("force", 7, 0, 15d);
         ORIGIN_RANGE = COMMON_BUILDER.comment("Origin material range limit").defineInRange("range", 3, 0, 10d);
         ORIGIN_TICK = COMMON_BUILDER.comment("Origin material tick limit").defineInRange("tick", 120, 0, 1200);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push("Ender Dragon Material");
-        ENDER_FORCE = COMMON_BUILDER.comment("Ender Dragon material force limit").defineInRange("force", 7, 0, 15d);
-        ENDER_RANGE = COMMON_BUILDER.comment("Ender Dragon material range limit").defineInRange("range", 5, 0, 10d);
-        ENDER_TICK = COMMON_BUILDER.comment("Ender Dragon material tick limit").defineInRange("tick", 140, 0, 1200);
+        ENDER_FORCE = COMMON_BUILDER.comment("Ender Dragon material force limit").defineInRange("force", 11, 0, 15d);
+        ENDER_RANGE = COMMON_BUILDER.comment("Ender Dragon material range limit").defineInRange("range", 6, 0, 10d);
+        ENDER_TICK = COMMON_BUILDER.comment("Ender Dragon material tick limit").defineInRange("tick", 200, 0, 1200);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push("Nether Star Material");
-        NETHER_FORCE = COMMON_BUILDER.comment("Nether Star material force limit").defineInRange("force", 6, 0, 15d);
-        NETHER_RANGE = COMMON_BUILDER.comment("Nether Star material range limit").defineInRange("range", 7, 0, 10d);
+        NETHER_FORCE = COMMON_BUILDER.comment("Nether Star material force limit").defineInRange("force", 9, 0, 15d);
+        NETHER_RANGE = COMMON_BUILDER.comment("Nether Star material range limit").defineInRange("range", 9, 0, 10d);
         NETHER_TICK = COMMON_BUILDER.comment("Nether Star material tick limit").defineInRange("tick", 300, 0, 1200);
         COMMON_BUILDER.pop();
 

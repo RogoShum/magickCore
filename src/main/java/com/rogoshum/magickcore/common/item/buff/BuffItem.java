@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.item.buff;
 
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import net.minecraft.world.entity.LivingEntity;
 

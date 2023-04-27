@@ -1,10 +1,8 @@
 package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.common.block.ItemExtractorBlock;
-import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
-import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -19,9 +17,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ItemExtractorTileEntity extends BlockEntity{
+    private final ConditionContext condition = ConditionContext.create();
     private ItemEntity item;
     private AABB aabb;
     public ItemExtractorTileEntity(BlockPos pos, BlockState state) {
@@ -34,8 +32,7 @@ public class ItemExtractorTileEntity extends BlockEntity{
 
         BlockState state = level.getBlockState(me.worldPosition);
         BlockEntity tile = level.getBlockEntity(me.worldPosition.offset(state.getValue(ItemExtractorBlock.FACING).getOpposite().getNormal()));
-        if(tile instanceof Container) {
-            Container inventory = (Container) tile;
+        if(tile instanceof Container inventory) {
             for (int i = 0; i < inventory.getContainerSize(); i++) {
                 ItemStack slot = inventory.getItem(i);
                 if(!slot.isEmpty()) {

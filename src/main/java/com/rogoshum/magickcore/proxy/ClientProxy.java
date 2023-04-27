@@ -2,13 +2,14 @@ package com.rogoshum.magickcore.proxy;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.render.*;
 import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
 import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
-import com.rogoshum.magickcore.client.render.RenderMode;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.client.render.RenderThread;
 import com.rogoshum.magickcore.client.element.*;
@@ -20,9 +21,9 @@ import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.registry.ObjectRegistry;
-import com.rogoshum.magickcore.common.registry.elementmap.EntityRenderers;
-import com.rogoshum.magickcore.common.registry.elementmap.RenderFunctions;
+import com.rogoshum.magickcore.api.registry.ObjectRegistry;
+import com.rogoshum.magickcore.api.registry.elementmap.EntityRenderers;
+import com.rogoshum.magickcore.api.registry.elementmap.RenderFunctions;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.client.Minecraft;
@@ -250,6 +251,7 @@ public class ClientProxy implements IProxy {
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SPIN.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.CHARGE.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MULTI_RELEASE.get(), ManaEntityRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.QUADRANT_CRYSTAL.get(), ManaLivingEntityRenderer::new);
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
@@ -284,11 +286,12 @@ public class ClientProxy implements IProxy {
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.SPIRIT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(ModBlocks.RADIANCE_CRYSTAL.get(), RenderType.cutout());
 		//BlockEntityRenderers.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ITEM_EXTRACTOR.get(), RenderType.cutout());
-		BlockEntityRenderers.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
+		//BlockEntityRenderers.register(ModTileEntities.ELEMENT_WOOL_TILE_ENTITY.get(), ElementWoolRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_WOOL.get(), RenderType.solid());
 	}
 

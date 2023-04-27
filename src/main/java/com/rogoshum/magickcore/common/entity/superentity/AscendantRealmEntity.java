@@ -1,19 +1,18 @@
 package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.AscendantRealmRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.extradata.entity.TakenEntityData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.extradata.entity.TakenEntityData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -79,7 +78,7 @@ public class AscendantRealmEntity extends ManaPointEntity implements ISuperEntit
                     , this.random.nextFloat(), this.random.nextFloat(), 0.7f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
-            litPar.setShakeLimit(15.0f);
+            litPar.setShakeLimit(5.0f);
             litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.1);
             MagickCore.addMagickParticle(litPar);
         }

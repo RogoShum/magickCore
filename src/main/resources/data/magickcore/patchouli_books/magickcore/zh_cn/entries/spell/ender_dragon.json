@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:ender_dragon_material",
-	  "text": "由末影龙掉落，与法术核心合成后可以提升法术核心的最高能量上限。"
+	  "text": "使用紫颂果在魔法工作台转换而成，与法术核心合成后可以提升法术核心的最高能量上限。"
     },
     {
       "type": "magickcore:element_recipe",

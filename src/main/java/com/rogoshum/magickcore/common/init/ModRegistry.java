@@ -1,19 +1,18 @@
 package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.integration.psi.PsiAbility;
 import com.rogoshum.magickcore.common.lib.LibConditions;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.magick.ability.*;
-import com.rogoshum.magickcore.common.magick.condition.*;
-import com.rogoshum.magickcore.common.magick.context.child.*;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.registry.ObjectRegistry;
-import com.rogoshum.magickcore.common.registry.elementmap.ElementFunctions;
+import com.rogoshum.magickcore.api.magick.condition.*;
+import com.rogoshum.magickcore.api.magick.context.child.*;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.ObjectRegistry;
+import com.rogoshum.magickcore.api.registry.elementmap.ElementFunctions;
 
 import java.util.concurrent.Callable;
 
@@ -36,6 +35,7 @@ public class ModRegistry {
                     functions.add(ApplyType.SUPER, ArcAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, ArcAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, ArcAbility::agglomerate);
+                    functions.add(ApplyType.RADIANCE, ArcAbility::radiance);
                     break;
                 case LibElements.SOLAR:
                     functions.add(ApplyType.ATTACK, SolarAbility::damageEntity);
@@ -46,6 +46,7 @@ public class ModRegistry {
                     functions.add(ApplyType.SUPER, SolarAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, SolarAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, SolarAbility::agglomerate);
+                    functions.add(ApplyType.RADIANCE, SolarAbility::radiance);
                     break;
                 case LibElements.VOID:
                     functions.add(ApplyType.ATTACK, VoidAbility::damageEntity);
@@ -57,6 +58,7 @@ public class ModRegistry {
                     functions.add(ApplyType.SUPER, VoidAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, VoidAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, VoidAbility::agglomerate);
+                    functions.add(ApplyType.RADIANCE, VoidAbility::radiance);
                     break;
                 case LibElements.STASIS:
                     functions.add(ApplyType.ATTACK, StasisAbility::damageEntity);
@@ -67,6 +69,7 @@ public class ModRegistry {
                     functions.add(ApplyType.SUPER, StasisAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, StasisAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, StasisAbility::agglomerate);
+                    functions.add(ApplyType.RADIANCE, StasisAbility::radiance);
                     break;
                 case LibElements.TAKEN:
                     functions.add(ApplyType.ATTACK, TakenAbility::damageEntity);
@@ -88,6 +91,7 @@ public class ModRegistry {
                     functions.add(ApplyType.SUPER, WitherAbility::superEntity);
                     functions.add(ApplyType.DIFFUSION, WitherAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, WitherAbility::agglomerate);
+                    functions.add(ApplyType.RADIANCE, WitherAbility::radiance);
             }
         });
 

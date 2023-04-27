@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Solar of the Buff creates a non-damaging thermal explosion that pushes the target away. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
+      "text": "Solar of the Diffusion creates a non-damaging thermal explosion that pushes the target away. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
     }
   ]
 }

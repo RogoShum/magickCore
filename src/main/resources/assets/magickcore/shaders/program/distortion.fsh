@@ -9,7 +9,6 @@ uniform vec2 InSize;
 
 uniform float BlurScale;
 uniform float Radius;
-uniform float Alpha;
 
 void main() {
     vec4 center = texture2D(DiffuseSampler, texCoord);
@@ -46,7 +45,6 @@ void main() {
     bulrDir0 = vec2(scale, 0.0);
     bulrDir1 = vec2(0.0, scale);
     blurred = texture2D(DiffuseSampler, texCoord);
-    float totalAlpha = center.a;
     bool nonEmpty = false;
     for(float r = -empty; r <= empty; r += 1.0) {
         vec4 sampleValue0 = texture2D(DiffuseSampler, texCoord + oneTexel * r * bulrDir0);
@@ -56,16 +54,12 @@ void main() {
         blurred += sampleValue0;
         blurred += sampleValue1;
         if(sampleValue0.a > 0.0) {
-            totalAlpha += sampleValue0.a;
             nonEmpty = true;
         }
 
         if(sampleValue1.a > 0.0){
-            totalAlpha += sampleValue1.a;
             nonEmpty = true;
         }
     }
-    float alpha = totalAlpha / count;
-    alpha = center.a;
-    gl_FragColor = vec4(blurred.rgb / count, alpha);
+    gl_FragColor = vec4(blurred.rgb / count, center.a);
 }

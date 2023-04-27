@@ -2,13 +2,13 @@ package com.rogoshum.magickcore.client.entity.easyrender.laser;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> {
     Queue<Vec3> DIRECTION;
-    RenderType TYPE;
+    final RenderType TYPE = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getWaveTexture(1), 1.0f);
 
     public ThornsCaressLaserRenderer(ThornsCaressEntity entity) {
         super(entity);
@@ -51,7 +51,7 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
             Vec2 rota = getRotationFromVector(dirc);
             DIRECTION.add(new Vec3(rota.x, rota.y, distance));
         }
-        TYPE = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getWaveTexture(1), 2.0f);
+
     }
 
     public void render(RenderParams params) {
@@ -65,7 +65,7 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
             matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((float) vector3d.y));
             RenderHelper.renderLaserParticle(
                     BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element.primaryColor()), RenderHelper.EMPTY_VERTEX_CONTEXT, (float) (vector3d.z * 2));
+                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element.primaryColor()), (float) (vector3d.z * 2));
             matrixStackIn.popPose();
         }
     }
@@ -78,8 +78,7 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        if(TYPE != null)
-            map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::render);
+        map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::render);
         return map;
     }
 }

@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.itemstack;
 
-import com.rogoshum.magickcore.common.extradata.ItemExtraData;
+import com.rogoshum.magickcore.api.extradata.ItemExtraData;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

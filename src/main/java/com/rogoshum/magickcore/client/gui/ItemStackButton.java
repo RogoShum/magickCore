@@ -4,23 +4,14 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.proxy.ClientProxy;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.network.chat.Component;
-
-import java.util.List;
-
-
-import net.minecraft.client.gui.components.Button.OnPress;
-import net.minecraftforge.client.gui.GuiUtils;
 
 public class ItemStackButton extends Button {
     public final ItemStack stack;
@@ -55,7 +46,6 @@ public class ItemStackButton extends Button {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderGameTime(MagickCore.proxy.getRunTick() * 50L, 0);
         int size = 42;
         render(matrixStack, x, y, 0, 0, size, size, size, size);
         RenderSystem.setShaderTexture(0, BOTTOM);

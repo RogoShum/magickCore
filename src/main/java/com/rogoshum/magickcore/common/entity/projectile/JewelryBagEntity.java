@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.api.IConditionOnlyEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.event.EntityEvents;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.projectile.JewelryBagRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
@@ -13,12 +13,12 @@ import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.magick.context.child.ItemContext;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.ProjectileUtil;
 import net.minecraft.world.level.block.Block;
@@ -290,7 +290,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 , (MagickCore.getRandFloat() * this.getBbWidth()) * 0.3f, (MagickCore.getRandFloat() * this.getBbWidth()) * 0.3f, 1.0f
                 , 20, spellContext().element.getRenderer());
         litPar.setGlow();
-        litPar.setShakeLimit(15.0f);
+        litPar.setShakeLimit(5.0f);
         litPar.setLimitScale();
         MagickCore.addMagickParticle(litPar);
     }

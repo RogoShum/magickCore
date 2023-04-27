@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraftforge.eventbus.api.Event;
 
 public class ElementEvent {

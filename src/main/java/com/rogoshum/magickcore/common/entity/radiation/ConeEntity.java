@@ -2,13 +2,13 @@ package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiation.ConeRadiateRenderer;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -67,7 +67,7 @@ public class ConeEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 1.5f;
+        return spellContext().range * 2.5f;
     }
 
     protected void applyParticle(int particleAge) {
@@ -80,32 +80,6 @@ public class ConeEntity extends ManaRadiateEntity {
         }
         if(direction == null) return;
         ParticleUtil.spawnImpactParticle(level, this.position(), range, direction, spellContext().element, ParticleType.PARTICLE);
-        /*
-        for (int i = 1; i <= range; ++i) {
-            Vector3d[] vectors = ParticleUtil.drawCone(this.getPositionVec(), direction.normalize().scale(getRange()), 4.5 * i, i * 2);
-            for (Vector3d vector : vectors) {
-                Vector3d dir = this.getPositionVec().subtract(vector);
-                LitParticle par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                        , vector
-                        , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setLimitScale();
-                par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
-                MagickCore.addMagickParticle(par);
-
-                par = new LitParticle(this.world, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
-                        , vector
-                        , 0.2f, 0.2f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
-                par.setGlow();
-                par.setParticleGravity(0);
-                par.setLimitScale();
-                par.addMotion(dir.x * 0.1, dir.y * 0.1, dir.z * 0.1);
-                MagickCore.addMagickParticle(par);
-            }
-        }
-
-         */
     }
 
     @Override

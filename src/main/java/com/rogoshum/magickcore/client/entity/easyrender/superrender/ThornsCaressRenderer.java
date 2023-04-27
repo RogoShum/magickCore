@@ -1,10 +1,10 @@
 package com.rogoshum.magickcore.client.entity.easyrender.superrender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -20,8 +20,8 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     float preRotate;
     float postRotate;
     float rotate;
-    private static final RenderType BLANK = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
-    private static final RenderType SPHERE = RenderHelper.getTexedSphereGlow(sphere_rotate, 1f, 0f);
+    private static final RenderType BLANK = RenderHelper.getTexedSphereGlow(blank, 2f, 0f, 0.2f, 1f);
+    private static final RenderType SPHERE = RenderHelper.getTexedSphereGlow(sphere_rotate, 2, 0f, 0.2f, 1f);
     float degrees;
 
     public ThornsCaressRenderer(ThornsCaressEntity entity) {
@@ -64,7 +64,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.2f, 1.2f, 1.2f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 6);
+        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.95f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 6);
     }
 
     @Override

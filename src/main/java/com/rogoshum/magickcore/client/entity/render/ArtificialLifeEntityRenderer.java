@@ -2,24 +2,18 @@ package com.rogoshum.magickcore.client.entity.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.entity.IManaEntity;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.entity.model.EntityHunterModel;
-import com.rogoshum.magickcore.client.render.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -48,7 +42,8 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 	@Override
 	public void render(ArtificialLifeEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-		if(entityIn.deathTime <= 0 && entityIn.isFocus()) {
+		if(entityIn.deathTime > 0) return;
+		if(entityIn.isFocus()) {
 			matrixStackIn.pushPose();
 			matrixStackIn.translate(0, entityIn.getEyeHeight(), 0);
 			if(entityIn.getVectorSet().isEmpty()) {

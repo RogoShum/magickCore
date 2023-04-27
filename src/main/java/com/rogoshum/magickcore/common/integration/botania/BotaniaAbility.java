@@ -2,22 +2,23 @@ package com.rogoshum.magickcore.common.integration.botania;
 
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.extradata.entity.LeechEntityData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.entity.LeechEntityData;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.common.util.ParticleBuilder;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
+import vazkii.botania.api.item.ISparkEntity;
 import vazkii.botania.api.mana.*;
 import vazkii.botania.api.recipe.IManaInfusionRecipe;
 import vazkii.botania.common.block.ModBlocks;
@@ -40,6 +42,7 @@ import vazkii.botania.common.block.tile.mana.IThrottledPacket;
 import vazkii.botania.common.block.tile.mana.TilePool;
 import vazkii.botania.common.entity.EntityManaBurst;
 import vazkii.botania.common.entity.ModEntities;
+import vazkii.botania.common.handler.ModSounds;
 import vazkii.botania.xplat.BotaniaConfig;
 import vazkii.botania.xplat.IXplatAbstractions;
 
@@ -48,9 +51,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BotaniaAbility {
+    public static boolean radiance(MagickContext context) {
+        if(context.victim == null) return false;
+        if(!context.world.isDay()) return false;
+        BlockPos pos = context.victim.getOnPos().above();
+        if(context.victim instanceof ISparkEntity)
+            pos = pos.below(2);
+        BlockState state = context.world.getBlockState(pos);
+        BlockEntity tile = context.world.getBlockEntity(pos);
+        var receiver = IXplatAbstractions.INSTANCE.findManaReceiver(context.world, pos, state, tile, Direction.DOWN);
+        if(receiver != null && !receiver.isFull()) {
+            ParticleUtil.spawnBlastParticle(context.world, Vec3.atCenterOf(pos), 2, ModElements.BOTANIA, ParticleType.PARTICLE);
+            receiver.receiveMana(Math.max(1, (int) (context.force*10)));
+            return true;
+        }
+        return false;
+    }
+
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null || context.victim instanceof ItemEntity) return false;
 
+        if(ModBuffs.hasBuff(context.victim, LibBuff.THORNS))
+            context.force *= 1.25f;
         if(context.caster != null && context.projectile instanceof Projectile)
             return context.victim.hurt(ModDamages.applyProjectileBotaniaDamage(context.caster, context.projectile), context.force);
         else if(context.caster != null)
@@ -59,6 +81,27 @@ public class BotaniaAbility {
             return context.victim.hurt(ModDamages.applyEntityBotaniaDamage(context.projectile), context.force);
         else
             return context.victim.hurt(ModDamages.getBotaniaDamage(), context.force);
+    }
+
+    public static boolean superEntity(MagickContext context) {
+        if(!(context.caster instanceof LivingEntity)) return false;
+        List<LivingEntity> livings = context.world.getEntitiesOfClass(LivingEntity.class, context.caster.getBoundingBox().inflate(32), Entity::isAlive);
+        context.world.playSound(null, context.caster, ModSounds.manaBlaster, SoundSource.PLAYERS, 2.0f, 0.0f);
+        for(LivingEntity living : livings) {
+            if(living == context.caster || MagickReleaseHelper.sameLikeOwner(context.caster, living)) continue;
+            LeechEntityData data = ExtraDataUtil.leechEntityData(living);
+            if(!context.world.isClientSide()) {
+                data.setCount(context.tick/80);
+                data.setForce(1.5f);
+                data.setOwner((LivingEntity) context.caster);
+                ModBuffs.applyBuff(living, LibBuff.THORNS, context.tick, context.force, false);
+
+                ParticleBuilder.create(context.world, ParticleType.PARTICLE, new Vec3(living.position().x
+                        , living.position().y+living.getBbHeight()*0.5
+                        , living.position().z), 1.2f, 1.2f, 1.0f, 100, LibElements.BOTANIA);
+            }
+        }
+        return true;
     }
 
     public static boolean hitBlock(MagickContext context) {

@@ -1,0 +1,25 @@
+{
+    "targets": [
+        "magickcore:color_final",
+        "magickcore:color_swap"
+    ],
+    "passes": [{
+        "name": "magickcore:color",
+        "intarget": "minecraft:main",
+        "outtarget": "magickcore:color_swap",
+        "auxtargets": [{
+            "name": "DiffuseDepthSampler",
+            "id": "minecraft:main:depth"
+        }, {
+            "name": "ColorSampler",
+            "id": "magickcore:color_final"
+        }, {
+            "name": "ColorDepthSampler",
+            "id": "magickcore:color_final"
+        }]
+    }, {
+        "name": "blit",
+        "intarget": "magickcore:color_swap",
+        "outtarget": "magickcore:color_final"
+    }]
+}

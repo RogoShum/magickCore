@@ -1,32 +1,23 @@
 package com.rogoshum.magickcore.common.item.tool;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.item.StaffRenderer;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
-import com.rogoshum.magickcore.proxy.ClientProxy;
-import com.rogoshum.magickcore.proxy.IProxy;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-import net.minecraft.world.item.Item.Properties;
 import net.minecraftforge.client.IItemRenderProperties;
 
 public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem {
@@ -56,7 +47,7 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
         }
         boolean did = MagickReleaseHelper.releaseMagick(context);
         if(did && playerIn instanceof Player)
-            ((Player) playerIn).getCooldowns().addCooldown(this, 10);
+            ((Player) playerIn).getCooldowns().addCooldown(this, 5);
         return did;
     }
 }

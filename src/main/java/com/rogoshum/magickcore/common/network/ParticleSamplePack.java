@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;

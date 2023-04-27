@@ -1,15 +1,11 @@
 package com.rogoshum.magickcore.common.event;
 
-import com.rogoshum.magickcore.common.advancements.StringTrigger;
-import com.rogoshum.magickcore.common.extradata.entity.PlayerTradeUnlock;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.advancements.StringTrigger;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
-import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibEffect;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;

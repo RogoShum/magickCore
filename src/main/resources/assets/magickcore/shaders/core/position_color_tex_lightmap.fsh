@@ -15,7 +15,7 @@ in vec2 noiseUV;
 out vec4 fragColor;
 
 void main() {
-    vec2 distuv = vec2(noiseUV.x + GameTime * 2.0, noiseUV.y + GameTime * 2.0);
+    vec2 distuv = vec2(noiseUV.x + GameTime * 50.0, noiseUV.y + GameTime * 50.0);
 
     vec2 offsetUV = texture(Sampler3, distuv).rb;
     offsetUV = ((offsetUV * 2.0) - 1.0) * FogStart;

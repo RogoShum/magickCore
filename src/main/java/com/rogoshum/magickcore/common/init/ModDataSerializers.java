@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.magick.ManaCapacity;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.ManaCapacity;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;

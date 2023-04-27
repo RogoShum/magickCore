@@ -1,25 +1,21 @@
 package com.rogoshum.magickcore.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
-import com.rogoshum.magickcore.api.render.IEasyRender;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderMode;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.client.vertex.VertexShakerHelper;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
-import com.mojang.math.Matrix4f;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
@@ -40,12 +36,10 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     protected double renderY;
     protected double renderZ;
 
-    protected Vec3[] quad = RenderHelper.QuadVector;
     private Color color;
     private final float alpha;
-    private float renderAlpha;
     private int age = 1;
-    private int maxAge;
+    private final int maxAge;
     private float scaleWidth;
     private float scaleHeight;
     private ResourceLocation texture;
@@ -130,7 +124,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public LitParticle setShakeLimit(float shakeLimit) {
-        this.shakeLimit = shakeLimit;
+        this.shakeLimit = shakeLimit*0.1f*Math.min(scaleHeight, scaleWidth);
         return this;
     }
 
@@ -330,8 +324,13 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return map;
     }
 
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
+        return null;
+    }
+
     public RenderMode getRenderMode() {
-        type = isGlow ? RenderHelper.getTexedParticleGlow(texture, 0) : RenderHelper.getTexedParticle(texture, 0);
+        type = isGlow ? RenderHelper.getTexedParticleGlow(texture, shakeLimit) : RenderHelper.getTexedParticle(texture, shakeLimit);
         return new RenderMode(type, shader);
     }
 
@@ -346,59 +345,14 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-
-        if(shakeLimit <= 0) {
-            RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
-        } else if(quad != null && color != null) {
-            Matrix4f matrix4f = matrixStackIn.last().pose();
-            BufferBuilder buffer = renderParams.buffer;
-            BufferContext context = BufferContext.create(matrixStackIn, buffer, type).useShader(shader);
-            RenderHelper.begin(context);
-            try {
-                buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(1.0f, 1.0f)
-                        .uv2(RenderHelper.renderLight).endVertex();
-                buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(1.0f, 0.0f)
-                        .uv2(RenderHelper.renderLight).endVertex();
-                buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(0.0f, 0.0f)
-                        .uv2(RenderHelper.renderLight).endVertex();
-                buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), renderAlpha).uv(0.0f, 1.0f)
-                        .uv2(RenderHelper.renderLight).endVertex();
-            } catch (Exception ignored) {
-
-            }
-
-            RenderHelper.finish(context);
-        }
-
+        RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
         matrixStackIn.popPose();
     }
 
     @Override
     public void update() {
         if (this.texture == null) return;
-
-        renderAlpha = getAlpha(this.alpha);
-        Vec3[] QuadVector = RenderHelper.QuadVector;
-        Vec3 V0 = QuadVector[0];
-        Vec3 V1 = QuadVector[1];
-        Vec3 V2 = QuadVector[2];
-        Vec3 V3 = QuadVector[3];
-        if (shakeLimit > 0.0f) {
-            VertexShakerHelper.VertexGroup group = VertexShakerHelper.getGroup(this.toString());
-            group.putVertex(QuadVector[0].x(), QuadVector[0].y(), QuadVector[0].z(), shakeLimit);
-            group.putVertex(QuadVector[1].x(), QuadVector[1].y(), QuadVector[1].z(), shakeLimit);
-            group.putVertex(QuadVector[2].x(), QuadVector[2].y(), QuadVector[2].z(), shakeLimit);
-            group.putVertex(QuadVector[3].x(), QuadVector[3].y(), QuadVector[3].z(), shakeLimit);
-
-            V0 = group.getVertex(QuadVector[0].x(), QuadVector[0].y(), QuadVector[0].z()).getPositionVec();
-            V1 = group.getVertex(QuadVector[1].x(), QuadVector[1].y(), QuadVector[1].z()).getPositionVec();
-            V2 = group.getVertex(QuadVector[2].x(), QuadVector[2].y(), QuadVector[2].z()).getPositionVec();
-            V3 = group.getVertex(QuadVector[3].x(), QuadVector[3].y(), QuadVector[3].z()).getPositionVec();
-        }
-
-        Vec3[] Quad = new Vec3[4];
-        Quad[0] = V0; Quad[1] = V1; Quad[2] = V2; Quad[3] = V3;
-        quad = Quad;
+        float renderAlpha = getAlpha(this.alpha);
         renderContext = new RenderHelper.RenderContext(renderAlpha, color, RenderHelper.renderLight);
     }
 

@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:ender_dragon_material",
-	  "text": "Dropped by the Ender Dragon, it can be combined with the context core to increase the maximum energy limit of the context core."
+	  "text": "It is converted from the Chorus Fruit at the Magic Workbench, it can be combined with the context core to increase the maximum energy limit of the context core."
     },
     {
       "type": "magickcore:element_recipe",

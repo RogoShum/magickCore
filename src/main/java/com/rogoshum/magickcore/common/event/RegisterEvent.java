@@ -1,22 +1,27 @@
 package com.rogoshum.magickcore.common.event;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.IQuadrantEntity;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
+import com.rogoshum.magickcore.api.extradata.entity.*;
+import com.rogoshum.magickcore.common.entity.living.QuadrantCrystalEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
-import com.rogoshum.magickcore.common.extradata.entity.*;
 import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -28,6 +33,8 @@ import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
@@ -95,7 +102,7 @@ public class RegisterEvent {
                     ItemEntity entity = new ItemEntity(event.getEntityLiving().level, event.getEntityLiving().getX(), event.getEntityLiving().getY() + 0.5f, event.getEntityLiving().getZ(), stack);
                     if(!event.getEntityLiving().level.isClientSide)
                         event.getEntityLiving().level.addFreshEntity(entity);
-                } else {
+                } else if(!(event.getEntityLiving() instanceof IQuadrantEntity)){
                     ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
                     Vec3 vec = event.getEntityLiving().position();
                     orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);
@@ -105,6 +112,9 @@ public class RegisterEvent {
                     orb.spellContext().tick(200);
                     orb.setCaster(event.getEntityLiving());
                     event.getEntityLiving().level.addFreshEntity(orb);
+                    if(event.getSource().getEntity() instanceof ServerPlayer) {
+                        AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getSource().getEntity(), "element_energy_" + state.getElement().type());
+                    }
                 }
             }
         });
@@ -145,6 +155,22 @@ public class RegisterEvent {
                 });
             }
         });
+    }
+
+    public static void spawnQuadrantCrystal(WorldGenLevel level, ChunkAccess chunk, BlockPos pos) {
+        if(chunk.getPos().x % 12 == 0 && chunk.getPos().z % 12 == 0) {
+            ServerLevel server = level.getLevel();
+            Random rand = new Random(server.getSeed() + chunk.getPos().x + chunk.getPos().z);
+            if(rand.nextInt(5) == 0) {
+                QuadrantCrystalEntity quadrant = ModEntities.QUADRANT_CRYSTAL.get().create(server);
+                quadrant.spellContext().element(MagickRegistry.getRandomFromAllElements());
+                quadrant.spellContext().force(1.2f + rand.nextFloat()*2f);
+                quadrant.spellContext().range(8+rand.nextInt(25));
+                quadrant.setPos(new Vec3(pos.getX(), 128, pos.getZ()));
+                quadrant.init();
+                server.addFreshEntity(quadrant);
+            }
+        }
     }
 
     public static float getShieldCapacity(LivingEntity livingEntity) {

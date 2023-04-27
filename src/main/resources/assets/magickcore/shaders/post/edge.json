@@ -1,0 +1,19 @@
+{
+    "targets": [
+        "magickcore:edge_final",
+        "magickcore:edge_swap"
+    ],
+    "passes": [{
+        "name": "magickcore:edge",
+        "intarget": "magickcore:edge_final",
+        "outtarget": "magickcore:edge_swap",
+        "auxtargets": [{
+            "name": "DiffuseDepthSampler",
+            "id": "minecraft:main:depth"
+        }]
+    }, {
+        "name": "blit",
+        "intarget": "magickcore:edge_swap",
+        "outtarget": "magickcore:edge_final"
+    }]
+}

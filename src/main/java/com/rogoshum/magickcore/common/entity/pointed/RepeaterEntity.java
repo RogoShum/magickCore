@@ -7,12 +7,12 @@ import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
@@ -144,7 +144,7 @@ public class RepeaterEntity extends ManaPointEntity {
         par.setGlow();
         par.setParticleGravity(0f);
         par.setLimitScale();
-        par.setShakeLimit(15f);
+        par.setShakeLimit(5f);
         MagickCore.addMagickParticle(par);
     }
 }

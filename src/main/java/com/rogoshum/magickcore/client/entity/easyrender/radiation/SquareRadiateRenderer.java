@@ -1,8 +1,8 @@
 package com.rogoshum.magickcore.client.entity.easyrender.radiation;
 
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.radiation.SquareEntity;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -36,7 +36,7 @@ public class SquareRadiateRenderer extends EasyRenderer<SquareEntity> {
     @Override
     public void update() {
         super.update();
-        scale = entity.spellContext().range;
+        scale = entity.getRange()*2;
     }
 
     @Override

@@ -1,13 +1,18 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
+import com.google.common.collect.Queues;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.mana.IManaCapacity;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.magick.Color;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -21,6 +26,8 @@ import com.mojang.math.Vector3f;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEntity> {
@@ -28,8 +35,11 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
     protected final HashMap<Vec3, VoxelShape> shapes = new HashMap<>();
     protected final HashSet<Vec3> posSet = new HashSet<>();
     protected static final RenderType BLOCK_TYPE = RenderHelper.getLineStripPC(5);
-    protected static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/laser/ray_top.png");
-    protected static final RenderType LASER_TYPE = RenderHelper.getTexedLaser(LASER_TOP);
+    protected static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/element/base/wave/wave_0.png");
+    Queue<Vec3> DIRECTION;
+    private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/element/base/wave/wave_0.png");
+    private final static RenderType SIDE = RenderHelper.getTexedEntityGlint(RenderHelper.SPHERE_ROTATE, 1f, 0f);
+    final RenderType TYPE = RenderHelper.getTexedLaserGlint(LASER_MID, -1f);
     public ArtificialLifeEntityRenderer(ArtificialLifeEntity entity) {
         super(entity);
     }
@@ -48,6 +58,17 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
             for(Vec3 vec : entity.getVectorSet()) {
                 addPos(vec, cam);
             }
+        }
+        DIRECTION = Queues.newArrayDeque();
+        List<Entity> livings = entity.level.getEntities(entity, entity.getBoundingBox().inflate(8), entity -> entity instanceof IManaCapacity);
+        for (Entity entity : livings) {
+            Vec3 me = getEntityRenderVector(Minecraft.getInstance().getFrameTime()).add(0, this.entity.getBbHeight() * 0.5, 0);
+            Vec3 it = getEntityRenderVector(entity, Minecraft.getInstance().getFrameTime()).add(0, entity.getBbHeight() * 0.5, 0);
+            Vec3 dirc = me.subtract(it);
+            float distance = (float) dirc.length();
+            dirc = dirc.normalize();
+            Vec2 rota = getRotationFromVector(dirc);
+            DIRECTION.add(new Vec3(rota.x, rota.y, distance));
         }
     }
 
@@ -68,20 +89,12 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
         return Minecraft.getInstance().crosshairPickEntity == entity && entity.isFocus();
     }
 
-    public void renderLaser(RenderParams params) {
-        baseOffset(params.matrixStack);
-        float scale = 0.25f;
-        Vec3 direction = Vec3.atLowerCornerOf(entity.getDirection().getOpposite().getNormal());
-        Vec2 rota = EasyRenderer.getRotationFromVector(direction);
-        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
-        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
-        params.matrixStack.translate(0, 0.4, 0);
-        params.matrixStack.scale(scale, scale, scale);
-        RenderHelper.renderLaserBottom(
-                BufferContext.create(params.matrixStack, params.buffer, LASER_TYPE),
-                new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight),
-                80
-        );
+    public void renderSide(RenderParams params) {
+        PoseStack matrixStackIn = params.matrixStack;
+        baseOffset(matrixStackIn);
+        BufferBuilder bufferIn = params.buffer;
+        matrixStackIn.scale(10.9f, 10.9f, 10.9f);
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderBlock(RenderParams params) {
@@ -93,13 +106,33 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
         }
     }
 
+    public void renderLaser(RenderParams params) {
+        PoseStack matrixStackIn = params.matrixStack;
+        baseOffset(matrixStackIn);
+        matrixStackIn.scale(0.1f, 0.1f, 0.1f);
+        Queue<Vec3> direction = DIRECTION;
+        for (Vec3 vector3d : direction) {
+            matrixStackIn.pushPose();
+            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees((float) vector3d.x));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((float) vector3d.y));
+            RenderHelper.renderLaserParticle(
+                    BufferContext.create(matrixStackIn, params.buffer, TYPE)
+                    , new RenderHelper.RenderContext(0.8f, this.entity.spellContext().element.primaryColor()), (float) (vector3d.z * 10));
+            matrixStackIn.popPose();
+        }
+    }
+
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
-        if(Minecraft.getInstance().crosshairPickEntity != entity || !entity.isFocus() || posSet.isEmpty() || shapes.isEmpty())
-            return null;
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        if(DIRECTION != null)
+            map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderLaser);
+        if(Minecraft.getInstance().crosshairPickEntity == entity)
+            map.put(new RenderMode(SIDE), this::renderSide);
+        if(Minecraft.getInstance().crosshairPickEntity != entity || !entity.isFocus() || posSet.isEmpty() || shapes.isEmpty())
+            return map;
         map.put(new RenderMode(BLOCK_TYPE), this::renderBlock);
-        //map.put(new RenderMode(LASER_TYPE), this::renderLaser);
+
         return map;
     }
 }

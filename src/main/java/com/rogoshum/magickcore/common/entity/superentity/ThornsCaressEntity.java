@@ -2,17 +2,17 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.ThornsCaressLaserRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.ThornsCaressRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,7 +50,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
         if(this.tickCount % 2 ==0) {
             List<Entity> livings = this.findEntity((entity -> entity instanceof LivingEntity && !MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity)));
             for (Entity entity : livings) {
-                MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.DE_BUFF);
+                MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(100).force(4f).applyType(ApplyType.DE_BUFF);
                 MagickReleaseHelper.releaseMagick(context);
                 context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(100).force(1).applyType(ApplyType.HIT_ENTITY);
                 MagickReleaseHelper.releaseMagick(context);
@@ -104,7 +104,7 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
                     , this.random.nextFloat() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth(), 0.6f + 0.4f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
-            litPar.setShakeLimit(35.0f);
+            litPar.setShakeLimit(5.0f);
             litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
             MagickCore.addMagickParticle(litPar);
         }
@@ -118,6 +118,6 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.level.getEntities(this, this.getBoundingBox().inflate(16), predicate);
+        return this.level.getEntities(this, this.getBoundingBox().inflate(12), predicate);
     }
 }

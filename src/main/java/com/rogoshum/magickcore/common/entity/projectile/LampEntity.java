@@ -9,12 +9,12 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibShaders;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -110,7 +110,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
             par.setParticleGravity(0f);
             par.addMotion(0, 0.1 * getBbWidth(), 0);
             par.setLimitScale();
-            par.setShakeLimit(15f);
+            par.setShakeLimit(5f);
             par.useShader(LibShaders.BITS);
             MagickCore.addMagickParticle(par);
         }

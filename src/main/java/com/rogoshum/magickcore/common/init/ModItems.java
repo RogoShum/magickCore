@@ -28,6 +28,7 @@ public class ModItems {
             , BaseItem.properties()));
     public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new EntityRendererBlockItem(ModBlocks.ITEM_EXTRACTOR.get()
             , BaseItem.properties(), () -> ItemExtractorRenderer::new));
+    public static final RegistryObject<Item> RADIANCE_CRYSTAL = ITEMS.register(LibItem.RADIANCE_CRYSTAL, RadianceCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_CRYSTAL = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties(), 0.4f, 0.4f));
     public static final RegistryObject<Item> MAGICK_CONTAINER = ITEMS.register("magick_container", ManaCapacityItem::new);

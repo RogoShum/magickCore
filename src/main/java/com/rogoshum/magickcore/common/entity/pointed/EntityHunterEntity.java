@@ -3,19 +3,19 @@ package com.rogoshum.magickcore.common.entity.pointed;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -76,7 +76,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         }
         float width = getBbWidth();
         float height = getBbHeight();
-        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 7) || entity instanceof IManaEntity || entity instanceof Projectile) && entity.getBbHeight() < height && entity.getBbWidth() < width;
+        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 9) || entity instanceof IManaEntity || entity instanceof Projectile) && entity.getBbHeight() < height && entity.getBbWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)

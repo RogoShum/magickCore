@@ -1,17 +1,8 @@
 package com.rogoshum.magickcore.common.recipe;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.api.mana.IMaterialLimit;
-import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.common.init.ManaMaterials;
-import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.item.ContextCoreItem;
 import com.rogoshum.magickcore.common.item.ElementStringItem;
-import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.lib.LibMaterial;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;

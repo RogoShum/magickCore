@@ -10,23 +10,28 @@ import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ItemContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.ItemContext;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
-import com.rogoshum.magickcore.mixin.MixinLevelChunk;
+import com.rogoshum.magickcore.mixin.AccessorLevelChunk;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.nbt.CompoundTag;
@@ -45,67 +50,97 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.tags.ITag;
 
 public class WitherAbility{
+    public static boolean radiance(MagickContext context) {
+        if(context.victim == null) return false;
+        BlockPos pos = context.victim.getOnPos();
+        if(context.world.getBlockState(pos).getMaterial() == Material.DIRT) {
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position(), 2, ModElements.WITHER, ParticleType.PARTICLE);
+            context.world.setBlockAndUpdate(pos, Blocks.GRASS_BLOCK.defaultBlockState());
+            return true;
+        }
+        BlockEntity tile = context.world.getBlockEntity(pos);
+        if(tile instanceof Container inventory) {
+            for(int i = 0; i < inventory.getContainerSize(); ++i) {
+                ItemStack stack = inventory.getItem(i);
+                if(!DUST_CACHE.containsKey(stack.getItem()))
+                    updateDustCache(stack.getItem());
+
+                Item result = DUST_CACHE.get(stack.getItem());
+                if(result != stack.getItem()) {
+                    stack.shrink(1);
+                    ItemStackUtil.dropItem(context.world, new ItemStack(result), pos.above());
+                    ParticleUtil.spawnBlastParticle(context.world, Vec3.atCenterOf(pos), 2, ModElements.WITHER, ParticleType.PARTICLE);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public static final HashMap<Item, Item> DUST_CACHE = new HashMap<>();
+
+    public static void updateDustCache(final Item input) {
+        Item item = input;
+        AtomicReference<ITag<Item>> iTag = new AtomicReference<>();
+        ForgeRegistries.ITEMS.tags().forEach((tags) -> {
+            ResourceLocation key = tags.getKey().location();
+            if((key.getPath().contains("ores/") || key.getPath().contains("ingots/") || key.getPath().contains("raw_materials/")) && tags.contains(input)) {
+                ResourceLocation res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ingots", "dusts"));
+                if(key.getPath().contains("ores")) {
+                    res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "dusts"));
+                } else if(key.getPath().contains("raw_materials")) {
+                    res = new ResourceLocation(key.getNamespace(), key.getPath().replace("raw_materials", "dusts"));
+                }
+                TagKey<Item> tagKey = ItemTags.create(res);
+                if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
+                    iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
+                else if(key.getPath().contains("ores/")) {
+                    res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "gems"));
+                    tagKey = ItemTags.create(res);
+                    if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
+                        iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
+                } else if(key.getPath().contains("raw_materials/")) {
+                    res = new ResourceLocation(key.getNamespace(), key.getPath().replace("raw_materials", "gems"));
+                    tagKey = ItemTags.create(res);
+                    if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
+                        iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
+                }
+            }
+        });
+
+        if(iTag.get() == null) {
+            DUST_CACHE.put(input, input);
+            return;
+        }
+        ITag<Item> itemITag = iTag.get();
+
+        for (Item tagItem : itemITag.stream().toList()) {
+            if(tagItem.getRegistryName().getNamespace().equals(input.getRegistryName().getNamespace()))
+                item = tagItem;
+            else if(!itemITag.stream().toList().contains(item))
+                item = tagItem;
+        }
+        DUST_CACHE.put(input, item);
+    }
+
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        if(context.victim instanceof ItemEntity) {
-            ItemEntity itemEntity = ((ItemEntity) context.victim);
+        if(context.victim instanceof ItemEntity itemEntity) {
             Item item = itemEntity.getItem().getItem();
-            AtomicBoolean ores = new AtomicBoolean(false);
-            if(!DUST_CACHE.containsKey(itemEntity.getItem().getItem())) {
-                AtomicReference<ITag<Item>> iTag = new AtomicReference<>();
-                ForgeRegistries.ITEMS.tags().forEach((tags) -> {
-                    ResourceLocation key = tags.getKey().location();
-                    if((key.getPath().contains("ores/") || key.getPath().contains("ingots/") || key.getPath().contains("raw_materials/")) && tags.contains(itemEntity.getItem().getItem())) {
-                        ResourceLocation res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ingots", "dusts"));
-                        if(key.getPath().contains("ores")) {
-                            ores.set(true);
-                            res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "dusts"));
-                        } else if(key.getPath().contains("raw_materials")) {
-                            res = new ResourceLocation(key.getNamespace(), key.getPath().replace("raw_materials", "dusts"));
-                        }
-                        TagKey<Item> tagKey = ItemTags.create(res);
-                        if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
-                            iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
-                        else if(key.getPath().contains("ores/")) {
-                            res = new ResourceLocation(key.getNamespace(), key.getPath().replace("ores", "gems"));
-                            tagKey = ItemTags.create(res);
-                            if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
-                                iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
-                        } else if(key.getPath().contains("raw_materials/")) {
-                            res = new ResourceLocation(key.getNamespace(), key.getPath().replace("raw_materials", "gems"));
-                            tagKey = ItemTags.create(res);
-                            if(ForgeRegistries.ITEMS.tags().isKnownTagName(tagKey))
-                                iTag.set(ForgeRegistries.ITEMS.tags().getTag(tagKey));
-                        }
-                    }
-                });
+            if(!DUST_CACHE.containsKey(item))
+                updateDustCache(item);
 
-                if(iTag.get() == null)
-                    return false;
-                ITag<Item> itemITag = iTag.get();
-
-                for (Item tagItem : itemITag.stream().toList()) {
-                    if(tagItem.getRegistryName().getNamespace().equals(itemEntity.getItem().getItem().getRegistryName().getNamespace()))
-                        item = tagItem;
-                    else if(!itemITag.stream().toList().contains(item))
-                        item = tagItem;
-                }
-            } else {
-                item = DUST_CACHE.get(itemEntity.getItem().getItem());
-                if(itemEntity.getItem().getItem().getDescriptionId().contains("ore"))
-                    ores.set(true);
-            }
+            boolean ores = false;
+            item = DUST_CACHE.get(item);
+            if(item.getDescriptionId().contains("ore"))
+                ores = true;
 
             if(item == itemEntity.getItem().getItem()) return false;
             CompoundTag nbt = itemEntity.getItem().save(new CompoundTag());
@@ -115,7 +150,7 @@ public class WitherAbility{
             if(dustItem.isEmpty()) return false;
 
             itemEntity.setItem(dustItem);
-            if(ores.get()) {
+            if(ores) {
                 ItemStack dustCopy = itemEntity.getItem().copy();
                 dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
                 if(!dustCopy.isEmpty()) {
@@ -288,7 +323,7 @@ public class WitherAbility{
                 if(context.world.getBlockState(pos).getBlock() instanceof EntityBlock) {
                     float force = context.force*20;
                     for (int i = 0; i < force; ++i) {
-                        ((MixinLevelChunk)context.world.getChunkAt(pos)).invokerUpdateBlockEntityTicker(tile);
+                        ((AccessorLevelChunk)context.world.getChunkAt(pos)).invokerUpdateBlockEntityTicker(tile);
                     }
                 }
             }

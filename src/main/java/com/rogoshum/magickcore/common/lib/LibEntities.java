@@ -46,4 +46,6 @@ public class LibEntities {
     public static final String CHAIN = "chain";
     public static final String MULTI_RELEASE = "multi_release";
     public static final String CHARGE = "charge";
+    public static final String QUADRANT_CRYSTAL = "quadrant_crystal";
+    public static final String LIVING_ARGENT = "living_argent";
 }

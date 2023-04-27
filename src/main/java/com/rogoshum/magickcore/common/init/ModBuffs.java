@@ -4,19 +4,17 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.common.integration.botania.BotaniaAbility;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.network.EntityStatePack;
 import com.rogoshum.magickcore.common.network.Networking;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.PacketDistributor;
@@ -51,8 +49,7 @@ public class ModBuffs {
         } , false);
 
         putBuff(LibBuff.HYPERMUTEKI, LibElements.SOLAR, true, (e, force) ->{
-            if(e instanceof LivingEntity) {
-                LivingEntity living = (LivingEntity) e;
+            if(e instanceof LivingEntity living) {
                 living.setHealth(living.getMaxHealth());
                 living.setAbsorptionAmount(20f);
                 living.invulnerableTime = 200;
@@ -61,11 +58,10 @@ public class ModBuffs {
         }, true);
 
         putBuff(LibBuff.RADIANCE_WELL, LibElements.SOLAR, true, (e, force) -> {
-            if(e instanceof LivingEntity) {
-                LivingEntity living = (LivingEntity) e;
-                living.heal(living.getMaxHealth() * 0.02f * force);
+            if(e instanceof LivingEntity living) {
+                living.heal(living.getMaxHealth() * 0.01f * force);
                 if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
-                    living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.01f * force, living.getMaxHealth()));
+                    living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.005f * force, living.getMaxHealth()));
                 }
                 living.hurtTime = 0;
             }

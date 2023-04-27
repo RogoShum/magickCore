@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 
 public class ManaEntityRenderer extends EntityRenderer<ManaEntity> {
-	private static ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
+	private static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
 
 	public ManaEntityRenderer(EntityRendererProvider.Context renderManager) {
 		super(renderManager);

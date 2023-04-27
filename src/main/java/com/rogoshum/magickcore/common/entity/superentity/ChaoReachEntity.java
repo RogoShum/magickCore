@@ -1,21 +1,19 @@
 package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.ChaosReachLaserRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.ChaosReachRenderer;
-import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,9 +22,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -37,8 +37,10 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     }
 
     @Override
-    public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.level.getEntities(this, this.getBoundingBox().inflate(32), predicate);
+    public @NotNull List<Entity> findEntity(Predicate<Entity> predicate) {
+        List<Entity> entities = this.level.getEntities(this, this.getBoundingBox().inflate(20), predicate);
+        Optional<Entity> optional = entities.stream().min(Comparator.comparing(this::distanceToSqr));
+        return optional.stream().toList();
     }
 
     @Override
@@ -62,8 +64,6 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
 
     @Override
     protected void doClientTask() {
-        Vec3 rand = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-        this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.2F, 0.005F));
         super.doClientTask();
     }
 
@@ -129,7 +129,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
                     , this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), 0.8f + 0.2f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
-            litPar.setShakeLimit(35.0f);
+            litPar.setShakeLimit(5.0f);
             litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
             MagickCore.addMagickParticle(litPar);
         }
@@ -144,7 +144,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
             par.setGlow();
             par.setParticleGravity(0f);
             par.setLimitScale();
-            par.setShakeLimit(15f);
+            par.setShakeLimit(5f);
             MagickCore.addMagickParticle(par);
         }
     }

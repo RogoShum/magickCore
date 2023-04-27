@@ -2,14 +2,14 @@ package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.client.render.RenderMode;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.GravityLiftEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -42,7 +42,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         map.put(new RenderMode(inner, RenderMode.ShaderList.BLOOM_SHADER), this::renderInner);
 
         RenderType base = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
-        map.put(new RenderMode(base, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderBase);
+        map.put(new RenderMode(base, RenderMode.ShaderList.SLIME_SMALL_SHADER), this::renderBase);
 
         return map;
     }
@@ -96,14 +96,13 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         RenderHelper.renderLaserParticle(
                 BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f))
                 , new RenderHelper.RenderContext(0.5f, entity.spellContext().element.secondaryColor())
-                , RenderHelper.EMPTY_VERTEX_CONTEXT
                 , height * 4.0f);
     }
 
     private void renderInner(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.translate(0,  height * 0.5-1, 0);
+        matrixStackIn.translate(0,  height-1, 0);
 
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
@@ -116,7 +115,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     private void renderOuter(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.translate(0,  height * 0.5-1, 0);
+        matrixStackIn.translate(0,  height-1, 0);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         if(AIR_CYLINDER != null)

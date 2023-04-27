@@ -49,4 +49,5 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> wind = SOUNDS.register("wind", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "wind")));
     public static final RegistryObject<SoundEvent> horror_effect = SOUNDS.register("horror_effect", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "horror_effect")));
     public static final RegistryObject<SoundEvent> explosion = SOUNDS.register("explosion", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "explosion")));
+    public static final RegistryObject<SoundEvent> cast = SOUNDS.register("cast", () -> new SoundEvent(new ResourceLocation(MagickCore.MOD_ID, "cast")));
 }

@@ -4,11 +4,11 @@ import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.item.BaseItem;
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.item.TooltipFlag;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SuperItem extends BaseItem {
     public SuperItem() {
-        super(properties().stacksTo(1));
+        super(properties().stacksTo(8));
     }
 
     @Override
@@ -41,6 +41,7 @@ public class SuperItem extends BaseItem {
             MagickContext context = MagickContext.create(worldIn).caster(playerIn).noCost().applyType(ApplyType.SUPER).tick((int) mana).element(element);
             boolean success = MagickReleaseHelper.releaseMagick(context);
             if(success) {
+                stack.shrink(1);
                 state.setManaValue(0);
                 ParticleUtil.spawnBlastParticle(playerIn.level, playerIn.position().add(0, playerIn.getBbHeight() * 0.5, 0), 5, state.getElement(), ParticleType.PARTICLE);
             }

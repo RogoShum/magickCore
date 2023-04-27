@@ -5,7 +5,7 @@
   },
   "result":{
     "item":"magickcore:mana_energy",
-    "nbt": "{item_extra_data:{FORCE:0.5f}}",
+    "nbt": "{item_extra_data:{FORCE:1.0f}}",
     "count":1
   }
 }

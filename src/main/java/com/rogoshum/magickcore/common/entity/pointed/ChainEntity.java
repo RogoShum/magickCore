@@ -5,10 +5,11 @@ import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.common.lib.LibShaders;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -207,13 +208,30 @@ public class ChainEntity extends ManaPointEntity {
             target = victimEntity.position().add(0, victimEntity.getBbHeight() * 0.5, 0);
         Vec3 end = self;
         Vec3 start = target;
+
+        LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getRuneTexture()
+                , self, 0.1f, 0.1f, 1.0f, 1, spellContext().element.getRenderer());
+        par.setParticleGravity(0);
+        par.setLimitScale();
+        par.setGlow();
+        par.useShader(LibShaders.BITS);
+        MagickCore.addMagickParticle(par);
+
+        par = new LitParticle(this.level, spellContext().element.getRenderer().getRuneTexture()
+                , end, 0.1f, 0.1f, 1.0f, 1, spellContext().element.getRenderer());
+        par.setParticleGravity(0);
+        par.setLimitScale();
+        par.setGlow();
+        par.useShader(LibShaders.BITS);
+        MagickCore.addMagickParticle(par);
+
         double dis = Math.max(start.subtract(end).length() * 10, 1);
         float scale = 0.10f;
         for (int i = 0; i < dis; i++) {
             double trailFactor = i / Math.max((dis - 1.0D), 1);
             Vec3 pos = ParticleUtil.drawLine(start, end, trailFactor);
-            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 1, spellContext().element.getRenderer());
+            par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
+                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, 0.5f, 5, spellContext().element.getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();

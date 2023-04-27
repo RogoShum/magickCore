@@ -7,8 +7,8 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibShaders;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -88,7 +88,7 @@ public class ShadowEntity extends ManaProjectileEntity {
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + z)
                     , scale, scale, 0.35f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
             par.setParticleGravity(0f);
-            par.setShakeLimit(15f);
+            par.setShakeLimit(5f);
             par.setLimitScale();
             par.useShader(LibShaders.BITS);
             MagickCore.addMagickParticle(par);
@@ -115,7 +115,7 @@ public class ShadowEntity extends ManaProjectileEntity {
                         , motionZ + z)
                         , scale, scale, 0.35f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
                 par.setParticleGravity(0f);
-                par.setShakeLimit(15f);
+                par.setShakeLimit(5f);
                 par.setLimitScale();
                 par.addMotion(motionX * 0.2, motionY * 0.2, motionZ * 0.2);
                 MagickCore.addMagickParticle(par);

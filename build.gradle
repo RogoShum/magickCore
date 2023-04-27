@@ -196,6 +196,7 @@ dependencies {
     compileOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
     runtimeOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
     implementation fg.deobf("blank:Psi+1.18.2:98")
+    //implementation fg.deobf("blank:oculus-1.18.2:1.4.3a")
 
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")

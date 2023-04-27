@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.api.event;
 
-import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickElement;
 
 public interface IMagickMob {
     public MagickElement getElement();

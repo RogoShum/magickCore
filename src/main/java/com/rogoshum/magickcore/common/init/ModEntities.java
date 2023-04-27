@@ -3,6 +3,8 @@ package com.rogoshum.magickcore.common.init;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.entity.PlaceableItemEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.living.LivingAgentEntity;
+import com.rogoshum.magickcore.common.entity.living.QuadrantCrystalEntity;
 import com.rogoshum.magickcore.common.entity.pointed.*;
 import com.rogoshum.magickcore.common.entity.projectile.*;
 import com.rogoshum.magickcore.common.entity.radiation.*;
@@ -60,4 +62,6 @@ public class ModEntities {
 	public static final RegistryObject<EntityType<ChainEntity>> CHAIN = Entities.register(LibEntities.CHAIN, () -> EntityType.Builder.of(ChainEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).build(LibEntities.CHAIN));
 	public static final RegistryObject<EntityType<MultiReleaseEntity>> MULTI_RELEASE = Entities.register(LibEntities.MULTI_RELEASE, () -> EntityType.Builder.of(MultiReleaseEntity::new, MobCategory.MISC).sized(0.25F, 0.25F).build(LibEntities.MULTI_RELEASE));
 	public static final RegistryObject<EntityType<ChargeEntity>> CHARGE = Entities.register(LibEntities.CHARGE, () -> EntityType.Builder.of(ChargeEntity::new, MobCategory.MISC).sized(0.15F, 0.15F).build(LibEntities.CHARGE));
+	public static final RegistryObject<EntityType<QuadrantCrystalEntity>> QUADRANT_CRYSTAL = Entities.register(LibEntities.QUADRANT_CRYSTAL, () -> EntityType.Builder.of(QuadrantCrystalEntity::new, MobCategory.MISC).sized(1.5F, 3.0F).build(LibEntities.QUADRANT_CRYSTAL));
+	public static final RegistryObject<EntityType<LivingAgentEntity>> LIVING_ARGENT = Entities.register(LibEntities.LIVING_ARGENT, () -> EntityType.Builder.of(LivingAgentEntity::new, MobCategory.MISC).sized(0F, 0F).build(LibEntities.LIVING_ARGENT));
 }

@@ -2,21 +2,24 @@ package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.client.element.ElementRenderer;
+import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.*;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.*;
 import com.rogoshum.magickcore.common.entity.projectile.ManaStarEntity;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.EnergyUtil;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -36,6 +39,20 @@ public class ArcAbility{
             return charge(context);
         if(context.victim == null) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
+    }
+
+    public static boolean radiance(MagickContext context) {
+        if(context.caster == null || context.victim == null) return false;
+        BlockEntity tile = context.world.getBlockEntity(context.victim.getOnPos());
+        if(tile != null)
+            EnergyUtil.receiveEnergy(tile, (int) (context.force*10));
+        if(context.victim instanceof Projectile) {
+            Vec3 vec = context.victim.position().subtract(context.caster.position());
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.ARC, ParticleType.PARTICLE);
+            context.victim.setPos(vec.scale(6).add(context.caster.position()));
+            return true;
+        }
+        return false;
     }
 
     public static boolean damageEntity(MagickContext context) {

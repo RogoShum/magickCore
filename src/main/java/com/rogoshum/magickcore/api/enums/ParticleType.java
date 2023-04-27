@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.api.enums;
 
-import com.rogoshum.magickcore.client.element.ElementRenderer;
-import com.rogoshum.magickcore.common.magick.MagickElement;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
+import com.rogoshum.magickcore.api.magick.MagickElement;
 import net.minecraft.resources.ResourceLocation;
 
 public enum ParticleType {

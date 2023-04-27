@@ -30,6 +30,12 @@ public class ModKeyBind {
             GLFW.GLFW_KEY_R,
             "key.category." + MagickCore.MOD_ID);
 
+    public static final KeyMapping ELEMENT_KEY = new KeyMapping(MagickCore.MOD_ID+".key.element",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_X,
+            "key.category." + MagickCore.MOD_ID);
+
     @SubscribeEvent
     public static void onKeyboardInput(InputEvent.KeyInputEvent event) {
         if (SWAP_KEY.consumeClick() && Minecraft.getInstance().player != null) {

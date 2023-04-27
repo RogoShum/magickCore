@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.integration.psi;
 
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
 import vazkii.psi.api.spell.*;
 import vazkii.psi.api.spell.piece.PieceOperator;
 
@@ -19,6 +18,6 @@ public class PieceOperatorManaIn extends PieceOperator {
 
     @Override
     public Class<?> getEvaluationType() {
-        return com.rogoshum.magickcore.common.magick.context.SpellContext.class;
+        return com.rogoshum.magickcore.api.magick.context.SpellContext.class;
     }
 }

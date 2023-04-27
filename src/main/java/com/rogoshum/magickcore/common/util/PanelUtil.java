@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
-import com.rogoshum.magickcore.common.tileentity.IPanelTileEntity;
+import com.rogoshum.magickcore.api.block.IPanelTileEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;

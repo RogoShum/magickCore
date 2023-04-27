@@ -4,19 +4,19 @@ import com.google.common.collect.Lists;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.client.entity.easyrender.ChargerRenderer;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.init.ModDataSerializers;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.child.ConditionContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.child.ConditionContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -191,7 +191,7 @@ public class ChargeEntity extends ManaEntity {
         Vec3 direction = this.position().add(0, this.getBbHeight() * 0.5, 0).subtract(par.positionVec()).scale(0.1);
         par.addMotion(direction.x, direction.y, direction.z);
         par.setParticleGravity(0f);
-        par.setShakeLimit(15f);
+        par.setShakeLimit(5f);
         MagickCore.addMagickParticle(par);
 
         if(target == null) return;
@@ -202,7 +202,7 @@ public class ChargeEntity extends ManaEntity {
                 , charge * 0.5f, charge * 0.5f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
         litPar.setGlow();
         litPar.setParticleGravity(0f);
-        litPar.setShakeLimit(15f);
+        litPar.setShakeLimit(5f);
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
 

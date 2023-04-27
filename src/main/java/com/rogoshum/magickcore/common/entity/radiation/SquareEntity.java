@@ -1,12 +1,12 @@
 package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiation.SquareRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +18,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -43,12 +42,12 @@ public class SquareEntity extends ManaRadiateEntity {
 
     @Nonnull
     @Override
-    public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
+    public List<Entity> findEntity(Predicate<Entity> predicate) {
         return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()), predicate);
     }
 
     public float getRange() {
-        return spellContext().range * 0.5f;
+        return spellContext().range;
     }
 
     @Override

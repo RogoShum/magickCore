@@ -3,18 +3,21 @@ package com.rogoshum.magickcore.common.magick.ability;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.common.block.ItemExtractorBlock;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -26,6 +29,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +38,37 @@ import net.minecraft.server.level.ServerLevel;
 import java.util.Optional;
 
 public class SolarAbility{
+    public static boolean radiance(MagickContext context) {
+        if(context.victim == null) return false;
+        BlockPos pos = context.victim.getOnPos();
+        BlockEntity tile = context.world.getBlockEntity(pos);
+        ItemStack block = new ItemStack(context.world.getBlockState(pos).getBlock());
+        Optional<SmeltingRecipe> optional = context.world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(block), context.world);
+        if (optional.isPresent()) {
+            ItemStack result = optional.get().getResultItem();
+            if(result.getItem() instanceof BlockItem) {
+                ParticleUtil.spawnBlastParticle(context.world, context.victim.position(), 2, ModElements.SOLAR, ParticleType.PARTICLE);
+                context.world.setBlockAndUpdate(pos, ((BlockItem)result.getItem()).getBlock().defaultBlockState());
+                return true;
+            }
+        }
+        if(tile instanceof Container inventory) {
+            for(int i = 0; i < inventory.getContainerSize(); ++i) {
+                ItemStack stack = inventory.getItem(i);
+                optional = context.world.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(stack), context.world);
+                if (optional.isPresent()) {
+                    ItemStack result = optional.get().getResultItem();
+                    if(!result.isEmpty()) {
+                        stack.shrink(1);
+                        ItemStackUtil.dropItem(context.world, result.copy(), pos.above());
+                        ParticleUtil.spawnBlastParticle(context.world, context.victim.position(), 2, ModElements.SOLAR, ParticleType.PARTICLE);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(context.victim instanceof ItemEntity) {
@@ -159,7 +195,7 @@ public class SolarAbility{
             }
             return false;
         }
-        ((LivingEntity) context.victim).heal(context.force);
+        ((LivingEntity) context.victim).heal(context.force*0.5f);
         ParticleOptions iparticledata = ParticleTypes.HEART;
 
         for(int i = 0; i < 7; ++i) {

@@ -4,7 +4,7 @@ import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.network.ParticlePack;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;

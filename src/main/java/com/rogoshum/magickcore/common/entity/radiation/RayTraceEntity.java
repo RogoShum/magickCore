@@ -1,16 +1,16 @@
 package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiation.RayRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.TraceContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
@@ -69,9 +69,9 @@ public class RayTraceEntity extends ManaRadiateEntity {
         Entity target = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(direction.scale(0.5)), direction, getLength(), false);
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(direction.scale(0.5)), direction, getRange(), false);
         } else if (getCaster() != null) {
-            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(getCaster().getLookAngle().scale(0.5)), getCaster().getLookAngle(), getLength(), false);
+            target = MagickReleaseHelper.getEntityRayTrace(this, this.position().add(getCaster().getLookAngle().scale(0.5)), getCaster().getLookAngle(), getRange(), false);
         }
 
         List<Entity> list = new ArrayList<>();
@@ -80,8 +80,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
         return list;
     }
 
-    public float getLength() {
-        return spellContext().range * 5;
+    public float getRange() {
+        return spellContext().range * 10;
     }
 
     @Override
@@ -89,9 +89,9 @@ public class RayTraceEntity extends ManaRadiateEntity {
         BlockHitResult result = null;
         if(spellContext().containChild(LibContext.DIRECTION)) {
             Vec3 direction = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
-            result = this.world().clip(new ClipContext(this.position(), this.position().add(direction.normalize().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+            result = this.world().clip(new ClipContext(this.position(), this.position().add(direction.normalize().scale(getRange())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         } else if (getCaster() != null) {
-            result = this.world().clip(new ClipContext(this.position(), this.position().add(getCaster().getLookAngle().scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+            result = this.world().clip(new ClipContext(this.position(), this.position().add(getCaster().getLookAngle().scale(getRange())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         }
 
         if(result != null && result.getType() != HitResult.Type.MISS){
@@ -119,16 +119,16 @@ public class RayTraceEntity extends ManaRadiateEntity {
             dir = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction.normalize();
         else if (getCaster() != null)
             dir = getCaster().getLookAngle().normalize();
-        target = target.add(dir.scale(getLength()));
+        target = target.add(dir.scale(getRange()));
 
-        Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.position(), dir, getLength());
+        Entity entity = MagickReleaseHelper.getEntityRayTrace(this, this.position(), dir, getRange());
         if(entity != null)
             target = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
-        BlockHitResult result = this.world().clip(new ClipContext(this.position(), this.position().add(dir.scale(getLength())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
+        BlockHitResult result = this.world().clip(new ClipContext(this.position(), this.position().add(dir.scale(getRange())), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null));
         if(result.getType() != HitResult.Type.MISS)
             target = Vec3.atCenterOf(result.getBlockPos());
 
-        float distance = (10f * spellContext().range);
+        float distance = getRange();
 
         float scale = 0.1f;
 

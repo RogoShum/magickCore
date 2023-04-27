@@ -1,11 +1,7 @@
 package com.rogoshum.magickcore.client.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.common.tileentity.MaterialJarTileEntity;
-import com.rogoshum.magickcore.client.render.BufferContext;
-import com.rogoshum.magickcore.client.RenderHelper;
-import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -14,8 +10,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Vector3f;
 
 public class MaterialJarRenderer implements BlockEntityRenderer<MaterialJarTileEntity> {

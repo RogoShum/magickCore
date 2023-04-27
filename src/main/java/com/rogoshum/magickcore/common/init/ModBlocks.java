@@ -26,4 +26,5 @@ public class ModBlocks {
     public static RegistryObject<FakeFluidBlock> FAKE_WATER = BLOCKS.register("fake_water", () -> new FakeFluidBlock(Fluids.WATER, BlockBehaviour.Properties.copy(Blocks.WATER).randomTicks()));
     public static RegistryObject<Block> SPIRIT_ORE = BLOCKS.register("spirit_ore", () -> new OreBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(2.0F, 3.0F)));
     public static RegistryObject<ItemExtractorBlock> ITEM_EXTRACTOR = BLOCKS.register("item_extractor", () -> new ItemExtractorBlock(BlockBehaviour.Properties.of(Material.GLASS).noCollission().noOcclusion().strength(2)));
+    public static RegistryObject<Block> RADIANCE_CRYSTAL = BLOCKS.register("radiance_crystal", () -> new RadianceCrystalBlock(BlockBehaviour.Properties.of(Material.GLASS).noCollission().randomTicks().instabreak().sound(SoundType.GLASS).noOcclusion()));
 }

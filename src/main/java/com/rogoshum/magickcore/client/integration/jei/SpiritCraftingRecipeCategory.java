@@ -4,9 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.RenderHelper;
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.recipe.MagickWorkbenchRecipe;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -30,10 +29,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.TranslatableComponent;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class SpiritCraftingRecipeCategory implements IRecipeCategory<SpiritCraftingRecipe>{
     private final IDrawableStatic background;

@@ -7,19 +7,19 @@ import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.ArtificialLifeEntityRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
-import com.rogoshum.magickcore.common.magick.MagickElement;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
-import com.rogoshum.magickcore.common.magick.context.child.DirectionContext;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
@@ -198,6 +198,7 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             if(!isFocus()) {
                 setFocus(true);
                 HashSet<Vec3> vector3ds = NBTTagHelper.getVectorSet(stack.getOrCreateTagElement(WandItem.SET_KEY));
+                vector3ds.removeIf(vec -> vec.distanceToSqr(this.getEyePosition()) >= 36);
                 if(!vector3ds.isEmpty()) {
                     this.getVectorSet().clear();
                     this.getVectorSet().addAll(vector3ds);
@@ -248,9 +249,6 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
                 manaNeed -= mana;
                 state.setManaValue(state.getManaValue() + mana);
             }
-
-            if(level.isClientSide)
-                spawnSupplierParticle((Entity) capacity);
         }
 
         if(isFocus() && this.getVectorSet().isEmpty() && level.isClientSide()) {
@@ -284,52 +282,6 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         if(!level.isClientSide()) {
             ItemStack stack = new ItemStack(ModItems.ARTIFICIAL_LIFE.get());
             level.addFreshEntity(new ItemEntity(level, this.position().x, this.position().y+0.5, this.position().z, stack));
-        }
-    }
-
-    public void spawnSupplierParticle(Entity supplier) {
-        Vec3 center = new Vec3(0, this.getBbHeight() * 0.5, 0);
-        Vec3 end = this.position().add(center);
-        Vec3 start = supplier.position().add(0, supplier.getBbHeight() * 0.5, 0);
-        double dis = start.subtract(end).length();
-        if(dis < 0.2)
-            dis = 0.2;
-        int distance = (int) (6 * dis);
-        if(distance < 1)
-            distance = 1;
-        float directionPoint = (float) (supplier.tickCount % distance) / distance;
-        int c = (int) (directionPoint * distance);
-
-        Vec3 direction = Vec3.ZERO;
-        Vec3 origin = start.subtract(end);
-        double y = -origin.y;
-        double x = Math.abs(origin.x);
-        double z = Math.abs(origin.z);
-        if(x > z)
-            direction = new Vec3(x, y, 0);
-        else if(z > x)
-            direction = new Vec3(0, y, z);
-        float scale;
-        float alpha = 1.0f;
-
-        MagickElement element = ModElements.ORIGIN;
-        if(supplier instanceof ISpellContext) {
-            element = ((ISpellContext) supplier).spellContext().element;
-        }
-        for (int i = 0; i < distance; ++i) {
-            if(i == c)
-                scale = 0.1f;
-            else
-                scale = 0.05f;
-
-            double trailFactor = i / (distance - 1.0D);
-            Vec3 pos = ParticleUtil.drawParabola(start, end, trailFactor, dis / 3, direction);
-            LitParticle par = new LitParticle(this.level, element.getRenderer().getParticleTexture()
-                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, alpha, 3, element.getRenderer());
-            par.setParticleGravity(0);
-            par.setLimitScale();
-            par.setGlow();
-            MagickCore.addMagickParticle(par);
         }
     }
 

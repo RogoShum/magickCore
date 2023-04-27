@@ -335,7 +335,7 @@
     "magickcore.function.void.cast": "无",
     "magickcore.function.arc.cast": "无",
     "magickcore.function.taken.cast": "无",
-    "magickcore.function.psi.cast": "Psi施法",
+    "magickcore.function.psi.cast": "施法",
     "magickcore.function.psi.attack": "无",
     "magickcore.function.psi.buff": "无",
     "magickcore.function.psi.de_buff": "无",

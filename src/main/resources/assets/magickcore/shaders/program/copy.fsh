@@ -10,5 +10,5 @@ void main() {
     if(center.a <= 0.0) {
         gl_FragColor = vec4(texture2D(DiffuseSampler, texCoord).rgb, 0.0);
     } else
-        gl_FragColor = texture2D(DiffuseSampler, texCoord);
+        gl_FragColor = vec4(texture2D(DiffuseSampler, texCoord).rgb, center.a);
 }

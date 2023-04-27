@@ -1,12 +1,13 @@
 package com.rogoshum.magickcore.common.entity.radiation;
 
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.radiation.SphereRadiateRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaRadiateEntity;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
@@ -27,10 +28,16 @@ public class SphereEntity extends ManaRadiateEntity {
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/sphere.png");
     public final Predicate<Entity> inSphere = (entity ->
             this.distanceToSqr(entity.position().add(0, entity.getBbHeight() * 0.5, 0))
-                    <= spellContext().range * spellContext().range);
+                    <= getRange() * getRange());
     public SphereEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
+
+    @Override
+    public float getRange() {
+        return spellContext().range * 1.5f;
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<EasyRenderer<? extends ManaEntity>> getRenderer() {
@@ -49,7 +56,7 @@ public class SphereEntity extends ManaRadiateEntity {
     @Nonnull
     @Override
     public List<Entity> findEntity(@Nullable Predicate<Entity> predicate) {
-        return this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range),
+        return this.level.getEntities(this, this.getBoundingBox().inflate(getRange()),
                 predicate != null ? predicate.and(inSphere)
                         : inSphere);
     }
@@ -64,11 +71,28 @@ public class SphereEntity extends ManaRadiateEntity {
         return MANA_FACTOR;
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+    }
+
     protected void applyParticle(int particleAge) {
-        float radius = spellContext().range;
+        Vec3[] vec3s = ParticleUtil.drawSphere(12, 12);
+        for (Vec3 pos : vec3s) {
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                    , pos.scale(getRange()).add(this.position())
+                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setLimitScale();
+            par.addMotion(pos.x * 0.2, pos.y * 0.2, pos.z * 0.2);
+            MagickCore.addMagickParticle(par);
+        }
+        /*
+        float radius = getRange();
         float rho, drho, theta, dtheta;
         float x, y, z;
-        int stacks = Math.max((int) (2 * spellContext().range), 8);
+        int stacks = Math.max((int) (2 * getRange()), 8);
         drho = (float) (2.0f * Math.PI / stacks);
         dtheta = (float) (2.0f * Math.PI / stacks);
         for (int i = 0; i < stacks; i++) {
@@ -90,17 +114,18 @@ public class SphereEntity extends ManaRadiateEntity {
                 MagickCore.addMagickParticle(par);
             }
         }
+         */
     }
 
     @Override
     public Iterable<BlockPos> findBlocks() {
-        int range = (int) (spellContext().range);
+        int range = (int) (getRange());
         return BlockPos.betweenClosed(new BlockPos(this.position()).above(range).east(range).south(range), new BlockPos(this.position()).below(range).west(range).north(range));
     }
 
     @Override
     public Predicate<BlockPos> blockPosPredicate() {
-        float rangeCube = spellContext().range * spellContext().range;
+        float rangeCube = getRange() * getRange();
         return (pos -> this.distanceToSqr( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)
                 <= rangeCube);
     }

@@ -2,19 +2,18 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.laser.RadianceWellLaserRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.RadianceWellRenderer;
-import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -80,10 +79,6 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     @Override
     protected void doClientTask() {
         super.doClientTask();
-        if(this.tickCount % 2 == 0) {
-            Vec3 rand = new Vec3(MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne(), MagickCore.getNegativeToOne());
-            this.hitReactions.put(this.random.nextInt(200) - this.random.nextInt(2000), new VectorHitReaction(rand, 0.06F, 0.01F));
-        }
     }
 
     @Override
@@ -142,7 +137,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
             par.setGlow();
             par.setParticleGravity(0.5f);
             par.setLimitScale();
-            par.setShakeLimit(15f);
+            par.setShakeLimit(1f);
             MagickCore.addMagickParticle(par);
         }
     }

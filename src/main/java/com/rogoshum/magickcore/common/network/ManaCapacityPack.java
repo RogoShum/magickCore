@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.network;
 
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
-import com.rogoshum.magickcore.common.magick.ManaCapacity;
+import com.rogoshum.magickcore.api.magick.ManaCapacity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.nbt.CompoundTag;

@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.element;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.resources.ResourceLocation;
 

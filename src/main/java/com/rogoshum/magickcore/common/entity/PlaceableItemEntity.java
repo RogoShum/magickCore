@@ -8,12 +8,13 @@ import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.placeable.PlaceableEntityItem;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.magick.context.SpellContext;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.recipe.SpiritCraftingRecipe;
 import com.rogoshum.magickcore.common.recipe.MatrixInventory;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.MultiBlockUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -58,6 +59,11 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         this.entityData.define(DIRECTION, Direction.DOWN);
         this.entityData.define(HEIGHT, this.getType().getHeight());
         this.entityData.define(WIDTH, this.getType().getWidth());
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getItemStack().getDisplayName();
     }
 
     public Direction getDirection() {

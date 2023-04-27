@@ -1,22 +1,17 @@
 package com.rogoshum.magickcore.client.integration.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
-import com.rogoshum.magickcore.common.init.ModRecipes;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import mezz.jei.api.constants.VanillaTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 

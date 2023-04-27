@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.api.event;
 
 import com.rogoshum.magickcore.common.buff.ManaBuff;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
@@ -62,10 +62,10 @@ public class EntityEvents {
         }
     }
 
-    public static class MagickPreReleaseEvent extends EntityEvent {
+    public static class MagickReleaseCheckEvent extends EntityEvent {
         private float mana;
         private MagickContext context;
-        public MagickPreReleaseEvent(MagickContext context, float mana) {
+        public MagickReleaseCheckEvent(MagickContext context, float mana) {
             super(context.caster);
             this.mana = mana;
             this.context = context;
@@ -82,9 +82,9 @@ public class EntityEvents {
         }
     }
 
-    public static class MagickReleaseEvent extends EntityEvent {
+    public static class MagickPreReleaseEvent extends EntityEvent {
         private MagickContext context;
-        public MagickReleaseEvent(MagickContext context) {
+        public MagickPreReleaseEvent(MagickContext context) {
             super(context.caster);
             this.context = context;
         }

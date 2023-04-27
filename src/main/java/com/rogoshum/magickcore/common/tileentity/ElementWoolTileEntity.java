@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.tileentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
+import com.rogoshum.magickcore.client.tileentity.easyrender.ElementWoolRenderer;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.lib.LibElements;
@@ -133,7 +134,7 @@ public class ElementWoolTileEntity extends BlockEntity implements ILightSourceEn
     @Override
     public void onLoad() {
         super.onLoad();
-        //MagickCore.proxy.addRenderer(new ElementWoolRenderer(this));
-        EntityLightSourceManager.addLightSource(this);
+        MagickCore.proxy.addRenderer(() -> new ElementWoolRenderer(this));
+        //EntityLightSourceManager.addLightSource(this);
     }
 }

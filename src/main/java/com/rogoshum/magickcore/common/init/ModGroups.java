@@ -2,9 +2,9 @@ package com.rogoshum.magickcore.common.init;
 
 import com.rogoshum.magickcore.MagickCore;
 
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.magick.context.child.PotionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.context.child.PotionContext;
+import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 

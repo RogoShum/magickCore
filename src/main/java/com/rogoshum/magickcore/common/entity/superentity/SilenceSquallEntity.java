@@ -2,15 +2,15 @@ package com.rogoshum.magickcore.common.entity.superentity;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ISuperEntity;
-import com.rogoshum.magickcore.client.entity.easyrender.base.EasyRenderer;
+import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.superrender.SilenceSqualRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.common.init.ModSounds;
-import com.rogoshum.magickcore.common.magick.ManaFactor;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.ManaFactor;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
@@ -93,10 +93,10 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     , new Vec3(MagickCore.getNegativeToOne() * 8 + this.getX()
                     , MagickCore.getNegativeToOne() * 6 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 8 + this.getZ())
-                    , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.3f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+                    , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.2f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
-            litPar.setShakeLimit(15.0f);
+            litPar.setShakeLimit(5.0f);
             litPar.addMotion(MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15);
             MagickCore.addMagickParticle(litPar);
         }
@@ -122,8 +122,8 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(200).force(4f).applyType(ApplyType.HIT_ENTITY);
                     MagickReleaseHelper.releaseMagick(context);
                 }
-                if(this.distanceTo(entity) <= 3) {
-                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(200).force(1f).applyType(ApplyType.DE_BUFF);
+                if(this.tickCount == 1 || this.distanceTo(entity) <= 3) {
+                    MagickContext context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(200).force(10f).applyType(ApplyType.DE_BUFF);
                     MagickReleaseHelper.releaseMagick(context);
                     if(this.tickCount % 20 == 0) {
                         context = new MagickContext(this.level).noCost().caster(this.getCaster()).projectile(this).victim(entity).tick(20).force(1f).applyType(ApplyType.ATTACK);
@@ -132,7 +132,6 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
                     }
                 }
             }
-            //}
         }
 
         if(cloest != null && cloest.isAlive()) {

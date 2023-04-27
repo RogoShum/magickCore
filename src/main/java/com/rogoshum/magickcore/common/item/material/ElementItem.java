@@ -1,13 +1,16 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.common.item.BaseItem;
-import com.rogoshum.magickcore.common.lib.LibEntityData;
-import com.rogoshum.magickcore.common.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.common.lib.LibItem;
-import com.rogoshum.magickcore.common.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -24,22 +28,43 @@ import java.util.List;
 public class ElementItem extends BaseItem implements IManaMaterial {
     private final String element;
     public ElementItem(String element) {
-        super(properties().stacksTo(16));
+        super(properties().stacksTo(64));
         this.element = element;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity playerIn) {
         if(!worldIn.isClientSide) {
-            ExtraDataUtil.entityData(playerIn).<EntityStateData>execute(LibEntityData.ENTITY_STATE, state -> {
-                if(!state.getElement().type().equals(element)) {
-                    state.setElement(MagickRegistry.getElement(element));
-                    playerIn.getItemInHand(handIn).shrink(1);
-                    playerIn.level.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, playerIn.getSoundSource(), 1.5f, 1.0f);
-                }
-            });
+            EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
+            if(!state.getElement().type().equals(element)) {
+                MagickElement element1 = MagickRegistry.getElement(element);
+                state.setElement(element1);
+                stack.shrink(1);
+                ParticleUtil.spawnBlastParticle(worldIn, playerIn.position().add(0, playerIn.getBbHeight() * 0.5, 0), 3, element1, ParticleType.PARTICLE);
+                playerIn.level.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, playerIn.getSoundSource(), 1.5f, 1.0f);
+            }
         }
-        return super.use(worldIn, playerIn, handIn);
+        return super.finishUsingItem(stack, worldIn, playerIn);
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        EntityStateData state = ExtraDataUtil.entityStateData(playerIn);
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if(state.getElement().type().equals(element))
+            return InteractionResultHolder.pass(itemstack);
+        playerIn.startUsingItem(handIn);
+        return InteractionResultHolder.consume(itemstack);
+    }
+
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack p_41454_) {
+        return 10;
     }
 
     @Override

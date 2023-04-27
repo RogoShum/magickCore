@@ -2,8 +2,12 @@ package com.rogoshum.magickcore.common.block;
 
 import com.rogoshum.magickcore.common.init.ModBlocks;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
+import com.rogoshum.magickcore.common.tileentity.ElementCrystalTileEntity;
 import com.rogoshum.magickcore.common.tileentity.ItemExtractorTileEntity;
 import com.rogoshum.magickcore.common.tileentity.MagickCraftingTileEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -23,6 +27,7 @@ import javax.annotation.Nullable;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class ItemExtractorBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = DirectionalBlock.FACING;
@@ -87,6 +92,11 @@ public class ItemExtractorBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ItemExtractorTileEntity(pos, state);
+    }
+
+    @Override
+    public InteractionResult use(BlockState p_60503_, Level level, BlockPos pos, Player p_60506_, InteractionHand p_60507_, BlockHitResult p_60508_) {
+        return super.use(p_60503_, level, pos, p_60506_, p_60507_, p_60508_);
     }
 
     @Override

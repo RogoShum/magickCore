@@ -9,12 +9,15 @@ import java.util.List;
 public class ClientConfig {
     public static ForgeConfigSpec CLIENT_CONFIG;
     public static ForgeConfigSpec.BooleanValue POST_PROCESSING_EFFECTS;
+    public static ForgeConfigSpec.BooleanValue COLOR_LIGHTING_EFFECTS;
 
     static {
-        ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-        COMMON_BUILDER.comment("Post-processing settings");
-        POST_PROCESSING_EFFECTS = COMMON_BUILDER.define("enabled", true);
+        ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+        CLIENT_BUILDER.comment("Post-processing settings");
+        POST_PROCESSING_EFFECTS = CLIENT_BUILDER.define("enabled", true);
 
-        CLIENT_CONFIG = COMMON_BUILDER.build();
+        CLIENT_BUILDER.comment("Color lighting settings");
+        COLOR_LIGHTING_EFFECTS = CLIENT_BUILDER.define("enabled", true);
+        CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 }

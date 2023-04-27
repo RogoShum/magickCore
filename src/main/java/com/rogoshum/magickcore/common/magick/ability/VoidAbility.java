@@ -3,18 +3,20 @@ package com.rogoshum.magickcore.common.magick.ability;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.context.MagickContext;
+import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.common.magick.MagickReleaseHelper;
-import com.rogoshum.magickcore.common.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.common.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.init.ModBuffs;
 import com.rogoshum.magickcore.common.init.ModDamages;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,6 +44,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 
 public class VoidAbility{
+    public static boolean radiance(MagickContext context) {
+        if(context.caster!= null && context.victim instanceof ItemEntity item) {
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
+            item.setPos(context.caster.position().add(0, -1, 0));
+            return true;
+        }
+        return false;
+    }
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.WEAKEN, context.tick, context.force, false);
@@ -69,16 +79,6 @@ public class VoidAbility{
 
     public static boolean hitBlock(MagickContext context) {
         return false;
-    }
-
-    public static void storeTEInStack(ItemStack stack, BlockEntity te) {
-        CompoundTag compoundnbt = te.saveWithId();
-        if (stack.getItem() instanceof PlayerHeadItem && compoundnbt.contains("SkullOwner")) {
-            CompoundTag compoundnbt2 = compoundnbt.getCompound("SkullOwner");
-            stack.getOrCreateTag().put("SkullOwner", compoundnbt2);
-        } else {
-            stack.addTagElement("BlockEntityTag", compoundnbt);
-        }
     }
 
     public static boolean applyBuff(MagickContext context) {
@@ -114,21 +114,24 @@ public class VoidAbility{
     }
 
     public static boolean diffusion(MagickContext context) {
-        if(context.victim == null || !context.victim.isAlive() || context.caster == null) return false;
-        Vec3 pos = context.victim.position();
-        ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
+        Entity target = context.victim;
+        if(target == null)
+            target = context.caster;
+        if(!target.isAlive()) return false;
+
+        Vec3 pos;
+        ParticleUtil.spawnBlastParticle(context.world, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         if(context.containChild(LibContext.POSITION)) {
             PositionContext positionContext = context.getChild(LibContext.POSITION);
             pos = positionContext.pos;
         } else if(context.projectile != null){
             pos = context.projectile.position();
-
         } else {
-            pos = context.caster.getLookAngle().scale(context.range * 2).add(context.victim.position());
+            pos = target.getLookAngle().scale(context.range * 2).add(target.position());
         }
-        context.victim.teleportTo(pos.x, pos.y, pos.z);
-        context.victim.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.0f);
-        ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
+        target.teleportTo(pos.x, pos.y, pos.z);
+        target.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.0f);
+        ParticleUtil.spawnBlastParticle(context.world, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         return true;
     }
 
@@ -176,7 +179,7 @@ public class VoidAbility{
                 if (result.isEmpty())
                     return false;
                 if(te != null) {
-                    storeTEInStack(result, te);
+                    ItemStackUtil.storeTEInStack(result, te);
                 } //else
                 //result.setCount((int) context.range);
 
