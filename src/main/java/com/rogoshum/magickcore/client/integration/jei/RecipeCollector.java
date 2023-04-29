@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.client.integration.jei;
 
 import com.google.common.collect.ImmutableList;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
@@ -113,6 +114,39 @@ public class RecipeCollector {
                 , ImmutableList.of(minecraftString)));
         OUTPUTS.put(res, ImmutableList.of(string));
         RECIPES.put(res, elementRecipe(crystal, minecraftString, string));
+
+        res = new ResourceLocation(MagickCore.MOD_ID, "radiance_crystal");
+        ItemStack frag = new ItemStack(ModItems.QUADRANT_FRAGMENTS.get());
+        ItemStack radiance = new ItemStack(ModItems.RADIANCE_CRYSTAL.get());
+
+
+        ImmutableList.Builder<ItemStack> crystals = ImmutableList.builder();
+        ImmutableList.Builder<ItemStack> frags = ImmutableList.builder();
+        ImmutableList.Builder<ItemStack> radiances = ImmutableList.builder();
+
+        for (String elementKey : MagickRegistry.getRegistry(LibRegistry.ELEMENT).registry().keySet()) {
+            ItemStack itemStack = crystal.copy();
+            NBTTagHelper.setElement(itemStack, elementKey);
+            crystals.add(itemStack);
+
+            ItemStack itemStack2 = frag.copy();
+            NBTTagHelper.setElement(itemStack2, elementKey);
+            frags.add(itemStack2);
+
+            ItemStack itemStack1 = radiance.copy();
+            NBTTagHelper.setElement(itemStack1, elementKey);
+            radiances.add(itemStack1);
+        }
+        ImmutableList<ItemStack> crystalsL = crystals.build();
+        ImmutableList<ItemStack> fragsL = frags.build();
+        ImmutableList<ItemStack> radianceL = radiances.build();
+        
+        INPUTS.put(res, ImmutableList.of(fragsL));
+        OUTPUTS.put(res, ImmutableList.of(radiance));
+        RECIPES.put(res, ImmutableList.of(radianceL,
+                fragsL, crystalsL, fragsL,
+                crystalsL, fragsL, crystalsL,
+                fragsL, crystalsL, fragsL));
 
         /*
         ModRecipes.getExplosionRecipes().forEach((resourceLocation, magickCraftingTransformRecipe) -> {

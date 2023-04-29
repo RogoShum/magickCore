@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.api.entity.IQuadrantEntity;
 import com.rogoshum.magickcore.api.event.ExtraDataEvent;
 import com.rogoshum.magickcore.api.event.RecipeLoadedEvent;
 import com.rogoshum.magickcore.api.extradata.entity.*;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.common.entity.living.QuadrantCrystalEntity;
 import com.rogoshum.magickcore.common.entity.projectile.ManaElementOrbEntity;
 import com.rogoshum.magickcore.common.init.*;
@@ -93,7 +94,7 @@ public class RegisterEvent {
                 int chance = state.getElement() != ModElements.ORIGIN ? 15 : 100;
                 if(event.getSource().getEntity() instanceof Player) {
                     PlayerTradeUnlock lock = ExtraDataUtil.playerTradeData((Player) event.getSource().getEntity());
-                    if(lock.getUnLock().size() < 5)
+                    if(lock.getUnLock().size() < 8)
                         chance /= 2;
                 }
 
@@ -317,6 +318,7 @@ public class RegisterEvent {
     @SubscribeEvent
     public void itemExtraData(ExtraDataEvent.ItemStack event) {
         event.add(LibRegistry.ITEM_DATA, ItemManaData::new);
+        event.add(LibRegistry.ITEM_DIMENSION_DATA, ItemDimensionData::new);
     }
 
     @SubscribeEvent
@@ -338,7 +340,7 @@ public class RegisterEvent {
     public static Holder<PlacedFeature> ORE_SPIRIT_MIDDLE;
 
     public static void registerOres() {
-        ORE_SPIRIT_TARGET_LIST = List.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, ModBlocks.SPIRIT_ORE.get().defaultBlockState()), OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, ModBlocks.SPIRIT_ORE.get().defaultBlockState()));
+        ORE_SPIRIT_TARGET_LIST = List.of(OreConfiguration.target(OreFeatures.STONE_ORE_REPLACEABLES, ModBlocks.SPIRIT_ORE.get().defaultBlockState()), OreConfiguration.target(OreFeatures.DEEPSLATE_ORE_REPLACEABLES, ModBlocks.DEEP_SPIRIT_ORE.get().defaultBlockState()));
         ORE_SPIRIT = FeatureUtils.register(MagickCore.fromId("ore_spirit").toString(), Feature.ORE, new OreConfiguration(ORE_SPIRIT_TARGET_LIST, 9));
         ORE_SPIRIT_UPPER = PlacementUtils.register(MagickCore.fromId("ore_spirit_upper").toString(), ORE_SPIRIT, commonOrePlacement(10, HeightRangePlacement.triangle(VerticalAnchor.absolute(-24), VerticalAnchor.absolute(56))));
         ORE_SPIRIT_MIDDLE = PlacementUtils.register(MagickCore.fromId("ore_spirit_middle").toString(), ORE_SPIRIT, commonOrePlacement(90,HeightRangePlacement.triangle(VerticalAnchor.absolute(80), VerticalAnchor.absolute(384))));

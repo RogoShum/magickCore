@@ -24,9 +24,13 @@ import com.rogoshum.magickcore.common.init.ModEffects;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
@@ -204,7 +208,7 @@ public class MagickReleaseHelper {
         }
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
         if(success && !context.applyType.isForm() && context.caster != null && context.projectile == null)
-            context.world.playSound(null, context.caster, ModSounds.cast.get(), SoundSource.PLAYERS, 2f, 1.0f+context.world.random.nextFloat());
+            context.world.playSound(null, context.caster, ModSounds.cast.get(), SoundSource.PLAYERS, 0.15f, 0.5f+context.world.random.nextFloat());
         if(context.applyType.continueCast()) {
             SpellContext postContext = context.postContext;
             if (postContext != null) {
@@ -488,20 +492,23 @@ public class MagickReleaseHelper {
         if (other instanceof TamableAnimal && ownerFunction(owner, ((TamableAnimal) other)::getOwner))
             return true;
 
+        if(owner instanceof AbstractClientPlayer && other instanceof AbstractClientPlayer)
+            return true;
+
         AtomicBoolean flag = new AtomicBoolean(false);
         ExtraDataUtil.entityData(other).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, data -> flag.set(data.getOwnerUUID().equals(owner.getUUID())));
 
         if (flag.get())
             return true;
 
-        return owner.getClass() == other.getClass() || owner.getClass().isAssignableFrom(other.getClass()) || other.getClass().isAssignableFrom(owner.getClass());
+        return owner.getType() == other.getType() || owner.getClass() == other.getClass() || owner.getClass().isAssignableFrom(other.getClass()) || other.getClass().isAssignableFrom(owner.getClass());
     }
 
     public static boolean ownerFunction(Entity owner, Supplier<Entity> entitySupplier) {
         Entity entity = entitySupplier.get();
         if(entity == null) return false;
 
-        return owner.getClass() == entity.getClass() || owner.getClass().isAssignableFrom(entity.getClass()) || entity.getClass().isAssignableFrom(owner.getClass());
+        return owner.getType() == entity.getType() || owner.getClass() == entity.getClass() || owner.getClass().isAssignableFrom(entity.getClass()) || entity.getClass().isAssignableFrom(owner.getClass());
     }
 
     public static class DoubleEntity {

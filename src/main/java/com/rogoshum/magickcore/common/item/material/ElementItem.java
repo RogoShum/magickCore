@@ -32,6 +32,10 @@ public class ElementItem extends BaseItem implements IManaMaterial {
         this.element = element;
     }
 
+    public String getElementType() {
+        return element;
+    }
+
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity playerIn) {
         if(!worldIn.isClientSide) {

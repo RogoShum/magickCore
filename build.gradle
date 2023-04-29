@@ -26,7 +26,7 @@ mixin {
     add sourceSets.main, "magickcore.refmap.json"
 }
 
-version = 'forge-1.18.2-0.8.8'
+version = 'forge-1.18.2-0.8.9'
 group = 'com.rogoshum.magickcore' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'MagickCore'
 
@@ -212,9 +212,9 @@ jar {
         attributes([
                 "Specification-Title": "MagickCore",
                 "Specification-Vendor": "RogoShum",
-                "Specification-Version": "0.8.8",
+                "Specification-Version": "0.8.9",
                 "Implementation-Title": "MagickCore",
-                "Implementation-Version": "0.8.8",
+                "Implementation-Version": "0.8.9",
                 "Implementation-Vendor" :"RogoShum",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                 "MixinConnector": "com.rogoshum.magickcore.mixin.MixinConnector"

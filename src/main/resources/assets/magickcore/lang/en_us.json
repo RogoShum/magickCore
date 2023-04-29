@@ -367,7 +367,7 @@
     "magickcore.function.botania.cast": "None",
 
     "magickcore.function.solar.attack": "Solar Attack",
-    "magickcore.function.solar.buff": "Health Recovery",
+    "magickcore.function.solar.buff": "Fire attack produces a flaming explosion",
     "magickcore.function.solar.de_buff": "Burning",
     "magickcore.function.solar.diffusion": "Explosion",
     "magickcore.function.solar.agglomerate": "Instant healing, Sunny",

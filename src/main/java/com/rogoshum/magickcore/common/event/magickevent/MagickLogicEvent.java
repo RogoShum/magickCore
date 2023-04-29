@@ -736,6 +736,18 @@ public class MagickLogicEvent {
 			event.setCanceled(true);
 
 		Entity entity = event.getSource().getEntity();
+		if(entity instanceof LivingEntity) {
+			EntityStateData sourceData = ExtraDataUtil.entityStateData(entity);
+			if(sourceData != null && sourceData.getBuffList().containsKey(LibBuff.RADIANCE_WELL) && (event.getSource().isFire() || event.getSource().isExplosion())) {
+				float force = sourceData.getBuffList().get(LibBuff.RADIANCE_WELL).getForce();
+				ParticleUtil.spawnBlastParticle(event.getEntity().level, event.getEntity().position().add(0, event.getEntity().getBbHeight()*0.5, 0), 6, ModElements.SOLAR, ParticleType.PARTICLE);
+				List<LivingEntity> livings = entity.level.getEntitiesOfClass(LivingEntity.class, event.getEntityLiving().getBoundingBox().inflate(4), living -> !MagickReleaseHelper.sameLikeOwner(entity, living));
+				for(LivingEntity living : livings) {
+					living.hurt(ModDamages.applyEntitySolarDamage(entity), force * 0.5f);
+					living.setSecondsOnFire(3);
+				}
+			}
+		}
 
 		if(state != null) {
 			onDamage(event.getSource(), event, state, entity);

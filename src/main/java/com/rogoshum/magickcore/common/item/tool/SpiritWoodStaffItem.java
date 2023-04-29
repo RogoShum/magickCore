@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.api.itemstack.ISpiritDimension;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.client.item.StaffRenderer;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
@@ -31,7 +32,7 @@ import net.minecraftforge.client.IItemRenderProperties;
 
 import java.util.function.Consumer;
 
-public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem {
+public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem, ISpiritDimension {
     public SpiritWoodStaffItem(Properties properties) {
         super(properties);
     }

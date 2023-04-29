@@ -17,6 +17,7 @@ import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.LivingEntity;
@@ -195,14 +196,23 @@ public class SolarAbility{
             }
             return false;
         }
-        ((LivingEntity) context.victim).heal(context.force*0.5f);
-        ParticleOptions iparticledata = ParticleTypes.HEART;
 
-        for(int i = 0; i < 7; ++i) {
-            double d0 = MagickCore.rand.nextGaussian() * 0.02D;
-            double d1 = MagickCore.rand.nextGaussian() * 0.02D;
-            double d2 = MagickCore.rand.nextGaussian() * 0.02D;
-            context.victim.level.addParticle(iparticledata, context.victim.getRandomX(1.0D), context.victim.getRandomY() + 0.5D, context.victim.getRandomZ(1.0D), d0, d1, d2);
+        LivingEntity living = ((LivingEntity) context.victim);
+        living.hurtTime = 0;
+        living.heal(context.force*0.75f);
+        if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
+            living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.02f * context.force, living.getMaxHealth()));
+        }
+
+        if(!(living instanceof Player)) {
+            ParticleOptions iparticledata = ParticleTypes.HEART;
+
+            for(int i = 0; i < 7; ++i) {
+                double d0 = MagickCore.rand.nextGaussian() * 0.02D;
+                double d1 = MagickCore.rand.nextGaussian() * 0.02D;
+                double d2 = MagickCore.rand.nextGaussian() * 0.02D;
+                context.victim.level.addParticle(iparticledata, context.victim.getRandomX(1.0D), context.victim.getRandomY() + 0.5D, context.victim.getRandomZ(1.0D), d0, d1, d2);
+            }
         }
         return true;
     }

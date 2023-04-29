@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.tool;
 
+import com.rogoshum.magickcore.api.itemstack.ISpiritDimension;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.client.item.StaffRenderer;
 import com.rogoshum.magickcore.common.item.ManaItem;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 
 import net.minecraftforge.client.IItemRenderProperties;
 
-public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem {
+public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem, ISpiritDimension {
     public SpiritCrystalStaffItem(Properties properties) {
         super(properties);
     }

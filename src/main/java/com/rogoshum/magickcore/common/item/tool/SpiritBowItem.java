@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.tool;
 
+import com.rogoshum.magickcore.api.itemstack.ISpiritDimension;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.client.item.SpiritBowRenderer;
@@ -23,7 +24,7 @@ import net.minecraftforge.client.IItemRenderProperties;
 
 import java.util.function.Consumer;
 
-public class SpiritBowItem extends ManaItem implements IManaContextItem {
+public class SpiritBowItem extends ManaItem implements IManaContextItem, ISpiritDimension {
     public SpiritBowItem(Properties properties) {
         super(properties);
     }

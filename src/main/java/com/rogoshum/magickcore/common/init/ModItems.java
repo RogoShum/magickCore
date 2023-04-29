@@ -11,7 +11,6 @@ import com.rogoshum.magickcore.common.lib.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,6 +24,8 @@ public class ModItems {
     public static final RegistryObject<Item> MATERIAL_JAR = ITEMS.register(LibItem.MATERIAL_JAR, () -> new EntityRendererBlockItem(ModBlocks.MATERIAL_JAR.get()
             , BaseItem.properties(), () -> MaterialJarItemRenderer::new));
     public static final RegistryObject<Item> SPIRIT_ORE = ITEMS.register(LibItem.SPIRIT_ORE, () -> new BlockItem(ModBlocks.SPIRIT_ORE.get()
+            , BaseItem.properties()));
+    public static final RegistryObject<Item> DEEP_SPIRIT_ORE = ITEMS.register(LibItem.DEEP_SPIRIT_ORE, () -> new BlockItem(ModBlocks.DEEP_SPIRIT_ORE.get()
             , BaseItem.properties()));
     public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new EntityRendererBlockItem(ModBlocks.ITEM_EXTRACTOR.get()
             , BaseItem.properties(), () -> ItemExtractorRenderer::new));
@@ -82,8 +83,11 @@ public class ModItems {
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(
             new FoodProperties.Builder().meat().saturationMod(3f).fast().alwaysEat().effect(() -> new MobEffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> ELEMENT_CRYSTAL = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties()));
+    public static final RegistryObject<Item> QUADRANT_FRAGMENTS = ITEMS.register("quadrant_fragments", () -> new ElementContainerItem(BaseItem.properties()));
     public static final RegistryObject<Item> ELEMENT_WOOL = ITEMS.register("element_wool", ElementWoolItem::new);
     public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", ElementStringItem::new);
+    //public static final RegistryObject<Item> ASSEMBLY_ESSENCE = ITEMS.register("assembly_essence", AssemblyEssenceItem::new);
+    //public static final RegistryObject<Item> CRYSTAL_BOX = ITEMS.register("crystal_box", CrystalBoxItem::new);
 
     //public static final RegistryObject<Item> origin_material = ITEMS.register("origin_material", () -> new ManaMaterialsItem(LibMaterial.ORIGIN));
     public static final RegistryObject<Item> NETHER_STAR_MATERIAL = ITEMS.register("nether_star_material", () -> new ManaMaterialItem(LibMaterial.NETHER_STAR));

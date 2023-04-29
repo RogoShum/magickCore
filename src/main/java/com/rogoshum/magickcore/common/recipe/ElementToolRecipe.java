@@ -27,6 +27,10 @@ public class ElementToolRecipe extends CustomRecipe {
         SERIALIZER.setRegistryName(new ResourceLocation(MagickCore.MOD_ID, idIn.getPath()));
     }
 
+    public static boolean isTool(ItemStack itemStack) {
+        return itemStack.isDamageableItem() || itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || Mob.getEquipmentSlotForItem(itemStack).getType().equals(EquipmentSlot.Type.ARMOR);
+    }
+
     @Override
     public boolean matches(CraftingContainer inv, Level worldIn) {
         ItemStack stack = ItemStack.EMPTY;
@@ -35,7 +39,7 @@ public class ElementToolRecipe extends CustomRecipe {
 
         for (int i = 0; i < inv.getContainerSize(); ++i) {
             ItemStack itemStack = inv.getItem(i);
-            if(itemStack.isDamageableItem() || itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || Mob.getEquipmentSlotForItem(itemStack).getType().equals(EquipmentSlot.Type.ARMOR))
+            if(isTool(itemStack))
                 stack = itemStack.copy();
             else if(itemStack.getItem() instanceof ElementStringItem && NBTTagHelper.hasElement(itemStack)) {
                 String e = NBTTagHelper.getElement(itemStack);
@@ -63,7 +67,7 @@ public class ElementToolRecipe extends CustomRecipe {
 
         for (int i = 0; i < inv.getContainerSize(); ++i) {
             ItemStack itemStack = inv.getItem(i);
-            if(itemStack.isDamageableItem() || itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE).size() > 0 || Mob.getEquipmentSlotForItem(itemStack).getType().equals(EquipmentSlot.Type.ARMOR))
+            if(isTool(itemStack))
                 stack = itemStack.copy();
             else if(itemStack.getItem() instanceof ElementStringItem && NBTTagHelper.hasElement(itemStack)) {
                 element = NBTTagHelper.getElement(itemStack);

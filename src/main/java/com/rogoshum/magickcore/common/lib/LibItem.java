@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.MagickCore;
 public class LibItem {
     public static final String MATERIAL_JAR = "material_jar";
     public static final String SPIRIT_ORE = "spirit_ore";
+    public static final String DEEP_SPIRIT_ORE = "deepslate_spirit_ore";
     public static final String ITEM_EXTRACTOR = "item_extractor";
     public static final String RADIANCE_CRYSTAL = "radiance_crystal";
     public static final String LASER_STAFF = "laser_staff";

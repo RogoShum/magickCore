@@ -1,0 +1,25 @@
+{
+  "type": "magickcore:nbt",
+  "group":"magickcore",
+  "pattern":[
+    "SOS",
+    "OSO",
+    "SOS"
+  ],
+  "key":{
+    "S":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:quadrant_fragments",
+      "nbt": "{ELEMENT:\"\"}"
+    },"O":{
+      "type": "magickcore:nbt",
+      "item":"magickcore:element_crystal",
+      "nbt": "{ELEMENT:\"\"}"
+    }
+  },
+  "result":{
+    "item":"magickcore:radiance_crystal",
+    "nbt": "{ELEMENT:\"\"}",
+    "count":1
+  }
+}

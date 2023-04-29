@@ -65,7 +65,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
         if(!initial) return false;
         List<Entity> livings = findEntity((living) -> living instanceof LivingEntity && MagickReleaseHelper.sameLikeOwner(this.getCaster(), living));
         livings.forEach(living -> {
-            MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(living).tick(20).force(3).applyType(ApplyType.BUFF);
+            MagickContext context = new MagickContext(level).noCost().caster(this.getCaster()).projectile(this).victim(living).force(1f).applyType(ApplyType.AGGLOMERATE);
             MagickReleaseHelper.releaseMagick(context);
         });
         return true;
@@ -115,7 +115,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
             cc.setParticleGravity(0);
             MagickCore.addMagickParticle(cc);
         }
-        for(int i = 0; i < 5; ++i) {
+        for(int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , this.getY() + this.getBbHeight() / 5

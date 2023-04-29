@@ -266,6 +266,7 @@ public class ClientProxy implements IProxy {
 		event.getItemColors().register(color, ModItems.ELEMENT_CRYSTAL.get());
 		event.getItemColors().register(color, ModItems.ELEMENT_STRING.get());
 		event.getItemColors().register(color, ModItems.ELEMENT_WOOL.get());
+		event.getItemColors().register(color, ModItems.QUADRANT_FRAGMENTS.get());
 		color = (stack, p_getColor_2_) -> {
 			CompoundTag tag = stack.getOrCreateTag();
 			if(tag.contains(WandItem.SET_KEY) && !tag.getCompound(WandItem.SET_KEY).isEmpty())

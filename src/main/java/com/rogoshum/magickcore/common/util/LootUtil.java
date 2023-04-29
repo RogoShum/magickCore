@@ -5,14 +5,11 @@ import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
-import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.init.*;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
-import com.rogoshum.magickcore.common.init.ManaMaterials;
-import com.rogoshum.magickcore.common.init.ModEffects;
-import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.ManaItem;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
@@ -32,7 +29,7 @@ public class LootUtil {
 
     public static ItemStack createRandomItemByLucky(int lucky) {
         int tick = (int) (Math.pow(lucky, 3) * MagickCore.rand.nextFloat() * (MagickCore.rand.nextInt(lucky * 2) + 1));
-        int type = MagickCore.rand.nextInt(7);
+        int type = MagickCore.rand.nextInt(8);
        if(type < 2) {
            tick *= 100;
            if(tick > 2400)
@@ -46,7 +43,7 @@ public class LootUtil {
            PotionUtils.setCustomEffects(stack, map.values());
            stack.setHoverName(new TranslatableComponent(effect.getDescriptionId()));
            return stack;
-       } else if(type < 4) {
+       } else if(type < 5) {
            if(tick > 600)
                tick = 600;
            ManaItem item;
@@ -82,10 +79,12 @@ public class LootUtil {
            }
 
            return createRandomManaItem(item, entityType, force, tick, Math.min(mana, 50000), trace);
-       } else {
+       } else if(type < 7) {
            ItemStack stack = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
-           stack.setCount(21 + MagickCore.rand.nextInt(22));
+           stack.setCount(3 + MagickCore.rand.nextInt(8));
            return stack;
+       } else {
+           return ModVillager.getEntityTypeItem(ModVillager.getRandomType());
        }
     }
 

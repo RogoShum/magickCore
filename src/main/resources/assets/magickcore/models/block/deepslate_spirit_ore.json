@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "magickcore:blocks/deepslate_spirit_ore"
+  }
+}

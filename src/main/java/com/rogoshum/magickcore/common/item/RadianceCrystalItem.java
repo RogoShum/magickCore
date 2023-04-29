@@ -41,8 +41,10 @@ public class RadianceCrystalItem extends BlockItem {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         if(stack.hasTag()) {
             CompoundTag tag = stack.getTag();
-            if(tag.contains("ELEMENT"))
+            if(tag.contains("ELEMENT")) {
                 tooltip.add((new TranslatableComponent(LibItem.ELEMENT)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
+                tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description.radiance." + tag.getString("ELEMENT")))));
+            }
         }
     }
 

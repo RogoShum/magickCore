@@ -47,7 +47,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
         baseOffset(matrixStackIn);
         float alpha = 1.0f;
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 29)));
+        //matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 29)));
 
         float height = entity.getBbHeight()*3;
 
@@ -63,7 +63,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         if(TYPE != null) {
             //map.put(new RenderMode(TYPE, RenderMode.ShaderList.OPACITY_SHADER), this::renderOpacity);
-            map.put(new RenderMode(TYPE, RenderMode.ShaderList.SLIME_SMALL_SHADER), this::renderSlime);
+            map.put(new RenderMode(TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderSlime);
         }
 
         return map;

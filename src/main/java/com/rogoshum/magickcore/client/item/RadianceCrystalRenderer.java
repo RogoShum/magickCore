@@ -39,18 +39,16 @@ public class RadianceCrystalRenderer extends BlockEntityWithoutLevelRenderer {
             MagickElement element = MagickRegistry.getElement(ele);
             color = element.secondaryColor();
         }
-        if(transformType != ItemTransforms.TransformType.FIXED)
-            matrixStackIn.scale(0.25f, 0.25f, 0.25f);
+        if(transformType == ItemTransforms.TransformType.GUI || transformType == ItemTransforms.TransformType.GROUND)
+            matrixStackIn.scale(0.35f, 0.35f, 0.35f);
         else {
-            matrixStackIn.scale(0.5f, 0.5f, 0.5f);
+            matrixStackIn.translate(0, 0.35, 0);
+            matrixStackIn.scale(0.8f, 0.8f, 0.8f);
         }
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
         RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CRYSTAL_TYPE)
-                , new RenderHelper.RenderContext(0.3f, color, combinedLight));
-        matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CRYSTAL_TYPE)
-                , new RenderHelper.RenderContext(0.5f, color, combinedLight));
+                , new RenderHelper.RenderContext(0.7f, color, combinedLight));
         matrixStackIn.popPose();
     }
 }

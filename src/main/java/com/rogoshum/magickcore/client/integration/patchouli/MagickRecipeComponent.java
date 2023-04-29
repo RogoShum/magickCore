@@ -30,7 +30,7 @@ public class MagickRecipeComponent implements ICustomComponent {
     public int stack = 0;
     private transient SpiritCraftingRecipe recipe;
     private transient int x, y;
-    private PoseStack poseStack;
+
     @Override
     public void build(int componentX, int componentY, int pageNum) {
         this.x = componentX;

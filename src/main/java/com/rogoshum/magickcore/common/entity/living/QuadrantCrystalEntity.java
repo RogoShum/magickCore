@@ -26,6 +26,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -83,7 +84,7 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
             finalPos = this.position();
         setPos(finalPos);
         ExtraDataUtil.entityStateData(this).setElement(spellContext().element);
-        if(tickCount < 0) {
+        if(tickCount < 10) {
             BlockPos blockpos = new BlockPos(this.position());
             int y = blockpos.getY();
 
@@ -100,7 +101,7 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
             }
             finalPos = new Vec3(getX(), y + spellContext().range * 0.8, getZ());
             setPos(finalPos);
-            tickCount=1;
+            tickCount=11;
         }
     }
 

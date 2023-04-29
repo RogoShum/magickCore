@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.api.extradata;
 
 import com.rogoshum.magickcore.api.entity.IEntityData;
 import com.rogoshum.magickcore.api.extradata.entity.*;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.lib.LibEntityData;
 import net.minecraft.world.entity.Entity;
@@ -23,6 +24,10 @@ public class ExtraDataUtil {
 
     public static ItemManaData itemManaData(ItemStack item) {
         return new ItemManaData(item);
+    }
+
+    public static ItemDimensionData itemDimensionData(ItemStack item) {
+        return new ItemDimensionData(item);
     }
 
     public static void entityStateData(Entity entity, Consumer<EntityStateData> consumer) {

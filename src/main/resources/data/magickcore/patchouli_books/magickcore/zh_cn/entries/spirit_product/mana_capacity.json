@@ -15,7 +15,7 @@
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:mana_capacity",
-      "text": "在魔力工作台处合成。"
+      "text": "在魔力工作台处合成。正中间一格为空。"
     }
   ]
 }

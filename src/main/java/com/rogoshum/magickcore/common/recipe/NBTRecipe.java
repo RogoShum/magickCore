@@ -139,22 +139,29 @@ public class NBTRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingContainer inv) {
         if(this.keySet.isEmpty())
             return this.getResultItem().copy();
-        for(int i = 0; i <= inv.getWidth() - this.recipeWidth; ++i) {
-            for(int j = 0; j <= inv.getHeight() - this.recipeHeight; ++j) {
+        String element = null;
+        ItemStack copy = ItemStack.EMPTY;
+        for(int i = 0; i <= inv.getWidth(); ++i) {
+            for(int j = 0; j <= inv.getHeight(); ++j) {
                 ItemStack stack = inv.getItem(i + j * inv.getWidth());
                 HashSet<String> keys = new HashSet<>();
                 if(stack.hasTag()) {
                     CompoundTag tag = stack.getTag();
                     keys = NBTTagHelper.getNBTKeySet(tag);
+                    if(element != null && NBTTagHelper.hasElement(stack) && !element.equals(NBTTagHelper.getElement(stack)))
+                        return ItemStack.EMPTY;
+                    if(element == null && NBTTagHelper.hasElement(stack))
+                        element = NBTTagHelper.getElement(stack);
                 }
                 if(keys.containsAll(this.keySet)) {
-                    ItemStack copy = this.getResultItem().copy();
+                    copy = this.getResultItem().copy();
                     if(stack.hasTag())
                         copy.setTag(stack.getTag().copy());
-                    return copy;
                 }
             }
         }
+        if(!copy.isEmpty())
+            return copy;
         return this.getResultItem().copy();
     }
 

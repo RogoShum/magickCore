@@ -82,7 +82,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(90));
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(90));
         matrixStackIn.scale(1.3f, 1.3f, 1f);
-        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), PARTICLE_TYPE_DYNAMIC), new RenderHelper.RenderContext(0.3f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), PARTICLE_TYPE_DYNAMIC), new RenderHelper.RenderContext(0.1f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
     }
 
     public void renderParticle1(RenderParams params) {
@@ -92,7 +92,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(90));
         matrixStackIn.scale(1.3f, 1.3f, 1f);
         matrixStackIn.scale(1.17f, 1.17f, 1f);
-        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), PARTICLE_TYPE), new RenderHelper.RenderContext(0.2f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
+        RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), PARTICLE_TYPE), new RenderHelper.RenderContext(0.1f * alpha, Color.BLUE_COLOR, RenderHelper.renderLight));
     }
 
     public void renderCube(RenderParams params) {

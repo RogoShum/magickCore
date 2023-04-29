@@ -24,6 +24,8 @@ public class ModBlocks {
     public static RegistryObject<FakeAirBlock> FAKE_AIR = BLOCKS.register("fake_air", () -> new FakeAirBlock(Blocks.AIR.defaultBlockState(), BlockBehaviour.Properties.copy(Blocks.AIR)));
     public static RegistryObject<FakeAirBlock> FAKE_CAVE_AIR = BLOCKS.register("fake_cave_air", () -> new FakeAirBlock(Blocks.CAVE_AIR.defaultBlockState(), BlockBehaviour.Properties.copy(Blocks.CAVE_AIR)));
     public static RegistryObject<FakeFluidBlock> FAKE_WATER = BLOCKS.register("fake_water", () -> new FakeFluidBlock(Fluids.WATER, BlockBehaviour.Properties.copy(Blocks.WATER).randomTicks()));
+    public static RegistryObject<Block> DEEP_SPIRIT_ORE = BLOCKS.register("deepslate_spirit_ore", () -> new OreBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(2.0F, 3.0F)));
+
     public static RegistryObject<Block> SPIRIT_ORE = BLOCKS.register("spirit_ore", () -> new OreBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(2.0F, 3.0F)));
     public static RegistryObject<ItemExtractorBlock> ITEM_EXTRACTOR = BLOCKS.register("item_extractor", () -> new ItemExtractorBlock(BlockBehaviour.Properties.of(Material.GLASS).noCollission().noOcclusion().strength(2)));
     public static RegistryObject<Block> RADIANCE_CRYSTAL = BLOCKS.register("radiance_crystal", () -> new RadianceCrystalBlock(BlockBehaviour.Properties.of(Material.GLASS).noCollission().randomTicks().instabreak().sound(SoundType.GLASS).noOcclusion()));

@@ -25,7 +25,6 @@ import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -36,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -44,9 +42,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RadianceCrystalTileEntity extends BlockEntity implements ISpellContext {
-    public static final ConcurrentHashMap<ResourceKey<Level>, List<RadianceCrystalTileEntity>> RADIANCE_CRYSTALS = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<Player, HashSet<RadianceCrystalTileEntity>> RADIANCE_PLAYER = new ConcurrentHashMap<>();
+public class DimensionInflateTileEntity extends BlockEntity implements ISpellContext {
+    public static final ConcurrentHashMap<ResourceKey<Level>, List<DimensionInflateTileEntity>> RADIANCE_CRYSTALS = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Player, HashSet<DimensionInflateTileEntity>> RADIANCE_PLAYER = new ConcurrentHashMap<>();
     private final SpellContext context = SpellContext.create();
     private ApplyType applyType = ApplyType.RADIANCE;
     private ItemStack item = ItemStack.EMPTY;
@@ -54,7 +52,7 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
     public int tickCount;
     private Entity capacity;
     private LivingAgentEntity livingAgent;
-    public RadianceCrystalTileEntity(BlockPos blockPos, BlockState blockState) {
+    public DimensionInflateTileEntity(BlockPos blockPos, BlockState blockState) {
         super(ModTileEntities.RADIANCE_CRYSTAL_TILE_ENTITY.get(), blockPos, blockState);
     }
 
@@ -116,10 +114,10 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
     @Override
     public void onLoad() {
         super.onLoad();
-        MagickCore.proxy.addRenderer(() -> new RadianceCrystalRenderer(this));
+        //MagickCore.proxy.addRenderer(() -> new RadianceCrystalRenderer(this));
         if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
             RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<RadianceCrystalTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
+        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
         list.add(this);
     }
 
@@ -128,7 +126,7 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
         super.setRemoved();
         if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
             RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<RadianceCrystalTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
+        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
         list.remove(this);
         removeFromPublicMap(new ArrayList<>());
     }
@@ -138,17 +136,29 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
         super.clearRemoved();
         if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
             RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<RadianceCrystalTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
+        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
         list.remove(this);
         removeFromPublicMap(new ArrayList<>());
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState state, RadianceCrystalTileEntity me) {
+    public static void tick(Level level, BlockPos blockPos, BlockState state, DimensionInflateTileEntity me) {
         me.tick(level, blockPos);
     }
 
     public void tick(Level level, BlockPos blockPos) {
         this.tickCount++;
+        if(level.isClientSide()) {
+            if(this.tickCount % 5 ==0) {
+                LitParticle cc = new LitParticle(this.level, this.spellContext().element.getRenderer().getRingTexture()
+                        , new Vec3(this.getBlockPos().getX()+0.5
+                        , this.getBlockPos().getY()+0.5
+                        , this.getBlockPos().getZ()+0.5)
+                        , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
+                cc.setGlow();
+                cc.setParticleGravity(0);
+                MagickCore.addMagickParticle(cc);
+            }
+        }
         if(this.livingAgent == null) {
             this.livingAgent = ModEntities.LIVING_ARGENT.get().create(level);
             this.livingAgent.setPos(Vec3.atCenterOf(blockPos));
@@ -213,7 +223,7 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
 
     public void removeFromPublicMap(List<Entity> list) {
         for(Player player : RADIANCE_PLAYER.keySet()) {
-            HashSet<RadianceCrystalTileEntity> crystals = RadianceCrystalTileEntity.RADIANCE_PLAYER.get(player);
+            HashSet<DimensionInflateTileEntity> crystals = DimensionInflateTileEntity.RADIANCE_PLAYER.get(player);
             if(!list.contains(player) && crystals.contains(this))
                 crystals.remove(this);
         }

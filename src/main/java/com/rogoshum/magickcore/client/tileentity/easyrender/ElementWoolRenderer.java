@@ -19,7 +19,7 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/white_wool.png");
 
     private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrbSolid(wool);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 1.0f, 0f);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbItem(RenderHelper.SPHERE_ROTATE, 1f, 0f);
     private Color color = Color.ORIGIN_COLOR;
 
     public ElementWoolRenderer(ElementWoolTileEntity tile) {
@@ -36,7 +36,7 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
     public void _render(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_1), new RenderHelper.RenderContext(0.32f
+        RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_1), new RenderHelper.RenderContext(0.7f
                 , color, RenderHelper.renderLight));
     }
 

@@ -38,11 +38,11 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
                 if(!stack1.isEmpty()) {
                     matrixStackIn.pushPose();
                     matrixStackIn.pushPose();
-                    if(transformType != ItemTransforms.TransformType.FIXED)
+                    if(transformType == ItemTransforms.TransformType.GUI)
                         matrixStackIn.translate(0, 0.15, 0);
                     else
                         matrixStackIn.translate(0, 0.4, 0);
-                    if(transformType != ItemTransforms.TransformType.FIXED)
+                    if(transformType == ItemTransforms.TransformType.GUI)
                         matrixStackIn.scale(0.01f, 0.01f, .01f);
                     else
                         matrixStackIn.scale(0.02f, 0.02f, .02f);
@@ -51,7 +51,7 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
                     Minecraft.getInstance().font.draw(matrixStackIn, count, -count.length()*3, 2, 0);
                     matrixStackIn.popPose();
                     matrixStackIn.translate(0, -0.12f, 0);
-                    if(transformType != ItemTransforms.TransformType.FIXED)
+                    if(transformType == ItemTransforms.TransformType.GUI)
                         matrixStackIn.scale(0.5f, 0.5f, .5f);
                     BakedModel ibakedmodel_ = Minecraft.getInstance().getItemRenderer().getModel(stack1, null, null, 0);
                     MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -63,7 +63,7 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
         }
 
         matrixStackIn.pushPose();
-        if(transformType != ItemTransforms.TransformType.FIXED)
+        if(transformType == ItemTransforms.TransformType.GUI || transformType == ItemTransforms.TransformType.GROUND)
             matrixStackIn.scale(0.3f, 0.42f, 0.3f);
         else {
             matrixStackIn.translate(0.0, 0.25, 0.0);

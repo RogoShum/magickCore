@@ -72,7 +72,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
                 living.heal(getHealth());
             } else {
                 this.setHealth(Math.min(living.getHealth() * 0.5f, getHealth() * 0.5f));
-                living.setHealth(Math.max(living.getHealth() * 0.5f, 0.001f));
+                living.setHealth(Math.max(living.getHealth()-getHealth(), 0.001f));
                 setBack(true);
             }
         }
@@ -137,16 +137,20 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
-                , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks
-                , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
-                , this.zOld + (this.getZ() - this.zOld) * partialTicks)
-                , 0.1f * this.getBbWidth(), 0.1f * this.getBbWidth(), 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
-        par.setGlow();
-        par.setParticleGravity(0);
-        par.setColor(Color.RED_COLOR);
-        par.setLimitScale();
-        MagickCore.addMagickParticle(par);
+        for(int i = 0; i < 6; ++i) {
+            Vec3 motion = this.getDeltaMovement().normalize().scale(i*0.2);
+            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
+                    , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks + motion.x
+                    , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2 + motion.y
+                    , this.zOld + (this.getZ() - this.zOld) * partialTicks + motion.z)
+                    , 0.3f * this.getBbWidth(), 0.3f * this.getBbWidth(), 1.0f, 13, MagickCore.proxy.getElementRender(spellContext().element.type()));
+            par.setGlow();
+            par.setParticleGravity(0);
+            par.setColor(Color.RED_COLOR);
+            par.setLimitScale();
+            par.addMotion(motion.x*0.05, motion.y*0.05, motion.z*0.05);
+            MagickCore.addMagickParticle(par);
+        }
     }
 
     @Override

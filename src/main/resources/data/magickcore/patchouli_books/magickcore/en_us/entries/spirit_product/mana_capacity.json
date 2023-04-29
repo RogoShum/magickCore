@@ -15,7 +15,7 @@
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:mana_capacity",
-      "text": "Crafted at the Magick Workbench。"
+      "text": "Crafted at the Magick Workbench. The middle space is empty."
     }
   ]
 }
