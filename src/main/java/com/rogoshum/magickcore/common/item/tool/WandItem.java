@@ -3,8 +3,11 @@ package com.rogoshum.magickcore.common.item.tool;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.integration.AdditionLoader;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,13 +17,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.moddiscovery.ModFile;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.resource.ResourcePackLoader;
 
 public class WandItem extends BaseItem {
     public static final String SET_KEY = "blockSet";

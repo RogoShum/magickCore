@@ -17,7 +17,6 @@ import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
-import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.common.event.RegisterEvent;
 import com.rogoshum.magickcore.api.extradata.entity.LeechEntityData;
 import com.rogoshum.magickcore.common.init.*;
@@ -26,6 +25,7 @@ import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.entity.TakenEntityData;
 import com.rogoshum.magickcore.common.entity.living.MageVillagerEntity;
 import com.rogoshum.magickcore.client.event.RenderEvent;
+import com.rogoshum.magickcore.common.item.material.EntityTypeItem;
 import com.rogoshum.magickcore.common.item.tool.SpiritSwordItem;
 import com.rogoshum.magickcore.common.lib.*;
 import com.rogoshum.magickcore.api.magick.ManaFactor;
@@ -49,6 +49,7 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -64,8 +65,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -112,19 +111,22 @@ public class MagickLogicEvent {
 	@SubscribeEvent
 	public void updateLightSource(TickEvent.ClientTickEvent event) {
 		if(!Minecraft.getInstance().isPaused() && event.phase == TickEvent.Phase.END) {
-			MagickCore.proxy.addAdditionTask(() -> {
-				if(RenderHelper.getPlayer() == null) {
-					EntityLightSourceManager.clear();
-					RenderEvent.clearParticle();
-					RenderHelper.GL_LIST_INDEX.clear();
-				}
-				RenderEvent.tickParticle();
-				MagickPoint.points.forEach(MagickPoint::tick);
-			}, () -> {
+			if(RenderHelper.getPlayer() == null) {
 				EntityLightSourceManager.clear();
 				RenderEvent.clearParticle();
-			});
-			MagickCore.proxy.tick(LogicalSide.CLIENT);
+				RenderHelper.VERTEX_CACHE.clear();
+				MagickCore.proxy.resetTask();
+			} else {
+				MagickCore.proxy.addAdditionTask(() -> {
+					RenderEvent.tickParticle();
+					MagickPoint.points.forEach(MagickPoint::tick);
+				}, () -> {
+					EntityLightSourceManager.clear();
+					RenderEvent.clearParticle();
+				});
+
+				MagickCore.proxy.tick(LogicalSide.CLIENT);
+			}
 		}
 	}
 
@@ -163,7 +165,7 @@ public class MagickLogicEvent {
 					lucky++;
 
 				ItemStack staff = LootUtil.createRandomItemByLucky(lucky);
-				while (!(staff.getItem() instanceof IManaData)) {
+				while (!(staff.getItem() instanceof IManaData) || staff.getItem() instanceof EntityTypeItem) {
 					staff = LootUtil.createRandomItemByLucky(lucky);
 				}
 				ItemManaData data = ExtraDataUtil.itemManaData(staff);
@@ -250,7 +252,7 @@ public class MagickLogicEvent {
 
 	@SubscribeEvent
 	public void onEntityJoin(EntityJoinWorldEvent event) {
-		if(RadianceCrystalTileEntity.RADIANCE_CRYSTALS.containsKey(event.getWorld().dimension())) {
+		if(event.getEntity() instanceof LivingEntity && RadianceCrystalTileEntity.RADIANCE_CRYSTALS.containsKey(event.getWorld().dimension())) {
 			List<RadianceCrystalTileEntity> list = RadianceCrystalTileEntity.RADIANCE_CRYSTALS.get(event.getWorld().dimension());
 			for(RadianceCrystalTileEntity tile : list) {
 				if(tile.getBlockPos().distToCenterSqr(event.getEntity().position()) <= RadianceCrystalTileEntity.workRange() * RadianceCrystalTileEntity.workRange()) {
@@ -337,9 +339,8 @@ public class MagickLogicEvent {
 
 			boolean flag = false;
 
-			ItemStack stack = ((LivingEntity) event.getEntity()).getMainHandItem();
-			if(!(stack.getItem() instanceof IManaData) || stack.getUseAnimation() == UseAnim.NONE)
-				stack = ((LivingEntity) event.getEntity()).getOffhandItem();
+			InteractionHand hand = event.getContext().hand;
+			ItemStack stack = ((LivingEntity) event.getEntity()).getItemInHand(hand);
 
 			ItemManaData item = ExtraDataUtil.itemManaData(stack);
 			if(item.manaCapacity().getMana() >= event.getMana()) {
@@ -466,7 +467,9 @@ public class MagickLogicEvent {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().isRemoved()) {
 				if(event.getEntity().tickCount % 40 == 0)
 					Networking.INSTANCE.send(
-							PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+							PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+									event.getEntity().position().x, event.getEntity().position().y, event.getEntity().position().z, 48, event.getEntity().level.dimension()
+							)),
 							new TakenStatePack(event.getEntity().getId(), takenState.getTime(), takenState.getOwnerUUID()));
 			}
 		}
@@ -479,8 +482,8 @@ public class MagickLogicEvent {
 		if(state.getElementShieldMana() < 0.0f)
 			state.setElementShieldMana(0.0f);
 
-		if(state.getMaxManaValue() < 50.0f)
-			state.setMaxManaValue(50f);
+		if(state.getMaxManaValue() < 350.0f)
+			state.setMaxManaValue(350f);
 
 		if(event.getEntity() instanceof LivingEntity && Float.isNaN(((LivingEntity)event.getEntity()).getHealth()))
 			((LivingEntity)event.getEntity()).setHealth(0.0f);
@@ -503,7 +506,9 @@ public class MagickLogicEvent {
 			CompoundTag tag = new CompoundTag();
 			state.write(tag);
 			Networking.INSTANCE.send(
-					PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+					PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+							event.getEntity().position().x, event.getEntity().position().y, event.getEntity().position().z, 48, event.getEntity().level.dimension()
+					)),
 					new EntityStatePack(event.getEntity().getId(), tag));
 		}
 
@@ -853,7 +858,8 @@ public class MagickLogicEvent {
 			event.setCanceled(true);
 			if(damage > 0.0f)
 				spawnParticle(state.getElement().type(), event.getEntity());
-			EntityCompoundTagPack.updateEntity(event.getEntityLiving());
+			if(!(event.getEntityLiving() instanceof Player))
+				EntityCompoundTagPack.updateEntity(event.getEntityLiving());
 		}
 	}
 
@@ -879,7 +885,9 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof IOwnerEntity && ((IOwnerEntity) event.getEntity()).getCaster() != null && event.getEntity().tickCount % 40 == 0) {
 			if(!event.getEntity().level.isClientSide && !event.getEntity().isRemoved())
 				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+								event.getEntity().position().x, event.getEntity().position().y, event.getEntity().position().z, 48, event.getEntity().level.dimension()
+						)),
 						new OwnerStatePack(event.getEntity().getId(), ((IOwnerEntity) event.getEntity()).getCaster().getUUID()));
 		}
 
@@ -887,7 +895,9 @@ public class MagickLogicEvent {
 			ManaCapacity data = ((IManaCapacity) event.getEntity()).manaCapacity();
 			if(!event.getEntity().level.isClientSide && !event.getEntity().isRemoved() && event.getEntity().tickCount % 10 == 0) {
 				Networking.INSTANCE.send(
-						PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+						PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+								event.getEntity().position().x, event.getEntity().position().y, event.getEntity().position().z, 48, event.getEntity().level.dimension()
+						)),
 						new ManaCapacityPack(event.getEntity().getId(), data));
 			}
 		}

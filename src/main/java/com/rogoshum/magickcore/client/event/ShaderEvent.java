@@ -80,18 +80,26 @@ public class ShaderEvent {
                 RenderTarget mainFramebuffer = mc.getMainRenderTarget();
                 TextureManager textureManager = mc.getTextureManager();
                 ResourceManager resourceManager = mc.getResourceManager();
-                shaders.put(resourceLocation.toString(), new PostChain(textureManager, resourceManager, mainFramebuffer, resourceLocation));
+                PostChain postChain = new PostChain(textureManager, resourceManager, mainFramebuffer, resourceLocation);
+                Window mainWindow = mc.getWindow();
+                int width = mainWindow.getWidth();
+                int height = mainWindow.getHeight();
+                postChain.resize(width, height);
+                shaders.put(resourceLocation.toString(), postChain);
             } catch (IOException | JsonSyntaxException e) {
                 MagickCore.LOGGER.warn("Failed to load shader: {}", resourceLocation, e);
             }
         });
         try {
-            RenderHelper.setRendertypeEntityFogShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent"), DefaultVertexFormat.POSITION_COLOR));
+            RenderHelper.setRendertypeEntityTranslucentInstanceShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_dist_instanced"), DefaultVertexFormat.NEW_ENTITY));
+            RenderHelper.setRendertypeEntityLightShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_light_filter"), DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL));
+            RenderHelper.setRendertypeEntityLightInstanceShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_light_instanced"), DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL));
             RenderHelper.setRendertypeEntityTranslucentShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_dist"), DefaultVertexFormat.NEW_ENTITY));
             RenderHelper.setPositionTextureShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_tex"), DefaultVertexFormat.POSITION_TEX));
             RenderHelper.setRendertypeEntityTranslucentNoiseShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_translucent_noise"), DefaultVertexFormat.NEW_ENTITY));
             RenderHelper.setPositionColorTexLightmapShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
             RenderHelper.setPositionColorTexLightmapDistShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap_dist"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
+            RenderHelper.setPositionColorTexLightmapDistInstanceShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("position_color_tex_lightmap_dist_instanced"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP));
             RenderHelper.setRendertypeEntityQuadrantShader(new ShaderInstance(Minecraft.getInstance().getResourceManager(), MagickCore.fromId("rendertype_entity_quadrant"), DefaultVertexFormat.NEW_ENTITY));
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,23 +122,24 @@ public class ShaderEvent {
         }
         RenderHelper.checkRenderingShader();
         if(RenderHelper.stopShader()) return;
-        Minecraft mc = Minecraft.getInstance();
-
-        Window mainWindow = mc.getWindow();
-        int width = mainWindow.getWidth();
-        int height = mainWindow.getHeight();
-        if (width != this.framebufferWidth || height != this.framebufferHeight) {
-            this.framebufferWidth = width;
-            this.framebufferHeight = height;
-            shaders.values().forEach(shaderGroup -> shaderGroup.resize(width, height));
+        if(!renderList.isEmpty()) {
+            Minecraft mc = Minecraft.getInstance();
+            Window mainWindow = mc.getWindow();
+            int width = mainWindow.getWidth();
+            int height = mainWindow.getHeight();
+            if (width != this.framebufferWidth || height != this.framebufferHeight) {
+                this.framebufferWidth = width;
+                this.framebufferHeight = height;
+                shaders.values().forEach(shader->shader.resize(width, height));
+            }
+            renderList.forEach( (shader) -> {
+                RenderTarget framebuffer = shaders.get(shader).getTempTarget(Objects.requireNonNull(getShaderFrameName(shader)));
+                framebuffer.clear(Minecraft.ON_OSX);
+                framebuffer.copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
+            });
+            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+            renderList.clear();
         }
-
-        shaders.forEach( (shader, shaderGroup) -> {
-            RenderTarget framebuffer = shaderGroup.getTempTarget(Objects.requireNonNull(getShaderFrameName(shader)));
-            framebuffer.clear(Minecraft.ON_OSX);
-            framebuffer.copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
-        });
-        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         RenderSystem.setShaderTexture(4, Minecraft.getInstance().getMainRenderTarget().getDepthTextureId());
         RenderSystem.setShaderTexture(5, Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
     }
@@ -146,19 +155,21 @@ public class ShaderEvent {
             shaderGroup.process(event.getPartialTicks());
             renderFrame.add(framebuffer);
         });
-        renderList.clear();
 
-        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-        Window mainWindow = Minecraft.getInstance().getWindow();
         PoseStack poseStack = RenderSystem.getModelViewStack();
-        renderFrame.forEach( framebuffer -> {
-            poseStack.pushPose();
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            framebuffer.blitToScreen(mainWindow.getWidth(), mainWindow.getHeight(), false);
-            RenderSystem.disableBlend();
-            poseStack.popPose();
-        });
+        if(!renderFrame.isEmpty()) {
+            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+            Window mainWindow = Minecraft.getInstance().getWindow();
+
+            renderFrame.forEach( framebuffer -> {
+                poseStack.pushPose();
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+                framebuffer.blitToScreen(mainWindow.getWidth(), mainWindow.getHeight(), false);
+                RenderSystem.disableBlend();
+                poseStack.popPose();
+            });
+        }
         if(Minecraft.useShaderTransparency()) {
             poseStack.pushPose();
             poseStack.mulPoseMatrix(event.getMatrixStack().last().pose());

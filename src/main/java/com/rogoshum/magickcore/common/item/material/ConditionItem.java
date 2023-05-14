@@ -107,7 +107,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand hand) {
         return false;
     }
 

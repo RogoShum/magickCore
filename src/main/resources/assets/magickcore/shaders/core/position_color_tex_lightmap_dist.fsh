@@ -6,8 +6,6 @@ uniform vec4 ColorModulator;
 
 in vec4 vertexColor;
 in vec2 texCoord0;
-in vec2 texCoord2;
-in vec2 noiseUV;
 
 out vec4 fragColor;
 

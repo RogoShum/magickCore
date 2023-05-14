@@ -8,22 +8,18 @@ import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RadianceCrystalRenderer extends BlockEntityWithoutLevelRenderer {
-    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexedOrbItem(RenderHelper.SPHERE_ROTATE);
+    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexturedItemGlint(RenderHelper.SPHERE_ROTATE, 1.0f, 0);
     public RadianceCrystalRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
     }
@@ -47,7 +43,7 @@ public class RadianceCrystalRenderer extends BlockEntityWithoutLevelRenderer {
         }
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CRYSTAL_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CRYSTAL_TYPE)
                 , new RenderHelper.RenderContext(0.7f, color, combinedLight));
         matrixStackIn.popPose();
     }

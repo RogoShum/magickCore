@@ -1,6 +1,0 @@
-{
-  "name": "Spell Form",
-  "description": "Mana Form that can lead to the next stage",
-  "icon": "magickcore:textures/entity/mana_orb.png",
-  "sortnum": 4
-}

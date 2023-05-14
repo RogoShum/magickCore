@@ -81,16 +81,18 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
     }
 
     protected void backToOwner() {
-        MagickContext context = MagickContext.create(this.level)
-                .replenishChild(DirectionContext.create(this.position().subtract(getCaster().position())))
-                .replenishChild(SpawnContext.create(getType()))
-                .force(getHealth())
-                .applyType(ApplyType.SPAWN_ENTITY)
-                .<MagickContext>tick(spellContext().tick)
-                .caster(getCaster()).projectile(this).victim(getCaster())
-                .<MagickContext>replenishChild(TraceContext.create(getCaster()))
-                .noCost();
-        MagickReleaseHelper.releaseMagick(context);
+        if(getCaster() != null) {
+            MagickContext context = MagickContext.create(this.level)
+                    .replenishChild(DirectionContext.create(this.position().subtract(getCaster().position())))
+                    .replenishChild(SpawnContext.create(getType()))
+                    .force(getHealth())
+                    .applyType(ApplyType.SPAWN_ENTITY)
+                    .<MagickContext>tick(spellContext().tick)
+                    .caster(getCaster()).projectile(this).victim(getCaster())
+                    .<MagickContext>replenishChild(TraceContext.create(getCaster()))
+                    .noCost();
+            MagickReleaseHelper.releaseMagick(context);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.api.magick.context;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class MagickContext extends SpellContext {
     public final Level world;
     public Entity caster, projectile, victim, separator;
+    public InteractionHand hand = InteractionHand.MAIN_HAND;
     public BlockEntity blockCaster;
     public boolean noCost = false;
     public float reduceCost = 0;
@@ -27,6 +29,11 @@ public class MagickContext extends SpellContext {
 
     public MagickContext caster(Entity caster) {
         this.caster = caster;
+        return this;
+    }
+
+    public MagickContext hand(InteractionHand hand) {
+        this.hand = hand;
         return this;
     }
 
@@ -89,7 +96,7 @@ public class MagickContext extends SpellContext {
         if(noCost)
             toolTip.nextTrans("noCost", ToolTipHelper.PINK);
 
-        toolTip.builder.append(getString(false));
+        toolTip.builder.append(getString(false, this.element));
         return super.toString();
     }
 }

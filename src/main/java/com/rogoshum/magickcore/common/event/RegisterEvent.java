@@ -27,12 +27,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -92,6 +94,7 @@ public class RegisterEvent {
         ExtraDataUtil.entityStateData(event.getEntityLiving(), state -> {
             if(!event.getEntityLiving().level.isClientSide) {
                 int chance = state.getElement() != ModElements.ORIGIN ? 15 : 100;
+
                 if(event.getSource().getEntity() instanceof Player) {
                     PlayerTradeUnlock lock = ExtraDataUtil.playerTradeData((Player) event.getSource().getEntity());
                     if(lock.getUnLock().size() < 8)
@@ -99,11 +102,15 @@ public class RegisterEvent {
                 }
 
                 if(event.getEntityLiving().level.random.nextInt(chance) == 0) {
-                    ItemStack stack = ModVillager.getEntityTypeItem(ModVillager.getRandomType());
+                    boolean flag = false;
+                    if(event.getSource().getEntity() instanceof Player)
+                        flag = ExtraDataUtil.playerTradeData((Player) event.getSource().getEntity()).getUnLock().size() != 0;
+
+                    ItemStack stack = ModVillager.getEntityTypeItem(flag ? ModVillager.getRandomType() : ModEntities.SQUARE.get());
                     ItemEntity entity = new ItemEntity(event.getEntityLiving().level, event.getEntityLiving().getX(), event.getEntityLiving().getY() + 0.5f, event.getEntityLiving().getZ(), stack);
                     if(!event.getEntityLiving().level.isClientSide)
                         event.getEntityLiving().level.addFreshEntity(entity);
-                } else if(!(event.getEntityLiving() instanceof IQuadrantEntity)){
+                } else if(!(event.getEntityLiving() instanceof IQuadrantEntity)) {
                     ManaElementOrbEntity orb = new ManaElementOrbEntity(ModEntities.ELEMENT_ORB.get(), event.getEntityLiving().level);
                     Vec3 vec = event.getEntityLiving().position();
                     orb.setPos(vec.x, vec.y + event.getEntityLiving().getBbHeight() / 2, vec.z);

@@ -19,15 +19,16 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.HashMap;
 import java.util.OptionalDouble;
 import java.util.function.Consumer;
 
 public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileEntity>{
-    private static final RenderType CYLINDER_TYPE_0 = RenderHelper.getTexedCylinderGlint(RenderHelper.ripple_5, 0.5f, 0);
-    private static final RenderType CYLINDER_TYPE_1 = RenderHelper.getTexedCylinderGlint(RenderHelper.ripple_4, 10, 0);
-    private static final RenderType PARTICLE_TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
+    private static final RenderType CYLINDER_TYPE_0 = RenderHelper.getTexturedUniGlint(RenderHelper.ripple_5, 0.5f, 0);
+    private static final RenderType CYLINDER_TYPE_1 = RenderHelper.getTexturedUniGlint(RenderHelper.ripple_4, 10, 0);
+    private static final RenderType PARTICLE_TYPE = RenderHelper.getTexturedQuadsGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
     private RenderType PARTICLE_TYPE_DYNAMIC = null;
     private float alpha=0f;
     private static final RenderType TYPE = RenderType.create(MagickCore.MOD_ID + "_lines", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256
@@ -50,7 +51,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
     public void update() {
         super.update();
         alpha = Math.min(tile.ticksExisted / 30f, 1.0f);
-        PARTICLE_TYPE_DYNAMIC = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (tile.ticksExisted % 10) + ".png"));
+        PARTICLE_TYPE_DYNAMIC = RenderHelper.getTexturedQuadsGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (tile.ticksExisted % 10) + ".png"));
     }
 
     @Override
@@ -62,18 +63,20 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
     public void renderCylinder0(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.9f, 1.2f, 2f, 2.4f, 16
-                , 0, 0.2f * alpha, 0.4f, Color.BLUE_COLOR);
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CYLINDER_TYPE_0), context);
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.9f, 1.2f, 2f, 2, 2.4f
+                , 0, 0.2f, 0.4f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CYLINDER_TYPE_0), context
+                , new RenderHelper.RenderContext(alpha, Color.BLUE_COLOR, RenderHelper.renderLight, true));
     }
 
     public void renderCylinder1(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(90));
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(1.4f, 1.2f, 3f, 1.6f, 16
-                , 0.5f * alpha, alpha, 1f, Color.BLUE_COLOR);
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CYLINDER_TYPE_1), context);
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(1.4f, 1.2f, 3f, 2, 1.6f
+                , 0.5f, 1, 1f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CYLINDER_TYPE_1), context
+        , new RenderHelper.RenderContext(alpha, Color.BLUE_COLOR, RenderHelper.renderLight, true));
     }
 
     public void renderParticle0(RenderParams params) {

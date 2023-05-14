@@ -38,8 +38,8 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
     protected static final ResourceLocation LASER_TOP = new ResourceLocation(MagickCore.MOD_ID,  "textures/element/base/wave/wave_0.png");
     Queue<Vec3> DIRECTION;
     private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/element/base/wave/wave_0.png");
-    private final static RenderType SIDE = RenderHelper.getTexedEntityGlint(RenderHelper.SPHERE_ROTATE, 1f, 0f);
-    final RenderType TYPE = RenderHelper.getTexedLaserGlint(LASER_MID, -1f);
+    private final static RenderType SIDE = RenderHelper.getTexturedEntityGlint(RenderHelper.SPHERE_ROTATE, 1f, 0f);
+    final RenderType TYPE = RenderHelper.getTexturedLaserGlint(LASER_MID, -1f);
     public ArtificialLifeEntityRenderer(ArtificialLifeEntity entity) {
         super(entity);
     }
@@ -94,7 +94,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(10.9f, 10.9f, 10.9f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderBlock(RenderParams params) {
@@ -115,9 +115,10 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
             matrixStackIn.pushPose();
             matrixStackIn.mulPose(Vector3f.YP.rotationDegrees((float) vector3d.x));
             matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((float) vector3d.y));
+            matrixStackIn.scale(1, (float) (vector3d.z * 10), 1);
             RenderHelper.renderLaserParticle(
                     BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(0.8f, this.entity.spellContext().element.primaryColor()), (float) (vector3d.z * 10));
+                    , new RenderHelper.RenderContext(0.8f, this.entity.spellContext().element.primaryColor()));
             matrixStackIn.popPose();
         }
     }

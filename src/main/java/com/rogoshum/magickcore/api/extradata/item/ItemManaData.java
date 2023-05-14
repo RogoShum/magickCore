@@ -15,12 +15,22 @@ public class ItemManaData extends ItemExtraData implements ISpellContext, IManaC
     private final ManaCapacity capacity;
     private final SpellContext spellContext;
     private final ContextCore contextCore;
+    private final int depth;
 
     public ItemManaData(ItemStack stack) {
+        this(stack, false, -1);
+    }
+
+    //onlyForClientRender
+    public ItemManaData(ItemStack stack, boolean displayOnly, int depth) {
         super(stack);
-        spellContext = ItemSpellContext.create(stack);
+        if(displayOnly)
+            spellContext = SpellContext.create();
+        else
+            spellContext = ItemSpellContext.create(stack);
         contextCore = new ContextCore(stack);
         capacity = new ItemManaCapacity(stack);
+        this.depth = depth;
         if(stack.hasTag() && stack.getTag().contains(LibRegistry.ITEM_DATA))
             read(stack.getTag().getCompound(LibRegistry.ITEM_DATA));
     }
@@ -32,7 +42,7 @@ public class ItemManaData extends ItemExtraData implements ISpellContext, IManaC
 
     @Override
     public void read(CompoundTag nbt) {
-        spellContext.deserialize(nbt);
+        spellContext.deserialize(nbt, depth);
         capacity.deserialize(nbt);
         contextCore.deserialize(nbt);
     }

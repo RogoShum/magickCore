@@ -18,7 +18,6 @@ uniform mat4 ProjMat;
 uniform mat3 IViewRotMat;
 uniform mat4 TextureMat;
 uniform int FogShape;
-uniform float GameTime;
 uniform vec3 CameraPos;
 
 uniform vec3 Light0_Direction;
@@ -31,7 +30,6 @@ out vec4 overlayColor;
 out vec2 texCoord0;
 out vec4 normal;
 out vec2 noiseUV;
-out float gameTime;
 out vec3 pos;
 
 void main() {
@@ -44,5 +42,4 @@ void main() {
     texCoord0 = (TextureMat * vec4(UV0, 0.0, 1.0)).xy;
     normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
     noiseUV = UV0+vec2(pos.x*0.05, pos.z*0.05);
-    gameTime = GameTime;
 }

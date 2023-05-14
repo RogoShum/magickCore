@@ -22,9 +22,6 @@ import java.util.Optional;
 public class ItemExtractorRenderer implements BlockEntityRenderer<ItemExtractorTileEntity> {
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/glass.png");
 
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrb(wool);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 0.1f, 0f);
-
     public ItemExtractorRenderer(BlockEntityRendererProvider.Context p_173554_) {
     }
 

@@ -1,8 +1,10 @@
 package com.rogoshum.magickcore.api.render.easyrender;
 
+import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.lib.LibShaders;
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,7 +14,7 @@ public class RenderMode {
     public final RenderType renderType;
     public final ShaderList useShader;
     public final boolean originRender;
-    public final int hashCode;
+    public int hashCode;
 
     public RenderMode(RenderType renderType) {
         this.renderType = renderType;
@@ -35,6 +37,13 @@ public class RenderMode {
         hashCode = Objects.hash(renderType.toString().hashCode(), useShader.hashCode(), false);
     }
 
+    public void transForQueueRender() {
+        if(originRender) return;
+        if(!RenderHelper.isRenderTypeGlint(renderType))
+            RenderHelper.setRenderTypeTexture(renderType, RenderHelper.TEXTURE);
+        hashCode = Objects.hash(renderType.toString().hashCode(), useShader.hashCode(), false);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,27 +57,15 @@ public class RenderMode {
         return hashCode;
     }
 
-    public static class DrawMode {
-        public final int drawMode;
-        public final VertexFormat vertexFormat;
-
-        public DrawMode(int drawMode, VertexFormat vertexFormat) {
-            this.drawMode = drawMode;
-            this.vertexFormat = vertexFormat;
-        }
+    public record DrawMode(VertexFormat.Mode drawMode, VertexFormat vertexFormat) {
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof DrawMode)) return false;
-            DrawMode drawMode1 = (DrawMode) o;
-            return drawMode == drawMode1.drawMode && vertexFormat.equals(drawMode1.vertexFormat);
-        }
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof DrawMode drawMode1)) return false;
+                return drawMode.equals(drawMode1.drawMode) && vertexFormat.equals(drawMode1.vertexFormat);
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(drawMode, vertexFormat);
-        }
     }
 
     public static class ShaderList {

@@ -4,6 +4,7 @@ public class LibAdvancements {
     public static final String UNLOCK_ROOT = "unlock_root";
     public static final String ELEMENT_CREATURE = "element_creature";
     public static final String ELEMENT_CRYSTAL = "element_crystal";
+    public static final String SPIRIT_CRYSTAL = "spirit_crystal";
     public static final String ELEMENT_MEAT = "element_meat";
     public static final String ELEMENT_STRING = "element_string";
     public static final String ELEMENT_CRYSTAL_1 = "element_crystal_1";
@@ -52,7 +53,8 @@ public class LibAdvancements {
     public static final String MAGICK_CRAFTING = "magick_crafting";
     public static final String CONTEXT_CORE = "context_core";
     public static final String MAGICK_CORE = "magick_core";
+    public static final String ENTITY_TYPE = "pre_entity_type";
+    public static final String UNDERSTAND_SPELL = "understand_spell";
     public static final String CONTEXT_POINTER = "context_pointer";
-    public static final String WAND = "wand";
     public static final String RING = "ring";
 }

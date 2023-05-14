@@ -131,14 +131,14 @@ public abstract class MixinLivingRender<T extends LivingEntity, M extends Entity
         RenderType rendertype = RenderHelper.getLayerEntityGlint(texture, 1.0f, 10f);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
         int i = LivingEntityRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
-        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.1F);
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.05F);
     }
 
     public void renderBuffLayerSolid(T entityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, Color color, ResourceLocation texture) {
         RenderType rendertype = RenderHelper.getLayerEntityGlintSolid(texture, 1.5f, 10f);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
         int i = LivingEntityRenderer.getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));
-        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.1F);
+        getModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, i, color.r(), color.g(), color.b(), 0.05F);
     }
 
     public void renderBuffLayerLayer(T entityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, Color color, ResourceLocation texture) {

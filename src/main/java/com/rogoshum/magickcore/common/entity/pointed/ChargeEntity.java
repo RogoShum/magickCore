@@ -84,6 +84,8 @@ public class ChargeEntity extends ManaEntity {
 
     @Override
     public boolean releaseMagick() {
+        if(this.spellContext().tick > 300)
+            this.spellContext().tick(300);
         if(level.isClientSide) {
             Vec3 former = getFormer();
             this.former = ManaFactor.create((float) former.x, (float) former.y, (float) former.z);
@@ -175,8 +177,8 @@ public class ChargeEntity extends ManaEntity {
         if(former != null)
             return ManaFactor.create(1.0f + (former.force <= 1.0f ? (1.0f - former.force) : former.force) * charge + charge
                     , 1.0f + (former.range <= 1.0f ? (1.0f - former.range) : former.range) * charge + charge
-                    , 1.0f + (former.tick <= 1.0f ? (1.0f - former.tick) : former.tick) * charge + charge * 20);
-        return ManaFactor.create(1.0f + charge, 1.0f + charge, 1.0f + charge * 20);
+                    , 1.0f + (former.tick <= 1.0f ? (1.0f - former.tick) : former.tick) * charge + charge);
+        return ManaFactor.create(1.0f + charge, 1.0f + charge, 1.0f + charge);
     }
 
     @Override

@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>{
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/white_wool.png");
 
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrbSolid(wool);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbItem(RenderHelper.SPHERE_ROTATE, 1f, 0f);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedQuadsSolid(wool);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexturedQuadsGlint(RenderHelper.SPHERE_ROTATE);
     private Color color = Color.ORIGIN_COLOR;
 
     public ElementWoolRenderer(ElementWoolTileEntity tile) {
@@ -29,14 +29,14 @@ public class ElementWoolRenderer extends EasyTileRenderer<ElementWoolTileEntity>
     public void render(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f
                 , color, RenderHelper.renderLight));
     }
 
     public void _render(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_1), new RenderHelper.RenderContext(0.7f
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, renderParams.buffer, RENDER_TYPE_1), new RenderHelper.RenderContext(0.2f
                 , color, RenderHelper.renderLight));
     }
 

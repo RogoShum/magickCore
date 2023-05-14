@@ -41,7 +41,7 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem, ISpir
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         return false;
     }
 
@@ -69,7 +69,7 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem, ISpir
         MagickReleaseHelper.releaseMagick(MagickContext.create(player.level, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
         InteractionHand hand = player.getMainHandItem() == stack ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         player.startUsingItem(hand);
-        boolean success = MagickReleaseHelper.releaseMagick(context);
+        boolean success = MagickReleaseHelper.releaseMagick(context.hand(hand));
         player.releaseUsingItem();
         return success;
     }

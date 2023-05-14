@@ -30,7 +30,6 @@ out vec4 vertexColor;
 out vec4 lightMapColor;
 out vec4 overlayColor;
 out vec2 texCoord0;
-out vec4 normal;
 
 void main() {
     texCoord0 = (TextureMat * vec4(UV0, 0.0, 1.0)).xy;
@@ -45,5 +44,4 @@ void main() {
     vertexColor = minecraft_mix_light(vec3(0, 1, 0), vec3(0, -1, 0), Normal, Color);
     lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
     overlayColor = texelFetch(Sampler1, UV1, 0);
-    normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 }

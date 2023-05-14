@@ -69,10 +69,10 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStackIn.translate(0.0, 0.25, 0.0);
             matrixStackIn.scale(1.0f, 1.4f, 1.0f);
         }
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedOrbItem(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.popPose();
 

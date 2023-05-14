@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class BubbleRenderer extends EasyRenderer<BubbleEntity> {
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(BubbleEntity.ICON);
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(BubbleEntity.ICON);
 
     public BubbleRenderer(BubbleEntity entity) {
         super(entity);

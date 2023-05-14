@@ -61,7 +61,9 @@ public class TakenAbility {
             state.setOwner(context.caster.getUUID());
             state.setTime(context.tick);
             Networking.INSTANCE.send(
-                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                            context.victim.position().x, context.victim.position().y, context.victim.position().z, 48, context.victim.level.dimension()
+                    )),
                     new TakenStatePack(context.victim.getId(), context.tick, context.victim.getUUID()));
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
         }
@@ -87,7 +89,9 @@ public class TakenAbility {
             state.setTime(time);
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
-                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> context.victim),
+                    PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                            context.victim.position().x, context.victim.position().y, context.victim.position().z, 48, context.victim.level.dimension()
+                    )),
                     new TakenStatePack(context.victim.getId(), time, context.victim.getUUID()));
             return true;
         }

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class MaterialJarRenderer extends EasyTileRenderer<MaterialJarTileEntity>{
-    private static final RenderType TYPE = RenderHelper.getTexedOrb(RenderHelper.blankTex);
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsTranslucent(RenderHelper.BLANK_TEX);
     private int light;
 
     public MaterialJarRenderer(MaterialJarTileEntity tile) {
@@ -27,10 +27,10 @@ public class MaterialJarRenderer extends EasyTileRenderer<MaterialJarTileEntity>
         baseOffset(matrixStackIn);
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         matrixStackIn.scale(0.6f, 0.99f, 0.6f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, TYPE)
                 , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, light));
         matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, TYPE)
                 , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, light));
     }
 

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
     float scale;
-    private static final RenderType TYPE = RenderHelper.getTexedSphereGlow(sphere_rotate, 2f, 0f, 0.1f, 1f);
+    private static final RenderType TYPE = RenderHelper.getTexturedEntityGlintShake(sphere_rotate, 1f, 0f, 0.05f, 1f);
 
     public ManaSphereRenderer(ManaSphereEntity entity) {
         super(entity);
@@ -24,15 +24,15 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(scale, scale, scale);
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderSphere(
+        RenderHelper.renderSphereCache(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE)
-                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 12);
+                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 1);
     }
 
     @Override
     public void update() {
         super.update();
-        scale = entity.getBbWidth() * 1.2f;
+        scale = entity.getBbWidth() * 1.4f;
         if(entity.tickCount < 9)
             scale *= 1 - 1f / ((float)entity.tickCount + 1f);
 

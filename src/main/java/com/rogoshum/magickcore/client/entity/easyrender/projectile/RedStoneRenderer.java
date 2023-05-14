@@ -19,8 +19,8 @@ import java.util.function.Consumer;
 
 public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
     public static final ResourceLocation TRAIL = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/trail.png");
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedEntity(RenderHelper.blankTex);
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedEntity(TRAIL);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedQuadsGlow(TRAIL);
 
     private static final RenderHelper.RenderContext RENDER_CONTEXT_0 = new RenderHelper.RenderContext(0.3f, Color.RED_COLOR, 0);
     private static final RenderHelper.RenderContext RENDER_CONTEXT_1 = new RenderHelper.RenderContext(0.9f, Color.RED_COLOR, RenderHelper.halfLight);
@@ -40,12 +40,12 @@ public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
         matrixStackIn.pushPose();
         scale = 1.01f;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), RENDER_CONTEXT_1);
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), RENDER_CONTEXT_1);
         matrixStackIn.popPose();
         matrixStackIn.mulPose(Vector3f.YP.rotation(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotation(45));
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), RENDER_CONTEXT_1);
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), RENDER_CONTEXT_1);
     }
 
     public void renderType1(RenderParams params) {
@@ -57,13 +57,13 @@ public class RedStoneRenderer extends EasyRenderer<RedStoneEntity> {
         float scale = entity.getBbWidth();
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.pushPose();
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), RENDER_CONTEXT_0);
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), RENDER_CONTEXT_0);
         scale = 1.01f;
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.popPose();
         matrixStackIn.mulPose(Vector3f.YP.rotation(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotation(45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), RENDER_CONTEXT_0);
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), RENDER_CONTEXT_0);
         matrixStackIn.scale(scale, scale, scale);
     }
 

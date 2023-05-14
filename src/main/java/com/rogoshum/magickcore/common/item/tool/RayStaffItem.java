@@ -10,6 +10,7 @@ import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,14 +23,14 @@ public class RayStaffItem extends ManaItem {
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext context = MagickContext.create(playerIn.level, data.spellContext()).caster(playerIn);
         if(context.containChild(LibContext.TRACE)) {
             TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-        return MagickReleaseHelper.releaseMagick(context);
+        return MagickReleaseHelper.releaseMagick(context.hand(handIn));
     }
 
     @Override

@@ -17,9 +17,9 @@ public class LeafRenderer extends EasyRenderer<LeafEntity> {
     private static final ResourceLocation LEAF_0 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_0.png");
     private static final ResourceLocation LEAF_1 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_1.png");
     private static final ResourceLocation LEAF_2 = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/leaf_2.png");
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlow(LEAF_1);
-    private static final RenderType RENDER_TYPE_2 = RenderHelper.getTexedOrbGlow(LEAF_2);
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrbGlow(LEAF_0);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexturedQuadsGlow(LEAF_1);
+    private static final RenderType RENDER_TYPE_2 = RenderHelper.getTexturedQuadsGlow(LEAF_2);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedQuadsGlow(LEAF_0);
 
     private RenderType renderType;
 

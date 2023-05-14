@@ -34,9 +34,9 @@ public class OrbBottleRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.translate(0, -0.95, 0);
         if(stack.hasTag() && NBTTagHelper.hasElement(stack)) {
             Color color = MagickRegistry.getElement(NBTTagHelper.getElement(stack)).primaryColor();
-            this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbItem(LIQUID)), RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
+            this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexturedShaderItemTranslucent(LIQUID)), RenderHelper.renderLight, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
         }
-        this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexedOrbItem(BOTTLE)), combinedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.3F);
+        this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexturedShaderItemTranslucent(BOTTLE)), combinedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.3F);
         matrixStackIn.popPose();
     }
 }

@@ -10,11 +10,8 @@ import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
-import com.rogoshum.magickcore.client.item.ManaEnergyRenderer;
 import com.rogoshum.magickcore.client.render.RenderParams;
-import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
 import com.rogoshum.magickcore.common.magick.Color;
-import com.rogoshum.magickcore.common.tileentity.MaterialJarTileEntity;
 import com.rogoshum.magickcore.common.tileentity.RadianceCrystalTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -34,14 +31,12 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTileEntity>{
-    private static final RenderType TYPE = RenderHelper.getTexedOrb(RenderHelper.blankTex);
-    private int light;
     Queue<Vec3> DIRECTION;
     protected Color color = Color.ORIGIN_COLOR;
     private static final ResourceLocation LASER_MID = new ResourceLocation(MagickCore.MOD_ID,  "textures/element/base/wave/wave_0.png");
-    private static final RenderType LASER_TYPE = RenderHelper.getTexedLaserGlint(LASER_MID, -1f);
-    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 1.0f, 1.0f);
-    private final static RenderType SIDE = RenderHelper.getTexedEntityGlint(RenderHelper.SPHERE_ROTATE, 1f, 0f);
+    private static final RenderType LASER_TYPE = RenderHelper.getTexturedLaserGlint(LASER_MID, -1f);
+    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexturedQuadsGlint(RenderHelper.SPHERE_ROTATE);
+    private final static RenderType SIDE = RenderHelper.getTexturedEntityGlint(RenderHelper.SPHERE_ROTATE, 1f, 0f);
     public RadianceCrystalRenderer(RadianceCrystalTileEntity tile) {
         super(tile);
     }
@@ -52,7 +47,7 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
         BufferBuilder bufferIn = params.buffer;
         float scale = RadianceCrystalTileEntity.workRange()*2+.9f;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, tile.getElement().primaryColor(), RenderHelper.renderLight));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, tile.getElement().primaryColor(), RenderHelper.renderLight));
     }
 
     public void render(RenderParams params) {
@@ -62,10 +57,10 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
         matrixStackIn.scale(0.65f, 0.65f, 0.65f);
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
                 , new RenderHelper.RenderContext(0.8f, tile.getElement().secondaryColor(), RenderHelper.renderLight));
         matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
                 , new RenderHelper.RenderContext(1.0f, tile.getElement().secondaryColor(), RenderHelper.renderLight));
     }
 
@@ -81,7 +76,6 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
     @Override
     public void update() {
         super.update();
-        light = tile.getLevel().getLightEmission(tile.getBlockPos());
         DIRECTION = Queues.newArrayDeque();
         List<Entity> livings = tile.getLevel().getEntities((Entity) null, new AABB(tile.getBlockPos()).inflate(8), (entity) -> entity instanceof IManaCapacity);
         for (Entity entity : livings) {
@@ -104,9 +98,10 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
             matrixStackIn.pushPose();
             matrixStackIn.mulPose(Vector3f.YP.rotationDegrees((float) vector3d.x));
             matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((float) vector3d.y));
+            matrixStackIn.scale(1, (float) (vector3d.z * 10), 1);
             RenderHelper.renderLaserParticle(
-                    BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(0.8f, tile.getElement().primaryColor()), (float) (vector3d.z * 10));
+                    BufferContext.create(matrixStackIn, params.buffer, LASER_TYPE)
+                    , new RenderHelper.RenderContext(0.8f, tile.getElement().primaryColor()));
             matrixStackIn.popPose();
         }
     }
@@ -116,7 +111,7 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
         map.put(new RenderMode(CRYSTAL_TYPE, RenderMode.ShaderList.BITS_SHADER), this::render);
         if(Minecraft.getInstance().hitResult instanceof BlockHitResult result && result.getBlockPos().equals(tile.getBlockPos())) {
-            map.put(new RenderMode(CRYSTAL_TYPE), this::renderSide);
+            map.put(new RenderMode(SIDE), this::renderSide);
         }
         map.put(RenderMode.ORIGIN_RENDER, this::renderItem);
         if(DIRECTION != null)

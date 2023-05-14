@@ -12,6 +12,7 @@ import com.rogoshum.magickcore.api.magick.context.child.PsiSpellContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.CreativeModeTab;
@@ -26,7 +27,7 @@ public class ItemSpellBullet extends MagickContextItem{
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand hand) {
         return false;
     }
 

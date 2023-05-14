@@ -17,8 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 public class ElementWoolRenderer implements BlockEntityRenderer<ElementWoolTileEntity> {
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/white_wool.png");
 
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrbSolid(wool);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 0.1f, 0f);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedQuadsSolid(wool);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexturedQuadsGlint(RenderHelper.SPHERE_ROTATE);
 
     public ElementWoolRenderer(BlockEntityRendererProvider.Context p_173554_) {
     }
@@ -29,8 +29,8 @@ public class ElementWoolRenderer implements BlockEntityRenderer<ElementWoolTileE
         matrixStackIn.translate(0.5, 0.5, 0.5);
         float f = MagickCore.proxy.getRunTick();
         RenderSystem.setShaderLights(Vector3f.ZERO, Vector3f.ZERO);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, tile.getColor(), RenderHelper.renderLight));
         matrixStackIn.popPose();
     }
 }

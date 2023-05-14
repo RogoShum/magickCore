@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(MagickCore.MOD_ID, "textures/laser/arrow_up.png");
     private static final ResourceLocation TEXTURE_PART = new ResourceLocation(MagickCore.MOD_ID, "textures/laser/arrow_part.png");
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(TEXTURE);
-    private static final RenderType PART = RenderHelper.getTexedOrbGlow(TEXTURE_PART);
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(TEXTURE);
+    private static final RenderType PART = RenderHelper.getTexturedQuadsGlow(TEXTURE_PART);
 
     public ManaArrowRenderer(ManaArrowEntity entity) {
         super(entity);
@@ -40,10 +40,9 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.translate(dir.x * entity.getBbWidth() * 2, dir.y * entity.getBbWidth() * 2, dir.z * entity.getBbWidth() * 2);
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
-        params.matrixStack.scale(scale, scale, scale);
+        params.matrixStack.scale(scale, scale*5, scale);
         RenderHelper.renderLaserMid(BufferContext.create(params.matrixStack, params.buffer, TYPE)
-        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
-        , 5);
+        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderPart(RenderParams params) {

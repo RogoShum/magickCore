@@ -5,6 +5,7 @@ import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.magick.ManaFactor;
@@ -35,6 +36,13 @@ public class MultiReleaseEntity extends ManaEntity {
     public MultiReleaseEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
         entityData.define(TARGET, -1);
+    }
+
+    @Override
+    protected void makeSound() {
+        if (this.tickCount == 1) {
+            this.playSound(ModSounds.soft_buildup_high.get(), 0.5F, 1.0F + this.random.nextFloat());
+        }
     }
 
     @Override

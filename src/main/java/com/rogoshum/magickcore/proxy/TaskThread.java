@@ -41,36 +41,34 @@ public class TaskThread extends Thread{
     @Override
     public void run() {
         while (!isInterrupted()) {
-            if(tick > preTick) {
-                preTick = tick;
-                if(additionTask != null) {
-                    try {
-                        additionTask.run();
-                    } catch (Exception e) {
-                        MagickCore.LOGGER.info("Addition Task Crashed!");
-                        e.printStackTrace();
-                        additionTask = null;
-                        if(additionCatch != null) {
-                            additionCatch.run();
-                            additionCatch = null;
-                        }
-                        interrupt();
-                    }
-                }
+            executeTask();
+        }
+    }
+
+    public void executeTask() {
+        if(tick > preTick) {
+            preTick = tick;
+            if(additionTask != null) {
                 try {
-                    for (int i = 0; i < taskList.size(); ++i) {
-                        Runnable run = taskList.get(i);
-                        if(run != null) {
-                            run.run();
-                        }
-                    }
-                    taskList.clear();
+                    additionTask.run();
                 } catch (Exception e) {
-                    MagickCore.LOGGER.info(getName() + " Crashed!");
-                    e.printStackTrace();
-                    taskList.clear();
+                    MagickCore.LOGGER.info("Addition Task Crashed!");
                     interrupt();
+                    e.printStackTrace();
                 }
+            }
+            try {
+                for (int i = 0; i < taskList.size(); ++i) {
+                    Runnable run = taskList.get(i);
+                    if(run != null) {
+                        run.run();
+                    }
+                }
+                taskList.clear();
+            } catch (Exception e) {
+                MagickCore.LOGGER.info(getName() + " Crashed!");
+                interrupt();
+                e.printStackTrace();
             }
         }
     }
@@ -78,6 +76,8 @@ public class TaskThread extends Thread{
     @Override
     public void interrupt() {
         super.interrupt();
+        taskList.clear();
+        additionTask = null;
         if(additionCatch != null) {
             additionCatch.run();
             additionCatch = null;

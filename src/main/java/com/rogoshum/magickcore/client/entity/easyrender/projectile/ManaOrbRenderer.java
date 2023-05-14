@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ManaOrbRenderer extends EasyRenderer<ManaOrbEntity> {
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(ModElements.ORIGIN.getRenderer().getOrbTexture());
 
     public ManaOrbRenderer(ManaOrbEntity entity) {
         super(entity);

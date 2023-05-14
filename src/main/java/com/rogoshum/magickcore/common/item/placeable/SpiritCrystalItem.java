@@ -91,7 +91,7 @@ public class SpiritCrystalItem extends PlaceableEntityItem {
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if(entityIn instanceof ServerPlayer)
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, LibAdvancements.ELEMENT_CRYSTAL);
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, LibAdvancements.SPIRIT_CRYSTAL);
     }
 
     @Override

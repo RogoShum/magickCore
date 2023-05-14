@@ -169,7 +169,9 @@ public class ModBuffs {
                 CompoundTag tag = new CompoundTag();
                 state.write(tag);
                 Networking.INSTANCE.send(
-                        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
+                        PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                                event.getEntity().position().x, event.getEntity().position().y, event.getEntity().position().z, 48, event.getEntity().level.dimension()
+                        )),
                         new EntityStatePack(event.getEntity().getId(), tag));
             }
         }

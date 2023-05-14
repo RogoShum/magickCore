@@ -26,9 +26,8 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     Color secColor = Color.ORIGIN_COLOR;
     float alpha;
     boolean render;
-    RenderType CIRCLE_TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png"));
+    RenderType CIRCLE_TYPE = RenderHelper.getTexturedQuadsGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_bloom.png"));
     RenderType BLOOM_TYPE;
-    ResourceLocation NOISE = new ResourceLocation(MagickCore.MOD_ID + ":textures/noise.png");
 
     public ElementShieldRenderer(LivingEntity entity) {
         super(entity);
@@ -63,8 +62,8 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
             } else
                 render = false;
         });
-        BLOOM_TYPE = RenderHelper.getTexedEntityGlowNoise(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.tickCount % 10) + ".png"));
-        CIRCLE_TYPE = RenderHelper.getTexedEntityGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
+        BLOOM_TYPE = RenderHelper.getTexturedEntityGlowNoise(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield_2/element_shield_" + (entity.tickCount % 10) + ".png"));
+        CIRCLE_TYPE = RenderHelper.getTexturedQuadsGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
     }
 
     public void renderCircle(RenderParams params) {
@@ -73,7 +72,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
         matrixStackIn.scale(entity.getBbWidth() * 1.7f, entity.getBbHeight() * 0.9f, entity.getBbWidth() * 1.7f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, CIRCLE_TYPE)
-                , new RenderHelper.RenderContext(alpha, color, RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(alpha, color, RenderHelper.halfLight));
     }
 
     public void renderBloom(RenderParams params) {
@@ -82,7 +81,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
         matrixStackIn.scale(entity.getBbWidth() * 1.65f, entity.getBbHeight() * 0.85f, entity.getBbWidth() * 1.65f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, BLOOM_TYPE)
-                , new RenderHelper.RenderContext(alpha, secColor, RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(alpha*0.7f, secColor, RenderHelper.renderLight));
     }
 
     @Override
@@ -93,7 +92,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
         if(BLOOM_TYPE != null) {
             //map.put(new RenderMode(BLOOM_TYPE), this::renderBloom);
             map.put(new RenderMode(BLOOM_TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderBloom);
-            map.put(new RenderMode(CIRCLE_TYPE, RenderMode.ShaderList.SLIME_SMALL_SHADER), this::renderCircle);
+            map.put(new RenderMode(CIRCLE_TYPE), this::renderCircle);
         }
         return map;
     }

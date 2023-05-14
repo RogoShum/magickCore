@@ -1,17 +1,25 @@
 package com.rogoshum.magickcore.client.event;
 
 import com.google.common.collect.Queues;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.shaders.ProgramManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
+import com.rogoshum.magickcore.api.render.IManaShader;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
 import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
 import com.rogoshum.magickcore.client.gui.ManaBarHUD;
 import com.rogoshum.magickcore.client.gui.ManaBuffHUD;
+import com.rogoshum.magickcore.client.render.instanced.ModelInstanceRenderer;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ElementShieldRenderer;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.ManaItemDurationBarRenderer;
@@ -27,6 +35,8 @@ import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,20 +60,35 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
+import org.lwjgl.opengl.GL20;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderEvent {
-    private static final ConcurrentHashMap<RenderMode, Queue<LitParticle>> particles = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<RenderMode, Queue<LitParticle>> PARTICLES = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<RenderMode, Queue<LitParticle>> SHADER_PARTICLES = new ConcurrentHashMap<>();
+    private static RenderTarget LIGHT_TARGET;
+    static {
+        RenderSystem.recordRenderCall(() -> {
+            LIGHT_TARGET = new TextureTarget(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), false, Minecraft.ON_OSX);
+            LIGHT_TARGET.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        });
+    }
 
     public static void addMagickParticle(LitParticle par) {
         if(par.getTexture() == null) return;
+
         RenderMode mode = par.getRenderMode();
-        if(!particles.containsKey(mode)) {
-            particles.put(mode, Queues.newConcurrentLinkedQueue());
+        if(!mode.useShader.isEmpty()) {
+            if(!SHADER_PARTICLES.containsKey(mode)) {
+                SHADER_PARTICLES.put(mode, Queues.newConcurrentLinkedQueue());
+            }
+            SHADER_PARTICLES.get(mode).add(par);
+        } else {
+            if(!PARTICLES.containsKey(mode)) {
+                PARTICLES.put(mode, Queues.newConcurrentLinkedQueue());
+            }
+            PARTICLES.get(mode).add(par);
         }
-        particles.get(mode).add(par);
         MagickCore.proxy.addRenderer(() -> par);
 
         //EntityLightSourceHandler.addLightSource(par);
@@ -104,55 +129,176 @@ public class RenderEvent {
         PoseStack matrixStackIn = event.getMatrixStack();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         RenderSystem.setShaderLights(Vector3f.YP, Vector3f.YN);
+        Queue<Consumer<RenderParams>> originalRenderer = MagickCore.proxy.getOriginalGlFunction();
+        HashMap<RenderMode, Queue<Consumer<RenderParams>>> solidRenderer = MagickCore.proxy.getSolidGlFunction();
         HashMap<RenderMode, Queue<Consumer<RenderParams>>> renderer = MagickCore.proxy.getGlFunction();
+        HashMap<RenderMode, Queue<Consumer<RenderParams>>> shaderRenderer = MagickCore.proxy.getShaderGlFunction();
+        Queue<Vector4f> lights = MagickCore.proxy.getColorLightFunction();
+
         RenderParams renderParams = new RenderParams();
         renderParams.matrixStack(matrixStackIn);
         renderParams.buffer(builder);
         renderParams.partialTicks(event.getPartialTicks());
-        for (RenderMode bufferMode : renderer.keySet()) {
+
+        if(lights.size() > 0)
+            renderLights(lights, RenderHelper.getRendertypeEntityLightShader());
+
+        renderParticle(matrixStackIn, builder, renderParams, PARTICLES);
+        renderParticle(matrixStackIn, builder, renderParams, SHADER_PARTICLES);
+
+        //renderer use minecraft render function
+        matrixStackIn.pushPose();
+        Iterator<Consumer<RenderParams>> it = originalRenderer.iterator();
+        while (it.hasNext()) {
+            Consumer<RenderParams> consumer = it.next();
             matrixStackIn.pushPose();
-            if (bufferMode.originRender) {
-                Queue<Consumer<RenderParams>> render = renderer.get(bufferMode);
-                Iterator<Consumer<RenderParams>> it = render.iterator();
-                while (it.hasNext()) {
-                    Consumer<RenderParams> consumer = it.next();
-                    matrixStackIn.pushPose();
-                    consumer.accept(renderParams);
-                    matrixStackIn.popPose();
-                }
-            } else {
-                BufferContext context = BufferContext.create(matrixStackIn, builder, bufferMode.renderType);
-                if (!bufferMode.useShader.isEmpty())
-                    context.useShader(bufferMode.useShader);
-
-                RenderHelper.setup(context);
-                RenderHelper.begin(context);
-                RenderHelper.queueMode = true;
-
-                Queue<Consumer<RenderParams>> render = renderer.get(bufferMode);
-                Iterator<Consumer<RenderParams>> it = render.iterator();
-                while (it.hasNext()) {
-                    Consumer<RenderParams> consumer = it.next();
-                    matrixStackIn.pushPose();
-                    consumer.accept(renderParams);
-                    matrixStackIn.popPose();
-                }
-
-                RenderHelper.queueMode = false;
-                RenderHelper.finish(context);
-                RenderHelper.end(context);
-            }
+            consumer.accept(renderParams);
             matrixStackIn.popPose();
         }
+        matrixStackIn.popPose();
 
-        for (RenderMode bufferMode : particles.keySet()) {
-            Queue<LitParticle> particleQueue = particles.get(bufferMode);
-            BufferContext context = BufferContext.create(matrixStackIn, builder, bufferMode.renderType);
+        //renderer use minecraft render function
+        callGLFunction(matrixStackIn, builder, renderParams, solidRenderer);
+        callGLFunction(matrixStackIn, builder, renderParams, renderer);
+        callGLFunction(matrixStackIn, builder, renderParams, shaderRenderer);
+
+        Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        double d0 = vec.x();
+        double d1 = vec.y();
+        double d2 = vec.z();
+        Matrix4f matrix4f = event.getMatrixStack().last().pose();
+
+        Frustum clippinghelper = new Frustum(matrix4f, event.getProjectionMatrix());
+        clippinghelper.prepare(d0, d1, d2);
+        if (Minecraft.getInstance().level.effects().constantAmbientLight()) {
+            Lighting.setupNetherLevel(matrixStackIn.last().pose());
+        } else {
+            Lighting.setupLevel(matrixStackIn.last().pose());
+        }
+
+        MagickCore.proxy.setClippingHelper(clippinghelper);
+        MagickCore.proxy.updateRenderer();
+    }
+
+    public static Vector4f unpackVec4(float packed) {
+        int ip = (int) packed;
+        int rr = ip / 1000000;
+        float gg = ip - 1000000 * (int)Math.floor(ip/1000000) / 10000.0f;
+        float bb = (ip % 10000) / 100.0f;
+        float aa = ip % 100;
+
+        return new Vector4f(rr / 100.0f, gg / 100.0f, bb / 100.0f, aa);
+    }
+
+
+    public void renderLights(Queue<Vector4f> lights, ShaderInstance shader) {
+        ProgramManager.glUseProgram(shader.getId());
+
+        int minCount = Math.min(lights.size(), 1000);
+        int i = 0;
+        for(Vector4f light : lights) {
+            int color = GL20.glGetUniformLocation(shader.getId(), "lights["+i+"]");
+            GL20.glUniform4f(color, light.x(), light.y(), light.z(), light.w());
+            i++;
+        }
+        int color = GL20.glGetUniformLocation(shader.getId(), "lightCount");
+        GL20.glUniform1i(color, minCount);
+
+        Window window = Minecraft.getInstance().getWindow();
+        int width = window.getWidth();
+        int height = window.getHeight();
+
+        RenderSystem.setShader(()->shader);
+
+        if(LIGHT_TARGET.width != width/3 || LIGHT_TARGET.height != height/3) {
+            LIGHT_TARGET.resize(width/3, height/3, Minecraft.ON_OSX);
+        }
+        LIGHT_TARGET.clear(Minecraft.ON_OSX);
+        LIGHT_TARGET.bindWrite(false);
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        RenderSystem.depthMask(false);
+
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.vertex(0.0D, (double)height, -50.0D).uv(0, 1).color(1, 1, 1, 1f).endVertex();
+        bufferbuilder.vertex((double)width, (double)height, -50.0D).uv(1, 1).color(1, 1, 1, 1).endVertex();
+        bufferbuilder.vertex((double)width, 0.0D, -50.0D).uv(1, 0).color(1, 1, 1, 1f).endVertex();
+        bufferbuilder.vertex(0.0D, 0.0D, -50.0D).uv(0, 0).color(1, 1, 1, 1).endVertex();
+        tessellator.end();
+
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        LIGHT_TARGET.blitToScreen(width, height, false);
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setProjectionMatrix(RenderHelper.getProjectionMatrix4f());
+    }
+
+    public void callGLFunction(PoseStack poseStack, BufferBuilder builder, RenderParams renderParams, HashMap<RenderMode, Queue<Consumer<RenderParams>>> renderer) {
+        for (RenderMode bufferMode : renderer.keySet()) {
+            Queue<Consumer<RenderParams>> render = renderer.get(bufferMode);
+            if(render.isEmpty()) return;
+            poseStack.pushPose();
+            BufferContext context = BufferContext.create(poseStack, builder, bufferMode.renderType);
             if (!bufferMode.useShader.isEmpty())
                 context.useShader(bufferMode.useShader);
+            boolean instancingRender = RenderHelper.isRenderTypeInstanced(bufferMode.renderType) && RenderHelper.gl33();
 
             RenderHelper.setup(context);
-            RenderHelper.begin(context);
+            if(!instancingRender) {
+                RenderHelper.begin(context);
+            }
+
+            RenderHelper.queueMode = true;
+            if(bufferMode.renderType != null && !RenderHelper.isRenderTypeGlint(bufferMode.renderType))
+                RenderHelper.GLOBAL_TEXTURE = RenderHelper.TEXTURE;
+
+            Iterator<Consumer<RenderParams>> it = render.iterator();
+            while (it.hasNext()) {
+                Consumer<RenderParams> consumer = it.next();
+                poseStack.pushPose();
+                consumer.accept(renderParams);
+                poseStack.popPose();
+            }
+
+            RenderHelper.queueMode = false;
+            if(!instancingRender)
+                RenderHelper.finish(context);
+            else if (RenderHelper.isRenderTypeLightingInstanced(bufferMode.renderType)) {
+                context.type.setupRenderState();
+                RenderHelper.LIGHTING_INSTANCE_RENDERER.drawWithShader(RenderHelper.getRendertypeEntityLightInstanceShader());
+                context.type.clearRenderState();
+            } else {
+                context.type.setupRenderState();
+                for (ModelInstanceRenderer instance : RenderHelper.UPDATE_INSTANCE)
+                    instance.drawWithShader(RenderHelper.getRendertypeEntityTranslucentInstanceShader());
+                context.type.clearRenderState();
+            }
+            RenderHelper.UPDATE_INSTANCE.clear();
+            RenderHelper.GLOBAL_TEXTURE = null;
+            RenderHelper.end(context);
+            poseStack.popPose();
+        }
+    }
+
+    public void renderParticle(PoseStack poseStack, BufferBuilder builder, RenderParams renderParams, ConcurrentHashMap<RenderMode, Queue<LitParticle>> particles) {
+        for (RenderMode bufferMode : particles.keySet()) {
+            Queue<LitParticle> particleQueue = particles.get(bufferMode);
+            if(particleQueue.isEmpty()) continue;
+            BufferContext context = BufferContext.create(poseStack, builder, bufferMode.renderType);
+            if (!bufferMode.useShader.isEmpty())
+                context.useShader(bufferMode.useShader);
+            boolean instancingRender = RenderHelper.gl33();
+
+            RenderHelper.setup(context);
+            if(!instancingRender && !context.buffer.building()) {
+                context.buffer.begin(context.type.mode(), context.type.format());
+            }
+
             RenderHelper.queueMode = true;
 
             Iterator<LitParticle> particleIterator = particleQueue.iterator();
@@ -168,26 +314,18 @@ public class RenderEvent {
             RenderSystem.setTextureMatrix(matrix4f);
 
             RenderHelper.queueMode = false;
-            RenderHelper.finish(context);
+
+            if(!instancingRender) {
+                RenderHelper.finish(context);
+            } else {
+                context.type.setupRenderState();
+                LitParticle.PARTICLE_INSTANCE_RENDERER.drawWithShader(RenderHelper.getPositionColorTexLightmapDistInstanceShader());
+                context.type.clearRenderState();
+            }
+
             RenderHelper.end(context);
             RenderSystem.resetTextureMatrix();
         }
-
-        Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        double d0 = vec.x();
-        double d1 = vec.y();
-        double d2 = vec.z();
-        Matrix4f matrix4f = event.getMatrixStack().last().pose();
-
-        Frustum clippinghelper = new Frustum(matrix4f, event.getProjectionMatrix());
-        clippinghelper.prepare(d0, d1, d2);
-        if (Minecraft.getInstance().level.effects().constantAmbientLight()) {
-            Lighting.setupNetherLevel(matrixStackIn.last().pose());
-        } else {
-            Lighting.setupLevel(matrixStackIn.last().pose());
-        }
-        MagickCore.proxy.setClippingHelper(clippinghelper);
-        MagickCore.proxy.updateRenderer();
     }
 
     @SubscribeEvent
@@ -220,12 +358,27 @@ public class RenderEvent {
 
     public static void tickParticle() {
         Vec3 vec = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        for (RenderMode res : particles.keySet()) {
-            Queue<LitParticle> litParticles = particles.get(res);
+        for (RenderMode res : PARTICLES.keySet()) {
+            Queue<LitParticle> litParticles = PARTICLES.get(res);
             double scale = Math.max((litParticles.size() * 0.003d), 1d);
             for(LitParticle par : litParticles) {
                 if(par != null) {
-                    if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z, scale))
+                    if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z, scale) && vec.distanceToSqr(par.centerVec()) < 2048)
+                        par.tick();
+                    else
+                        par.easyTick();
+                    if (par.isDead())
+                        litParticles.remove(par);
+                }
+            }
+        }
+
+        for (RenderMode res : SHADER_PARTICLES.keySet()) {
+            Queue<LitParticle> litParticles = SHADER_PARTICLES.get(res);
+            double scale = Math.max((litParticles.size() * 0.003d), 1d);
+            for(LitParticle par : litParticles) {
+                if(par != null) {
+                    if(RenderHelper.isInRangeToRender3d(par, vec.x, vec.y, vec.z, scale) && vec.distanceToSqr(par.centerVec()) < 2048)
                         par.tick();
                     else
                         par.easyTick();
@@ -237,8 +390,12 @@ public class RenderEvent {
     }
 
     public static void clearParticle() {
-        particles.values().forEach(list -> list.forEach(LitParticle::remove));
-        particles.values().forEach(Collection::clear);
+        PARTICLES.values().forEach(list -> list.forEach(LitParticle::remove));
+        PARTICLES.values().forEach(Collection::clear);
+        PARTICLES.clear();
+        SHADER_PARTICLES.values().forEach(list -> list.forEach(LitParticle::remove));
+        SHADER_PARTICLES.values().forEach(Collection::clear);
+        SHADER_PARTICLES.clear();
     }
 
     @SubscribeEvent

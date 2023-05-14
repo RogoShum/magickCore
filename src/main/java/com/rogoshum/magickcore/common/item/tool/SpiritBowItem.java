@@ -16,6 +16,7 @@ import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -44,13 +45,14 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem, ISpirit
         EntityStateData state = ExtraDataUtil.entityStateData(entityLiving);
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(entityLiving.level);
-        int tick = Math.min(40, (getUseDuration(stack) - timeLeft));
-        magickContext.range(tick * 0.25f);
-        magickContext.tick(tick * 4);
+        int tick = Math.min(20, (getUseDuration(stack) - timeLeft));
+        magickContext.range(tick * 0.5f);
+        magickContext.tick(tick * 8);
         MagickElement element = data.spellContext().element;
         MagickContext context = magickContext.caster(entityLiving).element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.ARROW.get());
         context.addChild(spawnContext);
+        context.hand(entityLiving.getUsedItemHand());
         context.addReduceCost(MagickReleaseHelper.singleContextMana(context));
         context.post(data.spellContext().copy().element(element));
         if(context.postContext.containChild(LibContext.TRACE)) {
@@ -70,7 +72,7 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem, ISpirit
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         return false;
     }
 }

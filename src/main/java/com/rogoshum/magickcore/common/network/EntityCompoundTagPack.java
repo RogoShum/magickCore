@@ -43,8 +43,9 @@ public class EntityCompoundTagPack extends EntityPack{
 
     public static void updateEntity(Entity entity) {
         if(entity.level.isClientSide) return;
-        Networking.INSTANCE.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
+        Networking.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                        entity.position().x, entity.position().y, entity.position().z, 48, entity.level.dimension()
+                )),
                 new EntityCompoundTagPack(entity.getId(), entity));
     }
 }

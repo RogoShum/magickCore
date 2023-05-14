@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.api.render.easyrender.base;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.entity.IManaEntity;
@@ -11,18 +12,19 @@ import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -33,6 +35,7 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender {
     protected static final ResourceLocation cylinder_bloom = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_bloom.png");
     protected static final ResourceLocation sphere_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/sphere_rotate.png");
     protected static final ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind.png");
+    protected static final ResourceLocation wind_round = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind_round.png");
     protected static final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_rotate.png");
     protected static final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
     protected static final ResourceLocation taken = new ResourceLocation("magickcore:textures/entity/takensphere.png");
@@ -174,25 +177,33 @@ public abstract class EasyRenderer<T extends Entity> implements IEasyRender {
     public void renderColorDecal(RenderParams params) {
         ILightSourceEntity light = (ILightSourceEntity) entity;
         float size = light.getSourceLight()*1.5f;
-        PoseStack vertexMat = RenderHelper.getVertexMatrix();
-        vertexMat.pushPose();
-        vertexMat.scale(size, size, size);
-        RenderHelper.setPosScale(2f, 0f, 0, light.getSourceLight());
-        PoseStack modelMat = RenderHelper.getModelMatrix();
-        modelMat.pushPose();
-        modelMat.translate( entity.getX(), entity.getY()+entity.getBbHeight() * 0.5, entity.getZ());
-        RenderHelper.renderDecal(BufferContext.create(RenderHelper.getVertexMatrix(), params.buffer, COLOR_LIGHT),
-                new RenderHelper.RenderContext(Math.min(Math.min(size, 15)/15f, 0.75f), light.getColor(), RenderHelper.renderLight));
-        modelMat.popPose();
-        vertexMat.popPose();
+
+        PoseStack model = RenderHelper.getModelMatrix();
+        model.pushPose();
+        model.translate(x, y+ entity.getBbHeight() * 0.5, z);
+        RenderHelper.renderDecal(
+                BufferContext.create(model, params.buffer, COLOR_LIGHT)
+                , new RenderHelper.RenderContext(Math.min(Math.min(size, 15)/15f, 0.75f), light.getColor(), RenderHelper.renderLight)
+                , light.getSourceLight(), size, (float) x, (float) (y+ entity.getBbHeight() * 0.5), (float) z);
+        model.popPose();
+    }
+
+    @Nullable
+    @Override
+    public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
+        if(true) return null;
+        if(!(entity instanceof ILightSourceEntity)) return null;
+        if(Minecraft.getInstance().player.getMainHandItem().getItem() != ModItems.WAND.get()) return null;
+        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
+        map.put(new RenderMode(COLOR_LIGHT), this::renderColorDecal);
+        return map;
     }
 
     @Override
-    public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
-        if(!(entity instanceof ILightSourceEntity)) return null;
-        HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(RenderMode.ORIGIN_RENDER, this::renderColorDecal);
-        return map;
+    public ILightSourceEntity getLightEntity() {
+        //if(Minecraft.getInstance().player.getMainHandItem().getItem() == ModItems.WAND.get()) return null;
+        if(!(entity instanceof ILightSourceEntity light)) return null;
+        return light;
     }
 
     @Override

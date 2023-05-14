@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ManaStarRenderer extends EasyRenderer<ManaStarEntity> {
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getStarTexture());
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(ModElements.ORIGIN.getRenderer().getStarTexture());
 
     public ManaStarRenderer(ManaStarEntity entity) {
         super(entity);

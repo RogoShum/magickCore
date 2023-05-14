@@ -13,6 +13,7 @@ import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.PotionContext;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CreativeModeTab;
@@ -101,7 +102,7 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
+        tooltip.add(new TranslatableComponent(LibItem.FUNCTION_MATERIAL));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
@@ -119,7 +120,7 @@ public class PotionTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand hand) {
         return false;
     }
 }

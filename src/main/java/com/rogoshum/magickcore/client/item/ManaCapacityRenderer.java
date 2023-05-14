@@ -20,10 +20,9 @@ import com.mojang.math.Vector3f;
 
 public class ManaCapacityRenderer extends BlockEntityWithoutLevelRenderer {
     protected final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
-    protected final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_rotate.png");
     protected static final ResourceLocation taken = new ResourceLocation("magickcore:textures/entity/takensphere.png");
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedEntityGlintItem(RenderHelper.blankTex);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedEntityGlintItem(taken);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedItemGlint(RenderHelper.BLANK_TEX, 1, 0);
+    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexturedItemGlint(taken, 1, 0);
 
     public ManaCapacityRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -40,11 +39,11 @@ public class ManaCapacityRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.pushPose();
         float scale = capacity.manaCapacity().getMana() / capacity.manaCapacity().getMaxMana();
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element.primaryColor(), combinedLight));
         matrixStackIn.popPose();
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0)
                 , new RenderHelper.RenderContext(0.12f, capacity.spellContext().element.primaryColor(), combinedLight));
         matrixStackIn.popPose();
     }

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
     float alpha;
     Quaternion rotate;
-    RenderType TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
+    RenderType TYPE = RenderHelper.getTexturedUniGlint(wind, entity.getBbHeight(), 0f);
 
     public ContextPointerRenderer(ContextPointerEntity entity) {
         super(entity);
@@ -37,11 +37,11 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         super.update();
         alpha = 0.5f - (float)entity.tickCount % 100 / 100f;
         alpha *= alpha * 4;
-        if(alpha < 0.8f)
-            alpha = 0.8f;
+        if(alpha < 0.6f)
+            alpha = 0.6f;
         float c = entity.tickCount % 30;
         rotate = Vector3f.YP.rotationDegrees(360f * (c / 29));
-        TYPE = RenderHelper.getTexedCylinderGlint(wind, entity.getBbHeight(), 0f);
+        TYPE = RenderHelper.getTexturedUniGlint(wind, entity.getBbHeight(), 0f);
     }
 
     public void renderItems(RenderParams params) {
@@ -83,17 +83,17 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
         matrixStackIn.mulPose(rotate);
 
         float height = entity.getBbHeight() - 0.2f;
-        alpha = 1.0f;
+
         RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(0.25f, 0.25f, 1.5f
-                , height, 8
-                , 0.5f * alpha, alpha*0.9f, 0.3f, entity.spellContext().element.primaryColor());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context);
+                , 1, height
+                , 0.5f, 0.6f, 0.3f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, TYPE)
+                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
         context = new RenderHelper.CylinderContext(0.6f, 0.55f, 1.5f
-                , height, 8
-                , 0.4f * alpha, alpha, 0.3f, entity.spellContext().element.primaryColor());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context);
+                , 1, height
+                , 0.4f, 0.7f, 0.3f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, TYPE)
+                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
     }
 
     @Override

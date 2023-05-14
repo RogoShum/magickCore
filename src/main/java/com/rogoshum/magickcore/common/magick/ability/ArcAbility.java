@@ -45,7 +45,7 @@ public class ArcAbility{
         if(context.caster == null || context.victim == null) return false;
         BlockEntity tile = context.world.getBlockEntity(context.victim.getOnPos());
         if(tile != null)
-            EnergyUtil.receiveEnergy(tile, (int) (context.force*10));
+            EnergyUtil.receiveEnergy(tile, (int) (context.force*20));
         if(context.victim instanceof Projectile) {
             Vec3 vec = context.victim.position().subtract(context.caster.position());
             ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.ARC, ParticleType.PARTICLE);

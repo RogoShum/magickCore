@@ -47,7 +47,7 @@ public class ManaNetherWartItem extends BaseItem implements IManaMaterial {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
+        tooltip.add(new TranslatableComponent(LibItem.FUNCTION_MATERIAL));
          tooltip.add(new TranslatableComponent(LibItem.MANA_NETHER_WART));
     }
 }

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
-    private static final RenderType TYPE = RenderHelper.getTexedEntityGlint(RenderHelper.TAKEN_LAYER);
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX);
 
     public AscendantRealmRenderer(AscendantRealmEntity entity) {
         super(entity);
@@ -22,8 +22,7 @@ public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
     public void render(RenderParams params) {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(9.999f, 2.2f, 9.999f);
-        RenderType TYPE = RenderHelper.getTexedEntityGlint(RenderHelper.blankTex);
-        RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer
+        RenderHelper.renderCubeCache(BufferContext.create(params.matrixStack, params.buffer
                 , TYPE)
                 , new RenderHelper.RenderContext(1.0f, Color.BLACK_COLOR, 0));
     }
@@ -31,8 +30,7 @@ public class AscendantRealmRenderer extends EasyRenderer<AscendantRealmEntity> {
     public void renderDistortion(RenderParams params) {
         baseOffset(params.matrixStack);
         params.matrixStack.scale(9.999f, 2.2f, 9.999f);
-        RenderType TYPE = RenderHelper.getTexedEntityGlint(RenderHelper.blankTex);
-        RenderHelper.renderCube(BufferContext.create(params.matrixStack, params.buffer
+        RenderHelper.renderCubeCache(BufferContext.create(params.matrixStack, params.buffer
                         , TYPE)
                 , new RenderHelper.RenderContext(0.3f, Color.BLACK_COLOR, 0));
     }

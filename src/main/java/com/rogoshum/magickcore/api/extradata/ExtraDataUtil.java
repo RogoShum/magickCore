@@ -22,6 +22,10 @@ public class ExtraDataUtil {
         consumer.accept(new ItemManaData(item));
     }
 
+    public static ItemManaData itemManaData(ItemStack item, int depth) {
+        return new ItemManaData(item, true, depth);
+    }
+
     public static ItemManaData itemManaData(ItemStack item) {
         return new ItemManaData(item);
     }

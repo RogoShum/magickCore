@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
-import com.google.common.collect.Queues;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
@@ -16,17 +15,20 @@ import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     float height;
     float c;
-    RenderHelper.CylinderContext INNER_CYLINDER;
-    RenderHelper.CylinderContext BASE_CYLINDER;
-    RenderHelper.CylinderContext AIR_CYLINDER;
-    Queue<RenderHelper.CylinderContext> OUTER_CYLINDER;
-    int outerCount;
+    RenderHelper.CylinderContext INNER_CYLINDER = new RenderHelper.CylinderContext(0.2f, 0.1f, 2f
+            , 0, 1.0f
+            , 0.0f, 0.5f, 0.3f);
+    RenderHelper.CylinderContext BASE_CYLINDER = new RenderHelper.CylinderContext(2f, 2f, 2f
+            , 0, 0.2f
+            , 0.0f, 0.8f, 0.1f);
+    RenderHelper.CylinderContext OUTER_CYLINDER = new RenderHelper.CylinderContext(1.2f, 1.2f, 2f
+            , 0, 1.0f
+            , 0.0f, 0.7f, 0.4f);
 
     public GravityLiftRenderer(GravityLiftEntity entity) {
         super(entity);
@@ -35,15 +37,14 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        RenderType laser = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f);
-        map.put(new RenderMode(laser, RenderMode.ShaderList.BLOOM_SHADER), this::renderLaser);
+        RenderType inner = RenderHelper.getTexturedUniGlint(wind, height, 0f);
+        map.put(new RenderMode(inner, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderInner);
 
-        RenderType inner = RenderHelper.getTexedCylinderGlint(wind, height, 0f);
-        map.put(new RenderMode(inner, RenderMode.ShaderList.BLOOM_SHADER), this::renderInner);
+        RenderType base = RenderHelper.getTexturedUniGlint(wind, 0.5f, 0f);
+        map.put(new RenderMode(base, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderBase);
 
-        RenderType base = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
-        map.put(new RenderMode(base, RenderMode.ShaderList.SLIME_SMALL_SHADER), this::renderBase);
-
+        RenderType Outer = RenderHelper.getTexturedUniGlint(wind_round, height*0.25f, 0f);
+        map.put(new RenderMode(Outer, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderOuter);
         return map;
     }
 
@@ -64,64 +65,36 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         super.update();
         height = (float) (entity.liftHeight() * Math.min((entity.tickCount * 0.05), 1));
         c = entity.tickCount % 20;
-
-        INNER_CYLINDER = new RenderHelper.CylinderContext(0.3f, 0.1f, 2f
-                , height, 16
-                , 0.0f, 1.0f, 0.3f, entity.spellContext().element.secondaryColor());
-
-        BASE_CYLINDER = new RenderHelper.CylinderContext(2f, 2f, 2f
-                , 0.5f, 16
-                , 0.0f, 0.8f, 0.1f, entity.spellContext().element.primaryColor());
-
-        c = entity.tickCount % 30;
-        Queue<RenderHelper.CylinderContext> cylinders = Queues.newArrayDeque();
-        for (int i = 0; i < height; i+=2) {
-            float radius = 1.2f;
-            if(i % 4 == 0)
-                radius += 0.3f * Math.sin(c / 29 * Math.PI);
-            RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 2f
-                    , 0.7f, 16
-                    , 0.0f, 1.0f, 0.6f, entity.spellContext().element.primaryColor());
-
-            cylinders.add(context);
-        }
-        OUTER_CYLINDER = cylinders;
     }
 
     private void renderLaser(RenderParams renderParams) {
-        PoseStack matrixStackIn = renderParams.matrixStack;
-        baseOffset(matrixStackIn);
-        matrixStackIn.translate(0,  -1, 0);
-        matrixStackIn.scale(0.25f, 0.25f, 0.25f);
-        RenderHelper.renderLaserParticle(
-                BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getElcTexture(3), height * 0.1f))
-                , new RenderHelper.RenderContext(0.5f, entity.spellContext().element.secondaryColor())
-                , height * 4.0f);
     }
 
     private void renderInner(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.translate(0,  height-1, 0);
-
+        matrixStackIn.translate(0,  height*0.5, 0);
+        matrixStackIn.scale(1, height*0.9f, 1);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
-        if(INNER_CYLINDER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexturedUniGlint(
                         wind, height, 0f))
-                , INNER_CYLINDER);
+                , INNER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.secondaryColor()));
     }
 
     private void renderOuter(RenderParams renderParams) {
         PoseStack matrixStackIn = renderParams.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.translate(0,  height-1, 0);
+        matrixStackIn.translate(0,  height*0.5, 0);
+        matrixStackIn.scale(1, height*0.9f, 1);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
-        if(AIR_CYLINDER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexedCylinderGlint(
-                            wind, height, 0f))
-                    , AIR_CYLINDER);
+        //matrixStackIn.translate(0,  -height, 0);
+        c = entity.tickCount % 30;
+        //matrixStackIn.translate(0,  height - 0.5 + (-c / 29 * 2), 0);
+        RenderType renderType = RenderHelper.getTexturedUniGlint(wind, height, 0f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
+                , OUTER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
     }
 
     private void renderBase(RenderParams renderParams) {
@@ -129,28 +102,16 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         PoseStack matrixStackIn = renderParams.matrixStack;
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
-        RenderType renderType = RenderHelper.getTexedCylinderGlint(wind, 0.5f, 0f);
-        if(BASE_CYLINDER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                , BASE_CYLINDER);
+        RenderType renderType = RenderHelper.getTexturedUniGlint(wind, 0.5f, 0f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
+                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0, -0.5, 0);
         matrixStackIn.scale(1.2f, 2f, 1.2f);
-        if(BASE_CYLINDER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                , BASE_CYLINDER);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
+                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
         matrixStackIn.popPose();
-        matrixStackIn.translate(0,  -height, 0);
-        c = entity.tickCount % 30;
-        matrixStackIn.translate(0,  height - 0.5 + (-c / 29 * 2), 0);
-        if(OUTER_CYLINDER != null) {
-            for(RenderHelper.CylinderContext cylinder : OUTER_CYLINDER) {
-                RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                        , cylinder);
-                matrixStackIn.translate(0, -2, 0);
-            }
-        }
     }
 
     @Override

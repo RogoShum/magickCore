@@ -69,10 +69,6 @@ public abstract class ElementRenderer {
         wind[3] = wind_3;
     }
 
-    public void renderLaserParticle(PoseStack matrix, BufferBuilder bufferIn, ResourceLocation res, float alpha, float length, float laserScale){
-        RenderHelper.renderLaserParticle(BufferContext.create(matrix, bufferIn, RenderHelper.getTexedLaserGlint(res, laserScale)), new RenderHelper.RenderContext(alpha, this.primaryColor), length);
-    }
-
     public ResourceLocation getRingTexture() {
         return ring[MagickCore.rand.nextInt(ring.length)];
     }

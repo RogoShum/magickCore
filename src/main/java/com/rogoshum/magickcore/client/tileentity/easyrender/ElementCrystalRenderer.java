@@ -61,7 +61,7 @@ public class ElementCrystalRenderer extends EasyTileRenderer<ElementCrystalTileE
     public void update() {
         super.update();
         ResourceLocation crystal = new ResourceLocation(MagickCore.MOD_ID + ":textures/blocks/element_crystal_stage" + tile.age + ".png");
-        TYPE = RenderHelper.getTexedEntityGlowNoise(crystal);
+        TYPE = RenderHelper.getTexturedEntityGlowNoise(crystal);
         MagickElement element = MagickRegistry.getElement(tile.eType);
         if(element != null)
             color = element.getRenderer().getPrimaryColor();

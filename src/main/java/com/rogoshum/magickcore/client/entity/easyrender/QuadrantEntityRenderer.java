@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 
 public class QuadrantEntityRenderer extends EasyRenderer<QuadrantCrystalEntity> {
     float scale;
-    private static final RenderType TYPE = RenderHelper.getEntityQuadrant(RenderHelper.blankTex);
-    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 1.0f, 1.0f);
-    private static final RenderType EYE_TYPE = RenderHelper.getTexedOrbTransparency(new ResourceLocation("textures/item/ender_eye.png"));
+    private static final RenderType TYPE = RenderHelper.getEntityQuadrant(RenderHelper.BLANK_TEX);
+    private static final RenderType CRYSTAL_TYPE = RenderHelper.getTexturedQuadsGlint(RenderHelper.SPHERE_ROTATE);
+    private static final RenderType EYE_TYPE = RenderHelper.getTexturedQuadsEnergy(new ResourceLocation("textures/item/ender_eye.png"));
 
     public QuadrantEntityRenderer(QuadrantCrystalEntity entity) {
         super(entity);
@@ -45,10 +45,10 @@ public class QuadrantEntityRenderer extends EasyRenderer<QuadrantCrystalEntity> 
         matrixStackIn.scale(entity.getBbWidth() * 0.5f, entity.getBbWidth(), entity.getBbWidth() * 0.5f);
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
                 , new RenderHelper.RenderContext(0.8f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
         matrixStackIn.scale(0.8f, 0.8f, 0.8f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
                 , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
     }
 

@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> {
     Queue<Vec3> DIRECTION;
-    final RenderType TYPE = RenderHelper.getTexedLaserGlint(entity.spellContext().element.getRenderer().getWaveTexture(1), 1.0f);
+    final RenderType TYPE = RenderHelper.getTexturedLaserGlint(entity.spellContext().element.getRenderer().getWaveTexture(1), 1.0f);
 
     public RadianceWellLaserRenderer(RadianceWellEntity entity) {
         super(entity);
@@ -65,9 +65,10 @@ public class RadianceWellLaserRenderer extends EasyRenderer<RadianceWellEntity> 
             matrixStackIn.pushPose();
             matrixStackIn.mulPose(Vector3f.YP.rotationDegrees((float) vector3d.x));
             matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees((float) vector3d.y));
+            matrixStackIn.scale(1, (float) (vector3d.z * 2), 1);
             RenderHelper.renderLaserParticle(
                     BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element.primaryColor()), (float) (vector3d.z * 2));
+                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element.primaryColor()));
             matrixStackIn.popPose();
         }
     }

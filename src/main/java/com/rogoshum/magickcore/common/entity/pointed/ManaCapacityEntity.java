@@ -152,7 +152,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     public float getSourceLight() {
-        return 10;
+        return 15;
     }
 
     @Override
@@ -184,6 +184,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                 level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
         for (Entity entity : list) {
             ItemEntity item = (ItemEntity)entity;
+            item.setUnlimitedLifetime();
             float manaTrans = this.manaCapacity().extractMana(30);
             float lost = ExtraDataUtil.itemManaData(item.getItem()).manaCapacity().receiveMana(manaTrans);
             this.manaCapacity().receiveMana(lost);

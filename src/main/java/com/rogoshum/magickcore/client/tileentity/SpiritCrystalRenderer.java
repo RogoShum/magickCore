@@ -25,7 +25,7 @@ public class SpiritCrystalRenderer implements BlockEntityRenderer<SpiritCrystalT
         matrixStackIn.translate(0.5, 0.03, 0.5);
         matrixStackIn.pushPose();
         matrixStackIn.scale(0.2f, 0.07f, 0.2f);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.popPose();
         matrixStackIn.translate(0.0, 0.15, 0.0);
@@ -37,7 +37,7 @@ public class SpiritCrystalRenderer implements BlockEntityRenderer<SpiritCrystalT
         matrixStackIn.scale(0.1f, 0.25f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.popPose();
         matrixStackIn.popPose();
@@ -50,7 +50,7 @@ public class SpiritCrystalRenderer implements BlockEntityRenderer<SpiritCrystalT
         matrixStackIn.scale(0.1f, 0.3f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.popPose();
         matrixStackIn.popPose();
@@ -63,7 +63,7 @@ public class SpiritCrystalRenderer implements BlockEntityRenderer<SpiritCrystalT
         matrixStackIn.scale(0.1f, 0.2f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntityGlow(RenderHelper.blankTex))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(RenderHelper.BLANK_TEX))
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, combinedLightIn));
         matrixStackIn.popPose();
         matrixStackIn.popPose();

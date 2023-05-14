@@ -20,7 +20,7 @@ import com.mojang.math.Vector3f;
 
 public class ContextPointerRenderer extends BlockEntityWithoutLevelRenderer {
     protected static final ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind.png");
-    protected static final RenderType TYPE = RenderHelper.getTexedCylinderItem(wind, 1.2f, 0);
+    protected static final RenderType TYPE = RenderHelper.getTexturedCylinderItem(wind, 1.2f, 0);
 
     public ContextPointerRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -42,16 +42,16 @@ public class ContextPointerRenderer extends BlockEntityWithoutLevelRenderer {
         float c = MagickCore.proxy.getRunTick() % 30;
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 29)));
 
-        float height = 1.2f;
-        float radius = 0.25f;
+        float height = 0.8f;
+        float radius = 0.22f;
 
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, height, 8, 0.0f, alpha, 0.5f, pointer.spellContext().element.primaryColor());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
-                , RenderHelper.drawCylinder(context, null, 1));
+        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, 1, height, 0.0f, 1, 0.5f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
+                , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
 
-        context = new RenderHelper.CylinderContext(0.7f, 0.6f, 1.5f, height, 8, 0.12f, alpha, 0.3f, pointer.spellContext().element.primaryColor());
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
-                , RenderHelper.drawCylinder(context, null, 1));
+        context = new RenderHelper.CylinderContext(0.7f, 0.6f, 1.5f, 1, height, 0.12f, 1, 0.3f);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
+                , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
         matrixStackIn.popPose();
     }
 }

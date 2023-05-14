@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.proxy;
 
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -22,6 +23,7 @@ public interface IProxy {
     public int getRunTick();
 
     public void addTask(Runnable run);
+    public void resetTask();
     public void addAdditionTask(Runnable tryTask, Runnable catchTask);
 
     public void registerHandlers();
@@ -30,7 +32,12 @@ public interface IProxy {
 
     public ElementRenderer getElementRender(String string);
     public void addRenderer(Supplier<IEasyRender> renderSupplier);
+    public Queue<Consumer<RenderParams>> getOriginalGlFunction();
+    public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getSolidGlFunction();
     public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction();
+    public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getShaderGlFunction();
+    public Queue<Vector4f> getColorLightFunction();
+
     void updateRenderer();
     public void setClippingHelper(Frustum clippingHelper);
 

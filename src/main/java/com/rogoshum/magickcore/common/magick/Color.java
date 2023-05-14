@@ -7,6 +7,9 @@ public class Color {
     public final static Color YELLOW_COLOR = Color.create(1, 1, 0);
     public final static Color BLUE_COLOR = Color.create(0, 0, 1);
     public final static Color RED_COLOR = Color.create(1, 0, 0);
+    public final static Color KHAKI_COLOR = Color.create(1, 0.96f, 0.56f);
+    public final static Color CYAN_COLOR = Color.create(0, 1, 1);
+    public final static Color SALMON_COLOR = Color.create(0.99f, 0.5f, 0.44f);
     public final static Color GREEN_COLOR = Color.create(0, 1, 0);
     public final static Color BLACK_COLOR = Color.create(0, 0, 0);
     public final static Color GREY_COLOR = Color.create(0.5f, 0.5f, 0.5f);

@@ -61,7 +61,10 @@ public class SectorRadiateRenderer extends EasyRenderer<SectorEntity> {
                 vector3dList.add(Vec3.ZERO);
                 vector3dList.add(vec);
             }
-            vector3dList.add(vectors[0]);
+            int left = vector3dList.size()%4;
+            for (int i = 0; i < left; ++i) {
+                vector3dList.add(vectors[0]);
+            }
             this.vector3dList = vector3dList;
         }
     }

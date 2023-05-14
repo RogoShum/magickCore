@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class PhantomRenderer extends EasyRenderer<PhantomEntity> {
-    SingleBuffer renderTypeBuffer = new SingleBuffer(RenderHelper::getTexedEntityGlow, RenderHelper.EMPTY_TEXTURE);
+    SingleBuffer renderTypeBuffer = new SingleBuffer(RenderHelper::getTexturedQuadsGlow, RenderHelper.EMPTY_TEXTURE);
     public PhantomRenderer(PhantomEntity entity) {
         super(entity);
     }

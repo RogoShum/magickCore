@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(ModElements.ORIGIN.getRenderer().getParticleSprite());
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(ModElements.ORIGIN.getRenderer().getParticleSprite());
 
     public JewelryBagRenderer(JewelryBagEntity entity) {
         super(entity);

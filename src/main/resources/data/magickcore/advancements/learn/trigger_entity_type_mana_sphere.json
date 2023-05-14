@@ -1,4 +1,5 @@
 {
+  "parent": "magickcore:spell_learn/context_pointer",
   "criteria": {
     "example": {
       "trigger": "magickcore:string",

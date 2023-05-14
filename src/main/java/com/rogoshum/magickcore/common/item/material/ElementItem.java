@@ -1,15 +1,19 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
@@ -46,10 +50,15 @@ public class ElementItem extends BaseItem implements IManaMaterial {
                 stack.shrink(1);
                 ParticleUtil.spawnBlastParticle(worldIn, playerIn.position().add(0, playerIn.getBbHeight() * 0.5, 0), 3, element1, ParticleType.PARTICLE);
                 playerIn.level.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, playerIn.getSoundSource(), 1.5f, 1.0f);
+
+                if(playerIn instanceof ServerPlayer) {
+                    AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) playerIn, LibAdvancements.UNDERSTAND_SPELL);
+                }
             }
         }
         return super.finishUsingItem(stack, worldIn, playerIn);
     }
+
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {

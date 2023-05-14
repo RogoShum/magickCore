@@ -165,19 +165,19 @@ public class SolarAbility{
             if(positionContext == null)
                 return false;
             BlockPos pos = new BlockPos(positionContext.pos);
-            Explosion explosion = context.world.explode(context.caster, pos.getX(), pos.getY(), pos.getZ(), context.force, Explosion.BlockInteraction.NONE);
+            Explosion explosion = context.world.explode(context.caster, pos.getX(), pos.getY(), pos.getZ(), Math.min(context.force*0.5f, 20), Explosion.BlockInteraction.NONE);
             boolean success = !explosion.getToBlow().isEmpty();
             if(success) {
-                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, context.force, ModElements.SOLAR, ParticleType.MIST);
+                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, Math.min(context.force*0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
                 return true;
             } else
                 return false;
         }
         if(context.victim == null) return false;
-        Explosion explosion = context.world.explode(context.caster, context.victim.getX(), context.victim.getY(), context.victim.getZ(), context.force, Explosion.BlockInteraction.NONE);
+        Explosion explosion = context.world.explode(context.caster, context.victim.getX(), context.victim.getY(), context.victim.getZ(), Math.min(context.force*0.5f, 20), Explosion.BlockInteraction.NONE);
         boolean success = !explosion.getToBlow().isEmpty();
         if(success)
-            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), context.force, ModElements.SOLAR, ParticleType.MIST);
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), Math.min(context.force*0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
         return success;
     }
 

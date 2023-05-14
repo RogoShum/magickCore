@@ -9,6 +9,7 @@
     "MixinLivingEntity",
     "MixinMobEntity",
     "MixinRecipeManager",
+    "MixinSheep",
     "MixinVillager",
     "MixinWorld"
   ],
@@ -23,7 +24,6 @@
     "AccessorRenderType",
     "AccessorShaderShard",
     "AccessorShaderState",
-    "AccessorTexture",
     "AccessorTextureState",
     "MixinClientWorld",
     "MixinDisplayEffectsScreen",
@@ -31,7 +31,7 @@
     "MixinLivingRender",
     "MixinShaderInstance",
     "MixinShaderInstance$MixinBufferUploader",
-    "MixinShaderInstance$MixinVertexBuffer",
+    "MixinTexture",
     "MixinWorldRender"
   ]
 }

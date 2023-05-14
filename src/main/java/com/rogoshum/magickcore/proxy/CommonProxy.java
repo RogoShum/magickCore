@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.proxy;
 
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
@@ -38,6 +39,14 @@ public class CommonProxy implements IProxy {
 	}
 
 	@Override
+	public void resetTask() {
+		if(magickThread != null) {
+			magickThread.interrupt();
+			magickThread = null;
+		}
+	}
+
+	@Override
 	public void addAdditionTask(Runnable tryTask, Runnable catchTask) {
 		checkThread();
 		magickThread.setAdditionTask(tryTask);
@@ -61,7 +70,27 @@ public class CommonProxy implements IProxy {
 	}
 
 	@Override
+	public Queue<Consumer<RenderParams>> getOriginalGlFunction() {
+		return null;
+	}
+
+	@Override
+	public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getSolidGlFunction() {
+		return null;
+	}
+
+	@Override
 	public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getGlFunction() {
+		return null;
+	}
+
+	@Override
+	public HashMap<RenderMode, Queue<Consumer<RenderParams>>> getShaderGlFunction() {
+		return null;
+	}
+
+	@Override
+	public Queue<Vector4f> getColorLightFunction() {
 		return null;
 	}
 

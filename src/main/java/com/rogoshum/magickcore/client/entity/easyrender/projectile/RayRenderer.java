@@ -37,7 +37,7 @@ public class RayRenderer extends EasyRenderer<RayEntity> {
         matrixStackIn.translate(dir.x * length - dir.x * entity.getBbWidth(), dir.y * length - dir.y * entity.getBbWidth(), dir.z * length - dir.z * entity.getBbWidth());
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
-        matrixStackIn.scale(scale, scale, scale);
+        matrixStackIn.scale(scale, (float) length, scale);
     }
 
     @Override
@@ -49,36 +49,33 @@ public class RayRenderer extends EasyRenderer<RayEntity> {
     public void renderTop(RenderParams params) {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserTop(
-                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_TOP)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
-                length
+                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_TOP)),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
         );
     }
 
     public void renderMid(RenderParams params) {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserMid(
-                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_MID)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
-                length
+                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_MID)),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
         );
     }
 
     public void renderBottom(RenderParams params) {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserBottom(
-                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexedLaser(LASER_BOTTOM)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight),
-                length
+                BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_BOTTOM)),
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
         );
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_TOP)), this::renderTop);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_MID)), this::renderMid);
-        map.put(new RenderMode(RenderHelper.getTexedLaser(LASER_BOTTOM)), this::renderBottom);
+        map.put(new RenderMode(RenderHelper.getTexturedQuadsGlow(LASER_TOP)), this::renderTop);
+        map.put(new RenderMode(RenderHelper.getTexturedQuadsGlow(LASER_MID)), this::renderMid);
+        map.put(new RenderMode(RenderHelper.getTexturedQuadsGlow(LASER_BOTTOM)), this::renderBottom);
         return map;
     }
 }

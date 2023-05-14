@@ -57,7 +57,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-
+            args '--username', 'Rogo'
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
@@ -196,6 +196,7 @@ dependencies {
     compileOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
     runtimeOnly fg.deobf("vazkii.botania:Botania:1.18.2-435")
     implementation fg.deobf("blank:Psi+1.18.2:98")
+    //implementation fg.deobf("blank:InGameAccountSwitcher-1.18:8.0.1")
     //implementation fg.deobf("blank:oculus-1.18.2:1.4.3a")
 
     // Examples using mod jars from ./libs

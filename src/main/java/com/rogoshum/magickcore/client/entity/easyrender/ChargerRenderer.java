@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public class ChargerRenderer extends EasyRenderer<ChargeEntity> {
     float scale;
     private static final ResourceLocation ICON = new ResourceLocation(MagickCore.MOD_ID +":textures/entity/charge_circle.png");
-    private static final RenderType TYPE = RenderHelper.getTexedOrbGlow(ICON);
+    private static final RenderType TYPE = RenderHelper.getTexturedQuadsGlow(ICON);
 
     public ChargerRenderer(ChargeEntity entity) {
         super(entity);

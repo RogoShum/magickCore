@@ -43,7 +43,7 @@ public class SpiritBowRenderer extends BlockEntityWithoutLevelRenderer {
         builder.vertex(matrixStack.last().pose(), 0, 0, 0).color(1, 1, 1, 0.5f).normal(0, 0, 0).endVertex();
         matrixStack.popPose();
 
-        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack, 2);
         if(data.contextCore().haveMagickContext()) {
             matrixStack.pushPose();
             matrixStack.translate(0.15, 0, 0);
@@ -60,7 +60,7 @@ public class SpiritBowRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.scale(0.1f, 0.6f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR,  combinedLight));
         matrixStack.popPose();
 
@@ -70,7 +70,7 @@ public class SpiritBowRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.scale(0.1f, 0.6f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 

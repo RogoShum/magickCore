@@ -25,12 +25,9 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,7 +36,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,15 +74,22 @@ public class MagickReleaseHelper {
     }
 
     public static float singleContextMana(SpellContext context) {
-        float baseMana = context.tick * 0.35f + (float)(Math.pow(context.force, 1.2) * 10) + (float)(Math.pow(context.range, 2.5) * 3);
+        float baseMana = context.tick + (float)(Math.pow(context.force, 1.5) * 10);
         if(context.containChild(LibContext.TRACE))
             baseMana *= 1.2f;
         if(context.containChild(LibContext.SPAWN)) {
+            baseMana *= 0.5f;
+            baseMana += (float)(Math.pow(context.range, 2.5) * 4);
             EntityType<?> type = context.<SpawnContext>getChild(LibContext.SPAWN).entityType;
             if(type.getCategory() != MobCategory.MISC && type.getCategory() != MobCategory.AMBIENT)
-                baseMana += (type.getHeight() + type.getWidth()) * 200;
+                baseMana += (type.getHeight() + type.getWidth()) * 2000;
             else
                 baseMana += (type.getHeight() + type.getWidth()) * 30;
+        } else {
+            baseMana += (float)(Math.pow(context.range, 2.5) * 2);
+        }
+        if(context.containChild(PositionContext.TYPE)) {
+            baseMana += 200f;
         }
         /*
         if(context.containChild(PsiSpellContext.TYPE)) {
@@ -492,11 +498,16 @@ public class MagickReleaseHelper {
         if (other instanceof TamableAnimal && ownerFunction(owner, ((TamableAnimal) other)::getOwner))
             return true;
 
-        if(owner instanceof AbstractClientPlayer && other instanceof AbstractClientPlayer)
-            return true;
-
         AtomicBoolean flag = new AtomicBoolean(false);
-        ExtraDataUtil.entityData(other).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, data -> flag.set(data.getOwnerUUID().equals(owner.getUUID())));
+        ExtraDataUtil.entityData(other).<TakenEntityData>execute(LibEntityData.TAKEN_ENTITY, data -> {
+            if(data.getOwnerUUID().equals(owner.getUUID()))
+                flag.set(true);
+        });
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            if(owner instanceof AbstractClientPlayer && other instanceof AbstractClientPlayer)
+                flag.set(true);
+        });
 
         if (flag.get())
             return true;

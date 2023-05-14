@@ -11,5 +11,6 @@ public interface IManaShader {
     Uniform getPosScale();
     Uniform getCameraPos();
     Uniform getCameraDirection();
+    Uniform getCameraOrientation();
 
 }

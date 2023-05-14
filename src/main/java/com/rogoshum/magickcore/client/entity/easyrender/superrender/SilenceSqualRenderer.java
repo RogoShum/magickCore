@@ -23,8 +23,11 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
     protected static final ResourceLocation wind = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/wind.png");
     float alpha;
     final ElementRenderer STASIS_RENDER = MagickCore.proxy.getElementRender(LibElements.STASIS);
-    RenderType TYPE = RenderHelper.getTexedOrbGlow(STASIS_RENDER.getCycleTexture());
-    RenderType SPHERE = RenderHelper.getTexedCylinderGlint(sphere_rotate, 1f, 0f, 0.5f, 10.0f);
+    RenderType TYPE = RenderHelper.getTexturedQuadsGlow(STASIS_RENDER.getCycleTexture());
+    RenderType SPHERE = RenderHelper.getTexturedUniGlint(sphere_rotate, 1f, 0f, 0.5f, 5.0f);
+    RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(7.0f, 4.0f, 2
+            , 3, 4f
+            , 0.0f, 0.8f, 0.8f);
     float preRotate;
     float postRotate;
     float rotate;
@@ -61,14 +64,8 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
         PoseStack matrixStackIn = params.matrixStack;
         BufferBuilder bufferIn = params.buffer;
         baseOffset(matrixStackIn);
-        //matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (rotate / 4)));
-
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(7.0f, 4.0f, 2
-                , 4f, 16
-                , 0.0f, 0.8f * alpha, 0.8f, renderer.getPrimaryColor());
-
-        RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, SPHERE)
-                , context);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE)
+                , context, new RenderHelper.RenderContext(alpha, renderer.getPrimaryColor(), RenderHelper.renderLight, true));
     }
 
     @Override

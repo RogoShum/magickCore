@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.client.render;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.mixin.AccessorRenderType;
-import com.rogoshum.magickcore.mixin.AccessorTexture;
+import com.rogoshum.magickcore.api.render.AccessorTexture;
 import com.rogoshum.magickcore.mixin.AccessorTextureState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,6 @@ import java.util.function.Function;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class SingleBuffer implements MultiBufferSource {
     protected final Function<ResourceLocation, RenderType> type;

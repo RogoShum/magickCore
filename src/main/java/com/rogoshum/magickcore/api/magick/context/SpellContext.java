@@ -34,6 +34,12 @@ public class SpellContext {
         return spellContext;
     }
 
+    public static SpellContext create(CompoundTag tag, int depth) {
+        SpellContext spellContext = create();
+        spellContext.deserialize(tag, depth);
+        return spellContext;
+    }
+
     public static SpellContext create() {
         return new SpellContext();
     }
@@ -166,6 +172,10 @@ public class SpellContext {
     }
 
     public void deserialize(CompoundTag tag) {
+        deserialize(tag, -1);
+    }
+
+    public void deserialize(CompoundTag tag, int depth) {
         NBTTagHelper tagHelper = new NBTTagHelper(tag);
         tagHelper.ifContainString("ELEMENT", (s) -> element = MagickRegistry.getElement(s));
         tagHelper.ifContainString("APPLY_TYPE", (s) -> applyType = ApplyType.getEnum(s));
@@ -180,22 +190,37 @@ public class SpellContext {
                 childContexts.put(s, context);
             }
         }));
-        tagHelper.ifContainNBT("POST", (nbt) -> {
-            if(!nbt.isEmpty())
-                post(SpellContext.create(nbt));
-        });
+
+        if(depth != 0) {
+            tagHelper.ifContainNBT("POST", (nbt) -> {
+                if(!nbt.isEmpty())
+                    post(SpellContext.create(nbt, depth-1));
+            });
+        }
     }
 
     @Override
     public String toString() {
-        return getString(false);
+        return getString(false, this.element);
     }
 
     public String toStringSample() {
-        return ToolTipHelper.DEEP_GREY + new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString() + getString(true);
+        return ToolTipHelper.DEEP_GREY + new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString() + getString(true, this.element);
     }
 
-    public String getString(boolean simple) {
+    public String toString(MagickElement playerElement) {
+        return getString(false, playerElement);
+    }
+
+    public String toStringSample(MagickElement playerElement) {
+        return ToolTipHelper.DEEP_GREY + new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString() + getString(true, playerElement);
+    }
+
+    public String getString(boolean simple, MagickElement playerElement) {
+        MagickElement element = this.element;
+        if(element == ModElements.ORIGIN)
+            element = playerElement;
+
         ToolTipHelper toolTip = new ToolTipHelper();
         int lightTab = applyType == null ? 0 : applyType.isForm() ? 0 : 1;
         int progressiveTab = lightTab + 1;
@@ -209,18 +234,15 @@ public class SpellContext {
             toolTip.tab = progressiveTab;
         }
 
-        if(element != ModElements.ORIGIN && applyType != ApplyType.NONE && !applyType.isForm()){
+        if(element != ModElements.ORIGIN && applyType != ApplyType.NONE && !applyType.isForm()) {
             toolTip.nextTrans(LibItem.FUNCTION, new TranslatableComponent(MagickCore.MOD_ID + ".function." + element.type() + "." + applyType).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
-            if(element != ModElements.ORIGIN) {
-                toolTip.builder.append("§l · ");
-                toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString());
-            }
+            toolTip.builder.append("§l <- ");
+            toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString());
             if(applyType != ApplyType.NONE && !applyType.isForm()) {
                 toolTip.builder.append(" ");
                 toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType).getString());
             }
-        }
-        else {
+        } else {
             if(element != ModElements.ORIGIN)
                 toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
             if(applyType != ApplyType.NONE && !applyType.isForm())
@@ -267,7 +289,7 @@ public class SpellContext {
         });
 
         if(postContext != null) {
-            toolTip.builder.append(postContext.getString(simple));
+            toolTip.builder.append(postContext.getString(simple, playerElement));
         }
         return toolTip.getString();
     }

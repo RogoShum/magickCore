@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.client.tileentity.easyrender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
@@ -12,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -99,8 +102,14 @@ public abstract class EasyTileRenderer<T extends BlockEntity>implements IEasyRen
         return null;
     }
 
+    @Nullable
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
+        return null;
+    }
+
+    @Override
+    public ILightSourceEntity getLightEntity() {
         return null;
     }
 }

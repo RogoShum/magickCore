@@ -114,7 +114,7 @@ public class LayerRenderHelper extends LivingEntityRenderer {
             }
         }
 
-        RenderType type = RenderHelper.getTexedEntityGlint(tex, 0.32f, 10f);
+        RenderType type = RenderHelper.getTexturedEntityGlint(tex, 0.32f, 10f);
         if(!tex.toString().contains(MagickCore.MOD_ID))
             type = getEntityRenderType(renderer, entityIn);
         if(type != null && this.model != null) {
@@ -151,6 +151,6 @@ public class LayerRenderHelper extends LivingEntityRenderer {
 
     @Override
     public ResourceLocation getTextureLocation(Entity entity) {
-        return RenderHelper.blankTex;
+        return RenderHelper.BLANK_TEX;
     }
 }

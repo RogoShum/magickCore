@@ -7,9 +7,13 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import com.rogoshum.magickcore.api.render.IManaShader;
 import com.rogoshum.magickcore.api.render.RenderHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,14 +22,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Objects;
 
 @Mixin(ShaderInstance.class)
-public class MixinShaderInstance implements IManaShader {
+public abstract class MixinShaderInstance implements IManaShader {
     @Shadow
     @Nullable
     public Uniform getUniform(String p_173349_) {
         return null;
     }
+
+    @Shadow @Final private Map<String, Object> samplerMap;
+
+    @Shadow public abstract void markDirty();
 
     @Nullable
     public Uniform I_VIEW_PROJ_MAT;
@@ -43,6 +53,18 @@ public class MixinShaderInstance implements IManaShader {
     public Uniform CAMERA_POS;
     @Nullable
     public Uniform CAMERA_DIR;
+    @Nullable
+    public Uniform CAMERA_ORIENT;
+
+    @Inject(at = @At("TAIL"), method = "setSampler")
+    public void construct(String samplerName, Object id, CallbackInfo ci) {
+        if(Objects.equals(samplerName, "Sampler0") && RenderHelper.GLOBAL_TEXTURE != null) {
+            TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+            AbstractTexture abstracttexture = texturemanager.getTexture(RenderHelper.GLOBAL_TEXTURE);
+            this.samplerMap.put(samplerName, abstracttexture.getId());
+            this.markDirty();
+        }
+    }
 
     @Inject(at = @At("TAIL"), method = "<init>(Lnet/minecraft/server/packs/resources/ResourceProvider;Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/vertex/VertexFormat;)V")
     public void construct(ResourceProvider p_173336_, ResourceLocation shaderLocation, VertexFormat p_173338_, CallbackInfo ci) {
@@ -54,6 +76,7 @@ public class MixinShaderInstance implements IManaShader {
         this.POS_SCALE = this.getUniform("PosScale");
         this.CAMERA_POS = this.getUniform("CameraPos");
         this.CAMERA_DIR = this.getUniform("CameraDir");
+        this.CAMERA_ORIENT = this.getUniform("CameraOrientation");
     }
 
     @Override
@@ -95,6 +118,11 @@ public class MixinShaderInstance implements IManaShader {
         return CAMERA_DIR;
     }
 
+    @Override
+    public Uniform getCameraOrientation() {
+        return CAMERA_ORIENT;
+    }
+
     /*
         @Mixin(LevelRenderer.class)
     public static class MixinLevelRenderer {
@@ -113,11 +141,13 @@ public class MixinShaderInstance implements IManaShader {
         }
     }
 
-    @Mixin(VertexBuffer.class)
+    /*
+        @Mixin(VertexBuffer.class)
     public static class MixinVertexBuffer {
         @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setupShaderLights(Lnet/minecraft/client/renderer/ShaderInstance;)V"), method = "_drawWithShader")
         public void shader(Matrix4f p_166877_, Matrix4f p_166878_, ShaderInstance p_166879_, CallbackInfo ci) {
             RenderHelper.setMagickCoreUniform();
         }
     }
+     */
 }

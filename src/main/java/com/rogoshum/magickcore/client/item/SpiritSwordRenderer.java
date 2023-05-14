@@ -39,7 +39,7 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.pushPose();
         matrixStack.translate(0, 0.7, 0);
         matrixStack.scale(0.08f, 0.6f, 0.08f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -48,7 +48,7 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
         matrixStack.scale(0.25f, 0.25f, 0.25f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexedEntity(QUARTZ))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(QUARTZ))
                 , new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -57,7 +57,7 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.scale(0.3f, 0.15f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -66,7 +66,7 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.scale(0.3f, 0.15f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -75,11 +75,11 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.scale(0.15f, 1.0f, 0.1f);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
-        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack, 2);
         if(data.contextCore().haveMagickContext()) {
             matrixStack.pushPose();
             matrixStack.translate(0, 0.3, 0);

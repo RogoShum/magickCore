@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
-    private final static RenderType renderType_1 = RenderHelper.getTexedEntityGlint(RenderHelper.blankTex, 1f, 0f);
-    private final static RenderType renderType_2 = RenderHelper.getTexedEntityGlint(taken, 1f, 0f);
+    private final static RenderType renderType_1 = RenderHelper.getTexturedEntityGlint(RenderHelper.BLANK_TEX, 1f, 0f);
+    private final static RenderType renderType_2 = RenderHelper.getTexturedEntityGlint(taken, 1f, 0f);
     float scale;
     int lightmap;
 
@@ -42,7 +42,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), lightmap));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), lightmap));
     }
 
     public void renderCapacity(RenderParams params) {
@@ -52,18 +52,16 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
         float scale = entity.manaCapacity().getMana() / entity.manaCapacity().getMaxMana() * this.scale;
         matrixStackIn.scale(scale, scale, scale);
-        for (int i = 0; i < 2; ++i) {
-            if(entity.getMode())
-                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), lightmap));
-            else
-                RenderHelper.renderCube(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), lightmap));
-            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
-        }
+        if(entity.getMode())
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), lightmap));
+        else
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), lightmap));
     }
 
     @Override
     protected void updateSpellContext() {
         super.updateSpellContext();
+        debugY+=0.7;
         String[] strings = new String[1];
         String mana = "§7Mana: " + entity.manaCapacity().getMana() + " / " + entity.manaCapacity().getMaxMana();
         if(contextLength < mana.length())

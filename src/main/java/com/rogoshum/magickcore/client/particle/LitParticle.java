@@ -1,29 +1,41 @@
 package com.rogoshum.magickcore.client.particle;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
-import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.api.render.RenderHelper;
+import com.rogoshum.magickcore.client.render.instanced.ParticleInstanceRenderer;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
+import java.nio.FloatBuffer;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class LitParticle implements ILightSourceEntity, IEasyRender {
+    public static final ResourceLocation TEXTURE = MagickCore.fromId("lit_particle_atlas.png");
+    public static final TextureAtlas TEXTURE_ATLAS = new TextureAtlas(TEXTURE);
+    private static final HashMap<ResourceLocation, ResourceLocation> TEXTURE_MAP = new HashMap<>();
+    public static final ParticleInstanceRenderer PARTICLE_INSTANCE_RENDERER = new ParticleInstanceRenderer();
     public boolean render = true;
     protected double posX;
     protected double posY;
@@ -42,7 +54,8 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     private final int maxAge;
     private float scaleWidth;
     private float scaleHeight;
-    private ResourceLocation texture;
+    private final ResourceLocation texture;
+    private final TextureAtlasSprite sprite;
     private boolean isGlow;
     private static final AABB EMPTY_AABB = new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     protected double motionX;
@@ -67,7 +80,17 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     public LitParticle(Level world, ResourceLocation texture, Vec3 position, float scaleWidth, float scaleHeight, float alpha, int maxAge, ElementRenderer renderer) {
         this.world = world;
-        this.texture = texture;
+        if(!TEXTURE_MAP.containsKey(texture)) {
+            this.texture = new ResourceLocation(texture.getNamespace(), texture.getPath().replace("textures/", "").replace(".png", ""));
+            TEXTURE_MAP.put(texture, this.texture);
+            RenderSystem.recordRenderCall(() -> {
+                TextureAtlas.Preparations preparations = TEXTURE_ATLAS.prepareToStitch(Minecraft.getInstance().getResourceManager(), TEXTURE_MAP.values().stream(), InactiveProfiler.INSTANCE, 0);
+                TEXTURE_ATLAS.reload(preparations);
+            });
+        } else
+            this.texture = TEXTURE_MAP.get(texture);
+
+        this.sprite = TEXTURE_ATLAS.getSprite(this.texture);
         this.setSize(scaleWidth, scaleHeight);
         this.setPosition(position.x, position.y, position.z);
         this.maxAge = Math.max(maxAge, 2);
@@ -77,6 +100,20 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         this.canCollide = renderer.getParticleCanCollide();
         this.renderer = renderer;
         update();
+    }
+
+    public static void addTexture(Collection<ResourceLocation> textures) {
+        HashSet<ResourceLocation> res = new HashSet<>();
+        for(ResourceLocation tex : textures) {
+            ResourceLocation atlas = new ResourceLocation(tex.getNamespace(), tex.getPath().replace("textures/", "").replace(".png", ""));
+            res.add(atlas);
+            TEXTURE_MAP.put(tex, atlas);
+        }
+
+        RenderSystem.recordRenderCall(() -> {
+            TextureAtlas.Preparations preparations = TEXTURE_ATLAS.prepareToStitch(Minecraft.getInstance().getResourceManager(), TEXTURE_MAP.values().stream(), InactiveProfiler.INSTANCE, 0);
+            TEXTURE_ATLAS.reload(preparations);
+        });
     }
 
     @Override
@@ -103,11 +140,6 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return this;
     }
 
-    public LitParticle setTexture(ResourceLocation texture) {
-        this.texture = texture;
-        return this;
-    }
-
     public LitParticle setTraceTarget(Entity traceTarget) {
         this.traceTarget = traceTarget;
         return this;
@@ -124,8 +156,12 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     public LitParticle setShakeLimit(float shakeLimit) {
-        this.shakeLimit = shakeLimit*0.1f*Math.min(scaleHeight, scaleWidth);
+        this.shakeLimit = Math.min(1, Float.parseFloat(String.format("%.1f", shakeLimit*0.2f*Math.min(scaleHeight, scaleWidth))));
         return this;
+    }
+
+    public float shakeLimit() {
+        return this.shakeLimit;
     }
 
     public LitParticle setParticleGravity(float g) {
@@ -325,12 +361,18 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
     }
 
     @Override
+    public ILightSourceEntity getLightEntity() {
+        return null;
+    }
+
+    @Nullable
+    @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getLightFunction() {
         return null;
     }
 
     public RenderMode getRenderMode() {
-        type = isGlow ? RenderHelper.getTexedParticleGlow(texture, shakeLimit) : RenderHelper.getTexedParticle(texture, shakeLimit);
+        type = isGlow ? RenderHelper.getTexturedParticleGlow(TEXTURE, RenderHelper.gl33() ? 0 : shakeLimit) : RenderHelper.getTexturedParticle(TEXTURE, RenderHelper.gl33() ? 0 : shakeLimit);
         return new RenderMode(type, shader);
     }
 
@@ -339,13 +381,73 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         return null;
     }
 
+    public void addVertex(FloatBuffer buffer) {
+        buffer.put(shakeLimit);
+
+        buffer.put(getScale(scaleWidth));
+        buffer.put(getScale(scaleHeight));
+
+        buffer.put(this.sprite.getU0());
+        buffer.put(this.sprite.getU1());
+        buffer.put(this.sprite.getV0());
+        buffer.put(this.sprite.getV1());
+
+        buffer.put(getColor().r());
+        buffer.put(getColor().g());
+        buffer.put(getColor().b());
+        buffer.put(alpha);
+
+        buffer.put((float) this.posX);
+        buffer.put((float) this.posY);
+        buffer.put((float) this.posZ);
+    }
+
     public void render(RenderParams renderParams) {
+        if(this.sprite == null) return;
+        if(RenderHelper.gl33()) {
+            PARTICLE_INSTANCE_RENDERER.addInstanceAttrib(this::addVertex);
+            return;
+        }
         PoseStack matrixStackIn = renderParams.matrixStack;
+        BufferBuilder buffer = renderParams.buffer;
         matrixStackIn.pushPose();
+        Matrix4f matrix4f = renderParams.matrixStack.last().pose();
+        int lightmap = renderContext.packedLightIn;
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-        RenderHelper.callParticleVertex(BufferContext.create(matrixStackIn, renderParams.buffer, type).useShader(shader), renderContext);
+        float coner = alpha * 0.8f;
+        float u0 = this.sprite.getU0();
+        float u1 = this.sprite.getU1();
+        float v0 = this.sprite.getV0();
+        float v1 = this.sprite.getV1();
+        float u05 = (u0+u1) * 0.5f;
+        float v05 = (v0+v1) * 0.5f;
+        Vec3[] quad = RenderHelper.FAN_PARTICLE;
+        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(u05, v05)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), coner).uv(u1, v1)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), coner).uv(u1, v0)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(u05, v05)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), coner).uv(u1, v0)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), coner).uv(u0, v0)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(u05, v05)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), coner).uv(u0, v0)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[4].x, (float) quad[4].y, (float) quad[4].z).color(color.r(), color.g(), color.b(), coner).uv(u0, v1)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(u05, v05)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[4].x, (float) quad[4].y, (float) quad[4].z).color(color.r(), color.g(), color.b(), coner).uv(u0, v1)
+                .uv2(lightmap).endVertex();
+        buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), coner).uv(u1, v1)
+                .uv2(lightmap).endVertex();
         matrixStackIn.popPose();
     }
 
@@ -407,7 +509,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
 
     @Override
     public Color getColor() {
-        return renderer.getPrimaryColor();
+        return color;
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.item.BaseItem;
+import com.rogoshum.magickcore.common.lib.LibItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
@@ -54,5 +55,6 @@ public class ManaMaterialItem extends BaseItem implements IManaMaterial {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(new TranslatableComponent(MagickCore.MOD_ID + ".material." + this.material));
+        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
     }
 }

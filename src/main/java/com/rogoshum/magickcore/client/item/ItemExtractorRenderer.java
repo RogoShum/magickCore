@@ -20,10 +20,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ItemExtractorRenderer extends BlockEntityWithoutLevelRenderer {
     protected final ResourceLocation blank = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
-    protected static final ResourceLocation cylinder_rotate = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/cylinder_rotate.png");
     protected static final ResourceLocation wool = new ResourceLocation("textures/block/glass.png");
-    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexedOrb(wool);
-    private static final RenderType RENDER_TYPE_1 = RenderHelper.getTexedOrbGlint(RenderHelper.SPHERE_ROTATE, 0.1f, 0f);
+    private static final RenderType RENDER_TYPE_0 = RenderHelper.getTexturedQuadsTranslucent(wool);
 
     public ItemExtractorRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -34,9 +32,7 @@ public class ItemExtractorRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5F, 0.5F, 0.5F);
         BufferBuilder bufferIn = Tesselator.getInstance().getBuilder();
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
-        //RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_1), new RenderHelper.RenderContext(1.0f, color, RenderHelper.renderLight));
-
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.popPose();
     }
 }

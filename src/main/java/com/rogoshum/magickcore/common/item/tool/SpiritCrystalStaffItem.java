@@ -13,6 +13,7 @@ import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +38,7 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
         MagickElement element = data.spellContext().element;
@@ -46,7 +47,7 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
             TraceContext traceContext = context.getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(playerIn);
         }
-        boolean did = MagickReleaseHelper.releaseMagick(context);
+        boolean did = MagickReleaseHelper.releaseMagick(context.hand(handIn));
         if(did && playerIn instanceof Player)
             ((Player) playerIn).getCooldowns().addCooldown(this, 5);
         return did;

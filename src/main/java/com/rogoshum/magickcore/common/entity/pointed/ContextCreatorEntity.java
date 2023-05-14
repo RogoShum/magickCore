@@ -13,12 +13,14 @@ import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.common.entity.base.ManaEntity;
 import com.rogoshum.magickcore.common.entity.base.ManaPointEntity;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.material.ManaMaterialItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibMaterial;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.ManaFactor;
@@ -26,8 +28,10 @@ import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
 import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -119,7 +123,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         List<ItemEntity> items = this.level.getEntities(EntityType.ITEM, this.getBoundingBox().inflate(1), (entity) -> entity.getItem().getItem() instanceof IManaMaterial);
         //items = new ArrayList<>();
         items.forEach(item -> {
-            if(item.isAlive() && !item.level.isClientSide() && item.tickCount > 15 && item.position().distanceToSqr(this.position()) <= 2.5) {
+            if(item.isAlive() && !item.level.isClientSide() && item.tickCount > 15) {
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 boolean creatorAndNotType = !material.typeMaterial() || getEntityType() == null;
                 boolean singleItem = material.singleMaterial();
@@ -305,6 +309,11 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 level.addFreshEntity(entity);
                 setRemoved(RemovalReason.DISCARDED);
                 playSound(SoundEvents.BEACON_DEACTIVATE, 0.5f, 2.0f);
+
+                if(player instanceof ServerPlayer && entityType != null) {
+                    AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) player, LibAdvancements.CONTEXT_POINTER);
+                }
+
                 if(level.isClientSide)
                     spawnParticle();
             } else
@@ -355,6 +364,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         if(compound.contains("STACKS")) {
             CompoundTag tag = compound.getCompound("STACKS");
             this.stacks.clear();
+            itemCount = 0;
             tag.getAllKeys().forEach(key -> {
                 CompoundTag stack = tag.getCompound(key);
                 PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, new Random(itemCount++));
@@ -399,6 +409,7 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
             getInnerManaData().spellContext().applyType(ApplyType.SPAWN_ENTITY);
             getInnerManaData().spellContext().addChild(SpawnContext.create(getEntityType()));
         }
+        EntityCompoundTagPack.updateEntity(this);
     }
 
     @Override
@@ -496,18 +507,18 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         public void tick() {
             this.motion = this.motion.scale(0.995);
 
-            if(this.motion.lengthSqr() < 0.01) {
-                double motionX = 0.1 - rand.nextDouble() * 0.2;
-                double motionY = 0.1 - rand.nextDouble() * 0.2;
-                double motionZ = 0.1 - rand.nextDouble() * 0.2;
+            if(this.motion.lengthSqr() < 0.0025) {
+                double motionX = 0.05 - rand.nextDouble() * 0.1;
+                double motionY = 0.05 - rand.nextDouble() * 0.1;
+                double motionZ = 0.05 - rand.nextDouble() * 0.1;
                 this.motion = new Vec3(motionX, motionY, motionZ);
             }
             this.prePos = pos;
             this.pos = this.pos.add(this.motion);
-            if(this.pos.lengthSqr() > 2.25)
-                this.pos = this.pos.normalize().scale(1.5);
-            if(this.pos.lengthSqr() < 1)
-                this.pos = this.pos.normalize().scale(1);
+            if(this.pos.lengthSqr() > 1.265)
+                this.pos = this.pos.normalize().scale(1.125);
+            if(this.pos.lengthSqr() < 0.63)
+                this.pos = this.pos.normalize().scale(0.4);
             age++;
         }
 

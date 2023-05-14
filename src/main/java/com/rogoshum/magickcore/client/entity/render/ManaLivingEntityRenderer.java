@@ -18,7 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class ManaLivingEntityRenderer extends EntityRenderer<LivingEntity> {
 	private static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
-	private static final RenderType EYE = RenderHelper.getTexedEntityGlow(MagickCore.fromId("textures/entity/mana_eye.png"));
+	private static final RenderType EYE = RenderHelper.getTexturedQuadsGlow(MagickCore.fromId("textures/entity/mana_eye.png"));
 
 	public ManaLivingEntityRenderer(EntityRendererProvider.Context renderManager) {
 		super(renderManager);

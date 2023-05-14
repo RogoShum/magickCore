@@ -41,14 +41,14 @@ public class StaffRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.pushPose();
         matrixStack.translate(0, 0.5, 0);
         matrixStack.scale(0.1f, 1.2f, 0.1f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
         matrixStack.pushPose();
         matrixStack.translate(0, -0.1, 0);
         matrixStack.scale(0.2f, 0.1f, 0.2f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                 , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
         matrixStack.popPose();
 
@@ -58,7 +58,7 @@ public class StaffRenderer extends BlockEntityWithoutLevelRenderer {
         float angle = 360f * (c / 99);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(angle));
 
-        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack, 2);
         if(data.contextCore().haveMagickContext()) {
             matrixStack.pushPose();
             matrixStack.scale(0.4f, 0.4f, 0.4f);
@@ -78,7 +78,7 @@ public class StaffRenderer extends BlockEntityWithoutLevelRenderer {
                 matrixStack.mulPose(Vector3f.YN.rotationDegrees(angle));
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
                 matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-                RenderHelper.renderCubeDynamic(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
+                RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
                         , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
                 matrixStack.popPose();
             }

@@ -25,7 +25,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
     public void update() {
         super.update();
         if(entity.initial)
-            TYPE = RenderHelper.getTexedOrbGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
+            TYPE = RenderHelper.getTexturedQuadsGlow(new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/shield/element_shield_" + (entity.tickCount % 10) + ".png"));
     }
 
     public void render(RenderParams params) {

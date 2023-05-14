@@ -99,21 +99,19 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         double x = Mth.lerp(partial, this.xOld, this.getX());
         double y = Mth.lerp(partial, this.yOld, this.getY());
         double z = Mth.lerp(partial, this.zOld, this.getZ());
-        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.5f;
-        for (int i = 0; i < 2; ++i) {
-            LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
-                    , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
-                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
-                    , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
-                    , scale, scale * 1.2f, 0.8f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
-            par.setGlow();
-            par.setParticleGravity(0f);
-            par.addMotion(0, 0.1 * getBbWidth(), 0);
-            par.setLimitScale();
-            par.setShakeLimit(5f);
-            par.useShader(LibShaders.BITS);
-            MagickCore.addMagickParticle(par);
-        }
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.7f;
+        LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleSprite()
+                , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
+                , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
+                , scale, scale * 1.2f, 0.8f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+        par.setGlow();
+        par.setParticleGravity(0f);
+        par.addMotion(0, 0.1 * getBbWidth(), 0);
+        par.setLimitScale();
+        par.setShakeLimit(5f);
+        par.useShader(LibShaders.BITS);
+        MagickCore.addMagickParticle(par);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.api.entity.ILightSourceEntity;
 import com.rogoshum.magickcore.common.init.CommonConfig;
 import com.rogoshum.magickcore.common.tileentity.GlowAirTileEntity;
@@ -10,23 +9,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.fml.LogicalSide;
 
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class EntityLightSourceManager {
-    private static final Queue<ILightSourceEntity> lightList = Queues.newConcurrentLinkedQueue();
+    private static final Queue<ILightSourceEntity> LIGHT_LIST = Queues.newConcurrentLinkedQueue();
 
     public static void tick() {
-        if(lightList.isEmpty()) return;
-        Iterator<ILightSourceEntity> it = lightList.iterator();
+        if(LIGHT_LIST.isEmpty()) return;
+        Iterator<ILightSourceEntity> it = LIGHT_LIST.iterator();
         while (it.hasNext()) {
             ILightSourceEntity entity = it.next();
             if(entity == null) {
@@ -78,16 +73,16 @@ public class EntityLightSourceManager {
     }
 
     public static void addLightSource(ILightSourceEntity entity) {
-        if (CommonConfig.ENTITY_LIGHTING.get() && !lightList.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
-            lightList.add(entity);
+        if (CommonConfig.ENTITY_LIGHTING.get() && !entity.world().isClientSide() && !LIGHT_LIST.contains(entity) && (entity.getSourceLight() > 0 || entity.getSourceLight() < 0)) {
+            LIGHT_LIST.add(entity);
         }
     }
 
     public static Queue<ILightSourceEntity> getLightList() {
-        return lightList;
+        return LIGHT_LIST;
     }
 
     public static void clear(){
-        lightList.clear();
+        LIGHT_LIST.clear();
     }
 }

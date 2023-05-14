@@ -24,7 +24,7 @@ public class ElementMeatItem extends ElementContainerItem{
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         CompoundTag tag = NBTTagHelper.getStackTag(stack);
         if (tag.contains("ELEMENT")) {
-            MagickContext attribute = new MagickContext(worldIn).victim(entityLiving).applyType(ApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(600).force(2);
+            MagickContext attribute = new MagickContext(worldIn).caster(entityLiving).victim(entityLiving).applyType(ApplyType.BUFF).element(MagickRegistry.getElement(tag.getString("ELEMENT"))).tick(1200).force(3);
             attribute.addChild(TraceContext.create(entityLiving));
             MagickReleaseHelper.releaseMagick(attribute.noCost());
         }

@@ -1,31 +1,43 @@
 package com.rogoshum.magickcore.api.render;
 
 import com.google.common.collect.Queues;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IPositionEntity;
 import com.rogoshum.magickcore.client.init.ClientConfig;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
+import com.rogoshum.magickcore.client.render.Cylinder;
+import com.rogoshum.magickcore.client.render.Polyhedron;
+import com.rogoshum.magickcore.client.render.instanced.LightingInstanceRenderer;
+import com.rogoshum.magickcore.client.render.instanced.ModelInstanceRenderer;
 import com.rogoshum.magickcore.client.vertex.VectorHitReaction;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.MutableFloat;
 import com.rogoshum.magickcore.mixin.AccessorRenderType;
-import com.rogoshum.magickcore.mixin.AccessorShaderShard;
-import com.rogoshum.magickcore.mixin.AccessorShaderState;
+import com.rogoshum.magickcore.mixin.AccessorTextureState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,28 +48,43 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.FloatBuffer;
 import java.util.*;
-import java.util.function.Supplier;
 
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.system.Checks;
+import org.lwjgl.system.MemoryUtil;
+
+import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderHelper {
-    public static final Color GREEN = Color.create(0.2f, 1.0f, 0.2f);
-    public static final Color RED = Color.create(1.0f, 0.2f, 0.2f);
+    public static final ResourceLocation TEXTURE = MagickCore.fromId("entity_texture_atlas.png");
+    public static final TextureAtlas TEXTURE_ATLAS = new TextureAtlas(TEXTURE);
+    private static final HashMap<ResourceLocation, ResourceLocation> TEXTURE_MAP = new HashMap<>();
 
-    public static final ResourceLocation blankTex = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
+    public static final HashMap<Object, Queue<VertexAttribute>> VERTEX_CACHE = new HashMap<>();
+    public static final HashMap<Object, ModelInstanceRenderer> INSTANCE_CACHE = new HashMap<>();
+    public static final HashSet<ModelInstanceRenderer> UPDATE_INSTANCE = new HashSet<>();
+    public static final HashMap<ChunkPos, Boolean> PARTICLE_CHUNK_TRACE = new HashMap<>();
+    public static LightingInstanceRenderer LIGHTING_INSTANCE_RENDERER;
+    static {
+        RenderSystem.recordRenderCall(() -> LIGHTING_INSTANCE_RENDERER = new LightingInstanceRenderer());
+    }
+
+    public static final ResourceLocation BLANK_TEX = new ResourceLocation(MagickCore.MOD_ID + ":textures/blank.png");
 
     public static final ResourceLocation DISSOVE = new ResourceLocation(MagickCore.MOD_ID + ":textures/dissove.png");
     public static final ResourceLocation RED_AND_BLUE = new ResourceLocation(MagickCore.MOD_ID, "textures/red_and_blue_2014.png");
     public static final ResourceLocation RED_AND_BLUE_AND_GREEN = new ResourceLocation(MagickCore.MOD_ID, "textures/red_and_blue_and_green.png");
     public static final ResourceLocation COLORS = new ResourceLocation(MagickCore.MOD_ID, "textures/theyaremanycolors.png");
     public static final int renderLight = 15728880;
-    public static final int renderLight2 = 15728640;
     public static final int halfLight = 7864440;
     public static boolean queueMode = false;
     private static Class<?> oculusShader = null;
@@ -71,6 +98,8 @@ public class RenderHelper {
     public static MutableFloat WORLD_FOG = new MutableFloat();
     public static float[] shaderFogColor = null;
     private static final float[] posScale = new float[]{0.0F, 0.0F, 0.0F, 0.0F};
+    public static ResourceLocation GLOBAL_TEXTURE = null;
+    private static int gl33 = -1;
 
     public static float[] getPosScale() {
         return posScale;
@@ -87,12 +116,28 @@ public class RenderHelper {
         return rendertypeEntityTranslucentDistShader;
     }
 
-    public static void setRendertypeEntityFogShader(ShaderInstance rendertypeEntityTranslucentShader) {
-        RenderHelper.rendertypeEntityFogShader = rendertypeEntityTranslucentShader;
+    public static ShaderInstance getRendertypeEntityTranslucentInstanceShader() {
+        return rendertypeEntityTranslucentDistInstanceShader;
     }
 
-    public static ShaderInstance getRendertypeEntityFogShader() {
-        return rendertypeEntityFogShader;
+    public static void setRendertypeEntityTranslucentInstanceShader(ShaderInstance rendertypeEntityTranslucentShader) {
+        RenderHelper.rendertypeEntityTranslucentDistInstanceShader = rendertypeEntityTranslucentShader;
+    }
+
+    public static void setRendertypeEntityLightShader(ShaderInstance rendertypeEntityTranslucentShader) {
+        RenderHelper.rendertypeEntityLightShader = rendertypeEntityTranslucentShader;
+    }
+
+    public static ShaderInstance getRendertypeEntityLightShader() {
+        return rendertypeEntityLightShader;
+    }
+
+    public static void setRendertypeEntityLightInstanceShader(ShaderInstance rendertypeEntityTranslucentShader) {
+        RenderHelper.rendertypeEntityLightInstanceShader = rendertypeEntityTranslucentShader;
+    }
+
+    public static ShaderInstance getRendertypeEntityLightInstanceShader() {
+        return rendertypeEntityLightInstanceShader;
     }
 
     public static void setRendertypeEntityTranslucentShader(ShaderInstance rendertypeEntityTranslucentShader) {
@@ -123,6 +168,13 @@ public class RenderHelper {
         RenderHelper.positionColorTexLightShader = positionColorTexLightShader;
     }
 
+    public static ShaderInstance getPositionColorTexLightmapDistInstanceShader() {
+        return positionColorTexLightDistInstanceShader;
+    }
+
+    public static void setPositionColorTexLightmapDistInstanceShader(ShaderInstance positionColorTexLightShader) {
+        RenderHelper.positionColorTexLightDistInstanceShader = positionColorTexLightShader;
+    }
     public static ShaderInstance getPositionColorTexLightmapDistShader() {
         return positionColorTexLightDistShader;
     }
@@ -139,31 +191,20 @@ public class RenderHelper {
         RenderHelper.positionTextureShader = positionTextureShader;
     }
 
-    private static ShaderInstance rendertypeEntityFogShader;
+    private static ShaderInstance rendertypeEntityLightShader;
+    private static ShaderInstance rendertypeEntityLightInstanceShader;
     private static ShaderInstance rendertypeEntityTranslucentDistShader;
+    private static ShaderInstance rendertypeEntityTranslucentDistInstanceShader;
     private static ShaderInstance rendertypeEntityTranslucentNoiseShader;
     private static ShaderInstance rendertypeEntityQuadrantShader;
 
     private static ShaderInstance positionColorTexLightShader;
     private static ShaderInstance positionColorTexLightDistShader;
+    private static ShaderInstance positionColorTexLightDistInstanceShader;
     private static ShaderInstance positionTextureShader;
     protected static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("no_transparency", RenderSystem::disableBlend, () -> {
     });
-    protected static final RenderStateShard.OutputStateShard TRANSLUCENT_TARGET = new RenderStateShard.OutputStateShard("translucent_target", () -> {
-        /*
-        if (isRenderingWorld() && Minecraft.useShaderTransparency()) {
-            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-        }
-         */
 
-    }, () -> {
-        /*
-        if (isRenderingWorld() && Minecraft.useShaderTransparency()) {
-            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-        }
-         */
-
-    });
     protected static final RenderStateShard.TransparencyStateShard LIGHTNING_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("magick_lightning_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
@@ -238,141 +279,14 @@ public class RenderHelper {
     protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENERGY_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEnergySwirlShader);
     protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_TRANSLUCENT_NOISE_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getRendertypeEntityTranslucentNoiseShader);
     protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_QUADRANT_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getRendertypeEntityQuadrantShader);
-    protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_FOG_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getRendertypeEntityFogShader);
-    protected static final RenderStateShard.ShaderStateShard POSITION_COLOR_TEX_LIGHTMAP_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getPositionColorTexLightmapShader);
-    protected static final RenderStateShard.ShaderStateShard POSITION_COLOR_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorShader);
+    protected static final RenderStateShard.ShaderStateShard RENDERTYPE_ENTITY_LIGHT_SHADER = new RenderStateShard.ShaderStateShard(RenderHelper::getRendertypeEntityLightShader);
     protected static final RenderStateShard.ShaderStateShard LINE_SHADER = new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader);
     protected static final RenderStateShard.WriteMaskStateShard COLOR_DEPTH_WRITE = new RenderStateShard.WriteMaskStateShard(true, true);
-    protected static final RenderStateShard.WriteMaskStateShard COLOR_WRITE = new RenderStateShard.WriteMaskStateShard(true, false);
     protected static final RenderStateShard.CullStateShard CULL_DISABLED = new RenderStateShard.CullStateShard(false);
-    protected static final RenderStateShard.CullStateShard CULL_ENABLED = new RenderStateShard.CullStateShard(true);
     protected static final RenderStateShard.LightmapStateShard LIGHTMAP_ENABLED = new RenderStateShard.LightmapStateShard(true);
     protected static final RenderStateShard.OverlayStateShard OVERLAY_ENABLED = new RenderStateShard.OverlayStateShard(true);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_ALWAYS = new RenderStateShard.DepthTestStateShard("always", 519);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_GREATER = new RenderStateShard.DepthTestStateShard(">", 516);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_NOTE = new RenderStateShard.DepthTestStateShard("!=", 517);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_EGREATER = new RenderStateShard.DepthTestStateShard(">=", 518);
     protected static final RenderStateShard.DepthTestStateShard DEPTH_EQUAL = new RenderStateShard.DepthTestStateShard("==", 514);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_NEVER = new RenderStateShard.DepthTestStateShard("never", 512);
-    protected static final RenderStateShard.DepthTestStateShard DEPTH_LESS = new RenderStateShard.DepthTestStateShard("<", 513);
     protected static final RenderStateShard.DepthTestStateShard DEPTH_LEQUAL = new RenderStateShard.DepthTestStateShard("<=", 515);
-
-    public static RenderType getTexedOrbSolid(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(NO_TRANSPARENCY).setTexturingState(EntityShakeStateShard.create()).setLightmapState(LIGHTMAP_ENABLED)
-                .setShaderState(RENDERTYPE_ENTITY_SHADER).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedParticle(ResourceLocation locationIn, float shakeLimit) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_DIST_SHADER).setTexturingState(new ParticleShakeStateShard(new MutableFloat(shakeLimit), new MutableFloat(1f)))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Particle", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.TRIANGLES, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedParticleGlow(ResourceLocation locationIn, float shakeLimit) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_DIST_SHADER).setTexturingState(new ParticleShakeStateShard(new MutableFloat(shakeLimit), new MutableFloat(1f)))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Particle_Glow", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.TRIANGLES, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedOrb(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
-                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedOrbItem(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(DEPTH_TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
-                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_ORIGINAL_TRANSLUCENT_SHADER).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Item", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedOrbGlow(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setOutputState(TRANSLUCENT_TARGET)
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
-                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Glow", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedOrbTransparency(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED)
-                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENERGY_SHADER).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Transparency", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedOrbGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED)
-                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setLightmapState(LIGHTMAP_ENABLED)
-                .setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedOrbItem(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setCullState(CULL_DISABLED)
-                .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENERGY_SHADER)
-                .setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Orb_Glint_Item_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedEntityGlow(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glow", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedEntityItem(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENERGY_SHADER)
-                .setLightmapState(LIGHTMAP_ENABLED).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Item", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedEntityGlowNoise(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_NOISE_SHADER)
-                .setLightmapState(LIGHTMAP_ENABLED).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glow_Noise", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedEntity(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).setDepthTestState(DEPTH_LEQUAL).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedEntityGlint(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(new EntityShakeStateShard(new MutableFloat(0.001f), new MutableFloat(0.2f), new MutableFloat(0.0f), new MutableFloat(0.0f))).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glint_Solid", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
 
     public static class LineStateShard extends RenderStateShard.TexturingStateShard {
         private final OptionalDouble width;
@@ -418,24 +332,28 @@ public class RenderHelper {
         }
     }
 
-    public static class CylinderShakeStateShard extends RenderStateShard.TexturingStateShard {
+    public static class EntityGlintStateShard extends RenderStateShard.TexturingStateShard {
         private final MutableFloat shakeLimit;
         private final MutableFloat shakeSpeed;
         private final MutableFloat glintScale;
         private final MutableFloat glintRotate;
 
-        public CylinderShakeStateShard(MutableFloat size, MutableFloat shakeSpeed, MutableFloat glintScale, MutableFloat glintRotate) {
-            super(MagickCore.MOD_ID+"_cylinder_shake_" + size+"_"+shakeSpeed+"_"+glintScale+"_"+glintRotate, () -> {
+        public EntityGlintStateShard(MutableFloat size, MutableFloat shakeSpeed, MutableFloat glintScale, MutableFloat glintRotate) {
+            super(MagickCore.MOD_ID+"_glint_" + size+"_"+shakeSpeed+"_"+glintScale+"_"+glintRotate, () -> {
                 shaderFogColor = RenderSystem.getShaderFogColor();
                 RenderSystem.setShaderFogColor(1.0f, 1.0f, 1.0f, size.get());
                 RenderSystem.setShaderTexture(3, RED_AND_BLUE_AND_GREEN);
                 RenderSystem.setShaderGameTime((long) (MagickCore.proxy.getRunTick()), shakeSpeed.get()*Minecraft.getInstance().getFrameTime());
-                long i = Util.getMillis() * 8L;
-                float f1 = (float) (i % 30000L) / 30000.0F;
-                Matrix4f matrix4f = Matrix4f.createTranslateMatrix(0.0f, f1, 0.0F);
-                matrix4f.multiply(Vector3f.YP.rotationDegrees(glintRotate.get()));
-                matrix4f.multiply(Matrix4f.createScaleMatrix(1.0f, glintScale.get(), 1.0f));
-                RenderSystem.setTextureMatrix(matrix4f);
+                if(glintScale.get() != 0) {
+                    long i = Util.getMillis() * 8L;
+                    float f1 = (float) (i % 15000L) / 15000.0F;
+                    if(glintScale.get() < 0)
+                        f1 = -f1;
+                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(0.0f, f1, 0.0F);
+                    matrix4f.multiply(Vector3f.YP.rotationDegrees(glintRotate.get()));
+                    matrix4f.multiply(Matrix4f.createScaleMatrix(1.0f, glintScale.get(), 1.0f));
+                    RenderSystem.setTextureMatrix(matrix4f);
+                }
             }, () -> {
                 if(shaderFogColor != null)
                     RenderSystem.setShaderFogColor(shaderFogColor[0], shaderFogColor[1], shaderFogColor[2], shaderFogColor[3]);
@@ -505,38 +423,201 @@ public class RenderHelper {
         }
     }
 
-    public static class EntityMatrixShard extends RenderStateShard.TexturingStateShard {
-        public EntityMatrixShard(String name, Runnable push, Runnable pop) {
-            super(MagickCore.MOD_ID+"_modelMatrix_"+name, push, pop);
-        }
-    }
-
     public static RenderStateShard.TexturingStateShard lineState(OptionalDouble size) {
         return new LineStateShard(size);
     }
 
-    public static RenderType getTexedEntityGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state =
-                RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                        .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                        .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    public static void addTexture(ResourceLocation texture) {
+        if(texture == null) return;
+        if(!TEXTURE.equals(texture) && !TEXTURE_MAP.containsKey(texture)) {
+            ResourceLocation atlas = new ResourceLocation(texture.getNamespace(), texture.getPath().replace("textures/", "").replace(".png", ""));
+            if(RenderSystem.isOnRenderThread()) {
+                TEXTURE_MAP.put(texture, atlas);
+                TextureAtlas.Preparations preparations = TEXTURE_ATLAS.prepareToStitch(Minecraft.getInstance().getResourceManager(), TEXTURE_MAP.values().stream(), InactiveProfiler.INSTANCE, 0);
+                TEXTURE_ATLAS.reload(preparations);
+            } else {
+                RenderSystem.recordRenderCall(() -> {
+                    TEXTURE_MAP.put(texture, atlas);
+                    TextureAtlas.Preparations preparations = TEXTURE_ATLAS.prepareToStitch(Minecraft.getInstance().getResourceManager(), TEXTURE_MAP.values().stream(), InactiveProfiler.INSTANCE, 0);
+                    TEXTURE_ATLAS.reload(preparations);
+                });
+            }
+        }
     }
 
-    public static RenderType getTexedEntityGlintItem(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state =
-                RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(DEPTH_LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                        .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENERGY_SHADER)
-                        .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(1.0f, 0.0f)).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glint_Item_1_0", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
+    public static void addTexture(Collection<ResourceLocation> textures) {
+        HashSet<ResourceLocation> res = new HashSet<>();
+        for(ResourceLocation tex : textures) {
+            ResourceLocation atlas = new ResourceLocation(tex.getNamespace(), tex.getPath().replace("textures/", "").replace(".png", ""));
+            res.add(atlas);
+            TEXTURE_MAP.put(tex, atlas);
+        }
+
+        RenderSystem.recordRenderCall(() -> {
+            TextureAtlas.Preparations preparations = TEXTURE_ATLAS.prepareToStitch(Minecraft.getInstance().getResourceManager(), TEXTURE_MAP.values().stream(), InactiveProfiler.INSTANCE, 0);
+            TEXTURE_ATLAS.reload(preparations);
+        });
+    }
+
+    public static RenderType getTexturedParticle(ResourceLocation locationIn, float shakeLimit) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_DIST_SHADER).setTexturingState(new ParticleShakeStateShard(new MutableFloat(shakeLimit), new MutableFloat(1f)))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Particle", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.TRIANGLES, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedParticleGlow(ResourceLocation locationIn, float shakeLimit) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setShaderState(POSITION_COLOR_TEX_LIGHTMAP_DIST_SHADER).setTexturingState(new ParticleShakeStateShard(new MutableFloat(shakeLimit), new MutableFloat(1f)))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Particle_Glow", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.TRIANGLES, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedQuadsSolid(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(NO_TRANSPARENCY).setTexturingState(EntityShakeStateShard.create()).setLightmapState(LIGHTMAP_ENABLED)
+                .setShaderState(RENDERTYPE_ENTITY_SHADER).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Quads_SolidType", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedQuadsTranslucent(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
+                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Quads_Translucent_Instanced", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedQuadsEnergy(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED)
+                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENERGY_SHADER).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Quads_Energy", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
+    }
+
+    public static RenderType getTexturedQuadsGlint(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED)
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setLightmapState(LIGHTMAP_ENABLED)
+                .setTexturingState(EntityShakeStateShard.create(1.0f, 0.0f)).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Quads_GlintType_Instanced", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedQuadsGlow(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED)
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setCullState(CULL_DISABLED)
+                .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).createCompositeState(true);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_Glow_Instanced", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedEntityGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        return getTexturedEntityGlintShake(locationIn, glintScale, glintRotate, 0.0f, 0.0f);
+    }
+
+    public static RenderType getTexturedEntityGlintShake(ResourceLocation locationIn, float glintScale, float glintRotate, float dist, float speed) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY)
+                .setOverlayState(OVERLAY_ENABLED).setLightmapState(LIGHTMAP_ENABLED).setCullState(CULL_DISABLED)
+                .setTexturingState(EntityShakeStateShard.create(dist, speed, glintScale, glintRotate)).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_GlintType_Instanced", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedEntityGlowNoise(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_NOISE_SHADER)
+                .setLightmapState(LIGHTMAP_ENABLED).createCompositeState(true);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Entity_GlintType_Noise", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedSegmentLaser(ResourceLocation locationIn, float glintScale) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                .setTexturingState(new EntityGlintStateShard(new MutableFloat(0.05f), new MutableFloat(0), new MutableFloat(glintScale), new MutableFloat(0))).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Uni_GlintType", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedLaserGlint(ResourceLocation locationIn, float glintScale) {
+        return getTexturedUniGlint(locationIn, glintScale, 0, 0.05f, 0);
+    }
+
+    public static RenderType getTexturedUniGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        return getTexturedUniGlint(locationIn, glintScale, glintRotate, 0, 0);
+    }
+
+    public static RenderType getTexturedUniGlint(ResourceLocation locationIn, float glintScale, float glintRotate, float dist, float speed) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                .setTexturingState(new EntityGlintStateShard(new MutableFloat(dist), new MutableFloat(speed), new MutableFloat(glintScale), new MutableFloat(glintRotate))).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Uni_GlintType_Instanced", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getColorDecal() {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setShaderState(RENDERTYPE_ENTITY_LIGHT_SHADER)
+                .setTexturingState(new RenderStateShard.TexturingStateShard("depth_off", () -> {
+                    GL11.glCullFace(GL11.GL_FRONT);
+                    RenderSystem.disableDepthTest();
+                }, () -> {
+                    RenderSystem.enableDepthTest();
+                    GL11.glCullFace(GL11.GL_BACK);
+                })).createCompositeState(true);
+        return RenderType.create(MagickCore.MOD_ID + ":Colored_Decal_LightingInstanced", DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getEntityQuadrant(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setOverlayState(OVERLAY_ENABLED).setTexturingState(EntityShakeStateShard.create()).setCullState(CULL_DISABLED)
+                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_QUADRANT_SHADER).createCompositeState(true);
+        return RenderType.create(MagickCore.MOD_ID + ":Quadrant", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedSphereGlowNoise(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_NOISE_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Glow_Noise_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    //===================================================================================================================================================================//
+
+    public static RenderType getTexturedCylinderItem(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(DEPTH_LIGHTNING_TRANSPARENCY)
+                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_ORIGINAL_TRANSLUCENT_SHADER)
+                .setTexturingState(new EntityGlintStateShard(new MutableFloat(), new MutableFloat(), new MutableFloat(glintScale), new MutableFloat(glintRotate))).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Cylinder_Item_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
+    }
+
+    public static RenderType getTexturedItemGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(LIGHTNING_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENERGY_SHADER)
+                .setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Item_GlintType", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+    }
+
+    public static RenderType getTexturedShaderItemTranslucent(ResourceLocation locationIn) {
+        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
+                .setTransparencyState(DEPTH_TRANSLUCENT_TRANSPARENCY).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED)
+                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_ORIGINAL_TRANSLUCENT_SHADER).createCompositeState(false);
+        return RenderType.create(MagickCore.MOD_ID + ":Textured_Shader_Item", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
     }
 
     public static RenderType getLayerEntityGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
         RenderType.CompositeState rendertype$state =
                 RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(GLINT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL).setOutputState(TRANSLUCENT_TARGET)
+                        .setTransparencyState(GLINT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL)
                         .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                         .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(true);
         return RenderType.create(MagickCore.MOD_ID + ":Layer_Entity_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
@@ -545,138 +626,19 @@ public class RenderHelper {
     public static RenderType getLayerEntityGlintSolid(ResourceLocation locationIn, float glintScale, float glintRotate) {
         RenderType.CompositeState rendertype$state =
                 RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL).setOutputState(TRANSLUCENT_TARGET)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL)
                         .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                         .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Layer_Entity_Glint_Solid_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
+        return RenderType.create(MagickCore.MOD_ID + ":Layer_Entity_Glint_SolidType_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
     }
 
     public static RenderType getLayerEntityGlint(ResourceLocation locationIn) {
         RenderType.CompositeState rendertype$state =
                 RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(GLINT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL).setOutputState(TRANSLUCENT_TARGET)
+                        .setTransparencyState(GLINT_TRANSPARENCY).setDepthTestState(DEPTH_EQUAL)
                         .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                         .setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(0.32f, 10f)).createCompositeState(true);
         return RenderType.create(MagickCore.MOD_ID + ":Layer_Entity_Glint_0.32_10", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderStateShard.TexturingStateShard getLaserGlint(float glintScale) {
-        return new RenderStateShard.TexturingStateShard("laser_glint_texturing_" + glintScale,
-                () -> {
-                    shaderFogColor = RenderSystem.getShaderFogColor();
-                    RenderSystem.setShaderFogColor(1.0f, 1.0f, 1.0f, 0.02f);
-                    RenderSystem.setShaderTexture(3, RED_AND_BLUE_AND_GREEN);
-                    RenderSystem.setShaderGameTime((long) (MagickCore.proxy.getRunTick()), Minecraft.getInstance().getFrameTime());
-                    long i = Util.getMillis() * 8L;
-                    float f1 = (i % (3000L * glintScale)) / (3000.0F * glintScale);
-                    if(glintScale < 0)
-                        f1 = -f1;
-                    Matrix4f matrix4f = Matrix4f.createTranslateMatrix(0.0f, f1, 0.0F);
-                    matrix4f.multiply(Matrix4f.createScaleMatrix(1, glintScale, 1));
-                    RenderSystem.setTextureMatrix(matrix4f);
-                }
-            , () -> {
-            if(shaderFogColor != null)
-                RenderSystem.setShaderFogColor(shaderFogColor[0], shaderFogColor[1], shaderFogColor[2], shaderFogColor[3]);
-            RenderSystem.setShaderGameTime(Minecraft.getInstance().level.getGameTime(), Minecraft.getInstance().getFrameTime());
-            RenderSystem.resetTextureMatrix();
-        });
-    }
-
-    public static RenderType getTexedLaserGlint(ResourceLocation locationIn, float glintScale) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(getLaserGlint(glintScale)).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Laser_Glint_" + glintScale, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedLaser(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create()).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Laser", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedCylinderGlow(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Cylinder_Glow", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedCylinderGlint(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                        .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                .setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                        .setTexturingState(new CylinderShakeStateShard(new MutableFloat(), new MutableFloat(), new MutableFloat(glintScale), new MutableFloat(glintRotate))).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Cylinder_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedCylinderGlint(ResourceLocation locationIn, float glintScale, float glintRotate, float dist, float speed) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                .setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                .setTexturingState(new CylinderShakeStateShard(new MutableFloat(dist), new MutableFloat(speed), new MutableFloat(glintScale), new MutableFloat(glintRotate))).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Cylinder_Glint_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedCylinderItem(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setTransparencyState(DEPTH_LIGHTNING_TRANSPARENCY)
-                .setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_ORIGINAL_TRANSLUCENT_SHADER)
-                .setTexturingState(new CylinderShakeStateShard(new MutableFloat(), new MutableFloat(), new MutableFloat(glintScale), new MutableFloat(glintRotate))).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Cylinder_Item_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedSphereGlow(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        return getTexedSphereGlow(locationIn, glintScale, glintRotate, 0.0f, 0.0f);
-    }
-
-    public static RenderType getTexedSphereGlow(ResourceLocation locationIn, float glintScale, float glintRotate, float dist, float speed) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET)
-                .setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED)
-                .setTexturingState(EntityShakeStateShard.create(dist, speed, glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Glow_Glint", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getColorDecal() {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setShaderState(RENDERTYPE_ENTITY_FOG_SHADER)
-                .setTexturingState(new RenderStateShard.TexturingStateShard("depth_off", () -> {
-                    GL11.glCullFace(GL11.GL_FRONT);
-                    RenderSystem.disableDepthTest();
-                }, () -> {
-                    RenderSystem.enableDepthTest();
-                    GL11.glCullFace(GL11.GL_BACK);
-                })).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Colored_Decal", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getEntityQuadrant(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder()
-                .setTransparencyState(LIGHTNING_TRANSPARENCY).setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false))
-                .setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setTexturingState(EntityShakeStateShard.create()).setCullState(CULL_DISABLED)
-                .setLightmapState(LIGHTMAP_ENABLED).setShaderState(RENDERTYPE_ENTITY_QUADRANT_SHADER).createCompositeState(true);
-        return RenderType.create(MagickCore.MOD_ID + ":Quadrant", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedSphereGlowItem(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENERGY_SHADER).setTransparencyState(DEPTH_LIGHTNING_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Glow_Item_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedSphereGlowNoise(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_NOISE_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Glow_Noise_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-
-    public static RenderType getTexedSphereGlowEqualDepth(ResourceLocation locationIn, float glintScale, float glintRotate) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setDepthTestState(DEPTH_EQUAL).setTransparencyState(LIGHTNING_TRANSPARENCY).setOutputState(TRANSLUCENT_TARGET).setOverlayState(OVERLAY_ENABLED).setCullState(CULL_DISABLED).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(glintScale, glintRotate)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Glow_EqualDepth_" + glintScale + "_" + glintRotate, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
-    }
-    public static RenderType getTexedSphereItem(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENERGY_SHADER).setTransparencyState(LIGHTNING_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).setTexturingState(EntityShakeStateShard.create(1.0f, 0)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere_Item", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, true, true, rendertype$state);
-    }
-
-    public static RenderType getTexedSphere(ResourceLocation locationIn) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(locationIn, false, false)).setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setTexturingState(EntityShakeStateShard.create(1, 0)).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":Textured_Sphere", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 256, false, false, rendertype$state);
     }
 
     public static final RenderStateShard.LayeringStateShard VIEW_OFFSET_Z_LAYERING = new RenderStateShard.LayeringStateShard("view_offset_z_layering", () -> {
@@ -692,16 +654,12 @@ public class RenderHelper {
 
     public static RenderType getLineStripGlow(double width) {
         RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setLayeringState(VIEW_OFFSET_Z_LAYERING).setShaderState(LINE_SHADER).setWriteMaskState(COLOR_DEPTH_WRITE).setLightmapState(LIGHTMAP_ENABLED).setCullState(CULL_DISABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":LINES_STRIP_" + width, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.LINE_STRIP, 256, false, false, rendertype$state);
+        return RenderType.create(MagickCore.MOD_ID + ":LINES_STRIP_" + width, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.LINES, 256, false, false, rendertype$state);
     }
 
     public static RenderType getLineStripPC(double width) {
         RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setShaderState(LINE_SHADER).setTransparencyState(ADDITIVE_TRANSPARENCY).setLightmapState(LIGHTMAP_ENABLED).setWriteMaskState(COLOR_DEPTH_WRITE).setLayeringState(VIEW_OFFSET_Z_LAYERING).setCullState(CULL_DISABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
         return RenderType.create(MagickCore.MOD_ID + ":LINES_STRIP_PC_" + width, DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256, false, false, rendertype$state);
-    }
-    public static RenderType getLinesGlow(double width) {
-        RenderType.CompositeState rendertype$state = RenderType.CompositeState.builder().setTransparencyState(ADDITIVE_TRANSPARENCY).setShaderState(LINE_SHADER).setLightmapState(LIGHTMAP_ENABLED).setWriteMaskState(COLOR_DEPTH_WRITE).setLayeringState(VIEW_OFFSET_Z_LAYERING).setCullState(CULL_DISABLED).setTexturingState(lineState(OptionalDouble.of(width))).createCompositeState(false);
-        return RenderType.create(MagickCore.MOD_ID + ":LINES_" + width, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.LINES, 256, false, false, rendertype$state);
     }
 
     public static final ResourceLocation TAKEN_LAYER = new ResourceLocation(MagickCore.MOD_ID + ":textures/element/base/taken_layer.png");
@@ -730,8 +688,6 @@ public class RenderHelper {
             {1, 3, 7, 5},
             {2, 6, 7, 3}};
 
-    public static final HashMap<Object, Queue<VertexBuffer>> GL_LIST_INDEX = new HashMap<>();
-
     public static final Vec3[] QUAD_VECTOR = new Vec3[]{
             new Vec3(-1.0, -1.0, 0.0)
             , new Vec3(-1.0F, 1.0F, 0.0F)
@@ -745,130 +701,87 @@ public class RenderHelper {
             , new Vec3(1.0F, 1.0F, 0.0F)
             , new Vec3(1.0F, -1.0F, 0.0F)};
 
-    public static void callParticleVertex(BufferContext context, RenderContext renderContext) {
+    public static void callQuadVertexDynamic(BufferContext context, RenderContext renderContext) {
         PoseStack matrixStack = context.matrixStack;
         Matrix4f matrix4f = matrixStack.last().pose();
         BufferBuilder buffer = context.buffer;
         Color color = renderContext.color;
         float alpha = renderContext.alpha;
         int lightmap = renderContext.packedLightIn;
-        Vec3[] quad = RenderHelper.FAN_PARTICLE;
-        float coner = alpha * 0.8f;
-        setup(context);
-        begin(context);
-        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(0.5f, 0.5f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), coner).uv(1.0f, 1.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), coner).uv(1.0f, 0.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(0.5f, 0.5f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), coner).uv(1.0f, 0.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), coner).uv(0.0f, 0.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(0.5f, 0.5f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), coner).uv(0.0f, 0.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[4].x, (float) quad[4].y, (float) quad[4].z).color(color.r(), color.g(), color.b(), coner).uv(0.0f, 1.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(0.5f, 0.5f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[4].x, (float) quad[4].y, (float) quad[4].z).color(color.r(), color.g(), color.b(), coner).uv(0.0f, 1.0f)
-                .uv2(lightmap).endVertex();
-        buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), coner).uv(1.0f, 1.0f)
-                .uv2(lightmap).endVertex();
-        finish(context);
-        end(context);
-    }
-
-    public static void callQuadVertex(BufferContext context, RenderContext renderContext) {
-        PoseStack matrixStack = context.matrixStack;
-        Matrix4f matrix4f = matrixStack.last().pose();
-        BufferBuilder buffer = context.buffer;
-        RenderType type = context.type;
-        Color color = renderContext.color;
-        float alpha = renderContext.alpha;
-        int lightmap = renderContext.packedLightIn;
-        String hash = "QUAD_VERTEX" + renderContext.hashCode();
+        String hash = "QUAD_VERTEX";
         Vec3[] quad = RenderHelper.QUAD_VECTOR;
 
-        setup(context);
-        begin(context);
-        buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f)
-                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
-        buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f)
-                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
-        buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f)
-                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
-        buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f)
-                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
-        finish(context);
-        end(context);
-
-        /*
-        if(!GL_LIST_INDEX.containsKey(hash)) {
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            VertexBuffer vertexBuffer = new VertexBuffer(DefaultVertexFormats.ENTITY);
-            begin(context);
-
-            buffer.finishDrawing();
-            vertexBuffer.upload(buffer);
-            vertexBuffers.add(vertexBuffer);
-            GL_LIST_INDEX.put(hash, vertexBuffers);
+        if(GLOBAL_TEXTURE != null) {
+            if(VERTEX_CACHE.containsKey(hash)) {
+                buildCacheVertexQueue(context, renderContext, hash);
+            } else {
+                Queue<VertexAttribute> queue = Queues.newArrayDeque();
+                for (int i = 0; i < 4; ++i) {
+                    Vec3 vec3 = RenderHelper.QUAD_VECTOR[i];
+                    VertexAttribute vertex = new VertexAttribute();
+                    vertex.pos(vec3);
+                    vertex.color(color);
+                    vertex.lightmap(lightmap);
+                    vertex.normal(vec3);
+                    if(i == 0)
+                        vertex.uv(1.0f, 1.0f);
+                    else if(i == 1)
+                        vertex.uv(1.0f, 0.0f);
+                    else if(i == 2)
+                        vertex.uv(0.0f, 0.0f);
+                    else vertex.uv(0.0f, 1.0f);
+                    vertex.alpha(1);
+                    queue.add(vertex);
+                }
+                VERTEX_CACHE.put(hash, queue);
+            }
         } else {
             setup(context);
-            type.setupRenderState();
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.bindBuffer();
-                DefaultVertexFormats.ENTITY.setupBufferState(0);
-                vertexBuffer.draw(matrixStack.getLast().getMatrix(), VertexFormat.Mode.QUADS);
-                VertexBuffer.unbindBuffer();
-                DefaultVertexFormats.ENTITY.clearBufferState();
-            }
-            type.clearRenderState();
+            begin(context);
+            buffer.vertex(matrix4f, (float) quad[0].x, (float) quad[0].y, (float) quad[0].z).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f)
+                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[0].x, (float) quad[0].y, (float) quad[0].z).endVertex();
+            buffer.vertex(matrix4f, (float) quad[1].x, (float) quad[1].y, (float) quad[1].z).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f)
+                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[1].x, (float) quad[1].y, (float) quad[1].z).endVertex();
+            buffer.vertex(matrix4f, (float) quad[2].x, (float) quad[2].y, (float) quad[2].z).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f)
+                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[2].x, (float) quad[2].y, (float) quad[2].z).endVertex();
+            buffer.vertex(matrix4f, (float) quad[3].x, (float) quad[3].y, (float) quad[3].z).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f)
+                    .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) quad[3].x, (float) quad[3].y, (float) quad[3].z).endVertex();
+            finish(context);
             end(context);
         }
-
-         */
     }
 
-    public static class CylinderContext {
-        final float baseRadius;
-        final float midRadius;
-        final float midFactor;
-        final float height;
-        final int stacks;
-        final float alpha;
-        final float midAlpha;
-        final float alphaFactor;
-        final Color color;
-        public CylinderContext(float baseRadius, float midRadius, float midFactor, float height, int stacks, float alpha, float midAlpha, float alphaFactor, Color color) {
+    public static class CylinderContext{
+        public final float baseRadius;
+        public final float midRadius;
+        public final float scaleFactor;
+        public final int depth;
+        public final float height;
+        public final float edgeAlpha;
+        public final float midAlpha;
+        public final float alphaFactor;
+        public CylinderContext(float baseRadius, float midRadius, float scaleFactor, int depth,
+                               float height, float edgeAlpha, float midAlpha, float alphaFactor) {
             this.baseRadius = baseRadius;
             this.midRadius = midRadius;
-            this.midFactor = midFactor;
+            this.scaleFactor = scaleFactor;
+            this.depth = depth;
             this.height = height;
-            this.stacks = stacks;
-            this.alpha = alpha;;
-            this.midAlpha = midAlpha;;
+            this.edgeAlpha = this.depth > 0 ? edgeAlpha : Math.max(edgeAlpha, midAlpha);
+            this.midAlpha = this.depth > 0 ? midAlpha : Math.max(edgeAlpha, midAlpha);
             this.alphaFactor = alphaFactor;
-            this.color = color;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof CylinderContext)) return false;
-            CylinderContext that = (CylinderContext) o;
-            return Float.compare(that.baseRadius, baseRadius) == 0 && Float.compare(that.midRadius, midRadius) == 0 && Float.compare(that.midFactor, midFactor) == 0 && Float.compare(that.height, height) == 0 && stacks == that.stacks && Float.compare(that.alpha, alpha) == 0 && Float.compare(that.midAlpha, midAlpha) == 0 && Float.compare(that.alphaFactor, alphaFactor) == 0 && color.equals(that.color);
+            if (!(o instanceof CylinderContext that)) return false;
+            return Float.compare(that.baseRadius, baseRadius) == 0 && Float.compare(that.midRadius, midRadius) == 0 && Float.compare(that.scaleFactor, scaleFactor) == 0 && depth == that.depth && Float.compare(that.height, height) == 0 && Float.compare(that.edgeAlpha, edgeAlpha) == 0 && Float.compare(that.midAlpha, midAlpha) == 0 && Float.compare(that.alphaFactor, alphaFactor) == 0;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash("CylinderContext", baseRadius, midRadius, midFactor, height, stacks, alpha, midAlpha, alphaFactor, color);
+            return Objects.hash(baseRadius, midRadius, scaleFactor, depth, height, edgeAlpha, midAlpha, alphaFactor);
         }
 
         @Override
@@ -876,84 +789,146 @@ public class RenderHelper {
             return "CylinderContext{" +
                     "baseRadius=" + baseRadius +
                     ", midRadius=" + midRadius +
-                    ", midFactor=" + midFactor +
+                    ", scaleFactor=" + scaleFactor +
+                    ", depth=" + depth +
                     ", height=" + height +
-                    ", stacks=" + stacks +
-                    ", alpha=" + alpha +
+                    ", edgeAlpha=" + edgeAlpha +
                     ", midAlpha=" + midAlpha +
                     ", alphaFactor=" + alphaFactor +
-                    ", color=" + color +
                     '}';
         }
     }
 
     public static class RenderContext {
         public float alpha;
-        public float size;
         public final Color color;
-        int packedLightIn = halfLight;
+        public final int packedLightIn;
+        public final boolean scaleAlpha;
 
-        public RenderContext(float alpha, Color color, float size, int packedLightIn) {
+        public RenderContext(float alpha, Color color, int packedLightIn, boolean scaleAlpha) {
             this.alpha = alpha;
             this.color = color;
-            this.size = size;
             this.packedLightIn = packedLightIn;
+            this.scaleAlpha = scaleAlpha;
         }
 
         public RenderContext(float alpha, Color color, int packedLightIn) {
             this.alpha = alpha;
             this.color = color;
             this.packedLightIn = packedLightIn;
+            this.scaleAlpha = false;
         }
 
         public RenderContext(float alpha, Color color) {
             this.alpha = alpha;
             this.color = color;
+            this.scaleAlpha = false;
+            packedLightIn = RenderHelper.renderLight;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof RenderContext that)) return false;
-            return Float.compare(that.alpha, alpha) == 0 && packedLightIn == that.packedLightIn && color.equals(that.color) && Float.compare(that.size, size) == 0;
+            return Float.compare(that.alpha, alpha) == 0 && packedLightIn == that.packedLightIn && color.equals(that.color) && scaleAlpha == that.scaleAlpha;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash("RenderContext", alpha, size, color, packedLightIn);
+            return Objects.hash("RenderContext", alpha, color, packedLightIn, scaleAlpha);
         }
     }
 
     public static class VertexContext {
-        final VectorHitReaction[] hitReaction;
+        public final VectorHitReaction[] hitReaction;
 
-        final boolean shake;
-        final String shakeName;
-        final float limit;
-
-        public VertexContext(VectorHitReaction[] hitReaction, boolean shake, String shakeName, float limit) {
-            this.hitReaction = hitReaction;
-            this.shake = shake;
-            this.shakeName = shakeName;
-            this.limit = limit;
-        }
-
-        public VertexContext(boolean shake, String shakeName, float limit) {
-            this.hitReaction = null;
-            this.shake = shake;
-            this.shakeName = shakeName;
-            this.limit = limit;
-        }
+        public final boolean shake;
+        public final float limit;
 
         public VertexContext(VectorHitReaction[] hitReaction, float limit) {
             this.hitReaction = hitReaction;
-            this.shake = false;
-            this.shakeName = "";
             this.limit = limit;
+            this.shake = hitReaction != null && limit > 0;
+        }
+
+        public VertexContext() {
+            this.hitReaction = null;
+            this.limit = 0;
+            this.shake = false;
         }
     }
 
-    public static void renderDistortion(BufferContext pack, RenderContext renderContext, VertexContext vertexContext, int stacks) {
+    public static void buildCacheVertexQueue(BufferContext pack, RenderContext render, Object hash) {
+        boolean instancingRender = RenderHelper.isRenderingWorld() && RenderHelper.isRenderTypeInstanced(pack.type) && RenderHelper.gl33();//
+        TextureAtlasSprite sprite = getRenderTypeSpirit(pack.type);
+        Matrix4f matrix4f = pack.matrixStack.last().pose();
+        if(!instancingRender) {
+            VertexConsumer buffer = pack.buffer;
+            Queue<VertexAttribute> vertexBuffers = VERTEX_CACHE.get(hash);
+            setup(pack);
+            begin(pack);
+            for (VertexAttribute vertex : vertexBuffers) {
+                if(RenderHelper.isRenderTypeGlint(pack.type))
+                    vertex.build(matrix4f, buffer, render);
+                else
+                    vertex.build(matrix4f, buffer, render, sprite);
+            }
+            finish(pack);
+            end(pack);
+        } else {
+            ModelInstanceRenderer instance = INSTANCE_CACHE.get(hash);
+            if(instance == null) {
+                instance = ModelInstanceRenderer.fromVertexAttrib(VERTEX_CACHE.get(hash));
+                INSTANCE_CACHE.put(hash, instance);
+            }
+            UPDATE_INSTANCE.add(instance);
+            instance.addInstanceAttrib((buffer -> {
+                buffer.put(render.packedLightIn & '\uffff');
+                buffer.put(render.packedLightIn >> 16 & '\uffff');
+
+                if(RenderHelper.isRenderTypeGlint(pack.type)) {
+                    buffer.put(0);
+                    buffer.put(1);
+                    buffer.put(0);
+                    buffer.put(1);
+                } else {
+                    buffer.put(sprite.getU0());
+                    buffer.put(sprite.getU1());
+                    buffer.put(sprite.getV0());
+                    buffer.put(sprite.getV1());
+                }
+
+                buffer.put(render.color.r());
+                buffer.put(render.color.g());
+                buffer.put(render.color.b());
+                buffer.put(render.alpha);
+
+                FloatBuffer matBuffer = MemoryUtil.memAllocFloat(16);
+                matrix4f.store(matBuffer);
+                matBuffer.clear();
+                buffer.put(matBuffer);
+                MemoryUtil.memFree(matBuffer);
+            }));
+        }
+    }
+
+    public static void renderVertexQueueDynamic(BufferContext pack, Queue<VertexAttribute> vertexs) {
+        Matrix4f matrix4f = pack.matrixStack.last().pose();
+        VertexConsumer buffer = pack.buffer;
+        setup(pack);
+        begin(pack);
+        TextureAtlasSprite sprite = getRenderTypeSpirit(pack.type);
+        for (VertexAttribute vertex : vertexs) {
+            if(RenderHelper.isRenderTypeGlint(pack.type))
+                vertex.build(matrix4f, buffer, null);
+            else
+                vertex.build(matrix4f, buffer, null, sprite);
+        }
+        finish(pack);
+        end(pack);
+    }
+
+    public static void renderDistortionCache(BufferContext pack, RenderContext renderContext, VertexContext vertexContext, int stacks) {
         if (stacks <= 2)
             stacks = 2;
 
@@ -961,255 +936,80 @@ public class RenderHelper {
             stacks++;
 
         if(vertexContext.hitReaction.length == 0) {
-            renderDistortion(pack, renderContext, stacks);
+            renderDistortionCache(pack, renderContext, stacks);
             return;
         }
         pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, vertexContext);
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            pack.matrixStack.pushPose();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV).endVertex();
-            }
-            finish(pack);
-            pack.matrixStack.popPose();
-        }
-        end(pack);
+        Queue<VertexAttribute> cylinderQueue = Polyhedron.drawPolyhedron(renderContext, vertexContext, stacks);
+        renderVertexQueueDynamic(pack, cylinderQueue);
         pack.matrixStack.popPose();
     }
 
-    public static void renderDistortion(BufferContext pack, RenderContext renderContext, int stacks) {
+    public static void renderDistortionCache(BufferContext pack, RenderContext renderContext, int stacks) {
         pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        String hash =stacks +"Distortion"+renderContext.hashCode();
+        String hash =stacks +"_Distortion";
 
-        if(!GL_LIST_INDEX.containsKey(hash)) {
-            Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, EMPTY_VERTEX_CONTEXT);
-            setup(pack);
-            begin(pack);
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-            while (it.hasNext()) {
-                Iterator<VertexAttribute> innerIt = it.next().iterator();
-                begin(pack);
-                VertexBuffer vertexBuffer = new VertexBuffer();
-                while (innerIt.hasNext()) {
-                    VertexAttribute vertex = innerIt.next();
-                    buffer.vertex(vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV).endVertex();
-                }
-                pack.buffer.end();
-                vertexBuffer.upload(pack.buffer);
-                vertexBuffers.add(vertexBuffer);
-            }
-
-            GL_LIST_INDEX.put(hash, vertexBuffers);
-            end(pack);
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> cylinderQueue = Polyhedron.drawPolyhedron(renderContext, EMPTY_VERTEX_CONTEXT, stacks);
+            VERTEX_CACHE.put(hash, cylinderQueue);
         } else {
-            setup(pack);
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
-            pack.type.setupRenderState();
-            RenderType.CompositeState state = ((AccessorRenderType)pack.type).getState();
-            RenderStateShard.ShaderStateShard shard = ((AccessorShaderState)(Object)state).getShaderState();
-            Optional<Supplier<ShaderInstance>> shader = ((AccessorShaderShard)shard).getShader();
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getProjectionMatrix4f(), shader.get().get());
-            }
-            pack.type.clearRenderState();
-            end(pack);
+            buildCacheVertexQueue(pack, renderContext, hash);
         }
         pack.matrixStack.popPose();
     }
 
-    public static void renderCylinder(BufferContext pack, CylinderContext context) {
+    public static void renderCylinderCache(BufferContext pack, CylinderContext context, RenderContext render) {
         pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        if(!GL_LIST_INDEX.containsKey(context)) {
-            Queue<Queue<VertexAttribute>> cylinderQueue = drawCylinder(context, null, 0);
-            setup(pack);
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-            while (it.hasNext()) {
-                Iterator<VertexAttribute> innerIt = it.next().iterator();
-                begin(pack);
-                VertexBuffer vertexBuffer = new VertexBuffer();
-                while (innerIt.hasNext()) {
-                    VertexAttribute vertex = innerIt.next();
-                    buffer.vertex(vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                            .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
-                }
-                pack.buffer.end();
-                vertexBuffer.upload(pack.buffer);
-                vertexBuffers.add(vertexBuffer);
-            }
-            GL_LIST_INDEX.put(context, vertexBuffers);
-            end(pack);
+        if(!VERTEX_CACHE.containsKey(context)) {
+            Queue<VertexAttribute> cylinderQueue = Cylinder.drawCylinder(context, EMPTY_VERTEX_CONTEXT);
+            VERTEX_CACHE.put(context, cylinderQueue);
         } else {
-            setup(pack);
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(context);
-            pack.type.setupRenderState();
-            RenderType.CompositeState state = ((AccessorRenderType)pack.type).getState();
-            RenderStateShard.ShaderStateShard shard = ((AccessorShaderState)(Object)state).getShaderState();
-            Optional<Supplier<ShaderInstance>> shader = ((AccessorShaderShard)shard).getShader();
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getProjectionMatrix4f(), shader.get().get());
-            }
-            pack.type.clearRenderState();
-            end(pack);
+            buildCacheVertexQueue(pack, render, context);
         }
         pack.matrixStack.popPose();
     }
 
-    public static void renderCylinder(BufferContext pack, CylinderContext context, VectorHitReaction[] hitReaction, float limit) {
-        if(hitReaction.length == 0) {
-            renderCylinder(pack, context);
-            return;
-        }
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        Queue<Queue<VertexAttribute>> cylinderQueue = drawCylinder(context, hitReaction, limit);
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                        .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
-            }
-            finish(pack);
-        }
-        end(pack);
-        pack.matrixStack.popPose();
-    }
-
-    public static void renderCylinder(BufferContext pack, Queue<Queue<VertexAttribute>> vertexQueue) {
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = vertexQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            pack.matrixStack.pushPose();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                        .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
-            }
-            finish(pack);
-            pack.matrixStack.popPose();
-        }
-        end(pack);
-        pack.matrixStack.popPose();
-    }
-
-    public static Queue<Queue<VertexAttribute>> drawCylinder(CylinderContext context, VectorHitReaction[] hitReaction, float limit) {
-        double majorStep = context.height / context.stacks;
-        double minorStep = 2.0 * Math.PI / context.stacks;
-        int i, j;
-
-        Queue<Queue<VertexAttribute>> queues = Queues.newArrayDeque();
-        for (i = 0; i < context.stacks; ++i) {
-            float z0 = (float) (0.5 * context.height - i * majorStep);
-            float z1 = (float) (z0 - majorStep);
-            Queue<VertexAttribute> queue = Queues.newArrayDeque();
-            for (j = 0; j <= context.stacks; ++j) {
-                double a = j * minorStep;
-                float min = Math.min(1f, Math.abs(z0) * 2 / context.height);
-                float min1 = Math.min(1f, Math.abs(z1) * 2 / context.height);
-
-                float z0MidFactor = (float) Math.pow(min, context.alphaFactor);
-                float z0EdgeFactor = (1 - z0MidFactor);
-                float z0Alpha = z0MidFactor * context.alpha + z0EdgeFactor * context.midAlpha;
-
-
-                float z1MidFactor = (float) Math.pow(min1, context.alphaFactor);
-                float z1EdgeFactor = (1 - z1MidFactor);
-                float z1Alpha = z1MidFactor * context.alpha + z1EdgeFactor * context.midAlpha;
-
-                float z0Radius = (float) Math.pow(min, context.midFactor);
-                z0Radius = z0Radius * context.baseRadius + (1 - z0Radius) * context.midRadius;
-
-                float z1Radius = (float) Math.pow(min1, context.midFactor);
-                z1Radius = z1Radius * context.baseRadius + (1 - z1Radius) * context.midRadius;
-
-                float z0X = (float) (z0Radius * Math.cos(a));
-                float z0Y = (float) (z0Radius * Math.sin(a));
-
-                float z1X = (float) (z1Radius * Math.cos(a));
-                float z1Y = (float) (z1Radius * Math.sin(a));
-
-                VertexAttribute vertex0 = calculateVertex(z0X, z0, z0Y, j / (float) context.stacks, i / (float) context.stacks, new RenderContext(z0Alpha, context.color), hitReaction, limit);
-                VertexAttribute vertex1 = calculateVertex(z1X, z1, z1Y, j / (float) context.stacks, (i + 1) / (float) context.stacks, new RenderContext(z1Alpha, context.color), hitReaction, limit);
-                queue.add(vertex0);
-                queue.add(vertex1);
-            }
-            queues.add(queue);
-        }
-        return queues;
-    }
-
-    public static void renderLaserParticle(BufferContext pack, RenderContext renderContext, float length) {
+    public static void renderLaserParticle(BufferContext pack, RenderContext renderContext) {
         Color color = renderContext.color;
-        float alpha = renderContext.alpha;
+        float alpha = 1;
+        int light = renderContext.packedLightIn;
 
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        //matrixStackIn.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-        setup(pack);
-        begin(pack);
-        int light = renderLight;
-        float center = length * 0.6f;
-        float side = (length - center) * 0.5f;
-        float side1 = center + side;
-        buffer.vertex(matrix4f, -1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, 0.0F, 0.0F).endVertex();
+        String hash = "LaserParticle";
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> queue = Queues.newArrayDeque();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.0F, 0.0F).color(color).alpha(0).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.2f, 0.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.2f, 0.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.0F, 0.0F).color(color).alpha(0).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.0F, 0.0F, -1.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, 0.0F, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side, 1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, 0.0F, 1.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, 0.0F, 1.0F).endVertex();
+            queue.add(VertexAttribute.create().pos(0.0F, 0.0F, -1.0F).color(color).alpha(0).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.2f, -1.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.2f, 1.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.0F, 1.0F).color(color).alpha(0).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side, 0.0F).endVertex();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.2f, 0.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.8f, 0.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.8f, 0.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.2f, 0.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.0F, side, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side1, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side1, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side1, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side1, 1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side, 1.0F).endVertex();
+            queue.add(VertexAttribute.create().pos(0.0F, 0.2f, -1.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.8f, -1.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.8f, 1.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.2f, 1.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side1, 0.0F).endVertex();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.8f, 0.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 1, 0.0F).color(color).alpha(0).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 1, 0.0F).color(color).alpha(0).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.8f, 0.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.0F, side1, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side1, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, length, -1.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, length, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, length, 1.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, length, 1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, side1, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, side1, 1.0F).endVertex();
-        finish(pack);
-        end(pack);
-        pack.matrixStack.popPose();
+            queue.add(VertexAttribute.create().pos(0.0F, 0.8f, -1.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 1, -1.0F).color(color).alpha(0).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 1, 1.0F).color(color).alpha(0).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.0F, 0.8f, 1.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
+            VERTEX_CACHE.put(hash, queue);
+        } else {
+            buildCacheVertexQueue(pack, renderContext, hash);
+        }
     }
 
     public static void renderLaserScale(BufferContext pack, RenderContext renderContext, float length, float begin, float end) {
@@ -1217,130 +1017,109 @@ public class RenderHelper {
         float alpha = renderContext.alpha;
 
         pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        setup(pack);
-        begin(pack);
         int light = renderLight;
+        Queue<VertexAttribute> queue = Queues.newArrayDeque();
+        queue.add(VertexAttribute.create().pos(-1.0F, 0.0f, 0.0F).color(color).alpha(alpha).uv(1.0f, end).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(-1.0F, length, 0.0F).color(color).alpha(alpha).uv(1.0f, begin).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(1.0F, length, 0.0F).color(color).alpha(alpha).uv(0.0f, begin).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(1.0F, 0.0f, 0.0F).color(color).alpha(alpha).uv(0.0f, end).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, -1.0F, 0.0f, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, end).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, begin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, begin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, 0.0f, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, end).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, 0.0F, 0.0F).endVertex();
-
-        buffer.vertex(matrix4f, 0.0F, 0.0F, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, end).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, 0.0F, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, length, -1.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, begin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, length, -1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, length, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, begin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, length, 1.0F).endVertex();
-        buffer.vertex(matrix4f, 0.0F, 0.0F, 1.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, end).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.0F, 0.0F, 1.0F).endVertex();
-
-        finish(pack);
-        end(pack);
+        queue.add(VertexAttribute.create().pos(0.0F, 0.0F, -1.0F).color(color).alpha(alpha).uv(1.0f, end).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(0.0F, length, -1.0F).color(color).alpha(alpha).uv(1.0f, begin).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(0.0F, length, 1.0F).color(color).alpha(alpha).uv(0.0f, begin).lightmap(light).normalAsPos());
+        queue.add(VertexAttribute.create().pos(0.0F, 0.0F, 1.0F).color(color).alpha(alpha).uv(0.0f, end).lightmap(light).normalAsPos());
+        renderVertexQueueDynamic(pack, queue);
         pack.matrixStack.popPose();
     }
 
-    public static void renderLaserTop(BufferContext pack, RenderContext renderContext, float length) {
+    public static void renderLaserTop(BufferContext pack, RenderContext renderContext) {
         Color color = renderContext.color;
-        float alpha = renderContext.alpha;
+        float alpha = 1;
+        int light = renderContext.packedLightIn;
 
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        setup(pack);
-        begin(pack);
-        int light = renderLight;
-        float center = length * 0.9f;
-        float side = (length - center) * 0.5f;
-        float side1 = center + side;
-        buffer.vertex(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, length, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, length, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side1, 0.0F).endVertex();
+        String hash = "LaserTop";
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> queue = Queues.newArrayDeque();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.95f, 0.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 1, 0.0F).color(color).alpha(0).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 1, 0.0F).color(color).alpha(0).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.95f, 0.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side1, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, length, -0.866025F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, length, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, length, 0.866025F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, length, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side1, 0.866025F).endVertex();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.95f, -0.866025F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 1, -0.866025F).color(color).alpha(0).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 1, 0.866025F).color(color).alpha(0).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.95f, 0.866025F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side1, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, length, 0.866025F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, length, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, length, -0.866025F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, length, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side1, -0.866025F).endVertex();
-        finish(pack);
-        end(pack);
-        pack.matrixStack.popPose();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.95f, 0.866025F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 1, 0.866025F).color(color).alpha(0).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 1, -0.866025F).color(color).alpha(0).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.95f, -0.866025F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
+            VERTEX_CACHE.put(hash, queue);
+        } else {
+            buildCacheVertexQueue(pack, renderContext, hash);
+        }
     }
 
-    public static void renderLaserMid(BufferContext pack, RenderContext renderContext, float length) {
+    public static void renderLaserMid(BufferContext pack, RenderContext renderContext) {
         Color color = renderContext.color;
-        float alpha = renderContext.alpha;
+        float alpha = 1;
+        int light = renderContext.packedLightIn;
 
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        setup(pack);
-        begin(pack);
-        int light = renderLight;
-        float center = length * 0.9f;
-        float side = (length - center) * 0.5f;
-        float side1 = center + side;
-        buffer.vertex(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side1, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side1, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side, 0.0F).endVertex();
+        String hash = "LaserMid";
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> queue = Queues.newArrayDeque();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.05f, 0.0F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.95f, 0.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.95f, 0.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.05f, 0.0F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side1, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side1, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side, 0.866025F).endVertex();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.05f, -0.866025F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 0.95f, -0.866025F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.95f, 0.866025F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.05f, 0.866025F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, side1, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side1, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side1, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side1, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side, -0.866025F).endVertex();
-
-        finish(pack);
-        end(pack);
-        pack.matrixStack.popPose();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.05f, 0.866025F).color(color).alpha(alpha).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 0.95f, 0.866025F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.95f, -0.866025F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.05f, -0.866025F).color(color).alpha(alpha).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
+            VERTEX_CACHE.put(hash, queue);
+        } else {
+            buildCacheVertexQueue(pack, renderContext, hash);
+        }
     }
 
-    public static void renderLaserBottom(BufferContext pack, RenderContext renderContext, float length) {
+    public static void renderLaserBottom(BufferContext pack, RenderContext renderContext) {
         Color color = renderContext.color;
-        float alpha = renderContext.alpha;
+        float alpha = 1;
+        int light = renderContext.packedLightIn;
 
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        setup(pack);
-        begin(pack);
-        int light = renderLight;
-        float center = length * 0.9f;
-        float side = (length - center) * 0.5f;
-        float side1 = center + side;
+        String hash = "LaserBottom";
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> queue = Queues.newArrayDeque();
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.0F, 0.0F).color(color).alpha(0).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-1.0F, 0.05f, 0.0F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.05f, 0.0F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(1.0F, 0.0F, 0.0F).color(color).alpha(0).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, -1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, 0.0F, 0.0F).endVertex();
-        buffer.vertex(matrix4f, -1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, side, 0.0F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, side, 0.0F).endVertex();
-        buffer.vertex(matrix4f, 1.0F, 0.0F, 0.0F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(1.0F, 0.0F, 0.0F).endVertex();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.0F, -0.866025F).color(color).alpha(0).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 0.05f, -0.866025F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.05f, 0.866025F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.0F, 0.866025F).color(color).alpha(0).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
 
-        buffer.vertex(matrix4f, 0.5F, 0.0F, -0.866025F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, 0.0F, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, 0.0F, 0.866025F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, 0.0F, 0.866025F).endVertex();
-
-        buffer.vertex(matrix4f, 0.5F, 0.0F, 0.866025F).color(color.r(), color.g(), color.b(), 0).uv(1.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, 0.0F, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, 0.5F, side, 0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(1.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(0.5F, side, 0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, side, -0.866025F).color(color.r(), color.g(), color.b(), alpha).uv(0.0f, 0.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, side, -0.866025F).endVertex();
-        buffer.vertex(matrix4f, -0.5F, 0.0F, -0.866025F).color(color.r(), color.g(), color.b(), 0).uv(0.0f, 1.0f).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(-0.5F, 0.0F, -0.866025F).endVertex();
-
-        finish(pack);
-        end(pack);
-        pack.matrixStack.popPose();
+            queue.add(VertexAttribute.create().pos(0.5F, 0.0F, 0.866025F).color(color).alpha(0).uv(1.0f, 1.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(0.5F, 0.05f, 0.866025F).color(color).alpha(alpha).uv(1.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.05f, -0.866025F).color(color).alpha(alpha).uv(0.0f, 0.0f).lightmap(light).normalAsPos());
+            queue.add(VertexAttribute.create().pos(-0.5F, 0.0F, -0.866025F).color(color).alpha(0).uv(0.0f, 1.0f).lightmap(light).normalAsPos());
+            VERTEX_CACHE.put(hash, queue);
+        } else {
+            buildCacheVertexQueue(pack, renderContext, hash);
+        }
     }
 
-    public static final VertexContext EMPTY_VERTEX_CONTEXT = new VertexContext(false, "", 0.0f);
+    public static final VertexContext EMPTY_VERTEX_CONTEXT = new VertexContext();
 
     public static void renderStaticParticle(BufferContext pack, RenderContext renderContext) {
-        callQuadVertex(pack, renderContext);
+        callQuadVertexDynamic(pack, renderContext);
     }
 
     public static void renderParticle(BufferContext pack, RenderContext renderContext) {
@@ -1350,20 +1129,39 @@ public class RenderHelper {
         pack.matrixStack.popPose();
     }
 
-    public static void renderCube(BufferContext context, RenderContext renderContext) {
-        PoseStack matrixStack = context.matrixStack;
-        BufferBuilder buffer = context.buffer;
-        RenderType type = context.type;
+    public static void renderPoint(BufferContext context, RenderContext renderContext, List<Vec3> vector3dList) {
+        Color color = renderContext.color;
+        int lightmap = renderContext.packedLightIn;
+
+        String hash = "POINT_VERTEX_" + vector3dList.hashCode();
+
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> attributes = Queues.newArrayDeque();
+            for (Vec3 vector3d : vector3dList) {
+                VertexAttribute attribute = new VertexAttribute();
+                attribute.pos(vector3d);
+                attribute.color(color);
+                attribute.uv(0, 0);
+                attribute.lightmap(lightmap);
+                attribute.normalAsPos();
+                attribute.alpha(1);
+                attributes.add(attribute);
+            }
+            VERTEX_CACHE.put(hash, attributes);
+        } else {
+            buildCacheVertexQueue(context, renderContext, hash);
+        }
+    }
+
+    public static void renderCubeCache(BufferContext context, RenderContext renderContext) {
         Color color = renderContext.color;
         float alpha = renderContext.alpha;
         int lightmap = renderContext.packedLightIn;
 
-        String hash = "CUBE_VERTEX" + renderContext.hashCode();
+        String hash = "CUBE_VERTEX";
 
-        if(!GL_LIST_INDEX.containsKey(hash)) {
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            VertexBuffer vertexBuffer = new VertexBuffer();
-            begin(context);
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> vertexBuffers = Queues.newArrayDeque();
             for(int i=0; i<6; ++i)
                 for(int j=0; j<4; ++j) {
                     float[] pos = vertex_list[index_list[i][j]];
@@ -1373,190 +1171,107 @@ public class RenderHelper {
                         u = 0.0f;
                     if(j == 1 || j == 2)
                         v = 0.0f;
-                    buffer.vertex(pos[0], pos[1], pos[2]).color(color.r(), color.g(), color.b(), alpha).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal(pos[0], pos[1], pos[2]).endVertex();
+                    VertexAttribute attribute = new VertexAttribute();
+                    attribute.pos(pos[0], pos[1], pos[2]);
+                    attribute.color(color);
+                    attribute.alpha(1);
+                    attribute.uv(u, v);
+                    attribute.lightmap(lightmap);
+                    attribute.normal(pos[0], pos[1], pos[2]);
+                    vertexBuffers.add(attribute);
                 }
-            buffer.end();
-            vertexBuffer.upload(buffer);
-            vertexBuffers.add(vertexBuffer);
-            GL_LIST_INDEX.put(hash, vertexBuffers);
+            VERTEX_CACHE.put(hash, vertexBuffers);
         } else {
-            setup(context);
-            type.setupRenderState();
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
-            RenderType.CompositeState state = ((AccessorRenderType)context.type).getState();
-            RenderStateShard.ShaderStateShard shard = ((AccessorShaderState)(Object)state).getShaderState();
-            Optional<Supplier<ShaderInstance>> shader = ((AccessorShaderShard)shard).getShader();
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrixStack.last().pose(), getProjectionMatrix4f(), shader.get().get());
-            }
-            type.clearRenderState();
-            end(context);
+            buildCacheVertexQueue(context, renderContext, hash);
         }
     }
 
-    public static void renderPoint(BufferContext context, RenderContext renderContext, List<Vec3> vector3dList) {
-        PoseStack matrixStack = context.matrixStack;
-        BufferBuilder buffer = context.buffer;
-        RenderType type = context.type;
+    public static void renderCubeDynamic(BufferContext context, RenderContext renderContext, float size) {
         Color color = renderContext.color;
         float alpha = renderContext.alpha;
         int lightmap = renderContext.packedLightIn;
 
-        String hash = "POINT_VERTEX" + renderContext.hashCode() + "_" + vector3dList.hashCode();
+        String hash = size+ "_SIZE_CUBE_VERTEX";
 
-        if(!GL_LIST_INDEX.containsKey(hash)) {
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            VertexBuffer vertexBuffer = new VertexBuffer();
-            setup(context);
-            begin(context);
-            for (Vec3 vector3d : vector3dList) {
-                buffer.vertex(vector3d.x, vector3d.y, vector3d.z).color(color.r(), color.g(), color.b(), alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightmap).normal((float) vector3d.x, (float) vector3d.y, (float) vector3d.z).endVertex();
-            }
-            buffer.end();
-            vertexBuffer.upload(buffer);
-            vertexBuffers.add(vertexBuffer);
-            GL_LIST_INDEX.put(hash, vertexBuffers);
-            end(context);
-        } else {
-            setup(context);
-            type.setupRenderState();
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
-            RenderType.CompositeState state = ((AccessorRenderType)context.type).getState();
-            RenderStateShard.ShaderStateShard shard = ((AccessorShaderState)(Object)state).getShaderState();
-            Optional<Supplier<ShaderInstance>> shader = ((AccessorShaderShard)shard).getShader();
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrixStack.last().pose(), getProjectionMatrix4f(), shader.get().get());
-            }
-            type.clearRenderState();
-            end(context);
-        }
-    }
-
-    public static void renderCubeDynamic(BufferContext context, RenderContext renderContext) {
-        Color color = ModElements.ORIGIN_COLOR;
-        if (renderContext.color != null)
-            color = renderContext.color;
-
-        float alpha = renderContext.alpha;
-        float size = 10f;
-        context.matrixStack.pushPose();
-        Matrix4f matrix4f = context.matrixStack.last().pose();
-        VertexConsumer buffer = context.buffer;
-        setup(context);
-        begin(context);
-        int light = renderContext.packedLightIn;
-        for(int i=0; i<6; ++i)
-            for(int j=0; j<4; ++j) {
-                float[] pos = vertex_list[index_list[i][j]];
-                float u = 1.0f;
-                float v = 1.0f;
-                if(j == 2 || j == 3)
-                    u = 0.0f;
-                if(j == 1 || j == 2)
-                    v = 0.0f;
-                buffer.vertex(matrix4f, pos[0], pos[1], pos[2]).color(color.r(), color.g(), color.b(), alpha).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pos[0], pos[1], pos[2]).endVertex();
-            }
-        finish(context);
-        end(context);
-        context.matrixStack.popPose();
-    }
-
-    public static void renderCubeDynamic(BufferContext context, RenderContext renderContext, float size) {
-        Color color = ModElements.ORIGIN_COLOR;
-        if (renderContext.color != null)
-            color = renderContext.color;
-
-        float alpha = renderContext.alpha;
-        context.matrixStack.pushPose();
-        Matrix4f matrix4f = context.matrixStack.last().pose();
-        VertexConsumer buffer = context.buffer;
-        setup(context);
-        begin(context);
-        int light = renderContext.packedLightIn;
-        for(int i=0; i<6; ++i)
-            for(int j=0; j<4; ++j) {
-                float[] pos = vertex_list[index_list[i][j]];
-                float u = 1.0f;
-                float v = 1.0f;
-                if(j == 2 || j == 3)
-                    u = 0.0f;
-                if(j == 1 || j == 2)
-                    v = 0.0f;
-                buffer.vertex(matrix4f, pos[0]*size, pos[1]*size, pos[2]*size).color(color.r(), color.g(), color.b(), alpha).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pos[0]*size, pos[1]*size, pos[2]*size).endVertex();
-            }
-        finish(context);
-        end(context);
-        context.matrixStack.popPose();
-    }
-
-    public static void renderDecal(BufferContext context, RenderContext renderContext) {
-        Color color = ModElements.ORIGIN_COLOR;
-        if (renderContext.color != null)
-            color = renderContext.color;
-
-        float alpha = renderContext.alpha;
-        Matrix4f matrix4f = RenderHelper.getVertexMatrix().last().pose();
-        VertexConsumer buffer = context.buffer;
-        setup(context);
-        begin(context);
-        int light = renderContext.packedLightIn;
-        for(int i=0; i<6; ++i)
-            for(int j=0; j<4; ++j) {
-                float[] pos = vertex_list[index_list[i][j]];
-                float u = 1.0f;
-                float v = 1.0f;
-                if(j == 2 || j == 3)
-                    u = 0.0f;
-                if(j == 1 || j == 2)
-                    v = 0.0f;
-                buffer.vertex(matrix4f, pos[0], pos[1], pos[2]).color(color.r(), color.g(), color.b(), alpha).endVertex();
-            }
-        finish(context);
-        end(context);
-    }
-
-    public static void renderSphere(BufferContext pack, RenderContext renderContext, int stacks) {
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        String hash =stacks +"Sphere"+renderContext.hashCode();
-
-        if(!GL_LIST_INDEX.containsKey(hash)) {
-            Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, EMPTY_VERTEX_CONTEXT);
-
-            setup(pack);
-            begin(pack);
-            Queue<VertexBuffer> vertexBuffers = Queues.newArrayDeque();
-            Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-            while (it.hasNext()) {
-                Iterator<VertexAttribute> innerIt = it.next().iterator();
-                begin(pack);
-                VertexBuffer vertexBuffer = new VertexBuffer();
-                while (innerIt.hasNext()) {
-                    VertexAttribute vertex = innerIt.next();
-                    buffer.vertex(vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                            .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> vertexBuffers = Queues.newArrayDeque();
+            for(int i=0; i<6; ++i)
+                for(int j=0; j<4; ++j) {
+                    float[] pos = vertex_list[index_list[i][j]];
+                    float u = 1.0f;
+                    float v = 1.0f;
+                    if(j == 2 || j == 3)
+                        u = 0.0f;
+                    if(j == 1 || j == 2)
+                        v = 0.0f;
+                    VertexAttribute attribute = new VertexAttribute();
+                    attribute.pos(pos[0]*size, pos[1]*size, pos[2]*size);
+                    attribute.color(color);
+                    attribute.alpha(1);
+                    attribute.uv(u, v);
+                    attribute.lightmap(lightmap);
+                    attribute.normalAsPos();
+                    vertexBuffers.add(attribute);
                 }
-                pack.buffer.end();
-                vertexBuffer.upload(pack.buffer);
-                vertexBuffers.add(vertexBuffer);
-            }
+            VERTEX_CACHE.put(hash, vertexBuffers);
+        } else {
+            buildCacheVertexQueue(context, renderContext, hash);
+        }
+    }
 
-            GL_LIST_INDEX.put(hash, vertexBuffers);
+    public static void renderDecal(BufferContext context, RenderContext renderContext, float size, float normalScale, float x, float y, float z) {
+        if(gl33()) {
+            LIGHTING_INSTANCE_RENDERER.addInstanceAttrib((buffer -> {
+                buffer.put(normalScale);
+                buffer.put(size);
+
+                buffer.put(renderContext.color.r());
+                buffer.put(renderContext.color.g());
+                buffer.put(renderContext.color.b());
+                buffer.put(renderContext.alpha);
+
+                buffer.put(x);
+                buffer.put(y);
+                buffer.put(z);
+            }));
+            return;
+        }
+        Color color = ModElements.ORIGIN_COLOR;
+        if (renderContext.color != null)
+            color = renderContext.color;
+
+        Matrix4f matrix4f = context.matrixStack.last().pose();
+        float alpha = renderContext.alpha;
+        VertexConsumer buffer = context.buffer;
+        for(int i=0; i<6; ++i)
+            for(int j=0; j<4; ++j) {
+                float[] pos = vertex_list[index_list[i][j]];
+                buffer.vertex(matrix4f, pos[0]*normalScale, pos[1]*normalScale, pos[2]*normalScale).uv(normalScale*0.01f, size*0.01f).color(color.r(), color.g(), color.b(), alpha).normal(pos[0], pos[1], pos[2]).endVertex();
+            }
+    }
+
+    public static void renderSphereCache(BufferContext pack, RenderContext renderContext, int stacks) {
+        pack.matrixStack.pushPose();
+        String hash =stacks +"_Sphere";
+
+        if(!VERTEX_CACHE.containsKey(hash)) {
+            Queue<VertexAttribute> cylinderQueue = Polyhedron.drawPolyhedron(renderContext, EMPTY_VERTEX_CONTEXT, stacks);
+            VERTEX_CACHE.put(hash, cylinderQueue);
             end(pack);
         } else {
-            setup(pack);
-            Queue<VertexBuffer> vertexBuffers = GL_LIST_INDEX.get(hash);
-            pack.type.setupRenderState();
-            RenderType.CompositeState state = ((AccessorRenderType)pack.type).getState();
-            RenderStateShard.ShaderStateShard shard = ((AccessorShaderState)(Object)state).getShaderState();
-            Optional<Supplier<ShaderInstance>> shader = ((AccessorShaderShard)shard).getShader();
-            for (VertexBuffer vertexBuffer : vertexBuffers) {
-                vertexBuffer.drawWithShader(matrix4f, getProjectionMatrix4f(), shader.get().get());
-            }
-            pack.type.clearRenderState();
-            end(pack);
+            buildCacheVertexQueue(pack, renderContext, hash);
         }
+        pack.matrixStack.popPose();
+    }
+
+    public static void renderSphereDynamic(BufferContext pack, RenderContext renderContext, VertexContext vertexContext, int stacks) {
+        if(!vertexContext.shake) {
+            renderSphereCache(pack, renderContext, stacks);
+            return;
+        }
+        pack.matrixStack.pushPose();
+        Queue<VertexAttribute> cylinderQueue = Polyhedron.drawPolyhedron(renderContext, vertexContext, stacks);
+        renderVertexQueueDynamic(pack, cylinderQueue);
         pack.matrixStack.popPose();
     }
 
@@ -1570,6 +1285,7 @@ public class RenderHelper {
 
     public static boolean shouldRender(LitParticle particle) {
         if(Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return false;
+        if (true) return true;
         Level world = Minecraft.getInstance().level;
         Player player = Minecraft.getInstance().player;
         Vec3 start = player.getEyePosition(Minecraft.getInstance().getFrameTime());
@@ -1706,156 +1422,7 @@ public class RenderHelper {
         return start.subtract(foot).dot(normal) <= 0;
     }
 
-    public static void renderSphere(BufferContext pack, RenderContext renderContext, VertexContext vertexContext, int stacks) {
-        if (stacks <= 2)
-            stacks = 2;
-
-        if (stacks % 2 != 0)
-            stacks++;
-
-        if(vertexContext.hitReaction.length == 0) {
-            renderSphere(pack, renderContext, stacks);
-            return;
-        }
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-        Queue<Queue<VertexAttribute>> cylinderQueue = drawSphere(stacks, renderContext, vertexContext);
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = cylinderQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            pack.matrixStack.pushPose();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                        .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(renderContext.packedLightIn).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
-            }
-            finish(pack);
-            pack.matrixStack.popPose();
-        }
-        end(pack);
-        pack.matrixStack.popPose();
-    }
-
-    public static void renderSphere(BufferContext pack, Queue<Queue<VertexAttribute>> vertexQueue) {
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = vertexQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            pack.matrixStack.pushPose();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV)
-                        .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(RenderHelper.renderLight).normal(vertex.normalX, vertex.normalY, vertex.normalZ).endVertex();
-            }
-            finish(pack);
-            pack.matrixStack.popPose();
-        }
-        end(pack);
-        pack.matrixStack.popPose();
-    }
-
-    public static void renderDistortion(BufferContext pack, Queue<Queue<VertexAttribute>> vertexQueue) {
-        pack.matrixStack.pushPose();
-        Matrix4f matrix4f = pack.matrixStack.last().pose();
-        VertexConsumer buffer = pack.buffer;
-
-        setup(pack);
-        Iterator<Queue<VertexAttribute>> it = vertexQueue.iterator();
-        while (it.hasNext()) {
-            Iterator<VertexAttribute> innerIt = it.next().iterator();
-            pack.matrixStack.pushPose();
-            begin(pack);
-            while (innerIt.hasNext()) {
-                VertexAttribute vertex = innerIt.next();
-                buffer.vertex(matrix4f, vertex.posX, vertex.posY, vertex.posZ).color(vertex.color.r(), vertex.color.g(), vertex.color.b(), vertex.alpha).uv(vertex.texU, vertex.texV).endVertex();
-            }
-            finish(pack);
-            pack.matrixStack.popPose();
-        }
-        end(pack);
-        pack.matrixStack.popPose();
-    }
-
-    public static Queue<Queue<VertexAttribute>> drawSphere(int stacks, RenderContext renderContext, VertexContext context) {
-        float rho, drho, theta, dtheta;
-        float x, y, z;
-        float s, t, ds, dt;
-        int i, j, imin, imax;
-
-        drho = (float) (2.0f * Math.PI / stacks);
-        dtheta = (float) (2.0f * Math.PI / stacks);
-        ds = 1.0f / stacks;
-        dt = 1.0f / stacks;
-        t = 1.0f; // because loop now runs from 0
-        float radius = 0.5f;
-        imin = 0;
-        imax = stacks / 2;
-        // draw intermediate stacks as quad strips
-        Queue<Queue<VertexAttribute>> queues = Queues.newArrayDeque();
-        Queue<VertexAttribute> queue = Queues.newArrayDeque();
-        for (i = imin; i < imax; i++) {
-            rho = i * drho;
-            s = 0.0f;
-
-            for (j = 0; j <= stacks; j++) {
-                theta = (j == stacks) ? 0.0f : j * dtheta;
-                x = (float) (-Math.sin(theta) * Math.sin(rho));
-                y = (float) (Math.cos(theta) * Math.sin(rho));
-                z = (float) Math.cos(rho);
-                VertexAttribute vertex0 = !context.shake ? calculateBlendVertex(x * radius, y * radius, z * radius, s, t, renderContext, context.hitReaction)
-                        : calculateVertex(x * radius, y * radius, z * radius, s, t, renderContext, context.hitReaction, context.limit);
-                queue.add(vertex0);
-                x = (float) (-Math.sin(theta) * Math.sin(rho + drho));
-                y = (float) (Math.cos(theta) * Math.sin(rho + drho));
-                z = (float) (Math.cos(rho + drho));
-                VertexAttribute vertex1 = !context.shake ? calculateBlendVertex(x * radius, y * radius, z * radius, s, t - dt, renderContext, context.hitReaction)
-                        : calculateVertex(x * radius, y * radius, z * radius, s, t - dt, renderContext, context.hitReaction, context.limit);
-                queue.add(vertex1);
-                s += ds;
-            }
-
-            t -= dt;
-        }
-        queues.add(queue);
-        return queues;
-    }
-
-    private static VertexAttribute calculateBlendVertex(float x, float y, float z, float texU, float TexV, RenderContext context, VectorHitReaction[] hitReaction) {
-        float maxAlhpa = 0;
-
-        if (hitReaction != null)
-            for (int c = 0; c < hitReaction.length; c++) {
-                VectorHitReaction reaction = hitReaction[c];
-                float add = reaction.IsHit(new Vec3(x, y, z));
-                if (add > maxAlhpa)
-                    maxAlhpa = add;
-            }
-
-        if (maxAlhpa + context.alpha > 1.0f) {
-            maxAlhpa = 1.0f;
-        } else
-            maxAlhpa += context.alpha;
-
-        VertexAttribute vertexAttribute = new VertexAttribute();
-        vertexAttribute.setPos(x, y, z);
-        vertexAttribute.setNormal(x, y, z);
-        vertexAttribute.setUV(texU, TexV);
-        vertexAttribute.alpha = maxAlhpa;
-        vertexAttribute.setColor(context.color);
-        vertexAttribute.setLightmap(context.packedLightIn);
-        return vertexAttribute;
-    }
-
-    private static VertexAttribute calculateVertex(float x, float y, float z, float texU, float TexV, RenderContext context, VectorHitReaction[] hitReaction, float limit) {
+    public static VertexAttribute calculateVertex(float x, float y, float z, float texU, float TexV, RenderContext context, VectorHitReaction[] hitReaction, float limit) {
         float maxAlhpa = 0;
 
         if (hitReaction != null)
@@ -1880,15 +1447,15 @@ public class RenderHelper {
             scale = 0;
 
         VertexAttribute vertexAttribute = new VertexAttribute();
-        vertexAttribute.setPos(x * scale, y * scale, z * scale);
+        vertexAttribute.pos(x * scale, y * scale, z * scale);
         if(limit < 0)
-            vertexAttribute.setNormal(x * limit, y * limit, z * limit);
+            vertexAttribute.normal(x * limit, y * limit, z * limit);
         else
-            vertexAttribute.setNormal(x * scale, y * scale, z * scale);
-        vertexAttribute.setUV(texU, TexV);
-        vertexAttribute.alpha = context.alpha;
-        vertexAttribute.setColor(Color.create(redScale, greenScale, blueScale));
-        vertexAttribute.setLightmap(context.packedLightIn);
+            vertexAttribute.normal(x * scale, y * scale, z * scale);
+        vertexAttribute.uv(texU, TexV);
+        vertexAttribute.alpha(context.alpha);
+        vertexAttribute.color(Color.create(redScale, greenScale, blueScale));
+        vertexAttribute.lightmap(context.packedLightIn);
         return vertexAttribute;
     }
 
@@ -1932,67 +1499,180 @@ public class RenderHelper {
         public int lightmap;
         public Color color = Color.ORIGIN_COLOR;
 
-        public void setPos(float x, float y, float z) {
+        public static VertexAttribute create() {
+            return new VertexAttribute();
+        }
+
+        public VertexAttribute pos(float x, float y, float z) {
             this.posX = x;
             this.posY = y;
             this.posZ = z;
+            return this;
         }
 
-        public void setLightmap(int lightmap) {
+        public VertexAttribute lightmap(int lightmap) {
             this.lightmap = lightmap;
+            return this;
         }
 
-        public void setColor(Color color) {
+        public VertexAttribute alpha(float alpha) {
+            this.alpha = alpha;
+            return this;
+        }
+
+        public VertexAttribute color(Color color) {
             this.color = color;
+            return this;
         }
 
-        public Color getColor() {
+        public Color color() {
             return color;
         }
 
-        public void setPos(Vec3 vec) {
+        public VertexAttribute pos(Vec3 vec) {
             this.posX = (float) vec.x;
             this.posY = (float) vec.y;
             this.posZ = (float) vec.z;
+            return this;
         }
 
-        public void setPos(Vector3f vec) {
+        public VertexAttribute pos(Vector3f vec) {
             this.posX = vec.x();
             this.posY = vec.y();
             this.posZ = vec.z();
+            return this;
         }
 
-        public void setNormal(float x, float y, float z) {
+        public VertexAttribute normalAsPos() {
+            this.normalX = posX;
+            this.normalY = posY;
+            this.normalZ = posZ;
+            return this;
+        }
+
+        public VertexAttribute normal(float x, float y, float z) {
             this.normalX = x;
             this.normalY = y;
             this.normalZ = z;
+            return this;
         }
 
-        public void setNormal(Vec3 vec) {
+        public VertexAttribute normal(Vec3 vec) {
             this.normalX = (float) vec.x;
             this.normalY = (float) vec.y;
             this.normalZ = (float) vec.z;
+            return this;
         }
 
-        public void setNormal(Vector3f vec) {
+        public VertexAttribute normal(Vector3f vec) {
             this.normalX = vec.x();
             this.normalY = vec.y();
             this.normalZ = vec.z();
+            return this;
         }
 
-        public void setUV(float u, float v) {
+        public VertexAttribute uv(float u, float v) {
             this.texU = u;
             this.texV = v;
+            return this;
         }
 
-        public void setUV(Vec2 uv) {
+        public VertexAttribute uv(Vec2 uv) {
             this.texU = uv.x;
             this.texV = uv.y;
+            return this;
+        }
+
+        public void build(Matrix4f matrix4f, VertexConsumer vertexConsumer, @Nullable RenderContext render, @Nullable TextureAtlasSprite sprite) {
+            vertexConsumer.getVertexFormat().getElements().forEach(element -> {
+                if(element == DefaultVertexFormat.ELEMENT_POSITION)
+                    vertexConsumer.vertex(matrix4f, this.posX, this.posY, this.posZ);
+                if(element == DefaultVertexFormat.ELEMENT_COLOR)
+                    if(render!=null) {
+                        vertexConsumer.color(render.color.r(), render.color.g(), render.color.b(),
+                                render.scaleAlpha ? render.alpha*this.alpha : render.alpha);
+                    } else
+                        vertexConsumer.color(this.color.r(), this.color.g(), this.color.b(), this.alpha);
+                if(element == DefaultVertexFormat.ELEMENT_UV0 || element == DefaultVertexFormat.ELEMENT_UV) {
+                    if(RenderHelper.isRenderingWorld() && sprite != null) {
+                        vertexConsumer.uv(getU(sprite, texU), getV(sprite, texV));
+                    } else
+                        vertexConsumer.uv(texU, texV);
+                }
+                if(element == DefaultVertexFormat.ELEMENT_UV1)
+                    vertexConsumer.overlayCoords(OverlayTexture.NO_OVERLAY);
+                if(element == DefaultVertexFormat.ELEMENT_UV2)
+                    if(render!=null)
+                        vertexConsumer.uv2(render.packedLightIn);
+                    else
+                        vertexConsumer.uv2(this.lightmap);
+                if(element == DefaultVertexFormat.ELEMENT_NORMAL)
+                    vertexConsumer.normal(this.normalX, this.normalY, this.normalZ);
+            });
+            vertexConsumer.endVertex();
+        }
+
+        public void build(Matrix4f matrix4f, VertexConsumer vertexConsumer, RenderContext render) {
+            build(matrix4f, vertexConsumer, render, null);
         }
     }
 
+    public static float getU(TextureAtlasSprite sprite, float u) {
+        float sub = sprite.getU1() - sprite.getU0();
+        return sprite.getU0() + sub * u;
+    }
+
+    public static float getV(TextureAtlasSprite sprite, float v) {
+        float sub = sprite.getV1() - sprite.getV0();
+        return sprite.getV0() + sub * v;
+    }
+
+    public static boolean isRenderTypeGlint(RenderType renderType) {
+        return renderType.toString().contains("GlintType");
+    }
+
+    public static boolean isRenderTypeInstanced(RenderType renderType) {
+        return renderType.toString().contains("Instanced");
+    }
+
+    public static boolean isRenderTypeLightingInstanced(RenderType renderType) {
+        return renderType.toString().contains("LightingInstanced");
+    }
+
+    public static ResourceLocation getRenderTypeTexture(RenderType renderType) {
+        RenderType.CompositeState state = ((AccessorRenderType)renderType).getState();
+        RenderStateShard.EmptyTextureStateShard textureState = ((AccessorTextureState)(Object)state).getTextureState();
+        if(!(textureState instanceof RenderStateShard.TextureStateShard))
+            return null;
+        Optional<ResourceLocation> texture = ((AccessorTexture)textureState).getTexture();
+        return texture.orElse(null);
+    }
+
+    public static void setRenderTypeTexture(RenderType renderType, ResourceLocation tex) {
+        RenderType.CompositeState state = ((AccessorRenderType)renderType).getState();
+        RenderStateShard.EmptyTextureStateShard textureState = ((AccessorTextureState)(Object)state).getTextureState();
+        if(!(textureState instanceof RenderStateShard.TextureStateShard))
+            return;
+        ((AccessorTexture)textureState).setTexture(tex);
+    }
+
+    public static ResourceLocation getRenderRealTexture(RenderType renderType) {
+        RenderType.CompositeState state = ((AccessorRenderType)renderType).getState();
+        RenderStateShard.EmptyTextureStateShard textureState = ((AccessorTextureState)(Object)state).getTextureState();
+        if(!(textureState instanceof RenderStateShard.TextureStateShard))
+            return null;
+        Optional<ResourceLocation> texture = ((AccessorTexture)textureState).getRealTexture();
+        return texture.orElse(null);
+    }
+
+    public static TextureAtlasSprite getRenderTypeSpirit(RenderType renderType) {
+        ResourceLocation res = RenderHelper.isRenderTypeGlint(renderType)? getRenderTypeTexture(renderType):getRenderRealTexture(renderType);
+        return TEXTURE_ATLAS.getSprite(TEXTURE_MAP.get(res));
+    }
+
     public static void begin(BufferContext bufferContext) {
-        if(!bufferContext.buffer.building()) {
+        if(!queueMode && !bufferContext.buffer.building()) {
+            addTexture(getRenderTypeTexture(bufferContext.type));
             bufferContext.buffer.begin(bufferContext.type.mode(), bufferContext.type.format());
         }
     }
@@ -2037,6 +1717,7 @@ public class RenderHelper {
 
     @OnlyIn(Dist.CLIENT)
     public static boolean isInRangeToRender3d(IPositionEntity position, double x, double y, double z, double scale) {
+        scale = 1d;
         double d0 = position.positionVec().x - x;
         double d1 = position.positionVec().y - y;
         double d2 = position.positionVec().z - z;
@@ -2100,6 +1781,15 @@ public class RenderHelper {
         return Minecraft.getInstance().options.renderDebug;
     }
 
+    public static boolean gl33() {
+        if(!ClientConfig.INSTANCED_RENDERING.get()) return false;
+        if(RenderSystem.isOnRenderThread()) {
+            if(gl33 < 0)
+                gl33 = (GL.getCapabilities().OpenGL33 || Checks.checkFunctions(GL.getCapabilities().glVertexAttribDivisor)) ? 1 : 0;
+        }
+
+        return RenderHelper.gl33 == 1;
+    }
     public static boolean stopShader() {
         return !ClientConfig.POST_PROCESSING_EFFECTS.get();
     }
@@ -2108,8 +1798,8 @@ public class RenderHelper {
         return ClientConfig.COLOR_LIGHTING_EFFECTS.get();
     }
 
-    public static void setMagickCoreUniform() {
-        IManaShader shaderInstance = (IManaShader) RenderSystem.getShader();
+    public static void setMagickCoreUniform(ShaderInstance shader) {
+        IManaShader shaderInstance = (IManaShader) shader;
         if (shaderInstance.getViewMat() != null) {
             shaderInstance.getViewMat().set(RenderHelper.getViewMatrix().last().pose());
         }
@@ -2146,6 +1836,34 @@ public class RenderHelper {
             float[] array = new float[]{pos.x(), pos.y(), pos.z()};
             shaderInstance.getCameraDirection().set(array);
         }
+        if(shaderInstance.getCameraOrientation() != null) {
+            Quaternion quat = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
+            shaderInstance.getCameraOrientation().set(new Vector4f(quat.i(), quat.j(), quat.k(), -quat.r()));
+        }
+
+        if(shader == RenderHelper.getRendertypeEntityLightShader()) {
+            Window window = Minecraft.getInstance().getWindow();
+            Matrix4f proj = Matrix4f.orthographic(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), 0.0F, (float)((double)window.getHeight() / window.getGuiScale()), 1000.0F, net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
+            Matrix4f view = new Matrix4f();
+            view.setIdentity();
+            view.multiplyWithTranslation(0, 0, 1000F-net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
+
+            if (shader.PROJECTION_MATRIX != null) {
+                shader.PROJECTION_MATRIX.set(proj);
+            }
+
+            if (shaderInstance.getViewMat() != null) {
+                shaderInstance.getViewMat().set(view);
+            }
+
+            if(shader.SCREEN_SIZE != null) {
+                shader.SCREEN_SIZE.set(window.getWidth()/3f, window.getHeight()/3f);
+            }
+        }
+    }
+
+    public static void setMagickCoreUniform() {
+        setMagickCoreUniform(RenderSystem.getShader());
     }
 
     private static boolean checkShader() {
@@ -2160,10 +1878,10 @@ public class RenderHelper {
                     boolean using = (boolean) method.invoke(loaded);
                     if (using && !oculusShaderLoaded) {
                         MagickCore.LOGGER.info("Oculus shader loaded");
-                        GL_LIST_INDEX.clear();
+                        VERTEX_CACHE.clear();
                     } else if (!using && oculusShaderLoaded) {
                         MagickCore.LOGGER.info("Oculus shader unload");
-                        GL_LIST_INDEX.clear();
+                        VERTEX_CACHE.clear();
                     }
                     return using;
                 } else {

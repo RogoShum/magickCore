@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import com.mojang.math.Vector3f;
 
 public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
-    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(RenderHelper.blankTex);
+    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(RenderHelper.BLANK_TEX);
 
     public SpiritCrystalItemRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -34,7 +34,7 @@ public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.scale(2.5f, 2.5f, 2.5f);
         matrixStackIn.pushPose();
         matrixStackIn.scale(0.2f, 0.07f, 0.2f);
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
         matrixStackIn.popPose();
 
@@ -47,7 +47,7 @@ public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.scale(0.1f, 0.25f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(45));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
         matrixStackIn.popPose();
         matrixStackIn.popPose();
@@ -60,7 +60,7 @@ public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.scale(0.1f, 0.3f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
         matrixStackIn.popPose();
         matrixStackIn.popPose();
@@ -73,7 +73,7 @@ public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.scale(0.1f, 0.2f, 0.1f);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-45));
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
                 , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
         matrixStackIn.popPose();
         matrixStackIn.popPose();

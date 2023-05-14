@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Vector3f;
 
 public class SpiritWoodStickRenderer extends BlockEntityWithoutLevelRenderer {
-    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(RenderHelper.blankTex);
+    private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(RenderHelper.BLANK_TEX);
 
     public SpiritWoodStickRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -39,7 +39,7 @@ public class SpiritWoodStickRenderer extends BlockEntityWithoutLevelRenderer {
         }
         matrixStackIn.scale(0.15f, 1.5f, 0.15f);
 
-        RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png")))
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png")))
                 , new RenderHelper.RenderContext(0.8f, Color.ORIGIN_COLOR, combinedLight));
         matrixStackIn.popPose();
     }

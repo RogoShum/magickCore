@@ -40,8 +40,9 @@ public class LivingAgentEntity extends LivingEntity implements ISpellContext, IM
     }
 
     @Override
-    public boolean canBeCollidedWith() {
-        return this.isAlive();
+    public void tick() {
+        super.tick();
+        remove(RemovalReason.DISCARDED);
     }
 
     @Override

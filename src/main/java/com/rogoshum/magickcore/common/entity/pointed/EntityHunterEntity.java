@@ -67,6 +67,9 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
 
     @Override
     public boolean releaseMagick() {
+        if(this.spellContext().tick > 100)
+            this.spellContext().tick(100);
+
         if(victim != null) {
             Vec3 motion = this.position().add(0, getBbHeight() * 0.5, 0).subtract(victim.position().add(0, victim.getBbHeight() * 0.5, 0)).normalize();
             victim.setDeltaMovement(motion.x, motion.y, motion.z);

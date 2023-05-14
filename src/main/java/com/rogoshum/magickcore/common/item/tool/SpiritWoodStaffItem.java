@@ -21,6 +21,7 @@ import com.rogoshum.magickcore.api.magick.context.child.ExtraManaFactorContext;
 import com.rogoshum.magickcore.api.magick.context.child.TraceContext;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +49,7 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem, I
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         return false;
     }
 
@@ -100,19 +101,8 @@ public class SpiritWoodStaffItem extends ManaItem implements IManaContextItem, I
             }
             context1 = context1.postContext;
         }
-        if(MagickReleaseHelper.releaseMagick(context, factor)) {
+        if(MagickReleaseHelper.releaseMagick(context.hand(player.getUsedItemHand()), factor)) {
             ParticleUtil.spawnBlastParticle(player.level, player.position().add(0, player.getBbHeight() * 0.5, 0), 2, state.getElement(), ParticleType.PARTICLE);
-        }
-    }
-
-
-    @Override
-    public void inventoryTick(ItemStack p_77663_1_, Level p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-        super.inventoryTick(p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-        if(p_77663_3_ instanceof ServerPlayer) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.WAND);
-            if(MagickCore.isModLoaded("curios"))
-                AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.RING);
         }
     }
 }

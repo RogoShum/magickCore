@@ -7,7 +7,6 @@ import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.ThornsCaressEntity;
-import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -20,8 +19,8 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
     float preRotate;
     float postRotate;
     float rotate;
-    private static final RenderType BLANK = RenderHelper.getTexedSphereGlow(blank, 2f, 0f, 0.2f, 1f);
-    private static final RenderType SPHERE = RenderHelper.getTexedSphereGlow(sphere_rotate, 2, 0f, 0.2f, 1f);
+    private static final RenderType BLANK = RenderHelper.getTexturedEntityGlintShake(blank, 2f, 0f, 0.2f, 1f);
+    private static final RenderType SPHERE = RenderHelper.getTexturedEntityGlintShake(sphere_rotate, 2, 0f, 0.2f, 1f);
     float degrees;
 
     public ThornsCaressRenderer(ThornsCaressEntity entity) {
@@ -43,20 +42,12 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
     }
 
-    public void renderSphereSlime(RenderParams params) {
-        PoseStack matrixStackIn = params.matrixStack;
-        baseOffset(matrixStackIn);
-        BufferBuilder bufferIn = params.buffer;
-        matrixStackIn.scale(0.5f, 0.5f, 0.5f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, BLANK), new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight), 6);
-    }
-
     public void renderSphereOpacity(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 6);
+        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 1);
     }
 
     public void renderSphereDistortion(RenderParams params) {
@@ -64,7 +55,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.2f, 1.2f, 1.2f);
-        RenderHelper.renderSphere(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.95f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 6);
+        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.95f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 1);
     }
 
     @Override

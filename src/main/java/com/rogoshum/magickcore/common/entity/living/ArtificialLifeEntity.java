@@ -20,6 +20,7 @@ import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
+import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
@@ -213,9 +214,12 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
             return InteractionResult.CONSUME;
         } else if(stack.getItem() instanceof MagickContextItem) {
             spellContext().copy(ExtraDataUtil.itemManaData(stack).spellContext());
+            EntityCompoundTagPack.updateEntity(this);
             return InteractionResult.CONSUME;
-        } else if(player.isShiftKeyDown())
+        } else if(player.isShiftKeyDown()) {
             spellContext().clear();
+            EntityCompoundTagPack.updateEntity(this);
+        }
 
         return InteractionResult.PASS;
     }

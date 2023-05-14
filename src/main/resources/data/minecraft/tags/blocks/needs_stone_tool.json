@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "magickcore:spirit_ore"
+    "magickcore:spirit_ore",
+    "magickcore:deepslate_spirit_ore"
   ]
 }

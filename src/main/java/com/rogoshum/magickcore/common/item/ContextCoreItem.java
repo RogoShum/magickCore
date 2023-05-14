@@ -52,6 +52,7 @@ public class ContextCoreItem extends BaseItem{
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        stack = stack.copy();
         if(entity.getThrower() != null && entity.level.getPlayerByUUID(entity.getThrower()) != null && entity.tickCount > 20) {
             boolean upGround = true;
             for (int i = 0; i < 2; ++i) {
@@ -62,7 +63,7 @@ public class ContextCoreItem extends BaseItem{
             if(!upGround)
                 entity.push(0, speed, 0);
             else {
-                entity.remove(Entity.RemovalReason.DISCARDED);
+                entity.getItem().shrink(1);
                 if(!entity.level.isClientSide) {
                     ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.level);
                     contextCreator.setPos(entity.getX(), entity.getY() - 0.5, entity.getZ());

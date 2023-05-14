@@ -98,7 +98,7 @@ public class ManaBuffHUD extends GuiComponent {
         if(hasDeBuff) {
             renderBuffHUD(deBuffColor, 1.0f, DE_BUFF_TEXTURE, RenderHelper.Noise.LINE.res());
         } else {
-            renderBuffHUD(buffColor, 1.0f, BUFF_TEXTURE, RenderHelper.blankTex);
+            renderBuffHUD(buffColor, 1.0f, BUFF_TEXTURE, RenderHelper.BLANK_TEX);
         }
     }
 

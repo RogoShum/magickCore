@@ -7,6 +7,7 @@ uniform sampler2D Sampler0;
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
+uniform float GameTime;
 
 in float vertexDistance;
 in vec4 vertexColor;
@@ -90,7 +91,7 @@ void main() {
     color *= lightMapColor;
     float fade = linear_fog_fade(vertexDistance, FogStart, FogEnd);
 
-    float c1 = noise_turbulence(vec3(noiseUV, pos.y*0.05));
+    float c1 = noise_turbulence(vec3(noiseUV, pos.y*0.05+GameTime * 25.0));
     vec4 noise = vec4( 1.5*c1, 1.5*c1*c1*c1, c1*c1*c1*c1*c1*c1, 1.0 );
     float alpha = 1.0-rgb2hsv(calibration(noise.rgb)).z;
     fragColor = vec4(color.rgb * fade, color.a * alpha);

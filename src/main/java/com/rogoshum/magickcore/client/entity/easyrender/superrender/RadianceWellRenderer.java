@@ -8,7 +8,6 @@ import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
-import com.rogoshum.magickcore.common.magick.Color;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -28,13 +27,14 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     int packedLightIn;
     float alphaS;
     float alphaC;
-    final RenderType TYPE = RenderHelper.getTexedSphereGlow(blank, 1f, 0f);
-    final RenderType INNER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 0.2f, 0f, 0.025f, 1.0f);
-    final RenderType OUTER_TYPE = RenderHelper.getTexedCylinderGlint(cylinder_bloom, 0.15f, 0f, 0.025f, 1.0f);
+    final RenderType TYPE = RenderHelper.getTexturedEntityGlint(blank, 1f, 0f);
+    final RenderType INNER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1f, 0f, 0.025f, 0.05f);
+    final RenderType OUTER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1.1f, 0f, 0.025f, 0.05f);
     RenderHelper.RenderContext RENDER_5;
-    RenderHelper.RenderContext RENDER_6;
-    RenderHelper.CylinderContext CYLINDER_INNER;
-    RenderHelper.CylinderContext CYLINDER_OUTER;
+    RenderHelper.CylinderContext CYLINDER_INNER = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 3, 2f
+            , 0, 0.8f, 1.5f);
+    RenderHelper.CylinderContext CYLINDER_OUTER = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 3, 2f
+            , 0, 1, 1f);
 
     public RadianceWellRenderer(RadianceWellEntity entity) {
         super(entity);
@@ -63,12 +63,10 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         BufferContext context = BufferContext.create(matrixStackIn, bufferIn, TYPE);
         float scale = 1.4f;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(context, RENDER_5, 12);
+        RenderHelper.renderSphereCache(context, RENDER_5, 0);
         scale = 0.7f;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(context, RENDER_5, 12);
-        matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderSphere(context, RENDER_6, 12);
+        RenderHelper.renderSphereCache(context, RENDER_5, 0);
     }
 
     public void renderInnerLight(RenderParams params) {
@@ -77,8 +75,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2f);
-        if(CYLINDER_INNER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER
+                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight, true));
     }
 
     public void renderOuterLight(RenderParams params) {
@@ -87,8 +85,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2.001f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2.001f);
-        if(CYLINDER_OUTER != null)
-            RenderHelper.renderCylinder(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER);
+        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER
+                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
     }
 
     @Override
@@ -105,17 +103,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         alphaS = Math.min(1f, (float)entity.tickCount / 5f);
         alphaC = Math.min(1f, (float) entity.tickCount / 20f);
         RENDER_5 = new RenderHelper.RenderContext(0.5f * alphaS
-                , entity.spellContext().element.primaryColor(), packedLightIn);
-        RENDER_6 = new RenderHelper.RenderContext(0.6f * alphaS
-                , Color.ORIGIN_COLOR, packedLightIn);
-
-        if(entity.initial) {
-            CYLINDER_INNER = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, 0.8f * alphaC, 1.5f, ModElements.ORIGIN.getRenderer().getSecondaryColor());
-
-            CYLINDER_OUTER = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 2f, 12
-                    , 0, alphaC, 1f, entity.spellContext().element.getRenderer().getPrimaryColor());
-        }
+                , entity.spellContext().element.secondaryColor(), packedLightIn);
     }
 
     @Override

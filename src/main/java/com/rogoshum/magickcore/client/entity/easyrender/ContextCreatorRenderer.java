@@ -29,9 +29,8 @@ import java.util.function.Consumer;
 
 public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
     private static final ResourceLocation TAKEN = new ResourceLocation("magickcore:textures/entity/takensphere.png");
-    private static final RenderType RENDER_TYPE = RenderHelper.getTexedSphereGlow(TAKEN, 1f, 0f);
-    private static final RenderType RENDER_TYPE_DEPTH = RenderHelper.getTexedSphereGlowEqualDepth(TAKEN, 1f, 0f);
-    private static final RenderType LINE = RenderHelper.getTexedLaserGlint(MagickRegistry.getElement(LibElements.ORIGIN).getRenderer().getWaveTexture(1), 1f);
+    private static final RenderType RENDER_TYPE = RenderHelper.getTexturedEntityGlint(TAKEN, 1f, 45f);
+    private static final RenderType LINE = RenderHelper.getTexturedSegmentLaser(MagickRegistry.getElement(LibElements.ORIGIN).getRenderer().getWaveTexture(1), 1f);
     float scale;
 
     public ContextCreatorRenderer(ContextCreatorEntity entity) {
@@ -51,6 +50,7 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
             renderTypeBuffer.endBatch();
             matrixStackIn.popPose();
         }
+
         List<ContextCreatorEntity.PosItem> stacks = entity.getStacks();
         for(int i = 0; i < stacks.size(); i++) {
             ContextCreatorEntity.PosItem item = stacks.get(i);
@@ -86,22 +86,18 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
 
         if(entity.getEntityType() == null)
             matrixStackIn.scale(scale, scale, scale);
+        else
+            matrixStackIn.scale(1.1f, 1.1f, 1.1f);
 
-        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(entity.getEntityType() == null ? 0.5f : 0.6f, color, packedLightIn);
-        RenderHelper.renderSphere(
+        RenderHelper.RenderContext renderContext = new RenderHelper.RenderContext(entity.getEntityType() == null ? 0.4f : 0.5f, color, packedLightIn);
+        RenderHelper.renderSphereCache(
                 BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE)
-                , renderContext, 24);
-
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderSphere(
-                BufferContext.create(matrixStackIn, params.buffer, RENDER_TYPE)
-                , renderContext, 24);
+                , renderContext, 0);
     }
 
     public void renderLaser(RenderParams params) {
         baseOffset(params.matrixStack);
         PoseStack matrixStackIn = params.matrixStack;
-        float partialTicks = params.partialTicks;
         Color color = entity.getInnerManaData().spellContext().element.primaryColor();
         matrixStackIn.scale(0.2f, 0.2f, 0.2f);
         BufferContext bufferContext = BufferContext.create(matrixStackIn, params.buffer, LINE);

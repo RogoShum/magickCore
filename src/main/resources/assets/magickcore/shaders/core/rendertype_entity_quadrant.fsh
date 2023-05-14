@@ -97,7 +97,7 @@ vec3 rgb2hsv(vec3 c)
 void main() {
     vec2 screenUV = gl_FragCoord.xy/ScreenSize;
     vec2 mistUV = vec2(screenUV.x / vertexLength - (CameraDir.x * 0.05 + CameraDir.z * 0.05), screenUV.y / vertexLength - CameraDir.y * 0.05);
-    vec4 color = texture(Sampler0, noiseUV);
+    vec4 color = texture(Sampler0, textureCoord);
     color *= vColor * ColorModulator;
 
     float c1 = noise_turbulence(vec3(mistUV, GameTime * 25.0));

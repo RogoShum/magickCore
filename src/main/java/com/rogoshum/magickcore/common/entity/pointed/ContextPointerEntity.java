@@ -20,6 +20,7 @@ import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.ManaFactor;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
@@ -330,7 +331,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                     spawnParticle();
                 if(!notClear)
                     getStacks().clear();
-                else
+
+                if(!level.isClientSide())
                     doNetworkUpdate();
             } else
                 dropItem();
@@ -397,6 +399,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         coolDown = 40;
         playSound(SoundEvents.BEACON_AMBIENT, 0.5f, 2.0f);
         getStacks().clear();
+
+        EntityCompoundTagPack.updateEntity(this);
     }
 
     @Override

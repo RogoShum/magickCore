@@ -9,7 +9,6 @@ in vec4 Color;
 in vec3 Normal;
 
 uniform mat4 ProjMat;
-uniform mat4 IViewMat;
 uniform mat4 ViewMat;
 
 out vec2 noiseUV;

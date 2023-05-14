@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
@@ -12,6 +13,7 @@ import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.init.ManaMaterials;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.item.ManaItem;
+import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.api.magick.ManaFactor;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
@@ -26,6 +28,7 @@ import com.rogoshum.magickcore.common.magick.materials.Material;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
@@ -75,6 +78,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        stack = stack.copy();
         if(entity.getThrower() != null && entity.level.getPlayerByUUID(entity.getThrower()) != null && entity.tickCount > 20) {
             boolean upGround = true;
             for (int i = 0; i < 2; ++i) {
@@ -85,7 +89,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
             if(!upGround)
                 entity.push(0, speed, 0);
             else {
-                entity.remove(Entity.RemovalReason.DISCARDED);
+                entity.getItem().shrink(1);
                 if(!entity.level.isClientSide) {
                     ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(entity.level);
                     contextCreator.setPos(entity.getX(), entity.getY() - 0.5, entity.getZ());
@@ -96,8 +100,8 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
                             contextCreator.getInnerManaData().setMaterial(manaMaterial);
                         }
                     }
-                    upgradeManaItem(entity.getItem(), contextCreator.getInnerManaData());
-                    ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
+                    upgradeManaItem(stack, contextCreator.getInnerManaData());
+                    ItemManaData data = ExtraDataUtil.itemManaData(stack);
                     if(data.spellContext().containChild(LibContext.SPAWN)) {
                         contextCreator.setEntityType(data.spellContext().<SpawnContext>getChild(LibContext.SPAWN).entityType);
                     }
@@ -208,7 +212,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
     }
 
     @Override
-    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack) {
+    public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand hand) {
         if(playerIn.level.isClientSide) return false;
         if(playerIn instanceof Player && !((Player) playerIn).isCreative()) {
             ContextCreatorEntity contextCreator = ModEntities.CONTEXT_CREATOR.get().create(playerIn.level);
@@ -248,6 +252,7 @@ public class EntityTypeItem extends ManaItem implements IManaMaterial {
                     ExtraDataUtil.playerTradeData((Player) entityIn).addUnlock(spawnContext.entityType);
                     if(type.getRegistryName() != null) {
                         AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, "entity_type_" + type.getRegistryName().getPath());
+                        AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) entityIn, LibAdvancements.ENTITY_TYPE);
                     }
                 }
             }

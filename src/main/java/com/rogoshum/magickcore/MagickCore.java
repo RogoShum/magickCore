@@ -37,7 +37,9 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -57,7 +59,6 @@ public class MagickCore {
     public static HashMap<String, AdditionLoader> modLoader = new HashMap<>();
 
     public MagickCore() {
-        LOGGER.debug("register RegisterEvent");
         MinecraftForge.EVENT_BUS.register(new RegisterEvent());
         //FMLJavaModLoadingContext.get().getModEventBus().addListener(RE::onRegiste2r);
         // Register the setup method for modloading

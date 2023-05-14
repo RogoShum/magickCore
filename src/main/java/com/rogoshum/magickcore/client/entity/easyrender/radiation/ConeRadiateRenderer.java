@@ -54,15 +54,20 @@ public class ConeRadiateRenderer extends EasyRenderer<ConeEntity> {
         if(this.vector3dList.isEmpty()) {
             List<Vec3> vector3dList = new ArrayList<>();
             for (int i = 1; i <= scale; ++i) {
-                Vec3[] vectors = ParticleUtil.drawCone(Vec3.ZERO, new Vec3(Direction.UP.step()).scale(scale), 4.5 * i, i * 2);
+                Vec3[] vectors = ParticleUtil.drawCone(Vec3.ZERO, new Vec3(Direction.UP.step()).scale(scale), 4.5 * i, i);
                 if(i + 1 > scale) {
                     for (Vec3 vec : vectors) {
                         vector3dList.add(vec);
                         vector3dList.add(Vec3.ZERO);
                         vector3dList.add(vec);
                     }
-                } else
+                } else {
                     Collections.addAll(vector3dList, vectors);
+                }
+            }
+            int left = vector3dList.size()%4;
+            for (int i = 0; i < left; ++i) {
+                vector3dList.add(Vec3.ZERO);
             }
             this.vector3dList = vector3dList;
         }

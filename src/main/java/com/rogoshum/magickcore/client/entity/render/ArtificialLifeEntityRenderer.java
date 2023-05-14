@@ -52,14 +52,14 @@ public class ArtificialLifeEntityRenderer extends EntityRenderer<ArtificialLifeE
 				Vec2 rota = EasyRenderer.getRotationFromVector(direction);
 				matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rota.x));
 				matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
-				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
+				RenderType type = RenderHelper.getTexturedQuadsSolid(EYE_TEXTURE);
 				matrixStackIn.translate(0, 0.98f, 0);
 				matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
 				RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			} else {
 				matrixStackIn.scale(0.98f, 0.98f, 0.98f);
-				RenderType type = RenderHelper.getTexedOrbSolid(EYE_TEXTURE);
-				RenderHelper.renderCubeDynamic(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
+				RenderType type = RenderHelper.getTexturedQuadsSolid(EYE_TEXTURE);
+				RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), type), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, packedLightIn));
 			}
 			matrixStackIn.popPose();
 		}
