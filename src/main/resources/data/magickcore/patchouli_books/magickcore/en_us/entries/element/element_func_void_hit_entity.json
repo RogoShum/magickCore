@@ -1,0 +1,12 @@
+{
+  "name": "§5虚空§7触碰实体",
+  "advancement": "magickcore:learn/trigger_element_func_void_hit_entity",
+  "icon": "magickcore:void",
+  "category": "magickcore:element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "触碰状态的虚空能量可以给予目标虚弱效果，使目标收到的伤害更高。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "射程药水",
+  "advancement": "magickcore:potion/mana_range",
+  "icon": "minecraft:potion{Potion:\"magickcore:mana_range\"}",
+  "category": "magickcore:potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:mana_range\"}",
+	  "text": "由含有“rabbit_foot(兔子脚)”字样的物品与清爽水酿造而成。$(br2)可以用红石或萤石粉提升药水品质。$(br2)功能：提升释放的魔法的射程属性。"
+    }
+  ]
+}

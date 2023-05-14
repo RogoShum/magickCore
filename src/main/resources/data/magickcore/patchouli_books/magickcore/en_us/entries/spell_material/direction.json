@@ -1,0 +1,13 @@
+{
+  "name": "方向记忆",
+  "advancement": "magickcore:mana_material/direction_memory",
+  "icon": "magickcore:direction_memory",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:direction_memory",
+	  "text": "使用金锭在魔法合成阵转换而成。方向记忆可以记录方向，直接对准方向右键即可。也可以选择两个方块，记录的会是两个方块之间的方向。潜行右键可以删除记忆。"
+    }
+  ]
+}

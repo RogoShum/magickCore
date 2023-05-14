@@ -1,0 +1,12 @@
+{
+  "name": "§b电弧§7凝聚",
+  "advancement": "magickcore:learn/trigger_element_func_arc_agglomerate",
+  "icon": "magickcore:arc",
+  "category": "magickcore:element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "凝聚状态的电弧元素可以平缓的推动实体。如果施法目标是方块，会补充方块的电弧能量。当法术的高度位置大于192格时，会转换当前天气为雷暴。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()"
+    }
+  ]
+}

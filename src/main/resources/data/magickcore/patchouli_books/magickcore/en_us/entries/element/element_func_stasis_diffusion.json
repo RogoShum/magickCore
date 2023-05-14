@@ -1,0 +1,12 @@
+{
+  "name": "§3冰影§7漫散",
+  "advancement": "magickcore:learn/trigger_element_func_stasis_diffusion",
+  "icon": "magickcore:stasis",
+  "category": "magickcore:element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "漫散状态的冰影效果可以给予玩家纯洁效果，停滞\"朝施法者移动的非友军投掷物\"。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()"
+    }
+  ]
+}

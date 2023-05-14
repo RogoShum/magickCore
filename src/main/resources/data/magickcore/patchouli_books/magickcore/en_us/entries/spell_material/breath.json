@@ -1,0 +1,13 @@
+{
+  "name": "探查能量",
+  "advancement": "magickcore:mana_material/mana_dragon_b",
+  "icon": "magickcore:mana_dragon_breath",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_dragon_breath",
+	  "text": "使用绿宝石、恶魂眼泪、龙息在魔法合成阵转换而成。"
+    }
+  ]
+}

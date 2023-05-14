@@ -1,0 +1,13 @@
+{
+  "name": "魔力时效",
+  "advancement": "magickcore:mana_material/mana_red",
+  "icon": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
+	  "text": "使用红石粉在魔法合成阵转换而成。"
+    }
+  ]
+}

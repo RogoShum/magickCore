@@ -1,0 +1,11 @@
+{
+  "parent": "magickcore:learn/root",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "element_creature"
+		}
+	}
+  }
+}

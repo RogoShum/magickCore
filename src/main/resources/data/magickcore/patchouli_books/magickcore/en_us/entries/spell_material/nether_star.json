@@ -1,0 +1,26 @@
+{
+  "name": "下界之星核心",
+  "advancement": "magickcore:mana_material/nether_star_material",
+  "icon": "magickcore:nether_star_material",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:nether_star_material",
+	  "text": "使用下界之星在魔法合成阵转换而成，与功能法术构造核心合成后可以提升功能法术构造核心的最高能量上限。对于形态构造核心而言，我们可以直接将下界之星核心当作材料丢入构造核心中，提升形态法术的属性上限。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:nether_star_material",
+      "item1": "magickcore:context_core",
+      "item2": "minecraft:air",
+      "item3": "minecraft:air",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:context_core{mana_material:\"nether_star\"}"
+    }
+  ]
+}

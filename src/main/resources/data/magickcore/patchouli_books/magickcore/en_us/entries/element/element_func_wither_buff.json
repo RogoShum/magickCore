@@ -1,0 +1,12 @@
+{
+  "name": "§2枯萎§7增益",
+  "advancement": "magickcore:learn/trigger_element_func_wither_buff",
+  "icon": "magickcore:wither",
+  "category": "magickcore:element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "增益状态的枯萎能量可以清除目标身上：药水效果等级低于增益强度的负面药水效果。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "魔法合成阵",
+  "advancement": "magickcore:element_product/spirit_crystal",
+  "icon": "magickcore:spirit_crystal",
+  "category": "magickcore:spirit_product",
+  "pages": [
+	{
+      "type": "text",
+      "text": "魔法合成阵是一种能够处理承载魔力的材料的合成阵，它的基本使用方式是用来转化物品，。"
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:spirit_wood_stick",
+      "text": "现在我们可以尝试一下把普通的木棍转换成灵魂木棍，直接把木棍丢在合成阵上就可以开始转换。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "minecraft:air",
+      "item1": "magickcore:spirit_wood_stick",
+      "item2": "minecraft:air",
+      "item3": "magickcore:spirit_wood_stick",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:wand",
+      "text": "灵魂木棍是制作魔棒的原材料，魔棒可以让我们操作魔法合成阵来合成灵魂制品。"
+    },
+    {
+      "type": "text",
+      "text": "制作完成之后，我们可以把灵魂木棍摆放在合成阵上，依次垒起来，达到三个之后用魔棒右键一下，就可以合成一个灵魂木法杖。"
+    },
+    {
+      "type": "image",
+      "title": "灵魂木摆放方式",
+      "images": ["magickcore:textures/book_image/wand.png"],
+      "border": "true"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:spirit_wood_staff",
+      "text": "魔力合成阵的合成都需要用魔棒来完成合成。"
+    }
+  ]
+}

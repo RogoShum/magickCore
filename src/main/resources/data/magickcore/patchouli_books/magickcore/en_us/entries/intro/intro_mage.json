@@ -1,0 +1,16 @@
+{
+  "name": "流浪法师",
+  "icon": "magickcore:entity_type{item_extra_data:{CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}}}}",
+  "category": "magickcore:intro",
+  "pages": [
+    {
+      "type": "text",
+      "text": "流浪法师是用于购买法术形态的商贩，可以用灵魂水晶来进行交易。不同于一般的村民，法师具备一定的魔力使用资质，可以去对付一下想要欺负自己的那些坏家伙。总之我不建议你去招惹他。"
+    },
+	{
+      "type": "entity",
+	  "entity": "magickcore:mage",
+	  "text": "流浪法师可以在合适的群系自然生成，也可以在村民身边摆放魔法工作台来使村民专职为法师。"
+    }
+  ]
+}

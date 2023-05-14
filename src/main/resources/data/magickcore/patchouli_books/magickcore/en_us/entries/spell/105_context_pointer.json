@@ -1,0 +1,47 @@
+{
+  "name": "105 法术指针",
+  "advancement": "magickcore:spell_learn/context_pointer",
+  "icon": "magickcore:context_pointer",
+  "category": "magickcore:spell",
+  "pages": [
+    {
+      "type": "text",
+      "text": "单个成型法术只能达成一次施法效果，但是法术指针可以让我们实现复合施法。首先我们需要在魔法合成阵处制作一个法术指针，并将它放置在地面上。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:context_pointer",
+      "text": "指引魔力走向的单行道。在魔法合成阵处合成。"
+    },
+    {
+      "type": "image",
+      "images": ["magickcore:textures/book_image/context_pointer.png"],
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "text": "法术指针长得像一个小漩涡，竖直向上。我们可以将做好的形态法术丢进去，再丢入功能法术，法术指针会按照顺序将它们排列起来。放置完毕之后，我们使用魔棒右键一下法术指针，就可以将形态法术与功能法术结合在一起。"
+    },
+    {
+      "type": "text",
+      "text": "通过法术指针合并的成型法术，在释放时里面的法术会按顺序执行。$(br2)当然一个成型法术也可以包含不止一个功能法术、一个形态法术。我们可以根据需求往里面放入更多的功能或者形态，然后合并在一起。$(br)如果法术指针放入且只放入了一个合并过的法术，使用魔棒右键可以将合并法术拆解回单个法术。"
+    },
+    {
+      "type": "spotlight",
+      "title": "复合法术",
+      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"solar\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:5.0f,POST:{ELEMENT:\"solar\",FORCE:1.0f,POST:{ELEMENT:\"arc\",FORCE:1.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{},APPLY_TYPE:\"attack\",TICK:0,RANGE:0.0f}}",
+      "text": "对于功能法术来讲，形态法术获取到目标之后，会触发它携带的功能法术，我们可以做出这种复合减益的法术，在战斗上可以一次性给目标叠加多种减益效果。比如同时携带烈焰攻击、烈焰减益、电弧减益的复合法术，用在灵魂木弓上的话，魔力箭在触碰目标后会依次基于目标这三种功能效果。"
+    },
+    {
+      "type": "text",
+      "text": "形态法术得益于不同的类型与自身特性，也可以在一个成型法术中使用多个形态，相互搭配来触发特殊的效果。$(br2)如果想要提升法术的效率，需要尽可能地尝试不同形态法术的搭配。已经获得的形态构造核心会在法师那里解锁，只需要使用5个灵魂水晶就可以购买一个形态构造核心。"
+    }
+  ,
+    {
+      "type": "image",
+      "images": ["magickcore:textures/book_image/mage.png"],
+      "border": "true",
+      "text": "流浪法师，在法师这里可以购买已经获得过的法术形态"
+    }
+  ]
+}

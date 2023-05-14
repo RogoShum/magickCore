@@ -1,0 +1,17 @@
+{
+  "name": "灵魂水晶戒指",
+  "advancement": "magickcore:spirit_product/ring",
+  "icon": "magickcore:spirit_crystal_ring",
+  "category": "magickcore:spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "灵魂水晶戒指本身不携带任何法术，需要右键装备并按下K来激活，Ctrl+K可以取下身上的戒指，可以装备成型法术。用成型法术和灵魂水晶戒指在工作台合成即可。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:spirit_crystal_ring",
+      "text": "在魔法合成阵处合成。"
+    }
+  ]
+}

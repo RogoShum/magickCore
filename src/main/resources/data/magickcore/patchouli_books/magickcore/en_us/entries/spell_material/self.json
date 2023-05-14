@@ -1,0 +1,13 @@
+{
+  "name": "劣质钻石",
+  "advancement": "magickcore:mana_material/self",
+  "icon": "magickcore:completely_self",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:completely_self",
+	  "text": "使用钻石在魔法合成阵转换而成。劣质钻石不能用来制作任何跟钻石相关的东西，但是它可以将施法的目标转化成施法者自身，注意，只是转化施法目标，并不会改变施法的其他属性。"
+    }
+  ]
+}

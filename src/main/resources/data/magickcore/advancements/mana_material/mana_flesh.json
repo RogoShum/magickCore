@@ -1,0 +1,11 @@
+{
+	"parent": "magickcore:element_product/spirit_crystal",
+	"criteria": {
+	"example": {
+		"trigger": "magickcore:string",
+		"conditions": {
+			"string": "mana_meat"
+		}
+	}
+  }
+}
