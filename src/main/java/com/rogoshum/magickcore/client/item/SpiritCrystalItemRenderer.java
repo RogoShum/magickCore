@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -31,52 +33,58 @@ public class SpiritCrystalItemRenderer extends BlockEntityWithoutLevelRenderer {
         if(transformType == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND || transformType == ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND) {
             matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(45));
         }
-        matrixStackIn.scale(2.5f, 2.5f, 2.5f);
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(0.2f, 0.07f, 0.2f);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
-                , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
-        matrixStackIn.popPose();
+        VertexConsumer vertex = bufferIn.getBuffer(RENDER_TYPE);
+        if(vertex instanceof BufferBuilder builder) {
+            RenderHelper.queueMode = true;
+            matrixStackIn.scale(2.5f, 2.5f, 2.5f);
+            matrixStackIn.pushPose();
+            matrixStackIn.scale(0.2f, 0.07f, 0.2f);
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE)
+                    , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+            matrixStackIn.popPose();
 
-        matrixStackIn.translate(0.0, 0.15, 0.0);
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0.05, 0.0, 0.0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-20));
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(0.1f, 0.25f, 0.1f);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(45));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
-                , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
-        matrixStackIn.popPose();
-        matrixStackIn.popPose();
+            matrixStackIn.translate(0.0, 0.15, 0.0);
+            matrixStackIn.pushPose();
+            matrixStackIn.translate(0.05, 0.0, 0.0);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-20));
+            matrixStackIn.pushPose();
+            matrixStackIn.scale(0.1f, 0.25f, 0.1f);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(45));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE)
+                    , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(-0.05, 0.00, -0.05);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(0.1f, 0.3f, 0.1f);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
-                , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
-        matrixStackIn.popPose();
-        matrixStackIn.popPose();
+            matrixStackIn.pushPose();
+            matrixStackIn.translate(-0.05, 0.00, -0.05);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-20));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
+            matrixStackIn.pushPose();
+            matrixStackIn.scale(0.1f, 0.3f, 0.1f);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE)
+                    , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(-0.05, 0.00, 0.05);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(20));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(0.1f, 0.2f, 0.1f);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-45));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE)
-                , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
-        matrixStackIn.popPose();
-        matrixStackIn.popPose();
+            matrixStackIn.pushPose();
+            matrixStackIn.translate(-0.05, 0.00, 0.05);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(20));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(20));
+            matrixStackIn.pushPose();
+            matrixStackIn.scale(0.1f, 0.2f, 0.1f);
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-45));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-45));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE)
+                    , new RenderHelper.RenderContext(0.5f, Color.ORIGIN_COLOR, RenderHelper.renderLight));
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
+            RenderHelper.queueMode = false;
+        }
+
 
         matrixStackIn.popPose();
     }

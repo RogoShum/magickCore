@@ -1,10 +1,10 @@
 {
-   "criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "magick_core"
-		}
-	}
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

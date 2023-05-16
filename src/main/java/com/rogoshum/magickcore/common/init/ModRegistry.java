@@ -112,6 +112,7 @@ public class ModRegistry {
         childContexts.register(LibContext.MANA_FACTOR, ExtraManaFactorContext::new);
         childContexts.register(LibContext.REMOVE_HURT_TIME, RemoveHurtTimeContext::new);
         childContexts.register(LibContext.PSI_SPELL, PsiSpellContext::new);
+        childContexts.register(LibContext.DIMENSION, DimensionContext::new);
 
         ObjectRegistry<Callable<Condition<?>>> conditions = new ObjectRegistry<>(LibRegistry.CONDITION);
         conditions.register(LibConditions.ALWAYS, AlwaysCondition::new);

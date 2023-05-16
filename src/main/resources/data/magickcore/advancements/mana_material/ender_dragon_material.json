@@ -1,10 +1,16 @@
 {
-	"criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "ender_dragon_material"
-		}
-	}
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "ender_dragon_material"
+      }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

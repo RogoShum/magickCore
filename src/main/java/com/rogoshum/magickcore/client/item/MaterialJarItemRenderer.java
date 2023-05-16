@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -30,6 +32,25 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 0.1901, 0.5);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+
+        matrixStackIn.pushPose();
+        if(transformType == ItemTransforms.TransformType.GUI || transformType == ItemTransforms.TransformType.GROUND)
+            matrixStackIn.scale(0.3f, 0.42f, 0.3f);
+        else {
+            matrixStackIn.translate(0.0, 0.25, 0.0);
+            matrixStackIn.scale(1.0f, 1.4f, 1.0f);
+        }
+        VertexConsumer vertex = bufferIn.getBuffer(RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX));
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
+                    , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStackIn.scale(0.9f, 0.9f, 0.9f);
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
+                    , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
+        }
+        RenderHelper.queueMode = false;
+        matrixStackIn.popPose();
 
         if(stack.hasTag()) {
             CompoundTag blockTag = NBTTagHelper.getBlockTag(stack.getTag());
@@ -61,21 +82,6 @@ public class MaterialJarItemRenderer extends BlockEntityWithoutLevelRenderer {
                 }
             }
         }
-
-        matrixStackIn.pushPose();
-        if(transformType == ItemTransforms.TransformType.GUI || transformType == ItemTransforms.TransformType.GROUND)
-            matrixStackIn.scale(0.3f, 0.42f, 0.3f);
-        else {
-            matrixStackIn.translate(0.0, 0.25, 0.0);
-            matrixStackIn.scale(1.0f, 1.4f, 1.0f);
-        }
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
-                , new RenderHelper.RenderContext(0.2f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStackIn.scale(0.9f, 0.9f, 0.9f);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedShaderItemTranslucent(RenderHelper.BLANK_TEX))
-                , new RenderHelper.RenderContext(0.05f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStackIn.popPose();
-
 
         matrixStackIn.popPose();
     }

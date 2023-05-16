@@ -102,7 +102,7 @@ public class ConditionItem extends ManaItem implements IManaMaterial {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
+        tooltip.add(new TranslatableComponent(LibItem.ENTITY_TYPE_MATERIAL));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 

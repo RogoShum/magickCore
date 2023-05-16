@@ -28,8 +28,8 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
     float alphaS;
     float alphaC;
     final RenderType TYPE = RenderHelper.getTexturedEntityGlint(blank, 1f, 0f);
-    final RenderType INNER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1f, 0f, 0.025f, 0.05f);
-    final RenderType OUTER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1.1f, 0f, 0.025f, 0.05f);
+    final RenderType INNER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1f, 0f, 0.005f, 1f);
+    final RenderType OUTER_TYPE = RenderHelper.getTexturedUniGlint(cylinder_bloom, 1.1f, 0f, 0.005f, 1f);
     RenderHelper.RenderContext RENDER_5;
     RenderHelper.CylinderContext CYLINDER_INNER = new RenderHelper.CylinderContext(0.5f, 0.5f, 1, 3, 2f
             , 0, 0.8f, 1.5f);

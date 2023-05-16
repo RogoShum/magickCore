@@ -1,11 +1,17 @@
 {
-	"parent": "magickcore:learn/root",
-	"criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "mana_multi"
-		}
-	}
+  "parent": "magickcore:learn/root",
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "mana_multi"
+      }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

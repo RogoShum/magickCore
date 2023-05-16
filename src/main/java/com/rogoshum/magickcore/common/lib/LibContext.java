@@ -6,6 +6,7 @@ public class LibContext {
     public static final String ITEM = "item";
     public static final String POTION = "potion";
     public static final String POSITION = "position";
+    public static final String DIMENSION = "dimension";
     public static final String DIRECTION = "direction";
     public static final String OFFSET = "offset";
     public static final String APPLY_TYPE = "apply_type";

@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
@@ -39,12 +41,20 @@ public class ManaCapacityRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStackIn.pushPose();
         float scale = capacity.manaCapacity().getMana() / capacity.manaCapacity().getMaxMana();
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element.primaryColor(), combinedLight));
-        matrixStackIn.popPose();
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RENDER_TYPE_0)
-                , new RenderHelper.RenderContext(0.12f, capacity.spellContext().element.primaryColor(), combinedLight));
+        VertexConsumer vertex = bufferIn.getBuffer(RENDER_TYPE_1);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element.primaryColor(), combinedLight));
+            matrixStackIn.popPose();
+        }
+        vertex = bufferIn.getBuffer(RENDER_TYPE_0);
+        if(vertex instanceof BufferBuilder builder) {
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE_0)
+                    , new RenderHelper.RenderContext(0.12f, capacity.spellContext().element.primaryColor(), combinedLight));
+        }
+        RenderHelper.queueMode = false;
         matrixStackIn.popPose();
     }
 }

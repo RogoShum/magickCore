@@ -1,6 +1,6 @@
 {
   "name": "流浪法师",
-  "icon": "magickcore:entity_type{item_extra_data:{CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}}}}",
+  "icon": "magickcore:mage_spawn_egg",
   "category": "magickcore:intro",
   "pages": [
     {

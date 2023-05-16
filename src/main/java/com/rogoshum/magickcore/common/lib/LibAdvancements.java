@@ -53,6 +53,8 @@ public class LibAdvancements {
     public static final String MAGICK_CRAFTING = "magick_crafting";
     public static final String CONTEXT_CORE = "context_core";
     public static final String MAGICK_CORE = "magick_core";
+    public static final String RADIANCE_CRYSTAL = "radiance_crystal";
+    public static final String QUADRANT_CRYSTAL = "quadrant_crystal";
     public static final String ENTITY_TYPE = "pre_entity_type";
     public static final String UNDERSTAND_SPELL = "understand_spell";
     public static final String CONTEXT_POINTER = "context_pointer";

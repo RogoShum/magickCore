@@ -1,12 +1,12 @@
 {
-  "name": "法术",
+  "name": "运用魔法",
   "advancement": "magickcore:learn/root",
   "icon": "magickcore:magick_context",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",
-      "text": "法术的本质是利用道具引导出自身体内的魔力，不同元素的魔力也会表现出不同的特性。引导出自身魔力的关键就是灵魂水晶。获得一些灵魂水晶也是我们操作魔力的开始。"
+      "text": "魔法的本质是利用道具引导出自身体内的魔力，不同元素的魔力也会表现出不同的特性。引导出自身魔力的关键就是灵魂水晶。获得一些灵魂水晶也是我们操作魔力的开始。"
     },
     {
       "type": "spotlight",

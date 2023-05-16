@@ -6,6 +6,12 @@
       "conditions": {
         "string": "entity_type_mana_sphere"
       }
+    },
+    "context_pointer": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "context_pointer"
+      }
     }
   }
 }

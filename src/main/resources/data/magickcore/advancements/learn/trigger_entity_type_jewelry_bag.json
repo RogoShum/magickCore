@@ -6,6 +6,12 @@
       "conditions": {
         "string": "entity_type_jewelry_bag"
       }
+    },
+    "context_pointer": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "context_pointer"
+      }
     }
   }
 }

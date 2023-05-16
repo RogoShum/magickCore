@@ -155,7 +155,8 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
             this.livingAgent.level = level;
         }
 
-        if(this.capacity == null) {
+        /*
+                if(this.capacity == null) {
             List<Entity> capacities = level.getEntities((Entity) null, new AABB(blockPos).inflate(5), e -> e instanceof IManaCapacity);
             Optional<Entity> artificial = capacities.stream().min(Comparator.comparing((capacity -> capacity.distanceToSqr(Vec3.atCenterOf(blockPos)))));
             artificial.ifPresent(capacity -> this.capacity = capacity);
@@ -174,8 +175,10 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
                 state.setManaValue(state.getManaValue() + mana);
             }
         }
-
-        releaseMagick(level, blockPos, applyType == ApplyType.RADIANCE);
+         */
+        EntityStateData state = ExtraDataUtil.entityStateData(this.livingAgent);
+        state.setMaxManaValue(ManaLimit.MAX_MANA.getValue());
+        releaseMagick(level, blockPos, true);//applyType == ApplyType.RADIANCE
     }
 
     public void releaseMagick(Level level, BlockPos blockPos, boolean noCost) {
@@ -187,7 +190,7 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
                 return entity != this.livingAgent;
             });
             float force = 1;
-            if(applyType == ApplyType.RADIANCE && entities.size() > 3)
+            if(entities.size() > 3)//applyType == ApplyType.RADIANCE &&
                 force = 3f / entities.size();
             removeFromPublicMap(entities);
             for(Entity entity : entities) {

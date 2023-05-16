@@ -6,6 +6,12 @@
       "conditions": {
         "string": "element_func_wither_buff"
       }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
     }
   }
 }

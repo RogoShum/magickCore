@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
@@ -44,14 +46,18 @@ public class ContextPointerRenderer extends BlockEntityWithoutLevelRenderer {
 
         float height = 0.8f;
         float radius = 0.22f;
+        VertexConsumer vertex = bufferIn.getBuffer(TYPE);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, 1, height, 0.0f, 1, 0.5f);
+            RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, builder, TYPE)
+                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
 
-        RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, 1, height, 0.0f, 1, 0.5f);
-        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
-                , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
-
-        context = new RenderHelper.CylinderContext(0.7f, 0.6f, 1.5f, 1, height, 0.12f, 1, 0.3f);
-        RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), TYPE)
-                , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+            context = new RenderHelper.CylinderContext(0.7f, 0.6f, 1.5f, 1, height, 0.12f, 1, 0.3f);
+            RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, builder, TYPE)
+                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+        }
+        RenderHelper.queueMode = false;
         matrixStackIn.popPose();
     }
 }

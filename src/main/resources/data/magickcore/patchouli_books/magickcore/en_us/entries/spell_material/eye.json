@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_spider_eye",
-	  "text": "使用蜘蛛眼在魔法合成阵转换而成。"
+	  "text": "使用蜘蛛眼在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，将元素转变为减益状态。"
     }
   ]
 }

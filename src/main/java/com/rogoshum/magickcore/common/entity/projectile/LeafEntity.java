@@ -52,7 +52,7 @@ public class LeafEntity extends ManaProjectileEntity {
 
     @Override
     public float getSourceLight() {
-        return 5;
+        return 8;
     }
 
     @Override

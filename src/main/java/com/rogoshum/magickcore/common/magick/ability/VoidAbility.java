@@ -2,6 +2,8 @@ package com.rogoshum.magickcore.common.magick.ability;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.magick.context.child.DimensionContext;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -119,6 +121,7 @@ public class VoidAbility{
             target = context.caster;
         if(!target.isAlive()) return false;
 
+        Level level = context.world;
         Vec3 pos;
         ParticleUtil.spawnBlastParticle(context.world, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         if(context.containChild(LibContext.POSITION)) {
@@ -129,9 +132,21 @@ public class VoidAbility{
         } else {
             pos = target.getLookAngle().scale(context.range * 2).add(target.position());
         }
-        target.teleportTo(pos.x, pos.y, pos.z);
-        target.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.0f);
-        ParticleUtil.spawnBlastParticle(context.world, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
+        if(!context.world.isClientSide() && context.containChild(DimensionContext.TYPE)) {
+            DimensionContext dimensionContext = context.getChild(DimensionContext.TYPE);
+            Level dimension = context.world.getServer().getLevel(dimensionContext.dimension);
+            if(dimension != null && level != dimension) {
+                level = dimension;
+                target = target.changeDimension((ServerLevel) level);
+                if(context.caster instanceof LivingEntity)
+                    ExtraDataUtil.entityStateData(context.caster).setManaValue(0);
+            }
+        }
+        if(target != null) {
+            target.teleportTo(pos.x, pos.y, pos.z);
+            target.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.0f);
+            ParticleUtil.spawnBlastParticle(level, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
+        }
         return true;
     }
 

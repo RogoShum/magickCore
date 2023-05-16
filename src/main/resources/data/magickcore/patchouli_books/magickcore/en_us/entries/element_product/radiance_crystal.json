@@ -1,0 +1,32 @@
+{
+  "name": "辉耀水晶",
+  "advancement": "magickcore:element_product/radiance_crystal",
+  "icon": "magickcore:radiance_crystal",
+  "category": "magickcore:element_product",
+  "pages": [
+    {
+      "title": "辉耀水晶",
+      "type": "spotlight",
+      "item": "magickcore:radiance_crystal{ELEMENT:\"arc\"},magickcore:radiance_crystal{ELEMENT:\"void\"},magickcore:radiance_crystal{ELEMENT:\"solar\"}",
+      "text": "辉耀水晶是一种功能性实体方块，根据元素的不同，可以发挥出不同的功能。它的合成原材料为象限碎片和元素水晶。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:quadrant_fragments{ELEMENT:\"arc\"},magickcore:quadrant_fragments{ELEMENT:\"void\"},magickcore:quadrant_fragments{ELEMENT:\"solar\"}",
+      "item1": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"solar\"}",
+      "item2": "magickcore:quadrant_fragments{ELEMENT:\"arc\"},magickcore:quadrant_fragments{ELEMENT:\"void\"},magickcore:quadrant_fragments{ELEMENT:\"solar\"}",
+      "item3": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"solar\"}",
+      "item4": "magickcore:quadrant_fragments{ELEMENT:\"arc\"},magickcore:quadrant_fragments{ELEMENT:\"void\"},magickcore:quadrant_fragments{ELEMENT:\"solar\"}",
+      "item5": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"solar\"}",
+      "item6": "magickcore:quadrant_fragments{ELEMENT:\"arc\"},magickcore:quadrant_fragments{ELEMENT:\"void\"},magickcore:quadrant_fragments{ELEMENT:\"solar\"}",
+      "item7": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"solar\"}",
+      "item8": "magickcore:quadrant_fragments{ELEMENT:\"arc\"},magickcore:quadrant_fragments{ELEMENT:\"void\"},magickcore:quadrant_fragments{ELEMENT:\"solar\"}",
+      "output": "magickcore:radiance_crystal{ELEMENT:\"arc\"},magickcore:radiance_crystal{ELEMENT:\"void\"},magickcore:radiance_crystal{ELEMENT:\"solar\"}",
+      "text": "一个象限水晶会掉落1-3个象限碎片，想要合成一个辉耀水晶至少要击杀2只象限水晶。"
+    },
+    {
+      "type": "text",
+      "text": "辉耀水晶在默认情况下不需要消耗魔力，它会对周围的实体释放辉耀状态的元素魔法。$(br2)辉耀水晶也可以放入更改元素状态的魔力材料，此时它更改魔力的状态，对周围实体释放此状态下低强度的魔法。"
+    }
+  ]
+}

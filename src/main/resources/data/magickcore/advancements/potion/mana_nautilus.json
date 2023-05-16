@@ -1,11 +1,11 @@
 {
   "parent": "magickcore:learn/root",
-	"criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "mana_nautilus"
-		}
-	}
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "mana_nautilus"
+      }
+    }
   }
 }

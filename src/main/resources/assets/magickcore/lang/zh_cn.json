@@ -240,6 +240,7 @@
     "magickcore.description.form_separator": "§9分离后续形态",
     "magickcore.description.separator": "分离后续形态",
     "magickcore.description.position": "位置",
+    "magickcore.description.dimension": "维度",
     "magickcore.description.apply_type": "额外类型",
     "magickcore.description.psi_spell": "Psi法术",
     "magickcore.description.spell_context": "法术",

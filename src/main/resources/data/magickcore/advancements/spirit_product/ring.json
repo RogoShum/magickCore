@@ -1,11 +1,17 @@
 {
-	"parent": "magickcore:spell_learn/magick_core",
-   "criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "ring"
-		}
-	}
+  "parent": "magickcore:spell_learn/magick_core",
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "ring"
+      }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

@@ -4,10 +4,15 @@
   "icon": "magickcore:artificial_life",
   "category": "magickcore:spirit_product",
   "pages": [
-	{
+    {
       "type": "spotlight",
-	  "item": "magickcore:artificial_life",
-	  "text": "人造生命是一种合成生命，内部本身含有灵魂水晶，可以利用成型法术释放魔法，对人造生命使用成型法术可以存入其中。潜行右键可以清除成型法术。"
+      "item": "magickcore:artificial_life",
+      "text": "人造生命是一种合成生命，内部本身含有灵魂水晶，可以利用成型法术释放魔法，对人造生命使用成型法术可以存入其中。潜行右键可以清除成型法术。"
+    },
+    {
+      "type": "crafting",
+      "recipe": "magickcore:artificial_life",
+      "text": "合成方式"
     },
     {
       "type": "entity",

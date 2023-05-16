@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.common.magick.Color;
@@ -39,8 +41,13 @@ public class SpiritWoodStickRenderer extends BlockEntityWithoutLevelRenderer {
         }
         matrixStackIn.scale(0.15f, 1.5f, 0.15f);
 
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png")))
-                , new RenderHelper.RenderContext(0.8f, Color.ORIGIN_COLOR, combinedLight));
+        VertexConsumer vertex = bufferIn.getBuffer(RENDER_TYPE);
+        if(vertex instanceof BufferBuilder) {
+            RenderHelper.queueMode = true;
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, (BufferBuilder) vertex, RenderType.entityTranslucent(new ResourceLocation( "minecraft:textures/block/quartz_block_top.png")))
+                    , new RenderHelper.RenderContext(0.8f, Color.ORIGIN_COLOR, combinedLight));
+            RenderHelper.queueMode = false;
+        }
         matrixStackIn.popPose();
     }
 }

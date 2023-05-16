@@ -1,6 +1,7 @@
 package com.rogoshum.magickcore.client.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
@@ -31,8 +32,12 @@ public class ItemExtractorRenderer extends BlockEntityWithoutLevelRenderer {
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack matrixStackIn, MultiBufferSource typeBufferIn, int combinedLight, int combinedOverlay) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5F, 0.5F, 0.5F);
-        BufferBuilder bufferIn = Tesselator.getInstance().getBuilder();
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
+        VertexConsumer vertex = typeBufferIn.getBuffer(RENDER_TYPE_0);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE_0), new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
+        }
+        RenderHelper.queueMode = false;
         matrixStackIn.popPose();
     }
 }

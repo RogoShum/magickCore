@@ -1,11 +1,17 @@
 {
-	"parent": "magickcore:element_product/spirit_crystal",
-	"criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "mana_dust"
-		}
-	}
+  "parent": "magickcore:element_product/spirit_crystal",
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "mana_dust"
+      }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

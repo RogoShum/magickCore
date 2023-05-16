@@ -76,6 +76,7 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
     @Override
     public void update() {
         super.update();
+        /*
         DIRECTION = Queues.newArrayDeque();
         List<Entity> livings = tile.getLevel().getEntities((Entity) null, new AABB(tile.getBlockPos()).inflate(8), (entity) -> entity instanceof IManaCapacity);
         for (Entity entity : livings) {
@@ -87,6 +88,7 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
             Vec2 rota = getRotationFromVector(dirc);
             DIRECTION.add(new Vec3(rota.x, rota.y, distance));
         }
+         */
     }
 
     public void renderLaser(RenderParams params) {
@@ -114,8 +116,8 @@ public class RadianceCrystalRenderer extends EasyTileRenderer<RadianceCrystalTil
             map.put(new RenderMode(SIDE), this::renderSide);
         }
         map.put(RenderMode.ORIGIN_RENDER, this::renderItem);
-        if(DIRECTION != null)
-            map.put(new RenderMode(LASER_TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderLaser);
+        //if(DIRECTION != null)
+           // map.put(new RenderMode(LASER_TYPE, RenderMode.ShaderList.BITS_SMALL_SHADER), this::renderLaser);
         return map;
     }
 }

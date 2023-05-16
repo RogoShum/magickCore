@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
@@ -36,50 +38,63 @@ public class SpiritSwordRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.65f, 0.65f, 0.65f);
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(135));
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0.7, 0);
-        matrixStack.scale(0.08f, 0.6f, 0.08f);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0.3, 0);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        matrixStack.scale(0.25f, 0.25f, 0.25f);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RenderHelper.getTexturedQuadsGlow(QUARTZ))
-                , new RenderHelper.RenderContext(1.0f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(0.3, 0.3, 0);
-        matrixStack.scale(0.3f, 0.15f, 0.1f);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
+        VertexConsumer vertex = bufferIn.getBuffer(RENDER_TYPE_1);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            matrixStack.pushPose();
+            matrixStack.translate(0, 0.7, 0);
+            matrixStack.scale(0.08f, -0.6f, 0.08f);
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(-0.3, 0.3, 0);
-        matrixStack.scale(0.3f, 0.15f, 0.1f);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
+            matrixStack.pushPose();
+            matrixStack.translate(0.2, 0.3, 0);
+            matrixStack.scale(0.5f, 0.125f, 0.1f);
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(0, -0.2, 0);
-        matrixStack.scale(0.15f, 1.0f, 0.1f);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
+            matrixStack.pushPose();
+            matrixStack.translate(-0.2, 0.3, 0);
+            matrixStack.scale(0.5f, 0.125f, 0.1f);
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
 
-        ItemManaData data = ExtraDataUtil.itemManaData(stack, 2);
+            matrixStack.pushPose();
+            matrixStack.translate(0, -0.2, 0);
+            matrixStack.scale(0.15f, 1.0f, 0.1f);
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
+        }
+
+        /*
+                VertexConsumer quartz = bufferIn.getBuffer(RenderHelper.getTexturedQuadsGlow(QUARTZ));
+        if(quartz instanceof BufferBuilder builder1) {
+            matrixStack.pushPose();
+            matrixStack.translate(0, 0.3, 0);
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            matrixStack.scale(0.25f, 0.25f, 0.25f);
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder1, RenderHelper.getTexturedQuadsGlow(QUARTZ))
+                    , new RenderHelper.RenderContext(0.1f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
+        }
+         */
+        RenderHelper.queueMode = false;
+
+        ItemManaData data = p_239207_2_ == ItemTransforms.TransformType.GUI || p_239207_2_ == ItemTransforms.TransformType.GROUND ?
+                ExtraDataUtil.itemManaData(stack, 1):ExtraDataUtil.itemManaData(stack, 2);
         if(data.contextCore().haveMagickContext()) {
             matrixStack.pushPose();
             matrixStack.translate(0, 0.3, 0);

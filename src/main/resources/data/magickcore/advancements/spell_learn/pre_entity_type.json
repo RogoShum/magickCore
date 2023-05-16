@@ -1,10 +1,16 @@
 {
-   "criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "pre_entity_type"
-		}
-	}
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "pre_entity_type"
+      }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
+    }
   }
 }

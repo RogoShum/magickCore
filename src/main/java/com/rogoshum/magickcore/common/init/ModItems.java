@@ -83,7 +83,7 @@ public class ModItems {
     public static final RegistryObject<Item> ELEMENT_MEAT = ITEMS.register("element_meat", () -> new ElementMeatItem(BaseItem.properties().food(
             new FoodProperties.Builder().meat().saturationMod(3f).fast().alwaysEat().effect(() -> new MobEffectInstance(ModEffects.MANA_STASIS.get(), 1200), 0.1f).build())));
     public static final RegistryObject<Item> ELEMENT_CRYSTAL = ITEMS.register("element_crystal", () -> new ElementCrystalItem(BaseItem.properties()));
-    public static final RegistryObject<Item> QUADRANT_FRAGMENTS = ITEMS.register("quadrant_fragments", () -> new ElementContainerItem(BaseItem.properties()));
+    public static final RegistryObject<Item> QUADRANT_FRAGMENTS = ITEMS.register("quadrant_fragments", () -> new QuadrantFragmentItem(BaseItem.properties()));
     public static final RegistryObject<Item> ELEMENT_WOOL = ITEMS.register("element_wool", ElementWoolItem::new);
     public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", ElementStringItem::new);
     //public static final RegistryObject<Item> ASSEMBLY_ESSENCE = ITEMS.register("assembly_essence", AssemblyEssenceItem::new);

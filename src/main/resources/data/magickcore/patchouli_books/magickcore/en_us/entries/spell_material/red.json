@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
-	  "text": "使用红石粉在魔法合成阵转换而成。"
+	  "text": "使用红石粉在魔法合成阵转换而成。可以作为魔力材料在功能构造与形态构造中使用，提升功能法术和形态法术的持续时间属性。"
     }
   ]
 }

@@ -14,6 +14,7 @@ import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.common.entity.base.ManaProjectileEntity;
 import com.rogoshum.magickcore.common.entity.living.ArtificialLifeEntity;
+import com.rogoshum.magickcore.common.entity.living.QuadrantCrystalEntity;
 import com.rogoshum.magickcore.common.entity.pointed.ChainEntity;
 import com.rogoshum.magickcore.common.entity.pointed.RepeaterEntity;
 import com.rogoshum.magickcore.common.entity.projectile.*;
@@ -756,6 +757,9 @@ public class MagickLogicEvent {
 
 		if(state != null) {
 			onDamage(event.getSource(), event, state, entity);
+		}
+		if(event.getSource().getEntity() instanceof QuadrantCrystalEntity && event.getEntityLiving() instanceof ServerPlayer) {
+			AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) event.getEntityLiving(), LibAdvancements.QUADRANT_CRYSTAL);
 		}
 	}
 

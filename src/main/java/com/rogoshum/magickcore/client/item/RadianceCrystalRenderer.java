@@ -1,7 +1,9 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
@@ -43,8 +45,12 @@ public class RadianceCrystalRenderer extends BlockEntityWithoutLevelRenderer {
         }
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, Tesselator.getInstance().getBuilder(), CRYSTAL_TYPE)
-                , new RenderHelper.RenderContext(0.7f, color, combinedLight));
+        VertexConsumer vertex = bufferIn.getBuffer(CRYSTAL_TYPE);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder)
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, CRYSTAL_TYPE)
+                    , new RenderHelper.RenderContext(0.7f, color, combinedLight));
+        RenderHelper.queueMode = false;
         matrixStackIn.popPose();
     }
 }

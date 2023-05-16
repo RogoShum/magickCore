@@ -43,7 +43,7 @@ public class RayEntity extends ManaProjectileEntity {
 
     @Override
     public float getSourceLight() {
-        return 7;
+        return 10;
     }
 
     @Override

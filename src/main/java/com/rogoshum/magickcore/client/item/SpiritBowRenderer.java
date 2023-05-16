@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.client.item;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
@@ -43,7 +44,8 @@ public class SpiritBowRenderer extends BlockEntityWithoutLevelRenderer {
         builder.vertex(matrixStack.last().pose(), 0, 0, 0).color(1, 1, 1, 0.5f).normal(0, 0, 0).endVertex();
         matrixStack.popPose();
 
-        ItemManaData data = ExtraDataUtil.itemManaData(stack, 2);
+        ItemManaData data = p_239207_2_ == ItemTransforms.TransformType.GUI || p_239207_2_ == ItemTransforms.TransformType.GROUND ?
+                ExtraDataUtil.itemManaData(stack, 0):ExtraDataUtil.itemManaData(stack, 2);
         if(data.contextCore().haveMagickContext()) {
             matrixStack.pushPose();
             matrixStack.translate(0.15, 0, 0);
@@ -54,25 +56,32 @@ public class SpiritBowRenderer extends BlockEntityWithoutLevelRenderer {
             Minecraft.getInstance().getItemRenderer().render(core, ItemTransforms.TransformType.GUI, false, matrixStack, bufferIn, combinedLight, OverlayTexture.NO_OVERLAY, ibakedmodel_);
             matrixStack.popPose();
         }
-        matrixStack.pushPose();
-        matrixStack.translate(0, -0.6, 0);
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-25));
-        matrixStack.scale(0.1f, 0.6f, 0.1f);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR,  combinedLight));
-        matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0.6, 0);
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(25));
-        matrixStack.scale(0.1f, 0.6f, 0.1f);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStack, Tesselator.getInstance().getBuilder(), RENDER_TYPE_1)
-                , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
-        matrixStack.popPose();
+
+        VertexConsumer vertex = bufferIn.getBuffer(RENDER_TYPE_1);
+        if(vertex instanceof BufferBuilder bufferBuilder) {
+            RenderHelper.queueMode = true;
+            matrixStack.pushPose();
+            matrixStack.translate(0, -0.6, 0);
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-25));
+            matrixStack.scale(0.1f, 0.6f, 0.1f);
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, bufferBuilder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR,  combinedLight));
+            matrixStack.popPose();
+
+            matrixStack.pushPose();
+            matrixStack.translate(0, 0.6, 0);
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(25));
+            matrixStack.scale(0.1f, 0.6f, 0.1f);
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(45));
+            matrixStack.mulPose(Vector3f.ZN.rotationDegrees(135));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStack, bufferBuilder, RENDER_TYPE_1)
+                    , new RenderHelper.RenderContext(0.9f, Color.ORIGIN_COLOR, combinedLight));
+            matrixStack.popPose();
+            RenderHelper.queueMode = false;
+        }
 
         matrixStack.popPose();
     }

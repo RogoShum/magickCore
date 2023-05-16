@@ -1,6 +1,6 @@
 {
   "name": "超能发生器",
-  "advancement": "magickcore:learn/ender_dragon_material",
+  "advancement": "magickcore:mana_material/ender_dragon_material",
   "icon": "magickcore:super_spawner",
   "category": "magickcore:spirit_product",
   "pages": [

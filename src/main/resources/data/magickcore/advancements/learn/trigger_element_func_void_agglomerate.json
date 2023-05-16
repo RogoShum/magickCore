@@ -6,6 +6,12 @@
       "conditions": {
         "string": "element_func_void_agglomerate"
       }
+    },
+    "magick_core": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "magick_core"
+      }
     }
   }
 }

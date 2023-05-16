@@ -1,10 +1,10 @@
 {
-   "criteria": {
-	"example": {
-		"trigger": "magickcore:string",
-		"conditions": {
-			"string": "context_pointer"
-		}
-	}
+  "criteria": {
+    "example": {
+      "trigger": "magickcore:string",
+      "conditions": {
+        "string": "context_pointer"
+      }
+    }
   }
 }
