@@ -1,5 +1,5 @@
 {
-  "name": "下界之星核心",
+  "name": "§9Nether Heart",
   "advancement": "magickcore:mana_material/nether_star_material",
   "icon": "magickcore:nether_star_material",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:nether_star_material",
-	  "text": "使用下界之星在魔法合成阵转换而成，与功能法术构造核心合成后可以提升功能法术构造核心的最高能量上限。对于形态构造核心而言，我们可以直接将下界之星核心当作材料丢入构造核心中，提升形态法术的属性上限。"
+	  "text": "Converted using Nether Star at Magic Synthesis Matrix, it can be combined with the functional spell core to increase the maximum energy limit of the context core. For the Form spell core, we can directly throw the Nether Heart into the spell core as a material to increase the upper limit of the form spell's attributes."
     },
     {
       "type": "magickcore:element_recipe",

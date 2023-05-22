@@ -1,0 +1,13 @@
+{
+  "name": "方块缩影",
+  "advancement": "magickcore:mana_material/condition_block",
+  "icon": "magickcore:condition_block",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:condition_block",
+	  "text": "使用圆石在魔法合成阵转换而成。可以作为魔力材料在形态构造中使用。方块缩影可以使法术形态只作用于方块。可以在合成台中与方块合成，作用于指定方块，也可以手持方块缩影潜行右键，来进行反向选取。"
+    }
+  ]
+}

@@ -66,7 +66,7 @@ public class LeafEntity extends ManaProjectileEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + x
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + y + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + z)
-                , scale, scale, 1f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , scale, scale, 1f, 20, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setParticleGravity(0f);
         par.setGlow();
         par.setLimitScale();

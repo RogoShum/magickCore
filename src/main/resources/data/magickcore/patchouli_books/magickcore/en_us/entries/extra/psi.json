@@ -1,24 +1,24 @@
 {
-  "name": "§3Psi元素",
+  "name": "§3Psi Element",
   "advancement": "magickcore:learn/trigger_element_energy_psi",
   "icon": "magickcore:spell_bullet",
   "category": "magickcore:extra",
   "pages": [
     {
       "type": "text",
-      "text": "在过量使用Psi能量之后，你偶然之间发现Psi能量可以凝聚成元素能量，当成法术魔力所使用。这是全新的发现！$(br2)现在任何装有术式的Psi术式子弹都可以在魔力工作台上转换为携带Psi元素的完备法术。"
+      "text": "After excessive use of Psi energy, you accidentally discovered that Psi energy can condense into elemental energy, which can be used as spell mana. This is a brand new discovery! $(br2) Now, any Psi spell bullet with a spell can be converted into a magick context carrying Psi element on the magic workbench."
     },
     {
       "type": "text",
-      "text": "Psi施法的完备法术是一种特殊的法术，这个法术的功能取决于术式子弹自身的功能。$(br2)在整个法术的运作中，可以把Psi术式当作是一个法术形态，Psi术式会被传入施术者、位置、方向等信息，法术把这些信息传入Psi术式，Psi术式可以对这些信息操作，再传递给后续法术。"
+      "text": "The magick context of Psi casting is a special spell whose function depends on the function of the spell bullet itself. $(br2)Throughout the operation of the entire spell, the Psi spell bullet can be regarded as a spell form, and the information such as the caster, position, and direction will be passed into the Psi spell bullet. The spell will pass these information to the Psi spell bullet, which can manipulate them and pass them on to subsequent spells."
     },
     {
       "type": "text",
-      "text": "在Psi编写台中，新增了五种模块：$(br2)1. $(#a30791)传入法术$()，这个模块用于传入当前的法术。$(br2)2. $(#167529)法术方向$(), 可以获取法术的方向信息。$(br2)3. $(#1f3394)法术位置$()，可以获得法术的位置信息，也可以用焦点来代替。"
+      "text": "New 5 pieces in the Spell Programmer：$(br2)1. $(#a30791)Operator: Spell incoming$(), This Operator is used to pass in the current MagickContext. $(br2)2. $(#167529)Operator: Spell direction$(), Get the direction of MagickContext.$(br2)3. $(#1f3394)Operator: Spell position$(), Get the position of MagickContext, \"Selector: Focal Point\" can be used instead."
     },
     {
       "type": "text",
-      "text": "4. $(#c2ae1b)法术目标$()，属于实体参数，如果由投掷物或者辐射通过触碰方块来触发法术，这个模块会传递空值。$(br2)5. $(#a30791)传出法术$()，启动式模块，需要传入位置、方向、当前的法术等信息，然后启动后续法术。"
+      "text": "4. $(#c2ae1b)Operator: Spell target$(), is an entity parameter, if the spell is triggered by a projectile or radiation by touching the block, this Operator will pass a empty value. $(br2)5. $(#a30791)Trick: Spell outgoing$()，This Trick needs to pass in information such as position, direction, and current spell, and then start the subsequent spell."
     }
   ]
 }

@@ -59,7 +59,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
     @Override
     public int getBarColor(ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack, 0);
-        Color color = data.spellContext().element.getRenderer().getPrimaryColor();
+        Color color = data.spellContext().element().getRenderer().getPrimaryColor();
         if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
             color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().primaryColor();
         }

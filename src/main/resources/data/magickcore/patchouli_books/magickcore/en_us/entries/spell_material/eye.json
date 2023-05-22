@@ -1,5 +1,5 @@
 {
-  "name": "魔力蜘蛛眼",
+  "name": "Mana Spider Eye",
   "advancement": "magickcore:mana_material/mana_spider_eye",
   "icon": "magickcore:mana_spider_eye",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_spider_eye",
-	  "text": "使用蜘蛛眼在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，将元素转变为减益状态。"
+	  "text": "Converted using spider's eye at Magic Synthesis Matrix. Can be used in functional spell as a mana material, changing the state of an element to Debuff."
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
-  "name": "§2枯萎§7凝聚",
+  "name": "§2Wither §7Agglomerate",
   "advancement": "magickcore:learn/trigger_element_func_wither_agglomerate",
   "icon": "magickcore:wither",
   "category": "magickcore:element",
   "pages": [
     {
       "type": "text",
-      "text": "凝聚状态的枯萎元素可以催熟作物，如果施法目标是生物，可以增加生物的年龄。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()"
+      "text": "Wither of the Diffusion can ripen crops. If the target of the spell is a creature, it can increase the age of the creature.$(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
     }
   ]
 }

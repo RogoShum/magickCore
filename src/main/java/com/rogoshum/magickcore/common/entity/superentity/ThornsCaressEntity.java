@@ -86,22 +86,22 @@ public class ThornsCaressEntity extends ManaPointEntity implements ISuperEntity 
 
     protected void applyParticle() {
         if(this.tickCount % 2 == 0){
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight() / 2
                     , this.getZ())
-                    , 0.45f, 0.45f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
+                    , 0.45f, 0.45f, this.random.nextFloat(), 60, this.spellContext().element().getRenderer());
             par.setGlow();
             //par.setParticleGravity(0);
             par.addMotion(MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05);
             MagickCore.addMagickParticle(par);
         }
         if(this.tickCount % 5 == 0){
-            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element().getRenderer().getMistTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
-                    , this.random.nextFloat() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth(), 0.6f + 0.4f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 4, this.spellContext().element.getRenderer());
+                    , this.random.nextFloat() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth(), 0.6f + 0.4f * this.random.nextFloat(), this.spellContext().element().getRenderer().getParticleRenderTick() / 4, this.spellContext().element().getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(5.0f);

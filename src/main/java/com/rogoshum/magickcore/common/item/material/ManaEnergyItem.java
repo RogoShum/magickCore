@@ -108,7 +108,7 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     @Override
     public int getManaNeed(ItemStack stack) {
         SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
-        return (int)((item.tick + item.range + item.force) * 1000);
+        return (int)((item.tick() + item.range() + item.force()) * 1000);
     }
 
     @Override
@@ -116,9 +116,9 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
         if (data instanceof IMaterialLimit) {
             SpellContext item = ExtraDataUtil.itemManaData(stack).spellContext();
             Material limit = ((IMaterialLimit) data).getMaterial();
-            if((data.spellContext().force < limit.getForce() && item.force > 0) ||
-                    (data.spellContext().tick < limit.getTick() && item.tick > 0) ||
-                    (data.spellContext().range < limit.getRange() && item.range > 0)) {
+            if((data.spellContext().force() < limit.getForce() && item.force() > 0) ||
+                    (data.spellContext().tick() < limit.getTick() && item.tick() > 0) ||
+                    (data.spellContext().range() < limit.getRange() && item.range() > 0)) {
                 data.spellContext().merge(item);
                 limit.limit(data.spellContext());
                 return true;

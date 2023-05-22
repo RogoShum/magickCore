@@ -79,7 +79,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, RenderHelper.getTexturedUniGlint(
                         wind, height, 0f))
-                , INNER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.secondaryColor()));
+                , INNER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element().secondaryColor()));
     }
 
     private void renderOuter(RenderParams renderParams) {
@@ -94,7 +94,7 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         //matrixStackIn.translate(0,  height - 0.5 + (-c / 29 * 2), 0);
         RenderType renderType = RenderHelper.getTexturedUniGlint(wind, height, 0f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                , OUTER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
+                , OUTER_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor()));
     }
 
     private void renderBase(RenderParams renderParams) {
@@ -104,13 +104,13 @@ public class GravityLiftRenderer extends EasyRenderer<GravityLiftEntity> {
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(360f * (c / 19)));
         RenderType renderType = RenderHelper.getTexturedUniGlint(wind, 0.5f, 0f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
+                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor()));
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0, -0.5, 0);
         matrixStackIn.scale(1.2f, 2f, 1.2f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, renderParams.buffer, renderType)
-                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor()));
+                , BASE_CYLINDER, new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor()));
         matrixStackIn.popPose();
     }
 

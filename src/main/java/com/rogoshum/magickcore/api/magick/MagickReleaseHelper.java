@@ -65,30 +65,30 @@ public class MagickReleaseHelper {
 
     public static float manaNeed(MagickContext context) {
         float manaNeed = singleContextMana(context);
-        SpellContext post = context.postContext;
+        SpellContext post = context.postContext();
         while (post != null) {
             manaNeed += singleContextMana(post);
-            post = post.postContext;
+            post = post.postContext();
         }
         return manaNeed;
     }
 
     public static float singleContextMana(SpellContext context) {
-        float baseMana = context.tick + (float)(Math.pow(context.force, 1.5) * 10);
+        float baseMana = context.tick() + (float)(Math.pow(context.force(), 1.5) * 10);
         if(context.containChild(LibContext.TRACE))
             baseMana *= 1.2f;
         if(context.containChild(LibContext.SPAWN)) {
             baseMana *= 0.5f;
-            baseMana += (float)(Math.pow(context.range, 2.5) * 4);
+            baseMana += (float)(Math.pow(context.range(), 2.5) * 4);
             EntityType<?> type = context.<SpawnContext>getChild(LibContext.SPAWN).entityType;
             if(type.getCategory() != MobCategory.MISC && type.getCategory() != MobCategory.AMBIENT)
                 baseMana += (type.getHeight() + type.getWidth()) * 2000;
             else
                 baseMana += (type.getHeight() + type.getWidth()) * 30;
         } else {
-            baseMana += (float)(Math.pow(context.range, 2.5) * 2);
+            baseMana += (float)(Math.pow(context.range(), 2.5) * 2);
         }
-        if(context.containChild(PositionContext.TYPE)) {
+        if(context.containChild(PotionContext.TYPE)) {
             baseMana += 200f;
         }
         /*
@@ -161,12 +161,12 @@ public class MagickReleaseHelper {
 
         MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
 
-        if(context.element != null && !LibElements.ORIGIN.equals(context.element.type()))
-            element = context.element;
+        if(context.element() != null && !LibElements.ORIGIN.equals(context.element().type()))
+            element = context.element();
         else if(context.projectile instanceof ISpellContext)
-            element = ((ISpellContext) context.projectile).spellContext().element;
+            element = ((ISpellContext) context.projectile).spellContext().element();
         else if(context.caster instanceof ISpellContext)
-            element = ((ISpellContext) context.caster).spellContext().element;
+            element = ((ISpellContext) context.caster).spellContext().element();
         else if(context.caster != null)
             element = ExtraDataUtil.entityStateData(context.caster).getElement();
 
@@ -183,12 +183,12 @@ public class MagickReleaseHelper {
                     Math.max(projectileFactor.tick * manaFactor.tick, projectileFactor.tick));
         }
 
-        context.force(manaFactor.force * context.force);
-        context.range(manaFactor.range * context.range);
-        context.tick((int) (manaFactor.tick * context.tick));
+        context.force(manaFactor.force * context.force());
+        context.range(manaFactor.range * context.range());
+        context.tick((int) (manaFactor.tick * context.tick()));
 
         if(context.caster instanceof ServerPlayer) {
-            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) context.caster, "element_func_" + element.type() + "_" + context.applyType);
+            AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) context.caster, "element_func_" + element.type() + "_" + context.applyType());
         }
         context.element(element);
         if(context.world != null) {
@@ -213,13 +213,13 @@ public class MagickReleaseHelper {
             }
         }
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
-        if(success && !context.applyType.isForm() && context.caster != null && context.projectile == null)
+        if(success && !context.applyType().isForm() && context.caster != null && context.projectile == null)
             context.world.playSound(null, context.caster, ModSounds.cast.get(), SoundSource.PLAYERS, 0.15f, 0.5f+context.world.random.nextFloat());
-        if(context.applyType.continueCast()) {
-            SpellContext postContext = context.postContext;
+        if(context.applyType().continueCast()) {
+            SpellContext postContext = context.postContext();
             if (postContext != null) {
                 MagickContext magickContext = MagickContext.create(context.world, postContext).caster(context.caster).projectile(context.projectile).victim(context.victim).noCost();
-                magickContext.force(manaFactor.force * magickContext.force).range(manaFactor.range * magickContext.range).tick((int) (manaFactor.tick * magickContext.tick));
+                magickContext.force(manaFactor.force * magickContext.force()).range(manaFactor.range * magickContext.range()).tick((int) (manaFactor.tick * magickContext.tick()));
                 boolean flag = MagickReleaseHelper.releaseMagick(magickContext, manaFactor);
                 if(flag)
                     success = true;
@@ -279,10 +279,10 @@ public class MagickReleaseHelper {
             context.serialize(tag);
             spellContext.spellContext().deserialize(tag);
             MagickElement element = MagickRegistry.getElement(LibElements.ORIGIN);
-            if(context.element != null && !LibElements.ORIGIN.equals(context.element.type()))
-                element = context.element;
+            if(context.element() != null && !LibElements.ORIGIN.equals(context.element().type()))
+                element = context.element();
             else if(context.caster instanceof ISpellContext)
-                element = ((ISpellContext) context.caster).spellContext().element;
+                element = ((ISpellContext) context.caster).spellContext().element();
             else if(context.caster instanceof LivingEntity)
                 element = ExtraDataUtil.entityStateData(context.caster).getElement();
             spellContext.spellContext().element(element);
@@ -346,10 +346,10 @@ public class MagickReleaseHelper {
         if(!event.isCanceled()) {
             if(pro instanceof IManaEntity && context.containChild(LibContext.SEPARATOR)) {
                 SpellContext preForm = ((IManaEntity) pro).spellContext();
-                SpellContext postForm = preForm.postContext;
+                SpellContext postForm = preForm.postContext();
                 while (postForm != null) {
-                    if(postForm.applyType.isForm()) {
-                        preForm.postContext = null;
+                    if(postForm.applyType().isForm()) {
+                        preForm.post(null);
                         MagickContext magickContext = MagickContext.create(context.world, postForm).caster(context.caster).projectile(context.projectile).victim(context.victim).separator(pro).noCost();
                         if(traceContext != null)
                             magickContext.replenishChild(traceContext);
@@ -362,7 +362,7 @@ public class MagickReleaseHelper {
                         postForm = null;
                     } else {
                         preForm = postForm;
-                        postForm = preForm.postContext;
+                        postForm = preForm.postContext();
                     }
                 }
             }

@@ -64,11 +64,11 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
 
     protected void applyParticle() {
         for(int i = 0; i < 3; ++i) {
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * 18 + this.getX()
                     , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 18 + this.getZ())
-                    , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f, 50, this.spellContext().element.getRenderer());
+                    , MagickCore.getNegativeToOne() / 2, MagickCore.getNegativeToOne() / 2, 0.6f, 50, this.spellContext().element().getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
             par.setTraceTarget(this);
@@ -77,11 +77,11 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         for(int i = 0; i < 3; ++i) {
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getTrailTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getTrailTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * 18 + this.getX()
                     , MagickCore.getNegativeToOne() * 18 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 18 + this.getZ())
-                    , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 100, this.spellContext().element.getRenderer());
+                    , MagickCore.getNegativeToOne() / 4, MagickCore.getNegativeToOne() / 8, 1.0f, 100, this.spellContext().element().getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
             par.setTraceTarget(this);
@@ -90,11 +90,11 @@ public class SilenceSquallEntity extends ManaEntity implements ISuperEntity {
         }
 
         for(int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element().getRenderer().getMistTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * 8 + this.getX()
                     , MagickCore.getNegativeToOne() * 6 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * 8 + this.getZ())
-                    , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.2f, this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+                    , this.random.nextFloat() * this.getBbWidth() * 1.5f, this.random.nextFloat() * this.getBbWidth() * 1.5f, 0.2f, this.spellContext().element().getRenderer().getParticleRenderTick(), this.spellContext().element().getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(5.0f);

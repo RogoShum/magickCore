@@ -271,10 +271,10 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
     }
 
     public void reSize() {
-        float height = getType().getHeight() + spellContext().range * 0.1f;
+        float height = getType().getHeight() + spellContext().range() * 0.1f;
         if(getBbHeight() != height)
             this.setHeight(height);
-        float width = getType().getWidth() + spellContext().range * 0.1f;
+        float width = getType().getWidth() + spellContext().range() * 0.1f;
         if(getBbWidth() != width)
             this.setWidth(width);
     }
@@ -386,7 +386,7 @@ public abstract class ManaEntity extends Entity implements IManaEntity, ILightSo
 
     @Override
     public Color getColor() {
-        return this.spellContext().element.primaryColor();
+        return this.spellContext().element().primaryColor();
     }
 
     @Override

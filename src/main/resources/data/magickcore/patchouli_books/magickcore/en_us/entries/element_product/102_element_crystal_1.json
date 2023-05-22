@@ -1,5 +1,5 @@
 {
-  "name": "携带元素的水晶",
+  "name": "Crystals Carrying Elemental Energy",
   "advancement": "magickcore:element_product/element_crystal_1",
   "icon": "magickcore:element_crystal{ELEMENT:\"arc\"}",
   "category": "magickcore:element_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:element_crystal{ELEMENT:\"arc\"}",
-	  "text": "携带元素的元素水晶也可以与羊毛和线合成，或是合成元素核心来改变自身的魔法元素。"
+	  "text": "Crystals carrying elemental energy can also be synthesized with wool and string or combined into elemental cores to change their own magical elements."
     },
     {
       "type": "magickcore:element_recipe",
@@ -34,11 +34,11 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:arc,magickcore:void,magickcore:wither,magickcore:solar,magickcore:stasis",
-      "text": "四个同种元素水晶即可合成一个元素核心，元素核心使用之后就可以改变自身魔力的元素属性。$(br2)不同元素的属性在法术制作上具备不同的功能效果，同时还具备一定程度上的伤害抗性效果。"
+      "text": "Four crystals of the same element can be synthesized into one elemental core, which, when used, can change one's own magical element. $(br2)Different elemental attributes have various functional effects in spellcasting and provide a certain level of damage resistance."
     },
     {
       "type": "text",
-      "text": "到目前为止，我们使用的还是自身就携带元素的物品，元素肉、元素线，他们提供的作用太少了。$(br2)等到你做出元素核心，能够将自身的魔力转变为其他元素之后，就可以正式踏入学习制作魔法的大门了。"
+      "text": "Up to this point, we have been using items that inherently carry elemental energy, such as elemental meat and elemental string. $(br2)However, once you create an elemental core and can transform your mana into other elements, you can formally embark on the path of learning magick."
     }
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "name": "104 初识形态",
+  "advancement": "magickcore:spell_learn/pre_entity_type",
+  "icon": "magickcore:context_core",
+  "category": "magickcore:spell",
+  "pages": [
+    {
+      "type": "text",
+      "text": "你已经成功地获得法术$(#DA70D6)形态$()的构造核心了，接下来我们就可以学习如何使用$(#DA70D6)形态$()构造核心，以及如何使用法术$(#DA70D6)形态$()了。$(br2)可能你已经接触过很多利用触摸、投掷物来释放的魔法了，但是这种类型的魔法结构比较单一，无法同时选中多个目标，所以我们还会需要辐射类型的法术$(#DA70D6)形态$()，来帮助我们选取一定范围的目标。"
+    },
+    {
+      "type": "text",
+      "text": "方形辐射属于辐射$(#DA70D6)形态$()的一种，这种$(#DA70D6)形态$()的特点是可以范围性的获取目标，不管是实体还是方块。但是辐射$(#DA70D6)形态$()一旦触发$(#0000FF)功能$()之后会直接消失，无论$(#FFB90F)持续时间$()是多少。那么要如何使用它呢？"
+    },
+    {
+      "type": "text",
+      "text": "我们需要先知道任何的法术$(#DA70D6)形态$()都是可以传递方向与位置的，传递的$(#0000FF)功能$()和位置不仅可以给$(#0000FF)$(#0000FF)功能$()法术$()用，也可以给$(#DA70D6)形态法术$()使用。$(br2)灵魂木弓生成的魔力箭只能对单个目标造成伤害，但是当我们在灵魂木弓上使用辐射$(#DA70D6)形态$()时，在魔力箭击中目标之后会生成辐射$(#DA70D6)形态$()，从而利用辐射$(#DA70D6)形态$()对多个目标触发$(#0000FF)$(#0000FF)功能$()法术$()。"
+    },
+    {
+      "type": "spotlight",
+      "title": "球状辐射成型法术",
+      "item": "magickcore:spirit_bow{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},RANGE:5.0f,POST:{ELEMENT:\"arc\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:square\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:3.0f}}",
+      "text": "这个成型法术就是利用方形辐射触发减益效果的法术，触发时会生成一个方形的范围，在范围内的所有实体都会获得减益的电弧魔法效果。装配在灵魂木弓上的整个过程表现为：$(br)(1) -> 释放魔力箭$(#DA70D6)形态$()$(br)(2) -> 魔力箭$(#DA70D6)形态$()触碰到目标后生成辐射$(#DA70D6)形态$()$(br)(3) -> 辐射$(#DA70D6)形态$()触发$(#0000FF)$(#0000FF)功能$()法术$()"
+    },
+    {
+      "type": "text",
+      "text": "现在我们需要将法术$(#DA70D6)形态$()的构造核心丢在地上，它会展开一个和$(#0000FF)功能$()构造核心差不多的构造器，同样可以吸收魔力材料。$(br2)对于一般的法术$(#DA70D6)形态$()来讲，$(#FFB90F)持续时间$()是必要的，它决定了$(#DA70D6)形态$()能够在世界中存留多久，所以我们需要用到红石转化而来的$(#FFB90F)持续时间$()魔力能量。和构造$(#0000FF)$(#0000FF)功能$()法术$()时一样，把材料丢进去就可以。"
+    },
+    {
+      "type": "image",
+      "title": "形态构造核心展开",
+      "images": ["magickcore:textures/book_image/entity_type.png"],
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "text": "法术$(#DA70D6)形态$()的$(#00CED1)强度$()和$(#EE6363)范围$()都不属于必需品，要不要增加$(#DA70D6)形态$()的$(#00CED1)强度$()和$(#EE6363)范围$()取决于$(#DA70D6)形态$()本身的特性，比如投掷物$(#DA70D6)形态$()对$(#EE6363)范围$()是没有需求的，通常只需要增加$(#FFB90F)持续时间$()即可，而辐射类$(#DA70D6)形态$()为了能够选取更多的目标，通常会增加很多的$(#EE6363)范围$()属性。$(br2)当然，高$(#EE6363)范围$()的$(#DA70D6)形态$()耗魔也会相应增加很多。$(br2)投掷物$(#DA70D6)形态$()对于魔力的元素也有特殊的需求，可以丢入元素核心，而具体的作用会在后面的章节讲解。"
+    },
+    {
+      "type": "spotlight",
+      "item": "magickcore:magick_context{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},RANGE:5.0f,POST:{ELEMENT:\"arc\",FORCE:5.0f,POST:{},CHILD_CONTEXT:{},APPLY_TYPE:\"de_buff\",TICK:120,RANGE:0.0f},disable:0b,CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:square\"}},APPLY_TYPE:\"spawn_entity\",TICK:120,RANGE:3.0f}}",
+      "text": "$(#DA70D6)形态法术$()的构造同样需要使用魔棒右键来得到成型法术，而你得到的成型法术和这一个应该差不多，不过仅仅有辐射$(#DA70D6)形态法术$()还不够，我们还需要将之前做好的$(#0000FF)$(#0000FF)功能$()法术$()取下来，将这两个成型法术结合在一起。"
+    }
+  ]
+}

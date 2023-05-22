@@ -12,11 +12,9 @@ import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
-import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
-import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.tileentity.easyrender.RadianceCrystalRenderer;
 import com.rogoshum.magickcore.common.entity.living.LivingAgentEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
@@ -25,7 +23,6 @@ import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -36,7 +33,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -227,7 +223,7 @@ public class RadianceCrystalTileEntity extends BlockEntity implements ISpellCont
             if (material.typeMaterial()) {
                 dropItem();
                 material.upgradeManaItem(stack, this);
-                this.setApplyType(spellContext().applyType);
+                this.setApplyType(spellContext().applyType());
                 this.item = stack.copy();
                 stack.shrink(1);
                 this.item.setCount(1);

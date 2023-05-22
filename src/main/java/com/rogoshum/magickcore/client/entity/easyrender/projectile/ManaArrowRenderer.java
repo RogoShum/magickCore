@@ -42,7 +42,7 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
         params.matrixStack.scale(scale, scale*5, scale);
         RenderHelper.renderLaserMid(BufferContext.create(params.matrixStack, params.buffer, TYPE)
-        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+        , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderPart(RenderParams params) {
@@ -58,9 +58,10 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
         params.matrixStack.popPose();
 
+        params.matrixStack.pushPose();
         scale = 0.3f * entity.getBbWidth();
         params.matrixStack.translate(dir.x * entity.getBbWidth(), dir.y * entity.getBbWidth(), dir.z * entity.getBbWidth());
         params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
@@ -69,13 +70,23 @@ public class ManaArrowRenderer extends EasyRenderer<ManaArrowEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         params.matrixStack.scale(scale, scale, scale);
         RenderHelper.renderStaticParticle(BufferContext.create(params.matrixStack, params.buffer, PART)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
+        params.matrixStack.popPose();
+
+        params.matrixStack.pushPose();
+        scale = 0.75f * entity.getBbWidth();
+        params.matrixStack.translate(dir.x * entity.getBbWidth() * 2, dir.y * entity.getBbWidth() * 2, dir.z * entity.getBbWidth() * 2);
+        params.matrixStack.mulPose(Vector3f.YP.rotationDegrees(rota.x));
+        params.matrixStack.mulPose(Vector3f.ZP.rotationDegrees(rota.y));
+        params.matrixStack.scale(scale, scale*5, scale);
+        RenderHelper.renderLaserMid(BufferContext.create(params.matrixStack, params.buffer, TYPE)
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
+        params.matrixStack.popPose();
     }
 
     @Override
     public HashMap<RenderMode, Consumer<RenderParams>> getRenderFunction() {
         HashMap<RenderMode, Consumer<RenderParams>> map = new HashMap<>();
-        map.put(new RenderMode(TYPE), this::render);
         map.put(new RenderMode(PART), this::renderPart);
         return map;
     }

@@ -68,7 +68,7 @@ public class RenderHelper {
     public static final ResourceLocation TEXTURE = MagickCore.fromId("entity_texture_atlas.png");
     public static final TextureAtlas TEXTURE_ATLAS = new TextureAtlas(TEXTURE);
     private static final HashMap<ResourceLocation, ResourceLocation> TEXTURE_MAP = new HashMap<>();
-
+    private static final HashMap<String, ResourceLocation> ITEM_MODEL_RESOURCE = new HashMap<>();
     public static final HashMap<Object, Queue<VertexAttribute>> VERTEX_CACHE = new HashMap<>();
     public static final HashMap<Object, ModelInstanceRenderer> INSTANCE_CACHE = new HashMap<>();
     public static final HashSet<ModelInstanceRenderer> UPDATE_INSTANCE = new HashSet<>();
@@ -1759,6 +1759,14 @@ public class RenderHelper {
 
     public static PoseStack getVertexMatrix() {
         return vertexMatrix;
+    }
+
+    public static HashMap<String, ResourceLocation> getItemModelResource() {
+        return ITEM_MODEL_RESOURCE;
+    }
+
+    public static void addItemModelResource(String s, ResourceLocation res) {
+        ITEM_MODEL_RESOURCE.put(s, res);
     }
 
     public static void setProjectionMatrix4f(Matrix4f matrix4f) {

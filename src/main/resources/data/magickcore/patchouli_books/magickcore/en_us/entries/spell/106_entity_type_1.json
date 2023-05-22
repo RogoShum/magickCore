@@ -1,37 +1,37 @@
 {
-  "name": "106 成长需求与魔法效益",
+  "name": "106 Growth Needs and Magical Benefits",
   "advancement": "magickcore:spell_learn/context_pointer",
   "icon": "magickcore:context_pointer",
   "category": "magickcore:spell",
   "pages": [
     {
       "type": "text",
-      "text": "通过前面的学习我们知道，一个成型法术可以包含多个$(#0000FF)$(#0000FF)功能$()法术$()和多个$(#DA70D6)$(#DA70D6)形态$()法术$()，并且$(#DA70D6)$(#DA70D6)形态$()法术$()可以根据自身的触发方式，来生成后面衔接的下一个$(#DA70D6)$(#DA70D6)形态$()法术$()。$(br2)我们还需要知道什么魔力属性会影响$(#DA70D6)$(#DA70D6)形态$()法术$()的效果，以及$(#DA70D6)$(#DA70D6)形态$()法术$()在触发时是否会流失一部分魔力。$(br)通常来讲，我们在第一次释放一种$(#DA70D6)$(#DA70D6)形态$()法术$()时也会解锁相应的$(#DA70D6)形态$()知识，比如球状辐射的$(#DA70D6)形态$()知识。"
+      "text": "From our previous lessons, we know that a shaped spell can contain multiple $(#0000FF)$(#0000FF)Function$() spells and multiple $(#DA70D6)$(#DA70D6)Form$() spells. The $(#DA70D6)$(#DA70D6)Form$() spells can generate the next $(#DA70D6)$(#DA70D6)Form$() spell based on their trigger method. We also need to understand which magical attributes affect the effectiveness of $(#DA70D6)$(#DA70D6)Form$() spells and whether they consume some mana upon triggering. Generally, when we first cast a specific $(#DA70D6)$(#DA70D6)Form$() spell, we also unlock the corresponding $(#DA70D6)Form$() knowledge, such as the knowledge of the Radiant $(#DA70D6)Form$()."
     },
     {
       "type": "text",
-      "text": "球状辐射是$(#DA70D6)辐射类形态$()，范围内捕获目标后会触发下一阶段魔法，之后自身会消失。$(br)$(t:提高形态的这些数值可以增加收益)$(li)$(#6C7B8B)成长需求：$(/t)$(t:提高形态的范围可以增加收益)$(li2)$(#EE6363)范围$(/t)$()$(br)$(t:法术数值对功能法术的影响)$(li)$(#6C7B8B)魔法效益：$(/t)$(t:功能法术的强度收益会降低到原本的0.3)$(li2)$(#00CED1)强度：0.3$(/t)$()$(t:功能法术的范围不受影响)$(li2)$(#EE6363)范围：1.0$(/t)$()$(t:功能法术的持续时间收益会降低到原本的0.3)$(li2)$(#FFB90F)持续时间：0.3$(/t)"
+      "text": "Radiant is a $(#DA70D6)Radiant-type$() $(#DA70D6)Form$() spell. After capturing targets within its range, it triggers the next stage of magic and then disappears. $(br)$(t:Increasing these values can increase the benefits)$(li)$(#6C7B8B)Growth Needs: $(/t)$(t:Increasing the range of the form can increase the benefits)$(li2)$(#EE6363)Range$(/t)$()$(br)$(t:Magical benefits affecting the attributes of the function spells)$(li)$(#6C7B8B)Magical Benefits: $(/t)$(t:The force benefits of the function spells are reduced to 0.3 of their original values)$(li2)$(#00CED1)force: 0.3$(/t)$()$(t:The range of the function spells is not affected)$(li2)$(#EE6363)Range: 1.0$(/t)$()$(t:The duration benefits of the function spells are reduced to 0.3 of their original values)$(li2)$(#FFB90F)Duration: 0.3$(/t)"
     },
     {
       "type": "text",
-      "text": "根据上述的知识我们了解到，球状辐射这种$(#DA70D6)形态$()，最值得提升的魔力属性就是$(#EE6363)范围$()属性，它可以提升辐射$(#EE6363)范围$()，从而选中更多的实体与方块。$(br2)同时我们还需要注意魔法效益这种特性，魔法效益会影响$(#0000FF)$(#0000FF)功能$()法术$()的属性，比如球状辐射$(#DA70D6)形态$()的$(#00CED1)强度$()能力为0.2，意味着由球状辐射携带的$(#0000FF)$(#0000FF)功能$()法术$()和衔接它的$(#DA70D6)$(#DA70D6)形态$()法术$()，触发时后面的法术$(#00CED1)强度$()效果会乘上0.2，也即是说由球状辐射衔接的法术，法术$(#00CED1)强度$()会降低。"
+      "text": "Based on the above knowledge, we understand that for the Radiant $(#DA70D6)Form$(), the most worthwhile magical attribute to improve is the $(#EE6363)Range$() attribute, as it can increase the range of radiation and target more entities and blocks. $(br2)At the same time, we also need to pay attention to the magical benefits. Magical benefits affect the attributes of $(#0000FF)$(#0000FF)Function$() spells. For example, the $(#00CED1)force$() ability of the Radiant $(#DA70D6)Form$() is 0.2, which means that the force effect of the subsequent spells triggered by the Radiant $(#DA70D6)Form$() and the $(#0000FF)$(#0000FF)Function$() spells it carries will be multiplied by 0.2. In other words, the force of the spells carried by the Radiant $(#DA70D6)Form$() will be reduced."
     },
     {
       "type": "text",
-      "text": "球状辐射的魔法效益。$(t:法术数值对功能法术的影响)$(li)$(#6C7B8B)魔法效益：$(/t)$(t:功能法术的强度收益会降低到原本的0.3)$(li2)$(#00CED1)强度：0.3$(/t)$()$(t:功能法术的范围不受影响)$(li2)$(#EE6363)范围：1.0$(/t)$()$(t:功能法术的持续时间收益会降低到原本的0.3)$(li2)$(#FFB90F)持续时间：0.3$(/t)"
+      "text": "Magical benefits of the Radiant $(#DA70D6)Form$(). $(t:Magical benefits affecting the attributes of the function spells)$(li)$(#6C7B8B)Magical Benefits: $(/t)$(t:The force benefits of the function spells are reduced to 0.3 of their original values)$(li2)$(#00CED1)force: 0.3$(/t)$()$(t:The range of the function spells is not affected)$(li2)$(#EE6363)Range: 1.0$(/t)$()$(t:The duration benefits of the function spells are reduced to 0.3 of their original values)$(li2)$(#FFB90F)Duration: 0.3$(/t)"
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_bow{item_extra_data:{APPLY_TYPE:\"spawn_entity\",CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:sphere\"}},ELEMENT:\"origin\",FORCE:0.0f,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:50000.0f},POST:{APPLY_TYPE:\"spawn_entity\",CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:mana_orb\"}},ELEMENT:\"origin\",FORCE:5.0f,POST:{APPLY_TYPE:\"attack\",CHILD_CONTEXT:{},ELEMENT:\"origin\",FORCE:5.0f,POST:{},RANGE:0.0f,TICK:0},RANGE:0.0f,TICK:120},RANGE:3.0f,TICK:120,disable:0b,haveMagickContext:0b}}",
-      "text": "不过我们可以通过衔接高$(#00CED1)强度$()能力的法术$(#DA70D6)形态$()来避免法术$(#00CED1)强度$()变低的副作用，假如在球状辐射后面衔接魔力弹$(#DA70D6)形态$()，再利用魔力弹$(#DA70D6)形态$()释放攻击法术，那么根据魔力弹$(#00CED1)强度$()能力1.0的特性，可以完美传递攻击法术的5.0$(#00CED1)强度$()。$(br2)这个灵魂木弓上的成型法术就是这样做的。"
+      "text": "However, we can avoid the decrease in spell force by linking a $(#DA70D6)Form$() spell with a high $(#00CED1)force$() ability. For example, if we link the Radiant $(#DA70D6)Form$() with the Mana Orb $(#DA70D6)Form$() and use the Mana Orb $(#DA70D6)Form$() to cast an attack spell, the Mana Orb's force ability of 1.0 allows for a perfect transfer of the attack spell's force of 5.0. $(br2)This is how the Molding Spell on the Spirit Bow works."
     },
     {
       "type": "text",
-      "text": "魔力弹是一种$(#DA70D6)投掷类魔法形态$()。$(br)$(t:法术数值对功能法术的影响)$(li)$(#6C7B8B)魔法效益：$(/t)$(t:功能法术的强度不受影响)$(li2)$(#00CED1)强度：1.0$(/t)$()$(t:功能法术的范围不受影响)$(li2)$(#EE6363)范围：1.0$(/t)$()$(t:功能法术的持续时间不受影响)$(li2)$(#FFB90F)持续时间：1.0$(/t)$()$(br2)"
+      "text": "Mana Orb is a $(#DA70D6)Projectile-type$() $(#DA70D6)Form$(). $(br)$(t:Magical benefits affecting the attributes of the function spells)$(li)$(#6C7B8B)Magical Benefits: $(/t)$(t:The force of the function spells is not affected)$(li2)$(#00CED1)force: 1.0$(/t)$()$(t:The range of the function spells is not affected)$(li2)$(#EE6363)Range: 1.0$(/t)$()$(t:The duration of the function spells is not affected)$(li2)$(#FFB90F)Duration: 1.0$(/t)$()$(br2)"
     },
     {
       "type": "text",
-      "text": "还有一点就是，提高$(#DA70D6)形态法术$()的一些属性，可以获得额外的收益，这些属于$(#DA70D6)形态$()本身的独有加成属性。比如提高魔力箭的$(#EE6363)范围$()属性，可以增加魔力箭的速度。$(br)魔力箭的成长需求。$(br)$(t:提高形态的这些数值可以增加收益)$(li)$(#6C7B8B)成长需求：$(/t)$(t:提高形态的范围可以增加收益)$(li2)$(#EE6363)$(#EE6363)范围$()$(/t)$()$(br2)$(#EE6363)范围$()属性会影响魔力箭的最大速度值。"
+      "text": "Additionally, improving certain attributes of $(#DA70D6)Form$() spells can provide additional benefits, which are unique bonuses of the $(#DA70D6)Form$() itself. For example, increasing the $(#EE6363)Range$() attribute of the mana arrow can increase its speed. $(br)Growth Needs of the mana arrow. $(br)$(t:Increasing these values can increase the benefits)$(li)$(#6C7B8B)Growth Needs: $(/t)$(t:Increasing the range of the form can increase the benefits)$(li2)$(#EE6363)$(#EE6363)Range$()$(/t)$()$(br2)The $(#EE6363)Range$() attribute affects the maximum speed value of the mana arrow."
     }
   ]
 }

@@ -12,7 +12,6 @@ import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.Entity;
@@ -45,14 +44,14 @@ public class ManaCapacityRenderer extends BlockEntityWithoutLevelRenderer {
         RenderHelper.queueMode = true;
         if(vertex instanceof BufferBuilder builder) {
             RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE_1)
-                    , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element.primaryColor(), combinedLight));
+                    , new RenderHelper.RenderContext(0.6f, capacity.spellContext().element().primaryColor(), combinedLight));
             matrixStackIn.popPose();
         }
         vertex = bufferIn.getBuffer(RENDER_TYPE_0);
         if(vertex instanceof BufferBuilder builder) {
             matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
             RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, builder, RENDER_TYPE_0)
-                    , new RenderHelper.RenderContext(0.12f, capacity.spellContext().element.primaryColor(), combinedLight));
+                    , new RenderHelper.RenderContext(0.12f, capacity.spellContext().element().primaryColor(), combinedLight));
         }
         RenderHelper.queueMode = false;
         matrixStackIn.popPose();

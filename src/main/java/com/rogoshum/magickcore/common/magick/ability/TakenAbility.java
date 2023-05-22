@@ -37,34 +37,34 @@ public class TakenAbility {
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(!context.victim.canChangeDimensions())
-            return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick / 2, context.force, false);
-        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick, context.force, true);
+            return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick() / 2, context.force(), false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN, context.tick(), context.force(), true);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.TAKEN))
-            context.force *= 1.25;
+            context.force(context.force() * 1.25f);
 
         boolean flag;
         if(context.caster != null && context.projectile instanceof Projectile)
-            flag = context.victim.hurt(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileTakenDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.caster), context.force());
         else if(context.projectile != null)
-            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityTakenDamage(context.projectile), context.force());
         else
-            flag = context.victim.hurt(ModDamages.getTakenDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getTakenDamage(), context.force());
 
-        if(flag && context.force >= 9 && context.caster != null && context.victim instanceof Mob && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
+        if(flag && context.force() >= 9 && context.caster != null && context.victim instanceof Mob && ModBuffs.hasBuff(context.victim, LibBuff.TAKEN)) {
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUUID());
-            state.setTime(context.tick);
+            state.setTime(context.tick());
             Networking.INSTANCE.send(
                     PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
                             context.victim.position().x, context.victim.position().y, context.victim.position().z, 48, context.victim.level.dimension()
                     )),
-                    new TakenStatePack(context.victim.getId(), context.tick, context.victim.getUUID()));
+                    new TakenStatePack(context.victim.getId(), context.tick(), context.victim.getUUID()));
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
         }
 
@@ -77,7 +77,7 @@ public class TakenAbility {
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN_KING, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.TAKEN_KING, context.tick() * 2, context.force(), true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
@@ -85,7 +85,7 @@ public class TakenAbility {
             if(!context.victim.canChangeDimensions()) return false;
             TakenEntityData state = ExtraDataUtil.takenEntityData(context.victim);
             state.setOwner(context.caster.getUUID());
-            int time = (int) (context.tick * context.force);
+            int time = (int) (context.tick() * context.force());
             state.setTime(time);
             context.victim.playSound(SoundEvents.BLAZE_HURT, 2.0F, 0.0f);
             Networking.INSTANCE.send(
@@ -128,16 +128,16 @@ public class TakenAbility {
                     if(nbt.contains("SpawnData")) {
                         CompoundTag entityTag = nbt.getCompound("SpawnData");
                         boolean success = false;
-                        for(int i = 0; i < context.force; i++) {
+                        for(int i = 0; i < context.force(); i++) {
                             Optional<Entity> optional =  EntityType.create(entityTag, context.world);
                             if(optional.isPresent()) {
                                 Entity entity = optional.get();
                                 double randX = MagickCore.getNegativeToOne();
                                 double randY = MagickCore.getNegativeToOne();
                                 double randZ = MagickCore.getNegativeToOne();
-                                randX *= 1 + context.range;
-                                randY *= 1 + context.range;
-                                randZ *= 1 + context.range;
+                                randX *= 1 + context.range();
+                                randY *= 1 + context.range();
+                                randZ *= 1 + context.range();
                                 entity.setPos(positionContext.pos.x + randX, positionContext.pos.y + randY, positionContext.pos.z + randZ);
                                 entity.level.addFreshEntity(entity);
                                 success = true;
@@ -154,7 +154,7 @@ public class TakenAbility {
                 animal.setInLove((Player) context.caster);
             else
                 animal.setInLove(null);
-            animal.setInLoveTime(context.tick * 20);
+            animal.setInLoveTime(context.tick() * 20);
             return true;
         }
 

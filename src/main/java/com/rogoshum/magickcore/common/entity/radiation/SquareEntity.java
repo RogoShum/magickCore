@@ -47,7 +47,7 @@ public class SquareEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range;
+        return spellContext().range();
     }
 
     @Override
@@ -70,9 +70,9 @@ public class SquareEntity extends ManaRadiateEntity {
         List<Vec3> list = ParticleUtil.drawRectangle(this.positionVec().add(0, this.getBbHeight() * 0.5, 0), scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vec3 pos = list.get(i);
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , pos
-                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();

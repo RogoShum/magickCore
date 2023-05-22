@@ -1,5 +1,5 @@
 {
-  "name": "魔棒",
+  "name": "Wand",
   "advancement": "magickcore:element_product/spirit_crystal",
   "icon": "magickcore:wand",
   "category": "magickcore:spirit_product",
@@ -7,31 +7,31 @@
     {
       "type": "spotlight",
       "item": "magickcore:wand",
-      "text": "魔棒是用来合成和控制一部分灵魂制品的必备品。 用魔棒右键方块可以选中方块，再次右键可以取消选中，能够选中的方块数量跟随魔力值的增加而增加，最多可以选取128个方块。潜行右键可以取消所有选中。"
+      "text": "The wand is a necessary tool for synthesizing and controlling some spirit products. Right-clicking blocks with the wand can select them, and right-clicking again can cancel the selection. The number of blocks that can be selected increases with the increase of mana value, and up to 128 blocks can be selected at most. Sneaking and right-clicking can cancel all selections."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/wand_0.png"],
       "border": "true",
-      "text": "选中的方块"
+      "text": "Selected blocks."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/wand_1.png"],
       "border": "true",
-      "text": "使用选中方块的魔棒去右键人造生命，可以把选中的方块传递给人造生命，激活人造生命会对这些方块释放法术。"
+      "text": "Using the wand with selected blocks to right-click on an artificial life will transfer the selected blocks to the artificial life, activating it to cast spells on those blocks."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/wand_2.png"],
       "border": "true",
-      "text": "使用没有选中方块的魔棒对人造生命右键，可以使人造生命针对单个方向的方块施放法术。"
+      "text": "Using the wand without selected blocks to right-click on an artificial life will allow the artificial life to cast spells on individual blocks in a specific direction."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/wand_3.png"],
       "border": "true",
-      "text": "最远距离为面对方向8格远的方块。"
+      "text": "The maximum distance is 8 blocks in the direction the artificial life is facing."
     }
   ]
 }

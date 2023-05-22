@@ -1,5 +1,5 @@
 {
-  "name": "劣质金粒",
+  "name": "Inferior Gold",
   "advancement": "magickcore:mana_material/reverse",
   "icon": "magickcore:reverse",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:reverse",
-	  "text": "使用金粒在魔法合成阵转换而成。可以作为魔力材料在功能构造与形态构造中使用。劣质金粒不能用来制作任何跟金粒相关的东西，但是它可以将施法的方向转化为相反的方向。"
+	  "text": "Converted using Gold Nugget at Magic Synthesis Matrix. It can be used as a mana material in functional and form spells. Inferior gold cannot be used to make anything related to gold nugget, but they can convert the direction of the spell to the opposite direction."
     }
   ]
 }

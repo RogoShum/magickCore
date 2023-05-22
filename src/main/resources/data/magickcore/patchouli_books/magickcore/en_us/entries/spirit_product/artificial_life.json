@@ -1,5 +1,5 @@
 {
-  "name": "人造生命",
+  "name": "Artificial Life",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:artificial_life",
   "category": "magickcore:spirit_product",
@@ -7,12 +7,11 @@
     {
       "type": "spotlight",
       "item": "magickcore:artificial_life",
-      "text": "人造生命是一种合成生命，内部本身含有灵魂水晶，可以利用成型法术释放魔法，对人造生命使用成型法术可以存入其中。潜行右键可以清除成型法术。"
+      "text": "Artificial life is a type of synthesized life that contains a spirit crystal within itself. It can use Molding Spell to cast magick, and using Molding Spell on artificial life can store them within it. Right-clicking while sneaking can clear the Molding Spell."
     },
     {
       "type": "crafting",
-      "recipe": "magickcore:artificial_life",
-      "text": "合成方式"
+      "recipe": "magickcore:artificial_life"
     },
     {
       "type": "entity",
@@ -20,7 +19,7 @@
     },
     {
       "type": "text",
-      "text": "人造生命需要放置在地上来运作，可以用红石信号来激活人造生命，让它释放成型法术记录的法术。持续的红石信号可以一直激活人造生命，红石信号越强烈，施法速度越慢，红石信号越弱，施法速度越快。$(br2)人造生命自身不会恢复魔力，魔力上限依然为5000，但是人造生命可以吸收周围魔力容器内的魔力。"
+      "text": "Artificial life must be placed on the ground to function and can be activated using red-stone signals, causing it to cast the Molding Spell stored within it. Continuous red-stone signals will keep the artificial life activated, with stronger signals causing it to cast spells slower and weaker signals causing it to cast spells faster. $(br2)Artificial life does not regenerate its own mana energy and still has a mana limit of 5000, but it can absorb mana from Mana Capacity in the surrounding area."
     }
   ]
 }

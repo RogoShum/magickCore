@@ -266,7 +266,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
 
     @Override
     public MagickContext beforeCast(MagickContext context) {
-        if(spellContext().containChild(LibContext.ITEM) && (context.doBlock || context.applyType == ApplyType.HIT_BLOCK))
+        if(spellContext().containChild(LibContext.ITEM) && (context.doBlock || context.applyType() == ApplyType.HIT_BLOCK))
             return context.applyType(ApplyType.NONE);
         return super.beforeCast(context);
     }
@@ -288,7 +288,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getZ())
                 , (MagickCore.getRandFloat() * this.getBbWidth()) * 0.3f, (MagickCore.getRandFloat() * this.getBbWidth()) * 0.3f, 1.0f
-                , 20, spellContext().element.getRenderer());
+                , 20, spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.setShakeLimit(5.0f);
         litPar.setLimitScale();
@@ -306,7 +306,7 @@ public class JewelryBagEntity extends ManaProjectileEntity implements IManaRefra
                 , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks
                 , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() * 0.5
                 , this.zOld + (this.getZ() - this.zOld) * partialTicks)
-                , 0.2f * this.getBbWidth(), 0.2f * this.getBbWidth(), 1.0f, 5, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.2f * this.getBbWidth(), 0.2f * this.getBbWidth(), 1.0f, 5, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

@@ -111,22 +111,22 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
     protected void applyParticle()
     {
         for(int i = 0; i < 1; ++i) {
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
-                    , 0.15f, 0.15f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
+                    , 0.15f, 0.15f, this.random.nextFloat(), 60, this.spellContext().element().getRenderer());
             par.setGlow();
             par.setParticleGravity(0);
             par.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.2);
             MagickCore.addMagickParticle(par);
         }
         for(int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+            LitParticle litPar = new LitParticle(this.level, this.spellContext().element().getRenderer().getMistTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
-                    , this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), 0.8f + 0.2f * this.random.nextFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
+                    , this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), this.random.nextFloat() * this.getBbWidth() * this.getBbWidth(), 0.8f + 0.2f * this.random.nextFloat(), this.spellContext().element().getRenderer().getParticleRenderTick() / 2, this.spellContext().element().getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setShakeLimit(5.0f);
@@ -140,7 +140,7 @@ public class ChaoReachEntity extends ManaPointEntity implements ISuperEntity {
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
-                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0f);
             par.setLimitScale();

@@ -9,12 +9,10 @@ import com.rogoshum.magickcore.client.entity.easyrender.ArtificialLifeEntityRend
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
 import com.rogoshum.magickcore.common.item.placeable.EntityItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
-import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
@@ -23,7 +21,6 @@ import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.common.network.EntityCompoundTagPack;
 import com.rogoshum.magickcore.common.util.EntityInteractHelper;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
-import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -258,9 +255,9 @@ public class ArtificialLifeEntity extends LivingEntity implements ISpellContext,
         if(isFocus() && this.getVectorSet().isEmpty() && level.isClientSide()) {
             Vec3i vector3i = getDirection().getNormal();
             double scale = (0.5+random.nextFloat());
-            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , this.position().add(0, getEyeHeight(), 0).add(vector3i.getX()*scale, vector3i.getY()*scale, vector3i.getZ()*scale)
-                    , 0.1f, 0.1f, 0.8f, 10, spellContext().element.getRenderer());
+                    , 0.1f, 0.1f, 0.8f, 10, spellContext().element().getRenderer());
             litPar.setGlow();
             litPar.setParticleGravity(0f);
             litPar.setLimitScale();

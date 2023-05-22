@@ -1,5 +1,5 @@
 {
-  "name": "魔弹法杖",
+  "name": "Orb Staff",
   "advancement": "magickcore:spirit_product/orb_staff",
   "icon": "magickcore:orb_staff",
   "category": "magickcore:spirit_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:orb_staff",
-	  "text": "魔弹法杖是一种魔法道具，无法合成，无法替换成型法术。可以在战利品箱内获取到。"
+	  "text": "The Orb staff is a kind of magic prop, which cannot be crafted and cannot replace Molding Spell."
     }
   ]
 }

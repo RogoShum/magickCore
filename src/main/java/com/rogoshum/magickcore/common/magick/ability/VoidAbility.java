@@ -28,7 +28,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -56,23 +55,23 @@ public class VoidAbility{
     }
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.WEAKEN, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.WEAKEN, context.tick(), context.force(), false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.WEAKEN))
-            context.force *= 1.2;
+            context.force(context.force() * 1.2f);
 
         boolean flag;
         if(context.caster != null && context.projectile instanceof Projectile)
-            flag = context.victim.hurt(ModDamages.applyProjectileVoidDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileVoidDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            flag = context.victim.hurt(ModDamages.applyEntityVoidDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityVoidDamage(context.caster), context.force());
         else if(context.projectile != null)
-            flag = context.victim.hurt(ModDamages.applyEntityVoidDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityVoidDamage(context.projectile), context.force());
         else
-            flag = context.victim.hurt(ModDamages.getVoidDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getVoidDamage(), context.force());
         if(flag)
             ModBuffs.applyBuff(context.victim, LibBuff.FRAGILE, 10, 0, false);
 
@@ -85,16 +84,16 @@ public class VoidAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.LIGHT, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.LIGHT, context.tick() * 2, context.force(), true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.FRAGILE, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.FRAGILE, context.tick(), context.force(), false);
     }
 
     public static boolean applyToolElement(MagickContext context) {
-        int level = (int) context.force;
+        int level = (int) context.force();
         if(!(context.caster instanceof LivingEntity)) return false;
         LivingEntity entity = (LivingEntity) context.caster;
         ItemStack stack = entity.getMainHandItem();
@@ -119,7 +118,7 @@ public class VoidAbility{
         Entity target = context.victim;
         if(target == null)
             target = context.caster;
-        if(!target.isAlive()) return false;
+        if(target == null || !target.isAlive()) return false;
 
         Level level = context.world;
         Vec3 pos;
@@ -130,7 +129,7 @@ public class VoidAbility{
         } else if(context.projectile != null){
             pos = context.projectile.position();
         } else {
-            pos = target.getLookAngle().scale(context.range * 2).add(target.position());
+            pos = target.getLookAngle().scale(context.range() * 2).add(target.position());
         }
         if(!context.world.isClientSide() && context.containChild(DimensionContext.TYPE)) {
             DimensionContext dimensionContext = context.getChild(DimensionContext.TYPE);
@@ -165,7 +164,7 @@ public class VoidAbility{
             //if(state.getHarvestLevel() > context.force) return false;
             Block block = state.getBlock();
             if (!state.isAir() && !(block instanceof IFluidBlock) && state.getDestroySpeed(world, pos) != -1) {
-                int exp = state.getExpDrop((LevelReader) world, pos, (int) context.force, 1);
+                int exp = state.getExpDrop((LevelReader) world, pos, (int) context.force(), 1);
                 if(context.caster instanceof Player) {
                     /*
                     if (!state.canHarvestBlock(world, pos, (PlayerEntity) context.caster)) {
@@ -211,6 +210,6 @@ public class VoidAbility{
             return false;
         }
         if(!(context.victim instanceof LivingEntity)) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick * 10, context.force, true) && ((LivingEntity) context.victim).addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, context.tick * 10));
+        return ModBuffs.applyBuff(context.victim, LibBuff.INVISIBILITY, context.tick() * 10, context.force(), true) && ((LivingEntity) context.victim).addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, context.tick() * 10));
     }
 }

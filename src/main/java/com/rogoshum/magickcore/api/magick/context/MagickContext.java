@@ -56,9 +56,9 @@ public class MagickContext extends SpellContext {
         this.doBlock = true;
         SpellContext context = this;
         while (context != null) {
-            if(context.applyType.isForm())
-                context.applyType = ApplyType.NONE;
-            context = context.postContext;
+            if(context.applyType().isForm())
+                context.applyType(ApplyType.NONE);
+            context = context.postContext();
         }
         return this;
     }
@@ -96,7 +96,7 @@ public class MagickContext extends SpellContext {
         if(noCost)
             toolTip.nextTrans("noCost", ToolTipHelper.PINK);
 
-        toolTip.builder.append(getString(false, this.element));
+        toolTip.builder.append(getString(false, this.element()));
         return super.toString();
     }
 }

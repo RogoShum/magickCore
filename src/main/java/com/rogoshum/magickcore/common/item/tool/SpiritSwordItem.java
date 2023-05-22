@@ -2,6 +2,7 @@ package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.itemstack.ISpiritDimension;
+import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.client.item.SpiritSwordRenderer;
 import com.rogoshum.magickcore.common.item.ManaItem;
@@ -64,8 +65,8 @@ public class SpiritSwordItem extends ManaItem implements IManaContextItem, ISpir
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
-        MagickElement element = data.spellContext().element;
-        MagickContext context = magickContext.caster(player).victim(entity).element(element);
+        MagickElement element = data.spellContext().element();
+        MagickContext context = magickContext.caster(player).victim(entity).element(element).addChild(PositionContext.create(entity.position().add(0, entity.getBbHeight()*0.5, 0)));
         MagickReleaseHelper.releaseMagick(MagickContext.create(player.level, context).caster(player).victim(entity).noCost().element(element).applyType(ApplyType.HIT_ENTITY));
         InteractionHand hand = player.getMainHandItem() == stack ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         player.startUsingItem(hand);

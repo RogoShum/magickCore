@@ -39,11 +39,11 @@ public class ManaStarEntity extends ManaProjectileEntity {
 
     @Override
     public void renderFrame(float partialTicks) {
-        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getTrailTexture()
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getTrailTexture()
                 , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks
                 , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2
                 , this.zOld + (this.getZ() - this.zOld) * partialTicks)
-                , 0.2f * getBbWidth(), 0.2f * getBbWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.2f * getBbWidth(), 0.2f * getBbWidth(), 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         par.setParticleGravity(0);
         par.setLimitScale();

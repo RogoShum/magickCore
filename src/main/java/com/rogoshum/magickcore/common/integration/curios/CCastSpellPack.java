@@ -58,7 +58,7 @@ public class CCastSpellPack extends EntityPack {
             ItemManaData data = ExtraDataUtil.itemManaData(ring);
             EntityStateData state = ExtraDataUtil.entityStateData(player);
             MagickContext magickContext = MagickContext.create(player.level, data.spellContext());
-            MagickElement element = data.spellContext().element;
+            MagickElement element = data.spellContext().element();
             MagickContext context = magickContext.caster(player).victim(player).element(element);
             if(context.containChild(LibContext.TRACE)) {
                 TraceContext traceContext = context.getChild(LibContext.TRACE);

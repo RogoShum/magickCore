@@ -1,0 +1,6 @@
+{
+    "parent": "magickcore:item/mana_energy_layer",
+    "textures": {
+        "layer0": "magickcore:items/shell"
+    }
+}

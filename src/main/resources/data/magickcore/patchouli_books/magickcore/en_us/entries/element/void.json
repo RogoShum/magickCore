@@ -1,5 +1,5 @@
 {
-  "name": "虚空元素",
+  "name": "Void",
   "advancement": "magickcore:learn/void",
   "icon": "magickcore:void",
   "category": "magickcore:element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:void",
-      "text": "虚空元素是一种偏向光能的魔力元素，能够弱化或强化目标。$(br2)虚空元素的生命会获得虚空庇护，减免来自于穿甲的伤害。"
+      "text": "The void element is a mana element that is biased towards light, can weaken or strengthen the target. $(br2)The life of void element will receive void protection, reducing damage from unblockable."
     }
   ]
 }

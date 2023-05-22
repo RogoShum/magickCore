@@ -1,0 +1,13 @@
+{
+  "name": "魔力地狱疣",
+  "advancement": "magickcore:mana_material/mana_wart",
+  "icon": "magickcore:mana_nether_wart",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_nether_wart",
+	  "text": "使用地狱疣在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，转变元素的状态为攻击。"
+    }
+  ]
+}

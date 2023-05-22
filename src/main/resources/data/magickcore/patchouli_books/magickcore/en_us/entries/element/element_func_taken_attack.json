@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7攻击",
+  "name": "§8Taken §7Attack",
   "advancement": "magickcore:learn/trigger_element_func_taken_attack",
   "icon": "magickcore:taken",
   "category": "magickcore:element",
   "pages": [
     {
       "type": "text",
-      "text": "攻击状态的夺魂元素可以用夺魂魔法伤害攻击目标，对受蛊惑的实体效果更加。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()"
+      "text": "Taken of the Attack can attack targets with taken magic damage, more effective against bewitched entities.$(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()"
     }
   ]
 }

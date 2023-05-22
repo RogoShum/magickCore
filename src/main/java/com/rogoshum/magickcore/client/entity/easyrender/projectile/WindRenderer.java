@@ -42,7 +42,7 @@ public class WindRenderer extends EasyRenderer<WindEntity> {
                 , 2 , height
                 , 0, 0.9f, 0.8f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context, new RenderHelper.RenderContext(1, entity.spellContext().element.secondaryColor()));
+                , context, new RenderHelper.RenderContext(1, entity.spellContext().element().secondaryColor()));
     }
 
     @Override

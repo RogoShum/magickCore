@@ -109,7 +109,7 @@ public class OrbBottleItem extends ElementContainerItem {
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
                 CompoundTag tag = NBTTagHelper.getStackTag(copy);
-                tag.putString("ELEMENT", orb.spellContext().element.type());
+                tag.putString("ELEMENT", orb.spellContext().element().type());
                 if(!playerIn.addItem(copy))
                     playerIn.drop(copy, false, true);
                 stack.shrink(1);

@@ -1,5 +1,5 @@
 {
-  "name": "魔力时效",
+  "name": "Mana Tick Energy",
   "advancement": "magickcore:mana_material/mana_red",
   "icon": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_energy{item_extra_data:{TICK:200}}",
-	  "text": "使用红石粉在魔法合成阵转换而成。可以作为魔力材料在功能构造与形态构造中使用，提升功能法术和形态法术的持续时间属性。"
+	  "text": "Use a redstone dust to convert it in the magick synthesis matrix. It can be used as a mana material in functional and form spell to improve the duration attributes of functional spells and form spells."
     }
   ]
 }

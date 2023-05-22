@@ -44,7 +44,7 @@ public class SilenceSqualRenderer extends EasyRenderer<SilenceSquallEntity> {
         preRotate = entity.tickCount % 50;
         postRotate = (entity.tickCount + 1) % 50;
         rotate = Mth.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
-        renderer = entity.spellContext().element.getRenderer();
+        renderer = entity.spellContext().element().getRenderer();
     }
 
     public void renderCore(RenderParams params) {

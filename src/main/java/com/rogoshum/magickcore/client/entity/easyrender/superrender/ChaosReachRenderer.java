@@ -35,7 +35,7 @@ public class ChaosReachRenderer extends EasyRenderer<ChaoReachEntity> {
         matrixStackIn.scale(entity.getBbWidth() * scale, entity.getBbWidth() * scale, entity.getBbWidth() * scale);
         matrixStackIn.pushPose();
         matrixStackIn.scale(scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat(), scale + 0.2f * MagickCore.rand.nextFloat());
-        RenderHelper.renderParticle(BufferContext.create(matrixStackIn, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+        RenderHelper.renderParticle(BufferContext.create(matrixStackIn, params.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
         matrixStackIn.popPose();
     }
 

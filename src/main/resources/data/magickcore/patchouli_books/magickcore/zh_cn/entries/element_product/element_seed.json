@@ -1,0 +1,14 @@
+{
+  "name": "元素种子",
+  "advancement": "magickcore:element_product/element_seeds",
+  "icon": "magickcore:element_crystal_seeds",
+  "category": "magickcore:element_product",
+  "pages": [
+    {
+      "title": "电弧元素种子",
+      "type": "spotlight",
+      "item": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
+      "text": "吸收了魔力的种子，可以种出与自身元素相符的元素水晶，携带元素属性的元素水晶可以用来改变生物的元素属性。$(br2)元素水晶在成熟时可以通过右键来直接收割，此时会保留根部，产出元素水晶物品和元素能量。"
+    }
+  ]
+}

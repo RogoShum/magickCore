@@ -11,7 +11,6 @@ import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -51,11 +50,11 @@ public class ContextPointerRenderer extends BlockEntityWithoutLevelRenderer {
         if(vertex instanceof BufferBuilder builder) {
             RenderHelper.CylinderContext context = new RenderHelper.CylinderContext(radius, radius, 1, 1, height, 0.0f, 1, 0.5f);
             RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, builder, TYPE)
-                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element().primaryColor(), RenderHelper.renderLight, true));
 
             context = new RenderHelper.CylinderContext(0.7f, 0.6f, 1.5f, 1, height, 0.12f, 1, 0.3f);
             RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, builder, TYPE)
-                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+                    , context, new RenderHelper.RenderContext(alpha, pointer.spellContext().element().primaryColor(), RenderHelper.renderLight, true));
         }
         RenderHelper.queueMode = false;
         matrixStackIn.popPose();

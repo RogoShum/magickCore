@@ -5,7 +5,7 @@ import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.api.magick.ManaCapacity;
-import com.rogoshum.magickcore.api.magick.context.ItemSpellContext;
+import com.rogoshum.magickcore.api.magick.context.TagSpellContext;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.extradata.ItemExtraData;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public class ItemManaData extends ItemExtraData implements ISpellContext, IManaC
         if(displayOnly)
             spellContext = SpellContext.create();
         else
-            spellContext = ItemSpellContext.create(stack);
+            spellContext = TagSpellContext.create(stack);
         contextCore = new ContextCore(stack);
         capacity = new ItemManaCapacity(stack);
         this.depth = depth;

@@ -1,5 +1,5 @@
 {
-  "name": "劣质燧石",
+  "name": "Inferior Flint",
   "advancement": "magickcore:mana_material/form_separator",
   "icon": "magickcore:form_separator",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:form_separator",
-	  "text": "使用燧石在魔法合成阵转换而成。可以作为魔力材料在形态构造中使用。劣质燧石不能用来制作任何跟燧石相关的东西。如果有法术形态携带了劣质燧石，那么它会分离自身与下个形态，两个形态不会相互触发，而是同步释放。"
+	  "text": "Converted using Flint at Magic Synthesis Matrix. It can be used as a mana material in form spells. Inferior flint cannot be used to make anything related to Flint. If a spell form carries a inferior flint, Then it will separate itself from the next form, and the two forms will not trigger each other, but will be released simultaneously."
     }
   ]
 }

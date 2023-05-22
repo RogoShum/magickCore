@@ -35,7 +35,7 @@ public class ElementSoulRenderer extends EasyRenderer<ManaProjectileEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderSphereCache(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SMALL_SHADER)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 1);
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight), 1);
     }
 
     @Override

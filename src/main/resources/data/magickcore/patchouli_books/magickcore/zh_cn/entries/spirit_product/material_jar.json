@@ -1,0 +1,17 @@
+{
+  "name": "材料罐",
+  "advancement": "magickcore:spell_learn/magick_core",
+  "icon": "magickcore:material_jar",
+  "category": "magickcore:spirit_product",
+  "pages": [
+    {
+      "type": "text",
+      "text": "材料罐是用来存储魔力材料的容器，一个材料罐只能存储一种材料，数量无上限，右键存取，潜行可以存取一组。"
+    },
+    {
+      "type": "magickcore:magick_recipe",
+      "magick_recipe": "magickcore:material_jar",
+      "text": "在魔法合成阵处合成。规模为2x2x2。"
+    }
+  ]
+}

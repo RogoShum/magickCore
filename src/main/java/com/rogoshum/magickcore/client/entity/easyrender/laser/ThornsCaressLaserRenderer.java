@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> {
     Queue<Vec3> DIRECTION;
-    final RenderType TYPE = RenderHelper.getTexturedLaserGlint(entity.spellContext().element.getRenderer().getWaveTexture(1), 1.0f);
+    final RenderType TYPE = RenderHelper.getTexturedLaserGlint(entity.spellContext().element().getRenderer().getWaveTexture(1), 1.0f);
 
     public ThornsCaressLaserRenderer(ThornsCaressEntity entity) {
         super(entity);
@@ -66,7 +66,7 @@ public class ThornsCaressLaserRenderer extends EasyRenderer<ThornsCaressEntity> 
             matrixStackIn.scale(1, (float) (vector3d.z * 2), 1);
             RenderHelper.renderLaserParticle(
                     BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element.primaryColor()));
+                    , new RenderHelper.RenderContext(1f, this.entity.spellContext().element().primaryColor()));
             matrixStackIn.popPose();
         }
     }

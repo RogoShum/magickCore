@@ -1,17 +1,17 @@
 {
-  "name": "灵魂木法杖",
+  "name": "Spirit Wood Staff",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:staff",
   "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂木法杖本身不携带任何法术，可以无间隔释放魔力。可以装备成型法术，用成型法术和灵魂木法杖在工作台合成即可，携带成型法术的灵魂木法杖单独作为合成材料可以取出成型法术。"
+      "text": "The spirit wood staff itself does not carry any spells, can release magick directly without charging, and a Molding Spell can be equipped. You can craft a spirit wood staff by combining a Molding Spell and a spirit wood staff at a workbench. A spirit wood staff with a Molding Spell can be used as a crafting ingredient to extract the Molding Spell."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_wood_staff",
-      "text": "在魔法合成阵处合成。"
+      "text": "Crafted at the Magick Synthesis Matrix"
     }
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "name": "清爽水",
+  "advancement": "magickcore:element_product/orb_bottle",
+  "icon": "minecraft:potion{Potion:\"magickcore:refreshing\"}",
+  "category": "magickcore:potion",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "minecraft:potion{Potion:\"magickcore:refreshing\"}",
+	  "text": "可以用含有“元素水晶”字样的东西与水瓶酿造而成。是用来酿造魔法药水的基础材料。"
+    }
+  ]
+}

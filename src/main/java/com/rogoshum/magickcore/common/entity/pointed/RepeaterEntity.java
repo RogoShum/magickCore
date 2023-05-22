@@ -55,12 +55,12 @@ public class RepeaterEntity extends ManaPointEntity {
         if(level.isClientSide) return false;
 
         if(cool_down >= 0)
-            cool_down -= Math.max(this.spellContext().force * 3, 1);
+            cool_down -= Math.max(this.spellContext().force() * 3, 1);
 
         if(spawnEntity != null && spawnEntity.isAlive()) return false;
         if(cool_down < 0) {
             this.playSound(ModSounds.thunder.get(), 0.15F, 1.0F - this.random.nextFloat());
-            MagickContext context = MagickContext.create(this.level, spellContext().postContext)
+            MagickContext context = MagickContext.create(this.level, spellContext().postContext())
                     .<MagickContext>replenishChild(PositionContext.create(this.position()))
                     .caster(getCaster()).projectile(this).noCost();
 
@@ -123,13 +123,13 @@ public class RepeaterEntity extends ManaPointEntity {
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+        LitParticle litPar = new LitParticle(this.level, this.spellContext().element().getRenderer().getMistTexture()
                 , new Vec3(this.getX()
                 , this.getY() + this.getBbHeight() * 0.5
                 , this.getZ())
                 , MagickCore.getRandFloat() * 0.25f, MagickCore.getRandFloat() * 0.25f
                 , MagickCore.getRandFloat()
-                , this.spellContext().element.getRenderer().getParticleRenderTick(), this.spellContext().element.getRenderer());
+                , this.spellContext().element().getRenderer().getParticleRenderTick(), this.spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
@@ -140,7 +140,7 @@ public class RepeaterEntity extends ManaPointEntity {
                 , new Vec3(this.getX()
                 , this.getY() + this.getBbHeight() * 0.5
                 , this.getZ())
-                , width, height, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , width, height, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         par.setParticleGravity(0f);
         par.setLimitScale();

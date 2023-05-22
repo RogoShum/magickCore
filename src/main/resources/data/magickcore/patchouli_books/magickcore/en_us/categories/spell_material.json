@@ -1,6 +1,6 @@
 {
-  "name": "魔力材料",
-  "description": "用于更改魔法属性的材料",
+  "name": "Mana material",
+  "description": "Materials used to change mana properties",
   "icon": "magickcore:mana_bone",
   "sortnum": 3
 }

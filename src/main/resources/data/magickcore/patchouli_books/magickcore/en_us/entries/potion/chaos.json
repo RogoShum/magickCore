@@ -1,5 +1,5 @@
 {
-  "name": "混沌药水",
+  "name": "Chaos Theorem Potion",
   "advancement": "magickcore:potion/mana_chaos",
   "icon": "minecraft:potion{Potion:\"magickcore:chaos_theorem\"}",
   "category": "magickcore:potion",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "minecraft:potion{Potion:\"magickcore:chaos_theorem\"}",
-	  "text": "由含有“phantom_membrane(幻翼膜)”字样的物品与清爽水酿造而成。$(br2)功能：使魔法不分敌我，尤指攻击、增益、减益状态的魔法，通常情况下攻击、减益只能对非玩家和非驯服生物使用，而增益只能对玩家、驯服生物使用。"
+	  "text": "Brewed from items containing the word \"phantom_membrane\" and refreshing water.$(br2)Function: Make magic indiscriminate between friend and foe，Especially the magic of attack, buff, and debuff state. Usually, attack and debuff can only be used on non-players and non-tamed creatures, while buffs can only be used on players and tamed creatures."
     }
   ]
 }

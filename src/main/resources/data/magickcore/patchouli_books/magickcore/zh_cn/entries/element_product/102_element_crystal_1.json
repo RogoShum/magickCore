@@ -1,0 +1,44 @@
+{
+  "name": "携带元素的水晶",
+  "advancement": "magickcore:element_product/element_crystal_1",
+  "icon": "magickcore:element_crystal{ELEMENT:\"arc\"}",
+  "category": "magickcore:element_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:element_crystal{ELEMENT:\"arc\"}",
+	  "text": "携带元素的元素水晶也可以与羊毛和线合成，或是合成元素核心来改变自身的魔法元素。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:element_crystal{ELEMENT:\"arc\"}",
+      "item1": "minecraft:string,minecraft:white_wool",
+      "item2": "minecraft:air",
+      "item3": "minecraft:air",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:element_string{ELEMENT:\"arc\"},magickcore:element_wool{ELEMENT:\"arc\"}"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"wither\"},magickcore:element_crystal{ELEMENT:\"solar\"},magickcore:element_crystal{ELEMENT:\"stasis\"}",
+      "item1": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"wither\"},magickcore:element_crystal{ELEMENT:\"solar\"},magickcore:element_crystal{ELEMENT:\"stasis\"}",
+      "item2": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"wither\"},magickcore:element_crystal{ELEMENT:\"solar\"},magickcore:element_crystal{ELEMENT:\"stasis\"}",
+      "item3": "magickcore:element_crystal{ELEMENT:\"arc\"},magickcore:element_crystal{ELEMENT:\"void\"},magickcore:element_crystal{ELEMENT:\"wither\"},magickcore:element_crystal{ELEMENT:\"solar\"},magickcore:element_crystal{ELEMENT:\"stasis\"}",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "magickcore:arc,magickcore:void,magickcore:wither,magickcore:solar,magickcore:stasis",
+      "text": "四个同种元素水晶即可合成一个元素核心，元素核心使用之后就可以改变自身魔力的元素属性。$(br2)不同元素的属性在法术制作上具备不同的功能效果，同时还具备一定程度上的伤害抗性效果。"
+    },
+    {
+      "type": "text",
+      "text": "到目前为止，我们使用的还是自身就携带元素的物品，元素肉、元素线，他们提供的作用太少了。$(br2)等到你做出元素核心，能够将自身的魔力转变为其他元素之后，就可以正式踏入学习制作魔法的大门了。"
+    }
+  ]
+}

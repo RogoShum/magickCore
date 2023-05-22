@@ -1,5 +1,5 @@
 {
-  "name": "冰影元素",
+  "name": "Stasis",
   "advancement": "magickcore:learn/stasis",
   "icon": "magickcore:stasis",
   "category": "magickcore:element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:stasis",
-      "text": "冰影元素是一种偏向暗影的魔力元素，能够让事物趋近停滞。$(br2)冰影元素的生命会获得冰影庇护，减免来自于非生命、受冻生命的伤害。"
+      "text": "The stasis element is a mana element that is biased towards dark, can bring something to a standstill. $(br2)Stasis element life will receive ice shadow shelter, reducing damage from non-life and chilly life."
     }
   ]
 }

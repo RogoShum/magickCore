@@ -35,7 +35,7 @@ public class SphereEntity extends ManaRadiateEntity {
 
     @Override
     public float getRange() {
-        return spellContext().range * 1.5f;
+        return spellContext().range() * 1.5f;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -79,9 +79,9 @@ public class SphereEntity extends ManaRadiateEntity {
     protected void applyParticle(int particleAge) {
         Vec3[] vec3s = ParticleUtil.drawSphere(12, 12);
         for (Vec3 pos : vec3s) {
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , pos.scale(getRange()).add(this.position())
-                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.2f, 0.2f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();

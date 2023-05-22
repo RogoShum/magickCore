@@ -1,5 +1,5 @@
 {
-  "name": "魔力火药",
+  "name": "Mana Powder",
   "advancement": "magickcore:mana_material/mana_powder",
   "icon": "magickcore:mana_gunpowder",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_gunpowder",
-	  "text": "使用火药在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，转变元素的状态为增益效果。"
+	  "text": "Converted using gunpowder at Magic Synthesis Matrix. Can be used in functional spell as a mana material, changing the state of an element to Buff."
     }
   ]
 }

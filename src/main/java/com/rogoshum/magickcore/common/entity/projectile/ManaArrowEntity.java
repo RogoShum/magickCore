@@ -48,7 +48,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     protected float getGravity() {
-        float range = spellContext().range;
+        float range = spellContext().range();
         if(range > 10)
             range = 10;
 
@@ -61,22 +61,22 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+        LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
-                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
+                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element().getRenderer());
         par.setGlow();
         MagickCore.addMagickParticle(par);
     }
 
     public void addParticle(Vec3 pos, Vec3 direction, int count, float baseScale, float scale) {
         for (int i = 0; i < count; ++i) {
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getLaserTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getLaserTexture()
                     , new Vec3(pos.x - i * direction.x
                     , pos.y - i * direction.y + this.getBbHeight() / 2
                     , pos.z - i * direction.z)
-                    , (float) (baseScale * Math.pow(scale, i)), (float) (baseScale * Math.pow(scale, i)), 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , (float) (baseScale * Math.pow(scale, i)), (float) (baseScale * Math.pow(scale, i)), 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -86,7 +86,7 @@ public class ManaArrowEntity extends ManaProjectileEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        float range = spellContext().range;
+        float range = spellContext().range();
         if(range > 10)
             range = 10;
         return ManaFactor.create(Math.min(1.5f, (float) (Math.pow(this.getDeltaMovement().length() * range, 1.8) * 0.2 + 0.05)), 1.0f, 1.0f);

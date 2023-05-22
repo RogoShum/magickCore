@@ -67,11 +67,11 @@ public class DawnWardEntity extends ManaPointEntity implements ISuperEntity {
     @Override
     protected void applyParticle() {
         if(this.tickCount % 2 == 0 && this.level.isClientSide) {
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
-                    , 0.2f, 0.2f, 0.9f, 50, this.spellContext().element.getRenderer());
+                    , 0.2f, 0.2f, 0.9f, 50, this.spellContext().element().getRenderer());
             par.setGlow();
             MagickCore.addMagickParticle(par);
         }

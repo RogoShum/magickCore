@@ -86,7 +86,7 @@ public class ShadowEntity extends ManaProjectileEntity {
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + x
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + y + this.getBbHeight() * 0.5
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + z)
-                    , scale, scale, 0.35f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , scale, scale, 0.35f, 20, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setParticleGravity(0f);
             par.setShakeLimit(5f);
             par.setLimitScale();
@@ -113,7 +113,7 @@ public class ShadowEntity extends ManaProjectileEntity {
                         , new Vec3(motionX + x
                         , motionY + y + this.getBbHeight() * 0.5
                         , motionZ + z)
-                        , scale, scale, 0.35f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                        , scale, scale, 0.35f, 40, MagickCore.proxy.getElementRender(spellContext().element().type()));
                 par.setParticleGravity(0f);
                 par.setShakeLimit(5f);
                 par.setLimitScale();

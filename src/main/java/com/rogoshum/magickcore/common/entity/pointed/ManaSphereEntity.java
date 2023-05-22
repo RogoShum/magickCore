@@ -50,10 +50,10 @@ public class ManaSphereEntity extends ManaPointEntity {
 
     @Override
     public void reSize() {
-        float height = getType().getHeight() + spellContext().range * 0.3f;
+        float height = getType().getHeight() + spellContext().range() * 0.3f;
         if(getBbHeight() != height)
             this.setHeight(height);
-        float width = getType().getWidth() + spellContext().range * 0.3f;
+        float width = getType().getWidth() + spellContext().range() * 0.3f;
         if(getBbWidth() != width)
             this.setWidth(width);
     }
@@ -68,12 +68,12 @@ public class ManaSphereEntity extends ManaPointEntity {
         if(!this.level.isClientSide && this.tickCount == 10)
             this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.random.nextFloat() / 5));
 
-        if(!this.level.isClientSide && this.tickCount % 15 == 0 && this.tickCount < this.spellContext().tick - 10 && this.tickCount > 10)
+        if(!this.level.isClientSide && this.tickCount % 15 == 0 && this.tickCount < this.spellContext().tick() - 10 && this.tickCount > 10)
         {
             this.playSound(ModSounds.sphere_ambience.get(), 1.0F, (0.85F - this.random.nextFloat() / 5));
         }
 
-        if(!this.level.isClientSide && this.tickCount == this.spellContext().tick - 20)
+        if(!this.level.isClientSide && this.tickCount == this.spellContext().tick() - 20)
         {
             this.playSound(ModSounds.shpere_dissipate.get(), 0.5F, (1.0F - this.random.nextFloat()));
         }
@@ -108,13 +108,13 @@ public class ManaSphereEntity extends ManaPointEntity {
     }
 
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.level, this.spellContext().element.getRenderer().getMistTexture()
+        LitParticle litPar = new LitParticle(this.level, this.spellContext().element().getRenderer().getMistTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
                 , MagickCore.getRandFloat() * this.getBbWidth()
                 , MagickCore.getRandFloat() * this.getBbWidth()
-                , 0.5f * MagickCore.getRandFloat(), this.spellContext().element.getRenderer().getParticleRenderTick() / 2, this.spellContext().element.getRenderer());
+                , 0.5f * MagickCore.getRandFloat(), this.spellContext().element().getRenderer().getParticleRenderTick() / 2, this.spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(5.0f);
@@ -122,13 +122,13 @@ public class ManaSphereEntity extends ManaPointEntity {
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2, MagickCore.getNegativeToOne() * 0.2);
         MagickCore.addMagickParticle(litPar);
 
-        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.4f;
+        float scale = Math.max(this.getBbWidth(), 0.5f) * 0.3f;
         for (int i = 0; i < 2; ++i) {
             LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getZ())
-                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0f);
             par.setLimitScale();

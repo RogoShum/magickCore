@@ -97,11 +97,11 @@ public class PhantomEntity extends ManaProjectileEntity {
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getMistTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth()*2 + this.getZ())
-                , 0.15f * this.getBbWidth(), 0.15f * this.getBbWidth(), 0.8f, 20, spellContext().element.getRenderer());
+                , 0.15f * this.getBbWidth(), 0.15f * this.getBbWidth(), 0.8f, 20, spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(5.0f);

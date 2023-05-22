@@ -1,17 +1,17 @@
 {
-  "name": "灵魂木弓",
+  "name": "Spirit Bow",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:spirit_bow",
   "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂木弓的魔法以魔力箭形态为起式，魔力箭触发后应用后续法术，可以装备成型法术。用成型法术和灵魂木弓在工作台合成即可，携带成型法术的灵魂木弓单独作为合成材料可以取出成型法术。"
+      "text": "The magic of the Spirit Bow starts in the form of a magic arrow. After the magic arrow is triggered, the follow-up spell is applied, and a Molding Spell can be equipped. You can craft a spirit bow by combining a Molding Spell and a spirit bow at a workbench. A spirit bow with a Molding Spell can be used as a crafting ingredient to extract the Molding Spell."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_bow",
-      "text": "在魔法合成阵处合成，需要注意是材料要放置在合成阵中间，否则无法合成灵魂木弓。"
+      "text": "Crafted at the Magick Synthesis Matrix. It should be noted that the materials should be placed in the middle of the synthesis matrix, otherwise the spirit bow cannot be synthesized."
     }
   ]
 }

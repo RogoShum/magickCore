@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.client.entity.easyrender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
@@ -9,15 +8,10 @@ import com.rogoshum.magickcore.api.render.easyrender.BufferContext;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.pointed.SpinEntity;
-import com.rogoshum.magickcore.common.lib.LibContext;
-import com.rogoshum.magickcore.api.magick.context.child.DirectionContext;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 
 import java.util.HashMap;
@@ -40,7 +34,7 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
         preRotate = entity.tickCount % 5;
         postRotate = (entity.tickCount + 1) % 5;
         rotate = Mth.lerp(Minecraft.getInstance().getFrameTime(), preRotate, postRotate);
-        renderer = entity.spellContext().element.getRenderer();
+        renderer = entity.spellContext().element().getRenderer();
     }
 
     public void render(RenderParams params) {
@@ -55,7 +49,7 @@ public class SpinRenderer extends EasyRenderer<SpinEntity> {
                 , 0.1f, 1.0f, 0.3f);
 
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE)
-                , context, new RenderHelper.RenderContext(1, entity.spellContext().element.primaryColor()));
+                , context, new RenderHelper.RenderContext(1, entity.spellContext().element().primaryColor()));
         matrixStackIn.popPose();
     }
 

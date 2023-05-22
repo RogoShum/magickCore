@@ -69,7 +69,7 @@ public class BubbleEntity extends ManaProjectileEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + x
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + y + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + z)
-                , scale, scale, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , scale, scale, 0.5f, 20, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setParticleGravity(0f);
         par.setGlow();
         par.setShakeLimit(5f);

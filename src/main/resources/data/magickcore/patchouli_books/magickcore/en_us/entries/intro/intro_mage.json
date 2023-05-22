@@ -1,16 +1,16 @@
 {
-  "name": "流浪法师",
+  "name": "Wandering mage",
   "icon": "magickcore:mage_spawn_egg",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",
-      "text": "流浪法师是用于购买法术形态的商贩，可以用灵魂水晶来进行交易。不同于一般的村民，法师具备一定的魔力使用资质，可以去对付一下想要欺负自己的那些坏家伙。总之我不建议你去招惹他。"
+      "text": "Wandering Mage is a vendor used to purchase spell forms, can be traded with spirit crystals. Unlike ordinary villagers, mages have certain qualifications for using magick power, so they can deal with those bad guys who want to bully them. In short, I don't recommend you to provoke him."
     },
 	{
       "type": "entity",
 	  "entity": "magickcore:mage",
-	  "text": "流浪法师可以在合适的群系自然生成，也可以在村民身边摆放魔法工作台来使村民专职为法师。"
+	  "text": "Wandering Mage can spawn naturally in suitable biomes, and can also place a magic crafting for the villagers to make the villagers become to mages."
     }
   ]
 }

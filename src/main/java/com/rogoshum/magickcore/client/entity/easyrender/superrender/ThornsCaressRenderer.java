@@ -47,7 +47,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.45f, 1.45f, 1.45f);
-        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 1);
+        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.9f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight), 1);
     }
 
     public void renderSphereDistortion(RenderParams params) {
@@ -55,7 +55,7 @@ public class ThornsCaressRenderer extends EasyRenderer<ThornsCaressEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(1.2f, 1.2f, 1.2f);
-        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.95f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight), 1);
+        RenderHelper.renderSphereCache(BufferContext.create(matrixStackIn, bufferIn, SPHERE), new RenderHelper.RenderContext(0.95f, entity.spellContext().element().secondaryColor(), RenderHelper.renderLight), 1);
     }
 
     @Override

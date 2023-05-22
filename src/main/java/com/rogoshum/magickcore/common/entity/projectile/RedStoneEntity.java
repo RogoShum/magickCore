@@ -112,23 +112,23 @@ public class RedStoneEntity extends ManaProjectileEntity implements IRedStoneEnt
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext()).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext()).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }
 
     @Override
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
-                , getBbWidth() * 0.2f, getBbWidth() * 0.2f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , getBbWidth() * 0.2f, getBbWidth() * 0.2f, 1.0f, 20, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         par.setLimitScale();
         MagickCore.addMagickParticle(par);

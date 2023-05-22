@@ -1,18 +1,18 @@
 {
-  "name": "102 简单法术",
+  "name": "102 Simple Spell",
   "advancement": "magickcore:spell_learn/understand_spell",
   "icon": "magickcore:context_core",
   "category": "magickcore:spell",
   "pages": [
     {
       "type": "text",
-      "text": "我们先来学习一下如何制作一个简单的增益法术，这个法术可以给予我们速度提升、急迫的效果。首先我们需要收集$(#20B2AA)一个电弧元素核心、火药、几根木棍、几颗青金石、几颗红石$()。$(br2)电弧元素核心利用电弧元素的水晶来种植并合成，而电弧元素常见于苦力怕身上。同时我们还需要在魔力合成阵处合成一个$(#0000FF)功能$()构造核心。"
+      "text": "Let's first learn how to create a simple buff spell that can give us a speed boost and a sense of urgency. First, we need to gather $(#20B2AA)an Arc Element Core, gunpowder, several sticks, several lapis lazuli, and several redstone$(). $(br2)The Arc Element Core is cultivated and synthesized using crystals from the Arc Element, which is commonly found on Creepers. Additionally, we need to synthesize a $(#0000FF)Function$() Spell Core at the Magick Synthesis Matrix."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/creeper.png"],
       "border": "true",
-      "text": "特异元素的苦力怕（电弧元素）"
+      "text": "Arc Element of the Creeper"
     },
     {
       "type": "magickcore:element_recipe",
@@ -26,33 +26,33 @@
       "item7": "minecraft:air",
       "item8": "minecraft:air",
       "output": "magickcore:wand",
-      "text": "首先我们需要将木棍丢在合成阵上，转化为灵魂木棍，然后用灵魂木棍合成一根魔棒。灵魂木棍是制作魔棒的原材料，在制作魔法的过程中，我们会经常用到魔棒。"
+      "text": "First, we need to throw the sticks onto the Synthesis Matrix to transform them into Spirit Sticks, and then use the Spirit Sticks to craft a Wand. Spirit Sticks are the raw material for creating wand, and we frequently use wand in the process."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:context_core",
-      "text": "之后我们需要将这些材料右键摆在魔法合成阵上即可，材料为灵魂木棍和灵魂水晶，规模为2X2。摆放完毕之后，需要用魔棒右键一下。就可以获得一个$(#0000FF)功能$()构造核心。"
+      "text": "Next, we need to right-click and place these materials on the Magick Synthesis Matrix. The materials required are Spirit Sticks and Spirit Crystals, arranged in a 2x2 grid. Once the materials are placed, use the wand to right-click on them to obtain a $(#0000FF)Function$() Spell Core."
     },
     {
       "type": "spotlight",
-      "title": "功能构造核心",
+      "title": "Function Spell Core",
       "item": "magickcore:context_core",
-      "text": "$(#0000FF)功能构造核心$()是收纳魔力材料的容器，专用于制作$(#0000FF)功能法术$()。我们可以将$(#0000FF)功能构造核心$()丢在地上，此时$(#0000FF)功能构造核心$()会上升几格高度，随后展开。$(br2)对于$(#0000FF)功能法术$()来讲，我们需要以掉落物形式往里面丢进元素核心、$(#0000FF)施加类型$()材料和一些其他的魔力材料，来决定$(#0000FF)功能法术$()的$(#0000FF)功能$()、$(#00CED1)强度$()、$(#FFB90F)持续时间$()和$(#EE6363)范围$()属性。"
+      "text": "The $(#0000FF)Function Spell Core$() is a container for storing mana materials and is specifically used for crafting $(#0000FF)functional spells$(). We can throw the $(#0000FF)Function Spell Core$() on the ground, and it will rise a few blocks and unfold. $(br2)For $(#0000FF)functional spells$(), we need to throw elemental cores, $(#0000FF)application types$() materials, and other mana materials into the Function Spell Core in the form of dropped items. This will determine the $(#0000FF)function$(), $(#00CED1)force$(), $(#FFB90F)duration$(), and $(#EE6363)range$() attributes of the $(#0000FF)functional spell$()."
     },
     {
       "type": "image",
-      "title": "展开后的功能构造核心",
+      "title": "Unfolded Function Spell Core",
       "images": ["magickcore:textures/book_image/context_core.png"],
-      "text": "内含材料的$(#0000FF)功能构造核心$()，我们可以通过$(#0000FF)右键$()功能构造核心来回收材料，也可以通过$(#0000FF)敲击$()功能构造核心三下来回收$(#0000FF)功能构造核心$()",
+      "text": "The unfolded $(#0000FF)Function Spell Core$() contains the materials. We can use $(#0000FF)right-click$() on the Function Spell Core to retrieve the materials or use $(#0000FF)three consecutive clicks$() on the Function Spell Core to retrieve the $(#0000FF)Function Spell Core$() itself.",
       "border": "true"
     },
     {
       "type": "text",
-      "text": "前面我们所收集到的材料有：$(#20B2AA)电弧元素核心、火药、青金石、红石$()。后三者需要丢在法术合成阵中进行转化，成为：魔力火药、$(#00CED1)强度$()魔力能量、$(#FFB90F)持续时间$()魔力能量。$(br2)魔力火药提供的作用是更改元素的$(#0000FF)施加类型$()，也可以说是魔力元素的状态，与电弧元素合并为电弧凝聚，效果为推动实体。$(br2)相当重要的一点是：构造核心具备属性上限，达到上限后无法投入更多魔力能量。"
+      "text": "The materials we have collected so far are: $(#20B2AA)Arc Element Core, gunpowder, lapis lazuli, redstone$(). The latter three need to be thrown into the Magick Synthesis Matrix to be transformed into: Mana Gunpowder, $(#00CED1)Force$() Mana Energy, and $(#FFB90F)Duration$() Mana Energy. $(br2)Mana Gunpowder is used to change the $(#0000FF)application type$() of the element, or in other words, the state of the mana element. When combined with the Arc Element, it forms Arc Buff, which has the effect of grants creature haste. $(br2)It is important to note that the Spell Core has attribute limits, and once the limit is reached, no more mana energy can be added."
     },
     {
       "type": "text",
-      "text": "魔力能量对应$(#0000FF)功能$()的三种基本属性：$(#00CED1)强度$()、$(#EE6363)范围$()、$(#FFB90F)持续时间$()。对于增益魔法来讲，通常我们只需要提升$(#00CED1)强度$()和$(#FFB90F)持续时间$()就可以了，这也是为什么我们需要收集青金石和红石。$(br2)我们将$(#20B2AA)电弧元素核心、魔力火药、两种魔力能量$()以掉落物形式丢进展开的$(#0000FF)功能$()构造核心中，就可以得到一个用于推动实体的魔法。$(br2)最后使用魔棒右键一下展开的法术构造，就可以将法术构造压缩为成型法术。需要注意的是，$(#B22222)一旦构造核心变为成型法术，这个法术就无法再修改$()。"
+      "text": "Mana energy corresponds to the three basic attributes of $(#0000FF)function$(): $(#00CED1)force$(), $(#EE6363)range$(), and $(#FFB90F)duration$(). For buff magic, we usually only need to increase $(#00CED1)force$() and $(#FFB90F)duration$(), which is why we need to collect lapis lazuli and redstone. $(br2)We throw the $(#20B2AA)Arc Element Core, Mana Gunpowder, and the two types of mana energy$() into the unfolded $(#0000FF)function$() Spell Core as dropped items to create a magic spell that can grants creature haste. $(br2)Finally, right-click on the unfolded spell construction with the wand to compress it into a Molding Spell. It is important to note that $(#B22222)once the Spell Core becomes a Molding Spell, it cannot be modified$()."
     }
   ]
 }

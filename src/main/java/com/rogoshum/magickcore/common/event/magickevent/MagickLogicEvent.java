@@ -65,7 +65,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -170,9 +169,9 @@ public class MagickLogicEvent {
 					staff = LootUtil.createRandomItemByLucky(lucky);
 				}
 				ItemManaData data = ExtraDataUtil.itemManaData(staff);
-				data.spellContext().applyType = ApplyType.DE_BUFF;
-				while (data.spellContext().element == ModElements.ORIGIN) {
-					data.spellContext().element = MagickRegistry.getRandomElement();
+				data.spellContext().applyType(ApplyType.DE_BUFF);
+				while (data.spellContext().element() == ModElements.ORIGIN) {
+					data.spellContext().element(MagickRegistry.getRandomElement());
 				}
 				data.manaCapacity().setMana(data.manaCapacity().getMaxMana());
 				player.getInventory().add(staff);
@@ -199,7 +198,7 @@ public class MagickLogicEvent {
 	public void onProjectileCreate(EntityEvents.EntityVelocity event) {
 		if(event.getEntity() instanceof LampEntity) {
 			event.setVelocity(0.2f);
-			event.setInaccuracy(((LampEntity) event.getEntity()).spellContext().range);
+			event.setInaccuracy(((LampEntity) event.getEntity()).spellContext().range());
 		}
 
 		if(event.getEntity() instanceof ManaArrowEntity) {
@@ -213,7 +212,7 @@ public class MagickLogicEvent {
 
 		if(event.getEntity() instanceof RayEntity) {
 			RayEntity ray = (RayEntity) event.getEntity();
-			float velocity = ray.spellContext().force * 0.8f - ray.spellContext().range * 0.5f;
+			float velocity = ray.spellContext().force() * 0.8f - ray.spellContext().range() * 0.5f;
 			event.setVelocity(0.3f + Math.max(velocity, 0));
 			event.setInaccuracy(velocity);
 		}
@@ -233,7 +232,7 @@ public class MagickLogicEvent {
 			SpawnContext spawnContext = event.getContext().getChild(LibContext.SPAWN);
 			Entity spawnEntity = spawnContext.entityType.create(event.getContext().world);
 			if(spawnEntity instanceof ISuperEntity) {
-				event.getContext().tick((int) (event.getContext().tick * 0.25));
+				event.getContext().tick((int) (event.getContext().tick() * 0.25));
 			}
 		}
 
@@ -244,9 +243,9 @@ public class MagickLogicEvent {
 			}
 			if(spellContext.containChild(LibContext.MANA_FACTOR)) {
 				ManaFactor manaFactor = spellContext.<ExtraManaFactorContext>getChild(LibContext.MANA_FACTOR).manaFactor;
-				event.getContext().force(manaFactor.force * event.getContext().force);
-				event.getContext().range(manaFactor.range * event.getContext().range);
-				event.getContext().tick((int) (manaFactor.tick * event.getContext().tick));
+				event.getContext().force(manaFactor.force * event.getContext().force());
+				event.getContext().range(manaFactor.range * event.getContext().range());
+				event.getContext().tick((int) (manaFactor.tick * event.getContext().tick()));
 			}
 		}
 	}
@@ -293,24 +292,24 @@ public class MagickLogicEvent {
 		}
 		event.setMana((float) (event.getMana() * Math.pow(0.8f, level)));
 		if(level > 0) {
-			event.getContext().force((float) (event.getContext().force * Math.pow(1.05f, level)));
-			event.getContext().range((float) (event.getContext().range * Math.pow(1.07f, level)));
-			event.getContext().tick((int) (event.getContext().tick * Math.pow(1.1f, level)));
+			event.getContext().force((float) (event.getContext().force() * Math.pow(1.05f, level)));
+			event.getContext().range((float) (event.getContext().range() * Math.pow(1.07f, level)));
+			event.getContext().tick((int) (event.getContext().tick() * Math.pow(1.1f, level)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActiveEffectsMap().containsKey(ModEffects.MANA_FORCE.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getEffect(ModEffects.MANA_FORCE.orElse(null)).getAmplifier() + 1;
-			event.getContext().force((float) (event.getContext().force * Math.pow(1.3f, amplifier)));
+			event.getContext().force((float) (event.getContext().force() * Math.pow(1.3f, amplifier)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActiveEffectsMap().containsKey(ModEffects.MANA_RANGE.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getEffect(ModEffects.MANA_RANGE.orElse(null)).getAmplifier() + 1;
-			event.getContext().range((float) (event.getContext().range * Math.pow(1.4f, amplifier)));
+			event.getContext().range((float) (event.getContext().range() * Math.pow(1.4f, amplifier)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActiveEffectsMap().containsKey(ModEffects.MANA_TICK.orElse(null))) {
 			int amplifier = ((LivingEntity)event.getEntity()).getEffect(ModEffects.MANA_TICK.orElse(null)).getAmplifier() + 1;
-			event.getContext().tick((int) (event.getContext().tick * Math.pow(1.5f, amplifier)));
+			event.getContext().tick((int) (event.getContext().tick() * Math.pow(1.5f, amplifier)));
 		}
 
 		if(((LivingEntity)event.getEntity()).getActiveEffectsMap().containsKey(ModEffects.TRACE.orElse(null))
@@ -422,14 +421,14 @@ public class MagickLogicEvent {
 			float range;
 			int tick;
 			SpellContext mana = ((ISpellContext) event.getEntity()).spellContext();
-			force = mana.force;
-			range = mana.range;
-			tick = mana.tick;
-			if(mana.postContext != null)
-				mana = mana.postContext;
-			force = Math.max(force, mana.force);
-			range = Math.max(range, mana.range);
-			tick = Math.max(tick, mana.tick);
+			force = mana.force();
+			range = mana.range();
+			tick = mana.tick();
+			if(mana.postContext() != null)
+				mana = mana.postContext();
+			force = Math.max(force, mana.force());
+			range = Math.max(range, mana.range());
+			tick = Math.max(tick, mana.tick());
 
 			MagickContext attribute = new MagickContext(event.getEntity().level).noCost()
 					.caster(event.getEntity()).projectile(event.getEntity()).victim(event.getVictim())
@@ -777,7 +776,7 @@ public class MagickLogicEvent {
 		if(event.getMagickContext().projectile instanceof ChainEntity)
 			((ChainEntity) event.getMagickContext().projectile).setPostEntity(event.getEntity());
 		if(event.getEntity() instanceof ManaProjectileEntity && event.getMagickContext().containChild(LibContext.SELF)) {
-			((ManaProjectileEntity) event.getEntity()).spellContext().tick(((ManaProjectileEntity) event.getEntity()).spellContext().tick*4);
+			((ManaProjectileEntity) event.getEntity()).spellContext().tick(((ManaProjectileEntity) event.getEntity()).spellContext().tick() *4);
 		}
 	}
 
@@ -909,7 +908,7 @@ public class MagickLogicEvent {
 		if(event.getEntity() instanceof ISpellContext) {
 			SpellContext state = ((ISpellContext) event.getEntity()).spellContext();
 			if(state != null) {
-				if(!event.getEntity().level.isClientSide && event.getEntity().tickCount == state.tick - 5) {
+				if(!event.getEntity().level.isClientSide && event.getEntity().tickCount == state.tick() - 5) {
 					event.getEntity().playSound(ModSounds.ring_pointer.get(), 0.5F, (1.0F + MagickCore.rand.nextFloat()));
 				}
 
@@ -918,7 +917,7 @@ public class MagickLogicEvent {
 					IExistTick existTick = (IExistTick) event.getEntity();
 					ticksExisted -= existTick.getTickThatNeedExistingBeforeRemove();
 				}
-				if(ticksExisted > state.tick && state.tick >= 0)
+				if(ticksExisted > state.tick() && state.tick() >= 0)
 					event.getEntity().remove(Entity.RemovalReason.DISCARDED);
 			}
 		}

@@ -43,8 +43,8 @@ public class PieceTrickManaOut extends PieceTrick {
             Entity e = this.getParamValue(context, this.target);
             if(context.caster != null) {
                 com.rogoshum.magickcore.api.magick.context.SpellContext spell = this.getParamValue(context, this.mana_spell);
-                if(spell.postContext != null) {
-                    MagickContext mc = MagickContext.create(context.caster.getLevel(), spell.postContext);
+                if(spell.postContext() != null) {
+                    MagickContext mc = MagickContext.create(context.caster.getLevel(), spell.postContext());
                     mc.caster(context.caster).victim(e).noCost().addChild(PositionContext.create(pos.toVec3D())).addChild(DirectionContext.create(pos.toVec3D()));
                     if(e == null)
                         mc.doBlock();

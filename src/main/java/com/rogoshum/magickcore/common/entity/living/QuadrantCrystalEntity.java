@@ -5,16 +5,12 @@ import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.entity.IQuadrantEntity;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.client.entity.easyrender.QuadrantEntityRenderer;
-import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
-import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
-import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.util.LootUtil;
-import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -26,7 +22,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -56,8 +51,8 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
             EntityType<?> manaType = ModEntities.MANA_STAR.get();
             if(level.isDay())
                 manaType = ModEntities.LEAF.get();
-            SpellContext context = LootUtil.createEntityType(manaType, 0, 200, 2, true, spellContext().element);
-            LootUtil.attackType(context, 2, 100, 3, spellContext().element);
+            SpellContext context = LootUtil.createEntityType(manaType, 0, 200, 2, true, spellContext().element());
+            LootUtil.attackType(context, 2, 100, 3, spellContext().element());
             MagickContext magickContext = MagickContext.create(level, context).caster(this).victim(this.getLastHurtByMob()).noCost();
             MagickReleaseHelper.releaseMagick(magickContext);
         }
@@ -83,7 +78,7 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
         if(finalPos == null)
             finalPos = this.position();
         setPos(finalPos);
-        ExtraDataUtil.entityStateData(this).setElement(spellContext().element);
+        ExtraDataUtil.entityStateData(this).setElement(spellContext().element());
         if(tickCount < 10) {
             BlockPos blockpos = new BlockPos(this.position());
             int y = blockpos.getY();
@@ -99,7 +94,7 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
                     blockpos = new BlockPos(getX(), y, getZ());
                 }
             }
-            finalPos = new Vec3(getX(), y + spellContext().range * 0.8, getZ());
+            finalPos = new Vec3(getX(), y + spellContext().range() * 0.8, getZ());
             setPos(finalPos);
             tickCount=11;
         }
@@ -208,21 +203,21 @@ public class QuadrantCrystalEntity extends LivingEntity implements ISpellContext
 
     @Override
     public int range() {
-        return Math.min((int) (spellContext().range * 2), 32);
+        return Math.min((int) (spellContext().range() * 2), 32);
     }
 
     @Override
     public void magnify(SpellContext context) {
-        if(spellContext().force > 3)
-            spellContext().force = 3;
-        if(context.element == spellContext().element) {
-            context.force *= spellContext().force;
-            context.range *= spellContext().force;
-            context.tick *= spellContext().force;
+        if(spellContext().force() > 3)
+            spellContext().force(3);
+        if(context.element() == spellContext().element()) {
+            context.force(context.force() * spellContext().force());
+            context.range(context.range() * spellContext().force());
+            context.tick((int) (context.tick() * spellContext().force()));
         } else {
-            context.force *= 0.5f;
-            context.range *= 0.5f;
-            context.tick *= 0.5f;
+            context.force(context.force() * 0.5f);
+            context.range(context.range() * 0.5f);
+            context.tick((int) (context.tick() * 0.5f));
         }
     }
 }

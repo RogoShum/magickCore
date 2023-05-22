@@ -1,5 +1,5 @@
 {
-  "name": "电弧元素",
+  "name": "Arc",
   "advancement": "magickcore:learn/arc",
   "icon": "magickcore:arc",
   "category": "magickcore:element",
@@ -8,7 +8,7 @@
     {
       "type": "spotlight",
 	  "item": "magickcore:arc",
-      "text": "电弧元素是一种偏向光能的魔力元素，能够影响速度和能量。$(br2)电弧元素的生命会获得电弧庇护，减免来自于火焰、魔法、电击的伤害。"
+      "text": "The arc element is a mana element that is biased towards light, which can affect speed and energy. $(br2)The life of an Arc element receives Arc protection, reducing damage from fire, magic, and lightning."
     }
   ]
 }

@@ -1,20 +1,20 @@
 {
-  "name": "世界的变化",
+  "name": "Change of World",
   "icon": "minecraft:grass",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",
-	  "title": "世界的变化",
-      "text": "在第一个玩家进入这个世界的那一刻，些许异样的能量被带了进来，附着到了这个世界的生命上。$(br2)我们可以称呼这些能量为超因果之力，或是魔力。$(br)魔力或明或暗，拥有不同的属性，而生命体可以引导出这些力量，以此产生魔法。"
+	  "title": "Change of World",
+      "text": "At the moment when the first player enters this world, some possibly different energy is brought in and attached to the life in this world.$(br2)We may call these energies supracausal power, or mana.$(br)Mana has a different elemental, and the living can lead these mana to generate magic."
     },
     {
       "type": "text",
-      "text": "通常来讲魔力可以被划分为不同的元素属性，一些元素是炙热的，一些元素是寒冷的，一些元素具备操控生命的能力，一些元素具备操控物体时间的能力，而这些被划分的魔力正附着在这个世界上的生物身上。对于刚刚进入这个世界的你来说，你的魔力还很稚嫩，属于尚未分化出元素的原生魔力。"
+      "text": "Generally speaking, mana can be divided into different element attributes, some elements are hot, some elements are cold, some elements have the ability to control life, some elements have the ability to control the time of objects, and these divided mana is attached to On creatures in this world. For you who have just entered this world, your mana is still very immature, belonging to the original mana that has not yet been differentiated into elements."
     },
     {
       "type": "text",
-      "text": "不过我们可以通过一些操作来获取不同元素的魔力，并且开发出这些元素的不同功能。"
+      "text": "However, we can obtain the mana of different elements through some operations, and develop different functions of these elements."
     }
   ]
 }

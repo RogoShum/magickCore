@@ -3,6 +3,8 @@ package com.rogoshum.magickcore.proxy;
 import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
 import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
@@ -28,25 +30,33 @@ import com.rogoshum.magickcore.api.registry.elementmap.RenderFunctions;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.ParticleStatus;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.resource.ResourcePackLoader;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -210,6 +220,7 @@ public class ClientProxy implements IProxy {
 		MinecraftForge.EVENT_BUS.addListener(event::onRenderShaders);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
@@ -288,6 +299,28 @@ public class ClientProxy implements IProxy {
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LIVING_ARGENT.get(), ManaLivingEntityRenderer::new);
 	}
 
+	public float manaEnergy(ItemStack p_174676_, @Nullable ClientLevel p_174677_, @Nullable LivingEntity p_174678_, int p_174679_) {
+		float result = 0;
+		ItemManaData data = ExtraDataUtil.itemManaData(p_174676_, 0);
+		if(data.contextCore().haveMagickContext())
+			result += 1;
+		if(data.spellContext().tick()>0)
+			result += 2;
+		if(data.spellContext().force()>0)
+			result += 4;
+		if(data.spellContext().range()>0)
+			result += 8;
+		return result;
+	}
+
+	public void onModelRegistry(ModelRegistryEvent event) {
+		ResourceLocation res = new ResourceLocation("mana_energy_layer");
+		ItemProperties.register(ModItems.SPIRIT_SWORD.get(), res, this::manaEnergy);
+		ItemProperties.register(ModItems.SPIRIT_BOW.get(), res, this::manaEnergy);
+		ItemProperties.register(ModItems.SPIRIT_CRYSTAL_STAFF.get(), res, this::manaEnergy);
+		ItemProperties.register(ModItems.STAFF.get(), res, this::manaEnergy);
+	}
+
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColor color = (stack, p_getColor_2_) -> {
 			if(NBTTagHelper.hasElement(stack)) {
@@ -308,6 +341,14 @@ public class ClientProxy implements IProxy {
 			return 	16777215;
 		};
 		event.getItemColors().register(color, ModItems.WAND.get());
+		/*
+		color = (stack, p_getColor_2_) -> {
+			if(p_getColor_2_ == 0) {
+				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().getDecimalColor();
+			}
+			return 	16777215;
+		};
+		 */
 	}
 
 	public void putElementRendererIn(String name, ElementRenderer renderer) {
@@ -321,6 +362,11 @@ public class ClientProxy implements IProxy {
 		RenderHelper.addTexture(res);
 		RenderHelper.addTexture(new ResourceLocation("textures/block/white_wool.png"));
 		RenderHelper.addTexture(new ResourceLocation("textures/item/ender_eye.png"));
+		RenderHelper.addItemModelResource("staff", MagickCore.fromId("staff_layer"));
+		RenderHelper.addItemModelResource("staff_crystal", MagickCore.fromId("staff_crystal_layer"));
+		RenderHelper.addItemModelResource("sword", MagickCore.fromId("sword_layer"));
+		RenderHelper.addItemModelResource("bow", MagickCore.fromId("bow_layer"));
+		RenderHelper.addItemModelResource("mana_energy", MagickCore.fromId("mana_energy_layer"));
 		res =  ResourcePackLoader.getPackFor(MagickCore.MOD_ID).get().getResources(PackType.CLIENT_RESOURCES, MagickCore.MOD_ID, "textures/element", Integer.MAX_VALUE, (s) -> s.endsWith(".png"));
 		LitParticle.addTexture(res);
 		res =  ResourcePackLoader.getPackFor(MagickCore.MOD_ID).get().getResources(PackType.CLIENT_RESOURCES, MagickCore.MOD_ID, "textures/particle", Integer.MAX_VALUE, (s) -> s.endsWith(".png"));

@@ -17,7 +17,6 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.client.particle.LitParticle;
-import com.rogoshum.magickcore.client.tileentity.easyrender.RadianceCrystalRenderer;
 import com.rogoshum.magickcore.common.entity.living.LivingAgentEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
@@ -149,11 +148,11 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
         this.tickCount++;
         if(level.isClientSide()) {
             if(this.tickCount % 5 ==0) {
-                LitParticle cc = new LitParticle(this.level, this.spellContext().element.getRenderer().getRingTexture()
+                LitParticle cc = new LitParticle(this.level, this.spellContext().element().getRenderer().getRingTexture()
                         , new Vec3(this.getBlockPos().getX()+0.5
                         , this.getBlockPos().getY()+0.5
                         , this.getBlockPos().getZ()+0.5)
-                        , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
+                        , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element().getRenderer());
                 cc.setGlow();
                 cc.setParticleGravity(0);
                 MagickCore.addMagickParticle(cc);
@@ -234,7 +233,7 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
             if (material.typeMaterial()) {
                 dropItem();
                 material.upgradeManaItem(stack, this);
-                this.setApplyType(spellContext().applyType);
+                this.setApplyType(spellContext().applyType());
                 this.item = stack.copy();
                 stack.shrink(1);
                 this.item.setCount(1);

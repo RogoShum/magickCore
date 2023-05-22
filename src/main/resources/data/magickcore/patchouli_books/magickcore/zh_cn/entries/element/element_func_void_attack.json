@@ -1,0 +1,12 @@
+{
+  "name": "§5虚空§7攻击",
+  "advancement": "magickcore:learn/trigger_element_func_void_attack",
+  "icon": "magickcore:void",
+  "category": "magickcore:element",
+  "pages": [
+    {
+      "type": "text",
+      "text": "攻击状态的虚空能量可以给予目标虚空魔法的攻击，对虚弱的目标效果更佳。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()"
+    }
+  ]
+}

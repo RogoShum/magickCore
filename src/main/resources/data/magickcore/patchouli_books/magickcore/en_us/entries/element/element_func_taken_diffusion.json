@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7漫散",
+  "name": "§8Taken §7Diffusion",
   "advancement": "magickcore:learn/trigger_element_func_taken_diffusion",
   "icon": "magickcore:taken",
   "category": "magickcore:element",
   "pages": [
     {
       "type": "text",
-      "text": "漫散状态的夺魂能量可以使刷怪笼生成生物。也可以让生物进行繁殖。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的范围可以增加收益)$(li2)$(#EE6363)范围$(/t)$()"
+      "text": "Taken of the Diffusion allows spawners block to spawn mobs. It can also allow creatures to reproduce. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Range can increase gains)$(li2)$(#EE6363)Range$(/t)$()"
     }
   ]
 }

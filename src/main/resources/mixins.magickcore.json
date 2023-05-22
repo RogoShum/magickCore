@@ -21,6 +21,7 @@
   },
   "client": [
     "AccessorBufferBuilder",
+    "AccessorBufferSource",
     "AccessorRenderType",
     "AccessorShaderShard",
     "AccessorShaderState",
@@ -29,6 +30,7 @@
     "MixinDisplayEffectsScreen",
     "MixinGameRenderer",
     "MixinLivingRender",
+    "MixinModelBakery",
     "MixinShaderInstance",
     "MixinShaderInstance$MixinBufferUploader",
     "MixinTexture",

@@ -86,11 +86,11 @@ public class MultiReleaseEntity extends ManaEntity {
 
         if(!spellContext().valid()) return false;
 
-        if(spellContext().force >= 1) {
-            Vec3[] vectors = ParticleUtil.drawCone(this.position().add(0, getBbHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range, (int) (spellContext().force + 1));
+        if(spellContext().force() >= 1) {
+            Vec3[] vectors = ParticleUtil.drawCone(this.position().add(0, getBbHeight() * 0.5, 0), direction.normalize(), 4.5 * spellContext().range(), (int) (spellContext().force() + 1));
             for (Vec3 vector : vectors) {
                 Vec3 dir = vector.subtract(this.position().add(0, getBbHeight() * 0.5, 0)).normalize();
-                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
+                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext())
                         .replenishChild(RemoveHurtTimeContext.create())
                         .replenishChild(ExtraManaFactorContext.create(getManaFactor()))
                         .<MagickContext>replenishChild(DirectionContext.create(dir))
@@ -99,14 +99,14 @@ public class MultiReleaseEntity extends ManaEntity {
                 MagickReleaseHelper.releaseMagick(beforeCast(context));
             }
         } else {
-            MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
+            MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext())
                     .<MagickContext>replenishChild(DirectionContext.create(direction))
                     .caster(getCaster()).projectile((Entity) this)
                     .victim(target).noCost();
             MagickReleaseHelper.releaseMagick(beforeCast(context));
         }
         remove(RemovalReason.DISCARDED);
-        ParticleUtil.spawnImpactParticle(level, this.position(), 1, direction.normalize().scale(0.2), spellContext().element, ParticleType.PARTICLE);
+        ParticleUtil.spawnImpactParticle(level, this.position(), 1, direction.normalize().scale(0.2), spellContext().element(), ParticleType.PARTICLE);
         return true;
     }
 
@@ -121,7 +121,7 @@ public class MultiReleaseEntity extends ManaEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        float force = 1 / (spellContext().force <= 1 ? 2 : spellContext().force + 1);
+        float force = 1 / (spellContext().force() <= 1 ? 2 : spellContext().force() + 1);
         if(force < 1)
             force += 0.1f;
         return ManaFactor.create(force, force, force);

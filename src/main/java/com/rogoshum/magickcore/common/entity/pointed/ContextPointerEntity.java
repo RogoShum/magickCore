@@ -125,7 +125,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
 
     public boolean isFuncType(ItemStack stack) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
-        return !data.spellContext().applyType.isForm();
+        return !data.spellContext().applyType().isForm();
     }
 
     @Override
@@ -150,8 +150,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
     @Override
     protected void applyParticle() {
         for (int i = 0; i < 1; ++i) {
-            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vec3(this.getX() + (0.5 - random.nextFloat()), this.getY(), this.getZ() + (0.5 - random.nextFloat())), 0.03f, 0.03f, random.nextFloat(), (int)(20f * getBbHeight()), spellContext().element.getRenderer());
+            LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
+                    , new Vec3(this.getX() + (0.5 - random.nextFloat()), this.getY(), this.getZ() + (0.5 - random.nextFloat())), 0.03f, 0.03f, random.nextFloat(), (int)(20f * getBbHeight()), spellContext().element().getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -182,7 +182,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         for(PosItem posItem : stacks) {
             posItem.tick(this.tickCount);
             if(tickCount % 5 == 0 && posItem.function)
-                posItem.spawnParticle(level, spellContext().element, this.position());
+                posItem.spawnParticle(level, spellContext().element(), this.position());
         }
     }
 
@@ -218,9 +218,9 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
         float alpha = 0.5f;
 
 
-        MagickElement element = spellContext().element;
+        MagickElement element = spellContext().element();
         if(supplier instanceof ISpellContext) {
-            element = ((ISpellContext) supplier).spellContext().element;
+            element = ((ISpellContext) supplier).spellContext().element();
         }
         for (int i = 0; i < distance; ++i) {
             if(i == c)
@@ -280,8 +280,8 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                         for(int i = getStacks().size() - 2; i > -1; --i) {
                             SpellContext origin = ExtraDataUtil.itemManaData(getStacks().get(i).getItemStack()).spellContext().copy();
                             SpellContext post = origin;
-                            while (post.postContext != null)
-                                post = post.postContext;
+                            while (post.postContext() != null)
+                                post = post.postContext();
                             post.post(context);
                             context = origin;
                         }
@@ -292,12 +292,12 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                     } else if(getStacks().size() == 1) {
                         PosItem item = getStacks().get(0);
                         ItemManaData data = ExtraDataUtil.itemManaData(item.itemStack);
-                        if(data.spellContext().postContext != null) {
+                        if(data.spellContext().postContext() != null) {
                             List<SpellContext> spellContexts = new ArrayList<>();
                             SpellContext context = data.spellContext();
-                            while (context.postContext != null) {
-                                SpellContext spellContext1 = context.postContext;
-                                context.postContext = null;
+                            while (context.postContext() != null) {
+                                SpellContext spellContext1 = context.postContext();
+                                context.post(null);
                                 spellContexts.add(spellContext1);
                                 context = spellContext1;
                             }
@@ -305,7 +305,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                             for (SpellContext post : spellContexts) {
                                 ItemStack newCore = new ItemStack(ModItems.MAGICK_CORE.get());
                                 ItemManaData coreData = ExtraDataUtil.itemManaData(newCore);
-                                post.postContext = null;
+                                post.post(null);
                                 coreData.spellContext().copy(post);
                                 CompoundTag tag = item.serialize(new CompoundTag());
                                 PosItem posItem = new PosItem(Vec3.ZERO, ItemStack.EMPTY, getStacks().size(), true, Vec3.ZERO);
@@ -321,7 +321,7 @@ public class ContextPointerEntity extends ManaPointEntity implements IManaRefrac
                                 stacks.add(posItem);
                             }
 
-                            data.spellContext().postContext = null;
+                            data.spellContext().post(null);
                             data.spellContext().copy(data.spellContext());
                             playSound(SoundEvents.PORTAL_AMBIENT, 0.5f, 2.0f);
                             notClear = true;

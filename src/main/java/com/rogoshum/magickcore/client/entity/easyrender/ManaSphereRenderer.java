@@ -26,7 +26,7 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         params.matrixStack.mulPose(Vector3f.XP.rotationDegrees(90));
         RenderHelper.renderSphereCache(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE)
-                , new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), 1);
+                , new RenderHelper.RenderContext(0.4f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight), 1);
     }
 
     @Override
@@ -36,9 +36,9 @@ public class ManaSphereRenderer extends EasyRenderer<ManaSphereEntity> {
         if(entity.tickCount < 9)
             scale *= 1 - 1f / ((float)entity.tickCount + 1f);
 
-        if(entity.spellContext().tick - entity.tickCount <= 9)
-            scale *= 1 - 1f / (float)(entity.spellContext().tick - entity.tickCount);
-        if(entity.spellContext().tick <= entity.tickCount)
+        if(entity.spellContext().tick() - entity.tickCount <= 9)
+            scale *= 1 - 1f / (float)(entity.spellContext().tick() - entity.tickCount);
+        if(entity.spellContext().tick() <= entity.tickCount)
             scale = 0;
     }
 

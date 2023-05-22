@@ -61,7 +61,7 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
                     pass = false;
             }
             if(pass) {
-                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext)
+                MagickContext context = MagickContext.create(((Entity)this).level, spellContext().postContext())
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getCaster()).projectile((Entity) this)
                         .victim(living).noCost();
@@ -74,9 +74,9 @@ public interface IManaEntity extends ISpellContext, IOwnerEntity {
 
     default boolean suitableEntity(Entity entity) {
         if(!entity.isAlive()) return false;
-        ApplyType applyType = spellContext().applyType;
-        if(spellContext().postContext != null)
-            applyType = spellContext().postContext.applyType;
+        ApplyType applyType = spellContext().applyType();
+        if(spellContext().postContext() != null)
+            applyType = spellContext().postContext().applyType();
 
         boolean sameLikeOwner = MagickReleaseHelper.sameLikeOwner(this.getCaster(), entity);
         if(applyType.getBeneficial() == ApplyType.Beneficial.HARMFUL && sameLikeOwner) {

@@ -33,7 +33,7 @@ public class EntityHunterRenderer extends EntityRenderer<EntityHunterEntity> {
 		matrixStackIn.pushPose();
 		matrixStackIn.scale(entityIn.getBbWidth(), entityIn.getBbHeight(), entityIn.getBbWidth());
 		matrixStackIn.translate(0, -0.5, 0);
-		Color color = entityIn.spellContext().element.primaryColor();
+		Color color = entityIn.spellContext().element().primaryColor();
 		this.model.renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderHelper.getTexturedQuadsGlow(TEXTURE)), packedLightIn, OverlayTexture.NO_OVERLAY, color.r(), color.g(), color.b(), 1.0F);
 
 		matrixStackIn.popPose();

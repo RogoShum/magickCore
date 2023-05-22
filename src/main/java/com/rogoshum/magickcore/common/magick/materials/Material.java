@@ -30,11 +30,11 @@ public class Material {
     }
 
     public void limit(SpellContext spellContext) {
-        if(spellContext.range > getRange())
+        if(spellContext.range() > getRange())
             spellContext.range(getRange());
-        if(spellContext.force > getForce())
+        if(spellContext.force() > getForce())
             spellContext.force(getForce());
-        if(spellContext.tick > getTick())
+        if(spellContext.tick() > getTick())
             spellContext.tick(getTick());
     }
 }

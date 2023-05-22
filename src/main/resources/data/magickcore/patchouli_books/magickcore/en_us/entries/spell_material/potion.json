@@ -1,5 +1,5 @@
 {
-  "name": "药水施加类型",
+  "name": "Potion Application Type",
   "advancement": "magickcore:mana_material/potion_type",
   "icon": "magickcore:potion_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,POST:{},disable:0b,CHILD_CONTEXT:{potion:{effect.minecraft.night_vision:{Ambient:0b,CurativeItems:[{id:\"minecraft:milk_bucket\",Count:1b}],ShowIcon:1b,ShowParticles:1b,Duration:360,Id:16b,Amplifier:0b}}},APPLY_TYPE:\"potion\",TICK:0,RANGE:0.0f}}",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:potion_type{item_extra_data:{ELEMENT:\"origin\",haveMagickContext:0b,ManaCapacity:{CAPACITY:0.0f,MAX_CAPACITY:5000.0f},FORCE:0.0f,POST:{},disable:0b,CHILD_CONTEXT:{potion:{effect.minecraft.night_vision:{Ambient:0b,CurativeItems:[{id:\"minecraft:milk_bucket\",Count:1b}],ShowIcon:1b,ShowParticles:1b,Duration:360,Id:16b,Amplifier:0b}}},APPLY_TYPE:\"potion\",TICK:0,RANGE:0.0f}}",
-	  "text": "任何药水都可以在魔法合成阵处转换成相应的药水施加类型，但是持续时间会缩短到原来的十分之一。幸运的是我们可以通过增加法术的强度来提高药水效果到原有的强度、持续时间。药水施加效果属于单独的施加类型，元素属性不影响药水效果。需要注意的是，强度属性超过药水等级不会带来额外效果。"
+	  "text": "Any potion can be converted into the corresponding potion effect type at the magic synthesis matrix, but the duration will be reduced to one-tenth of the original. Fortunately, we can increase the force of the spell to restore the potion effect to its original strength and duration. Potion effects belong to separate application types, and elemental attributes do not affect potion effects. It should be noted that exceeding the potion level with the force attribute will not bring additional effects."
     }
   ]
 }

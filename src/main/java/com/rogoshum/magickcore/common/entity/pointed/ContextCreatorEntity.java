@@ -127,8 +127,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 IManaMaterial material = ((IManaMaterial)item.getItem().getItem());
                 boolean creatorAndNotType = !material.typeMaterial() || getEntityType() == null;
                 boolean singleItem = material.singleMaterial();
-                boolean anotherType = getInnerManaData().spellContext().applyType != ApplyType.NONE && material.typeMaterial();
-                boolean anotherElement = getInnerManaData().spellContext().element != ModElements.ORIGIN && material.elementMaterial();
+                boolean anotherType = getInnerManaData().spellContext().applyType() != ApplyType.NONE && material.typeMaterial();
+                boolean anotherElement = getInnerManaData().spellContext().element() != ModElements.ORIGIN && material.elementMaterial();
                 if(singleItem) {
                     singleItem = false;
                     for (PosItem posItem : stacks) {
@@ -198,8 +198,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         stacks.forEach(PosItem::tick);
         if(this.getEntityType() != null) {
             for (PosItem posItem : stacks) {
-                LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element.getRenderer().getParticleTexture()
-                        , this.position().add(0, this.getBbHeight() / 2 + 0.2, 0).add(posItem.pos), 0.1f, 0.1f, 0.5f, 10, innerManaData.spellContext().element.getRenderer());
+                LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element().getRenderer().getParticleTexture()
+                        , this.position().add(0, this.getBbHeight() / 2 + 0.2, 0).add(posItem.pos), 0.1f, 0.1f, 0.5f, 10, innerManaData.spellContext().element().getRenderer());
                 par.setGlow();
                 MagickCore.addMagickParticle(par);
             }
@@ -207,8 +207,8 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         AtomicBoolean hasEnergy = new AtomicBoolean(false);
 
         if(hasEnergy.get()) {
-            LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element.getRenderer().getParticleTexture()
-                    , this.position().add(0, this.getBbHeight() / 2, 0), 0.8f, 0.8f, 1.0f, 5, innerManaData.spellContext().element.getRenderer());
+            LitParticle par = new LitParticle(this.level, innerManaData.spellContext().element().getRenderer().getParticleTexture()
+                    , this.position().add(0, this.getBbHeight() / 2, 0), 0.8f, 0.8f, 1.0f, 5, innerManaData.spellContext().element().getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -245,9 +245,9 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
         float scale;
         float alpha = 0.25f;
 
-        MagickElement element = innerManaData.spellContext().element;
+        MagickElement element = innerManaData.spellContext().element();
         if(supplier instanceof ISpellContext) {
-            element = ((ISpellContext) supplier).spellContext().element;
+            element = ((ISpellContext) supplier).spellContext().element();
         }
         for (int i = 0; i < distance; ++i) {
             if(i == c)
@@ -343,9 +343,9 @@ public class ContextCreatorEntity extends ManaPointEntity implements IManaRefrac
                 y = (float) (Math.cos(theta) * Math.sin(rho));
                 z = (float) Math.cos(rho);
                 Vec3 pos = new Vec3(x * radius, y * radius, z * radius);
-                LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+                LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                         , pos.add(this.position().add(0, getBbHeight() * 0.5, 0))
-                        , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                        , 0.1f, 0.1f, 1.0f, 10, MagickCore.proxy.getElementRender(spellContext().element().type()));
                 par.setGlow();
                 par.setParticleGravity(0);
                 par.setLimitScale();

@@ -4,6 +4,7 @@ import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -67,6 +68,6 @@ public class DimensionContext extends ChildContext {
 
     @Override
     public String getString(int tab) {
-        return dimension.location().toString();
+        return new TranslatableComponent(dimension.location().toString()).getString();
     }
 }

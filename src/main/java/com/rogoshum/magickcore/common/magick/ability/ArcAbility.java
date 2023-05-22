@@ -38,14 +38,14 @@ public class ArcAbility{
         if(context.doBlock)
             return charge(context);
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick(), context.force(), false);
     }
 
     public static boolean radiance(MagickContext context) {
         if(context.caster == null || context.victim == null) return false;
         BlockEntity tile = context.world.getBlockEntity(context.victim.getOnPos());
         if(tile != null)
-            EnergyUtil.receiveEnergy(tile, (int) (context.force*20));
+            EnergyUtil.receiveEnergy(tile, (int) (context.force() *20));
         if(context.victim instanceof Projectile) {
             Vec3 vec = context.victim.position().subtract(context.caster.position());
             ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 2, ModElements.ARC, ParticleType.PARTICLE);
@@ -60,23 +60,23 @@ public class ArcAbility{
             return charge(context);
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.PARALYSIS))
-            context.force *= 1.25f;
+            context.force(context.force() * 1.25f);
 
         boolean flag;
         if(context.caster != null && context.projectile instanceof Projectile)
-            flag = context.victim.hurt(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileArcDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.caster), context.force());
         else if(context.projectile != null)
-            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityArcDamage(context.projectile), context.force());
         else
-            flag = context.victim.hurt(ModDamages.getArcDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getArcDamage(), context.force());
 
         //if(flag && !victim.world.isRemote)
         //victim.thunderHit((ServerWorld) victim.world, null);
 
         if(flag) {
-            List<Entity> list = context.victim.level.getEntities(context.victim, context.victim.getBoundingBox().inflate(context.range));
+            List<Entity> list = context.victim.level.getEntities(context.victim, context.victim.getBoundingBox().inflate(context.range()));
 
             for(Entity entity1 : list) {
                 if(entity1 instanceof LivingEntity && !ModBuffs.hasBuff(entity1, LibBuff.PARALYSIS) &&
@@ -89,9 +89,9 @@ public class ArcAbility{
                         Vec3 motion = entity1.position().add(0, entity1.getBbHeight() / 2, 0).subtract(starEntity.position()).normalize();
                         starEntity.shoot(motion.x, motion.y, motion.z, 1.0f, 1.0f);
                         starEntity.spellContext().element(MagickRegistry.getElement(LibElements.ARC));
-                        starEntity.spellContext().force(context.force * 0.5f);
+                        starEntity.spellContext().force(context.force() * 0.5f);
                         starEntity.spellContext().applyType(ApplyType.ATTACK);
-                        starEntity.spellContext().tick(Math.max(context.tick / 10, 20));
+                        starEntity.spellContext().tick(Math.max(context.tick() / 10, 20));
                         starEntity.spellContext().range(0);
                         starEntity.spellContext().addChild(TraceContext.create(entity1.getUUID()));
                         context.victim.level.addFreshEntity(starEntity);
@@ -166,9 +166,9 @@ public class ArcAbility{
     public static boolean applyBuff(MagickContext context) {
         if(context.doBlock)
             return charge(context);
-        if(context.force >= 1 && context.victim instanceof LivingEntity) {
-            boolean flag = ((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, context.tick * 2, (int) (context.force - 1)));
-            if(((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, context.tick * 2, (int) (context.force - 1))))
+        if(context.force() >= 1 && context.victim instanceof LivingEntity) {
+            boolean flag = ((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, context.tick() * 2, (int) (context.force() - 1)));
+            if(((LivingEntity)context.victim).addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, context.tick() * 2, (int) (context.force() - 1))))
                 flag = true;
             return flag;
         }
@@ -179,7 +179,7 @@ public class ArcAbility{
         if(context.doBlock)
             return charge(context);
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.PARALYSIS, context.tick(), context.force(), false);
     }
 
     public static boolean superEntity(MagickContext context) {
@@ -208,7 +208,7 @@ public class ArcAbility{
         }
 
         if(!(context.victim instanceof LivingEntity) || !(context.caster instanceof LivingEntity)) return false;
-        float health = context.force * 0.5f;
+        float health = context.force() * 0.5f;
         if(context.victim.hurt(ModDamages.getArcDamage(), health)) {
             ExtraDataUtil.entityStateData(context.caster, (state) -> state.setManaValue(state.getManaValue() + health * 50));
             return true;
@@ -244,7 +244,7 @@ public class ArcAbility{
         else
             motion = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0).subtract(context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0)).normalize();
 
-        motion = motion.scale(context.force * 0.2);
+        motion = motion.scale(context.force() * 0.6);
         Vec3 originMotion = context.victim.getDeltaMovement();
         context.victim.setDeltaMovement(motion.scale(0.8).add(originMotion.scale(0.2)));
         context.victim.setOnGround(true);

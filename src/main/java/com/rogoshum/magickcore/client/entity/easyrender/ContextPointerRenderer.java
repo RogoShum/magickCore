@@ -88,12 +88,12 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
                 , 1, height
                 , 0.5f, 0.6f, 0.3f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element().primaryColor(), RenderHelper.renderLight, true));
         context = new RenderHelper.CylinderContext(0.6f, 0.55f, 1.5f
                 , 1, height
                 , 0.4f, 0.7f, 0.3f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, TYPE)
-                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+                , context, new RenderHelper.RenderContext(alpha, entity.spellContext().element().primaryColor(), RenderHelper.renderLight, true));
     }
 
     @Override
@@ -117,8 +117,8 @@ public class ContextPointerRenderer extends EasyRenderer<ContextPointerEntity> {
             for(int i = entity.getStacks().size() - 2; i > -1; --i) {
                 SpellContext origin = ExtraDataUtil.itemManaData(entity.getStacks().get(i).getItemStack()).spellContext().copy();
                 SpellContext post = origin;
-                while (post.postContext != null)
-                    post = post.postContext;
+                while (post.postContext() != null)
+                    post = post.postContext();
                 post.post(context);
                 context = origin;
             }

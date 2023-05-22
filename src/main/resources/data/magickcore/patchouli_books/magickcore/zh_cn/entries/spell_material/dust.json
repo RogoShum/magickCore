@@ -1,0 +1,13 @@
+{
+  "name": "魔力强度",
+  "advancement": "magickcore:mana_material/mana_dust",
+  "icon": "magickcore:mana_energy{item_extra_data:{FORCE:10.0f}}",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_energy{item_extra_data:{FORCE:10.0f}}",
+	  "text": "使用萤石粉在魔法合成阵转换而成。可以作为魔力材料在功能构造与形态构造中使用，提升功能法术和形态法术的强度属性。"
+    }
+  ]
+}

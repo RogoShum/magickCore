@@ -19,9 +19,7 @@ import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.PotionContext;
 import com.rogoshum.magickcore.api.magick.context.child.PsiSpellContext;
 import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
-import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.common.magick.materials.Material;
-import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -70,7 +68,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
 
         matrixStack.scale(1.1f, 1.1f, 1.1f);
         renderSingleEnergy(matrixStack, bufferIn, buffer, spellContext, combinedLight, stack);
-        SpellContext post = spellContext.postContext;
+        SpellContext post = spellContext.postContext();
         float tick = 100;
         float scale = 0.4f;
 
@@ -87,7 +85,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             scale *= 0.7f;
             renderSingleEnergy(matrixStack, bufferIn, buffer, post, combinedLight, stack);
             matrixStack.popPose();
-            post = post.postContext;
+            post = post.postContext();
         }
 
         if(stack.getItem() instanceof ContextCoreItem) {
@@ -107,9 +105,59 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.popPose();
     }
 
+    public static void renderSimpleEnergy(SpellContext spellContext, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight) {
+        int tick = spellContext.tick();
+        int orbStack = tick / 20;
+        float last = (tick % 20) / 20f;
+
+        matrixStack.pushPose();
+        float angle = MagickCore.proxy.getRunTick() % 60;
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(360f * (angle / 59)));
+        if(tick > 0)
+            renderEnergy(matrixStack, bufferIn, combinedLight, 0, orbStack, last);
+
+        //force
+        float force = spellContext.force();
+        orbStack = (int) (force);
+        last = force % 1f;
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(360f * (angle / 59)));
+        if(force > 0)
+            renderEnergy(matrixStack, bufferIn, combinedLight, 1, orbStack, last);
+
+        //range
+        float range = spellContext.range();
+        orbStack = (int) (range);
+        last = range % 1f;
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(360f * (angle / 59)));
+        if(range > 0)
+            renderEnergy(matrixStack, bufferIn, combinedLight, 2, orbStack, last);
+        matrixStack.popPose();
+
+        matrixStack.pushPose();
+        matrixStack.scale(0.6f, 0.6f, 0.6f);
+        VertexConsumer vertex = bufferIn.getBuffer(spellContext.containChild(LibContext.POTION) ? RENDER_TYPE_1 : RENDER_TYPE_0);
+        RenderHelper.queueMode = true;
+        if(vertex instanceof BufferBuilder builder) {
+            if(spellContext.containChild(LibContext.POTION)) {
+                PotionContext potionContext = spellContext.getChild(LibContext.POTION);
+                int color = PotionUtils.getColor(potionContext.effectInstances);
+                RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
+                        , new RenderHelper.RenderContext(0.3f, Color.create(color), combinedLight));
+            } else if(spellContext.element().primaryColor().equals(Color.ORIGIN_COLOR)) {
+                RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_0)
+                        , new RenderHelper.RenderContext(0.12f, spellContext.element().primaryColor(), combinedLight));
+            } else {
+                RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_0)
+                        , new RenderHelper.RenderContext(0.3f, spellContext.element().primaryColor(), combinedLight));
+            }
+        }
+        RenderHelper.queueMode = false;
+        matrixStack.popPose();
+    }
+
     public void renderSingleEnergy(PoseStack matrixStack, MultiBufferSource bufferIn, BufferBuilder buffer, SpellContext spellContext, int combinedLight, ItemStack stack) {
         //tick
-        int tick = spellContext.tick;
+        int tick = spellContext.tick();
         int orbStack = tick / 20;
         float last = (tick % 20) / 20f;
 
@@ -155,7 +203,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             renderEnergy(matrixStack, bufferIn, combinedLight, 0, orbStack, last);
 
         //force
-        float force = spellContext.force;
+        float force = spellContext.force();
         orbStack = (int) (force);
         last = force % 1f;
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(360f * (angle / 59)));
@@ -163,7 +211,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
             renderEnergy(matrixStack, bufferIn, combinedLight, 1, orbStack, last);
 
         //range
-        float range = spellContext.range;
+        float range = spellContext.range();
         orbStack = (int) (range);
         last = range % 1f;
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(360f * (angle / 59)));
@@ -181,25 +229,25 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
                 int color = PotionUtils.getColor(potionContext.effectInstances);
                 RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
                         , new RenderHelper.RenderContext(0.3f, Color.create(color), combinedLight));
-            } else if(spellContext.element.primaryColor().equals(Color.ORIGIN_COLOR)) {
+            } else if(spellContext.element().primaryColor().equals(Color.ORIGIN_COLOR)) {
                 RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_0)
-                        , new RenderHelper.RenderContext(0.12f, spellContext.element.primaryColor(), combinedLight));
+                        , new RenderHelper.RenderContext(0.12f, spellContext.element().primaryColor(), combinedLight));
             } else {
                 RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_0)
-                        , new RenderHelper.RenderContext(0.3f, spellContext.element.primaryColor(), combinedLight));
+                        , new RenderHelper.RenderContext(0.3f, spellContext.element().primaryColor(), combinedLight));
             }
         }
         matrixStack.scale(1.1f, 1.1f, 1.1f);
 
         if(stack.getItem() instanceof MagickContextItem) {
-            if(!APPLY_TYPE_TEXTURES.containsKey(spellContext.applyType)){
+            if(!APPLY_TYPE_TEXTURES.containsKey(spellContext.applyType())){
                 vertex = bufferIn.getBuffer(RENDER_TYPE_1);
                 if(vertex instanceof BufferBuilder builder) {
                     RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RENDER_TYPE_1)
                             , RENDER_CONTEXT_0);
                 }
             } else {
-                ResourceLocation res = APPLY_TYPE_TEXTURES.get(spellContext.applyType);
+                ResourceLocation res = APPLY_TYPE_TEXTURES.get(spellContext.applyType());
                 vertex = bufferIn.getBuffer(RenderHelper.getTexturedItemGlint( res, 0.5f,0f));
                 if(vertex instanceof BufferBuilder builder) {
                     RenderHelper.renderCubeCache(BufferContext.create(matrixStack, builder, RenderHelper.getTexturedItemGlint( res, 0.5f,0f))
@@ -219,7 +267,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.popPose();
     }
 
-    public void renderEnergy(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int energyType, int stack, float last) {
+    public static void renderEnergy(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int energyType, int stack, float last) {
         float scale = 0.2f;
         float alpha = 0.2f;
 
@@ -269,7 +317,7 @@ public class ManaEnergyRenderer extends BlockEntityWithoutLevelRenderer {
         matrixStack.popPose();
     }
 
-    public void renderOrb(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, Color color, float scale, float alpha) {
+    public static void renderOrb(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, Color color, float scale, float alpha) {
         matrixStack.pushPose();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.scale(scale, scale, scale);

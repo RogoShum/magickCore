@@ -54,7 +54,7 @@ public class JewelryBagRenderer extends EasyRenderer<JewelryBagEntity> {
         map.put(new RenderMode(TYPE), (renderParams) -> {
             baseOffset(renderParams.matrixStack);
             renderParams.matrixStack.scale(entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f, entity.getBbWidth() * 0.6f);
-            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+            RenderHelper.renderParticle(BufferContext.create(renderParams.matrixStack, renderParams.buffer, TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
         });
         map.put(RenderMode.ORIGIN_RENDER, this::renderItem);
         return map;

@@ -42,7 +42,7 @@ public class WindEntity extends ManaProjectileEntity {
         super.tick();
         //this.setNoGravity(true);
         this.noPhysics = true;
-        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), (Entity::isAlive));
+        List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range()), (Entity::isAlive));
         for(int i = 0; i < entityList.size(); ++i) {
             Entity entity = entityList.get(i);
             if(!suitableEntity(entity)) continue;
@@ -101,11 +101,11 @@ public class WindEntity extends ManaProjectileEntity {
         double y = Mth.lerp(partial, this.yOld, this.getY());
         double z = Mth.lerp(partial, this.zOld, this.getZ());
         float times = Math.max(getBbWidth(), 2) * 5;
-        int age = Math.max((int) (2 * spellContext().range), 10);
+        int age = Math.max((int) (2 * spellContext().range()), 10);
         for (int i = 0; i < times; ++i) {
-            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(x , y + getBbHeight() / 2 , z)
-                    , 0.1f, 0.1f, 1.0f, age, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.1f, 0.1f, 1.0f, age, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0f);
             par.setLimitScale();

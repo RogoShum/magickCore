@@ -69,11 +69,11 @@ public class ManaLaserEntity extends ManaProjectileEntity {
 
          */
 
-        LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+        LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getY() + this.getBbHeight() / 2
                 , MagickCore.getNegativeToOne() * this.getBbWidth() + this.getZ())
-                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element.getRenderer());
+                , 0.15f * getBbWidth(), 0.15f * getBbWidth(), 1.0f, 10, this.spellContext().element().getRenderer());
         par.setGlow();
         MagickCore.addMagickParticle(par);
     }

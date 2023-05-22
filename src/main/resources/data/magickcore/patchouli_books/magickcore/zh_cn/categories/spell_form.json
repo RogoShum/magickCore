@@ -1,0 +1,6 @@
+{
+  "name": "法术形态",
+  "description": "引导下一阶段法术的魔法形态",
+  "icon": "magickcore:entity_type{item_extra_data:{CHILD_CONTEXT:{spawn:{ENTITY_TYPE:\"magickcore:arrow\"}}}}",
+  "sortnum": 4
+}

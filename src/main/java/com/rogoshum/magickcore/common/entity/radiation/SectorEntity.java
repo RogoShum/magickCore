@@ -53,7 +53,7 @@ public class SectorEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 2.5f;
+        return spellContext().range() * 2.5f;
     }
 
     @Nonnull
@@ -86,17 +86,17 @@ public class SectorEntity extends ManaRadiateEntity {
 
         List<Vec3> vectors = ParticleUtil.drawSector(this.position(), direction.normalize().scale(range*2), 90, 15);
         for (Vec3 vector : vectors) {
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , vector
-                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
             MagickCore.addMagickParticle(par);
             Vec3 dir = this.position().subtract(vector);
-            par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , vector
-                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.1f, 0.1f, 1.0f, particleAge, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();

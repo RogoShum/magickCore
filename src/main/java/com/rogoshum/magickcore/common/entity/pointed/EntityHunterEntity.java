@@ -67,7 +67,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
 
     @Override
     public boolean releaseMagick() {
-        if(this.spellContext().tick > 100)
+        if(this.spellContext().tick() > 100)
             this.spellContext().tick(100);
 
         if(victim != null) {
@@ -79,7 +79,7 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
         }
         float width = getBbWidth();
         float height = getBbHeight();
-        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force > 9) || entity instanceof IManaEntity || entity instanceof Projectile) && entity.getBbHeight() < height && entity.getBbWidth() < width;
+        Predicate<Entity> entityPredicate = entity -> ((entity instanceof LivingEntity && spellContext().force() > 9) || entity instanceof IManaEntity || entity instanceof Projectile) && entity.getBbHeight() < height && entity.getBbWidth() < width;
         List<Entity> entities = findEntity(entityPredicate);
         for (Entity entity : entities) {
             if(victim == null)
@@ -90,10 +90,10 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
 
     @Override
     public void reSize() {
-        float height = getType().getHeight() + spellContext().range * 0.5f;
+        float height = getType().getHeight() + spellContext().range() * 0.5f;
         if(getBbHeight() != height)
             this.setHeight(height);
-        float width = getType().getWidth() + spellContext().range * 0.5f;
+        float width = getType().getWidth() + spellContext().range() * 0.5f;
         if(getBbWidth() != width)
             this.setWidth(width);
     }
@@ -158,8 +158,8 @@ public class EntityHunterEntity extends ManaPointEntity implements IManaRefracti
                     scale = 0.10f;
                 double trailFactor = c / (distance - 1.0D);
                 Vec3 pos = ParticleUtil.drawLine(vector3d, center, trailFactor);
-                LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                        , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, spellContext().element.getRenderer());
+                LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
+                        , new Vec3(pos.x, pos.y, pos.z), scale, scale, 1.0f, 5, spellContext().element().getRenderer());
                 par.setParticleGravity(0);
                 par.setLimitScale();
                 par.setGlow();

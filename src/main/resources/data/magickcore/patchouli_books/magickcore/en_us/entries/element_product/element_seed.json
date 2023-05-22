@@ -1,14 +1,14 @@
 {
-  "name": "元素种子",
+  "name": "Elemental Seeds",
   "advancement": "magickcore:element_product/element_seeds",
   "icon": "magickcore:element_crystal_seeds",
   "category": "magickcore:element_product",
   "pages": [
     {
-      "title": "电弧元素种子",
+      "title": "Arc Element Seeds",
       "type": "spotlight",
       "item": "magickcore:element_crystal_seeds{ELEMENT:\"arc\"}",
-      "text": "吸收了魔力的种子，可以种出与自身元素相符的元素水晶，携带元素属性的元素水晶可以用来改变生物的元素属性。$(br2)元素水晶在成熟时可以通过右键来直接收割，此时会保留根部，产出元素水晶物品和元素能量。"
+      "text": "These seeds have absorbed mana and can grow into elemental crystals that match their own elemental attributes. Elemental crystals carrying elemental attributes can be used to change the elemental attributes of creatures. $(br2)When mature, elemental crystals can be directly harvested by right-clicking, leaving the roots intact, and yielding both elemental crystal items and elemental energy."
     }
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "name": "位置记忆",
+  "advancement": "magickcore:mana_material/position_memory",
+  "icon": "magickcore:position_memory",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:position_memory",
+	  "text": "使用末影珍珠在魔法合成阵转换而成。可以作为魔力材料在功能构造与形态构造中使用，以此决定魔法的目标位置。位置记忆可以记录世界中的坐标，需要右键方块来记录，潜行右键可以删除位置记忆。携带位置的记忆丢进水中可以获得对目标位置的方块进行操作的完备法术。"
+    }
+  ]
+}

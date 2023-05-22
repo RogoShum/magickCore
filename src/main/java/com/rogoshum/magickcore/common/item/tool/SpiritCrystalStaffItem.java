@@ -41,7 +41,7 @@ public class SpiritCrystalStaffItem extends ManaItem implements IManaContextItem
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand handIn) {
         ItemManaData data = ExtraDataUtil.itemManaData(stack);
         MagickContext magickContext = MagickContext.create(playerIn.level, data.spellContext());
-        MagickElement element = data.spellContext().element;
+        MagickElement element = data.spellContext().element();
         MagickContext context = magickContext.caster(playerIn).victim(playerIn).element(element);
         if(context.containChild(LibContext.TRACE)) {
             TraceContext traceContext = context.getChild(LibContext.TRACE);

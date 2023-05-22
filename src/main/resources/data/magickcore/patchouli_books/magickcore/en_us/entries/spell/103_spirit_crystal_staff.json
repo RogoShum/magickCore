@@ -1,49 +1,49 @@
 {
-  "name": "103 简单法杖",
+  "name": "103 Basic Staff",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:context_core",
   "category": "magickcore:spell",
   "pages": [
     {
       "type": "text",
-      "text": "恭喜你，你已经知道如何制作一个基础的法术了，现在你需要的就是一个用来施法的道具，一个最基础的施法道具就是灵魂水晶法杖，它可以在法术合成阵处合成。"
+      "text": "Congratulations! You have learned how to create a basic spell. Now you need a tool for casting spells, and the simplest casting tool is the Spirit Crystal Staff, which can be crafted at the Magick Synthesis Matrix."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_crystal_staff",
-      "text": "灵魂水晶法杖需要两根灵魂木棍和五个灵魂水晶合成。规模为3X3。摆放完需要用魔棒右键来完成合成。"
+      "text": "The Spirit Crystal Staff requires two Spiritwood Sticks and five Spirit Crystals for synthesis. The scale is 3x3. After placing the materials, right-click with the wand to complete the synthesis."
     },
     {
       "type": "text",
-      "text": "如果你已经得到了灵魂水晶法杖，只需要在背包中将法杖与成型法术一起合成，就可以将法术装上去。装备有成型法术的法杖只要右键就可以用来施法。$(br2)但是需要注意的是：魔力的消耗与法术的基本属性密切相关，$(#00CED1)强度$()、$(#FFB90F)持续时间$()、$(#EE6363)范围$()的提高，都会提升魔力的消耗，对于大部分魔法来说，$(#EE6363)范围$()是最消耗魔力的一种属性。"
+      "text": "If you already have the Spirit Crystal Staff, simply combine it with a Molding Spell in your inventory to equip the spell. Equipped staffs with Molding Spells can be used for casting by right-clicking. $(br2)However, please note that the consumption of magic is closely related to the basic attributes of the spell. Increasing $(#00CED1)force$(), $(#FFB90F)duration$(), or $(#EE6363)range$() will increase the magic consumption. For most spells, $(#EE6363)range$() is the most magic-consuming attribute."
     },
     {
       "type": "text",
-      "text": "目前的阶段我们还无法自己定义魔法的$(#DA70D6)形态$()，只能够通过施法道具来决定魔法的$(#DA70D6)形态$()。$(br2)对于灵魂水晶法杖来说，施法的对象就是我们自身，我们使用装在法杖上的增益法术会对自身起效果。如果想要让法术对其他生物或者方块起作用，我们就需要将法术安装在其他的施法工具上。"
+      "text": "At this stage, we cannot define the $(#DA70D6)form$() of magick ourselves. We can only determine the $(#DA70D6)form$() of magick through casting tools. $(br2)For the Spirit Crystal Staff, the target of the spell is ourselves. The buff spells attached to the staff will affect ourselves. If we want the spell to affect other creatures or blocks, we need to install the spell on other casting tools."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_sword",
-      "text": "灵魂木剑的施法对象为攻击到的目标，假如说我们将增益法术放在灵魂木剑上，那么增益效果会被施加在被我们攻击的目标身上。"
+      "text": "The Spirit Sword's spell targets are the entities it strikes. If we place an buff spell on the Spirit Sword, the buff effect will be applied to the targets we attack."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_sword",
-      "text": "灵魂木剑也需要在魔法合成阵处合成，规模为1x3，需要注意的是横向规模为1的合成方案，需要将材料放置在合成阵的正中心。摆放完毕之后使用魔棒右键一下即可完成合成。"
+      "text": "The Spirit Sword also needs to be crafted at the Magick Synthesis Matrix. The scale is 1x3, and the materials need to be placed in the center of the matrix. After arranging the materials, right-click with the wand to complete the synthesis."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_bow",
-      "text": "灵魂木弓的魔法以魔力箭$(#DA70D6)形态$()为起式，蓄力后松手可以生成一根魔力箭，箭所触碰到的目标会触发成型法术，不过魔力箭的移动速度较慢，需要一定的预判才能击中目标。"
+      "text": "The magick of the Spirit Bow takes the $(#DA70D6)form$() of mana arrows. When fully charged and released, it generates a magick arrow. The arrow will trigger the Molding Spell upon hitting a target. However, the mana arrows move relatively slowly, requiring some prediction to hit the target accurately."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_bow",
-      "text": "灵魂木弓需要在魔法合成阵处合成，材料也需要对准合成阵的中心，如果放偏在合成阵的一侧则无法完成合成。摆放完毕之后使用魔棒右键一下即可完成合成。"
+      "text": "The Spirit Bow also needs to be crafted at the Magick Synthesis Matrix. The materials also need to be aligned with the center of the matrix. If placed off-center, the synthesis cannot be completed. After arranging the materials, right-click with the wand to complete the synthesis."
     },
     {
       "type": "text",
-      "text": "现在你可以尝试一下对自己使用增益法术了，灵魂水晶法杖只要右键就可以进行施法操作，不出意外的话，你可以获得电弧元素带来的速度提升与急迫效果加成。"
+      "text": "Now you can try using buff spells on yourself. Simply right-click with the Spirit Crystal Staff to cast the spell. With any luck, you should experience the speed boost and urgency effects brought by the Arc element."
     }
   ]
 }

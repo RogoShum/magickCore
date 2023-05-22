@@ -1,6 +1,5 @@
 package com.rogoshum.magickcore.common.item.material;
 
-import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
@@ -112,7 +111,7 @@ public class ElementItem extends BaseItem implements IManaMaterial {
 
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
-        if(!data.spellContext().element.type().equals(element)){
+        if(!data.spellContext().element().type().equals(element)){
             data.spellContext().element(MagickRegistry.getElement(element));
             return true;
         }

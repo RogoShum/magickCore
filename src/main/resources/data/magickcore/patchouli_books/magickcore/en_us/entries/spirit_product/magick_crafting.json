@@ -1,12 +1,12 @@
 {
-  "name": "魔法合成阵",
+  "name": "Magick Synthesis Matrix",
   "advancement": "magickcore:element_product/spirit_crystal",
   "icon": "magickcore:spirit_crystal",
   "category": "magickcore:spirit_product",
   "pages": [
 	{
       "type": "text",
-      "text": "魔法合成阵是一种能够处理承载魔力的材料的合成阵，它的基本使用方式是用来转化物品，也可以用来制作灵魂制品。"
+      "text": "The Magick Synthesis Matrix is a mystical formation capable of manipulating materials that carry mana energy. Its fundamental purpose is to transmute items, as well as to craft spirit-infused artifacts. "
     }
   ]
 }

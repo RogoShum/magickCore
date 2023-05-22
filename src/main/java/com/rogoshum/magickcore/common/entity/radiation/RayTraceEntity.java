@@ -81,7 +81,7 @@ public class RayTraceEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 10;
+        return spellContext().range() * 10;
     }
 
     @Override
@@ -137,8 +137,8 @@ public class RayTraceEntity extends ManaRadiateEntity {
             double tx = this.getX() + (target.x - this.getX()) * trailFactor + level.random.nextGaussian() * 0.005;
             double ty = this.getY() + (target.y - this.getY()) * trailFactor + level.random.nextGaussian() * 0.005;
             double tz = this.getZ() + (target.z - this.getZ()) * trailFactor + level.random.nextGaussian() * 0.005;
-            LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vec3(tx, ty, tz), scale, scale, 1.0f, particleAge, spellContext().element.getRenderer());
+            LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
+                    , new Vec3(tx, ty, tz), scale, scale, 1.0f, particleAge, spellContext().element().getRenderer());
             par.setLimitScale();
             par.setGlow();
             par.addMotion(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f);

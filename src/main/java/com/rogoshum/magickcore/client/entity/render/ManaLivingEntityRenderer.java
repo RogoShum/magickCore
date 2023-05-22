@@ -39,7 +39,7 @@ public class ManaLivingEntityRenderer extends EntityRenderer<LivingEntity> {
 			matrixStackIn.scale(3, 3, 3);
 			matrixStackIn.translate(-0.025, 0, 0);
 			RenderHelper.renderStaticParticle(BufferContext.create(matrixStackIn, buffer, EYE)
-					, new RenderHelper.RenderContext(0.8f, quadrant.spellContext().element.primaryColor(), RenderHelper.renderLight));
+					, new RenderHelper.RenderContext(0.8f, quadrant.spellContext().element().primaryColor(), RenderHelper.renderLight));
 			matrixStackIn.popPose();
 		}
 	}

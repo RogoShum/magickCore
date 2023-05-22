@@ -21,15 +21,12 @@ import com.rogoshum.magickcore.common.util.ParticleUtil;
 import com.rogoshum.magickcore.mixin.AccessorLevelChunk;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -50,8 +47,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -159,7 +154,7 @@ public class WitherAbility{
                         entity.level.addFreshEntity(entity);
                 }
             }
-            if(!dustItem.getDescriptionId().contains("ingot") && context.force >= 7) {
+            if(!dustItem.getDescriptionId().contains("ingot") && context.force() >= 7) {
                 ItemStack dustCopy = itemEntity.getItem().copy();
                 dustItem = ItemStackUtil.mergeStacks(dustItem, dustCopy, 64);
                 if(!dustCopy.isEmpty()) {
@@ -172,23 +167,23 @@ public class WitherAbility{
             ParticleUtil.spawnBlastParticle(context.world, itemEntity.position().add(0, itemEntity.getBbHeight(), 0), 2, ModElements.WITHER, ParticleType.PARTICLE);
             return true;
         } else
-            return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick, context.force, false);
+            return ModBuffs.applyBuff(context.victim, LibBuff.WITHER, context.tick(), context.force(), false);
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(ModBuffs.hasBuff(context.victim, LibBuff.WITHER))
-            context.force *= 1.25;
+            context.force(context.force() * 1.25f);
 
         boolean flag = false;
         if(context.caster != null && context.projectile instanceof Projectile)
-            flag = context.victim.hurt(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyProjectileWitherDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.caster), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.caster), context.force());
         else if(context.projectile != null)
-            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.projectile), context.force);
+            flag = context.victim.hurt(ModDamages.applyEntityWitherDamage(context.projectile), context.force());
         else
-            flag = context.victim.hurt(ModDamages.getWitherDamage(), context.force);
+            flag = context.victim.hurt(ModDamages.getWitherDamage(), context.force());
 
         return flag;
     }
@@ -200,7 +195,7 @@ public class WitherAbility{
     public static boolean growBlock(MagickContext context, Block block, BlockPos pos, BlockState state) {
         if (state.getBlock() instanceof BonemealableBlock) {
             BonemealableBlock igrowable = (BonemealableBlock)state.getBlock();
-            for (int i = 0; i < context.force; i++) {
+            for (int i = 0; i < context.force(); i++) {
                 if(igrowable.isValidBonemealTarget((ServerLevel)context.world, pos, state, false))
                     igrowable.performBonemeal((ServerLevel)context.world, context.world.random, pos, context.world.getBlockState(pos));
                 spawnLoot(context, block,  pos, context.world.getBlockState(pos), CropBlock.AGE);
@@ -209,7 +204,7 @@ public class WitherAbility{
         } else {
             boolean hasAge = false;
             IntegerProperty integerProperty = null;
-            int force = (int) context.force;
+            int force = (int) context.force();
             if(containProperty(context.world, pos, BlockStateProperties.AGE_1, force)) {
                 hasAge = true;
                 integerProperty = BlockStateProperties.AGE_1;
@@ -279,12 +274,12 @@ public class WitherAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.DECAY, context.tick * 2, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.DECAY, context.tick() * 2, context.force(), true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick, context.force, false);
+        return ModBuffs.applyBuff(context.victim, LibBuff.CRIPPLE, context.tick(), context.force(), false);
     }
 
     public static boolean applyToolElement(MagickContext context) {
@@ -321,7 +316,7 @@ public class WitherAbility{
                 BlockPos pos = new BlockPos(positionContext.pos);
                 BlockEntity tile = context.world.getBlockEntity(pos);
                 if(context.world.getBlockState(pos).getBlock() instanceof EntityBlock) {
-                    float force = context.force*20;
+                    float force = context.force() *20;
                     for (int i = 0; i < force; ++i) {
                         ((AccessorLevelChunk)context.world.getChunkAt(pos)).invokerUpdateBlockEntityTicker(tile);
                     }
@@ -329,7 +324,7 @@ public class WitherAbility{
             }
         }
         if(!(context.victim instanceof LivingEntity)) return false;
-        float health = Math.min(((LivingEntity) context.victim).getHealth() - 0.1f, context.force * 0.5f);
+        float health = Math.min(((LivingEntity) context.victim).getHealth() - 0.1f, context.force() * 0.5f);
 
         ((LivingEntity) context.victim).setHealth(((LivingEntity) context.victim).getHealth() - health);
         ((LivingEntity)context.victim).setAbsorptionAmount(((LivingEntity) context.victim).getAbsorptionAmount() + health);
@@ -362,7 +357,7 @@ public class WitherAbility{
             AgeableMob ageable = (AgeableMob) context.victim;
             int i = ageable.getAge();
             if (i < 0) {
-                i += context.force * 400;
+                i += context.force() * 400;
                 ageable.setAge(i);
             }
             return true;

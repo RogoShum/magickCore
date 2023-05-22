@@ -1,6 +1,6 @@
 {
-  "name": "额外魔法学",
-  "description": "你是怎么发现这个的？",
+  "name": "Additional knowledge",
+  "description": "How did you find this?",
   "icon": "magickcore:textures/items/eye.png",
   "secret": true
 }

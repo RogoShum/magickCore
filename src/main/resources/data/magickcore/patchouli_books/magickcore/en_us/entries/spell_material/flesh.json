@@ -1,5 +1,5 @@
 {
-  "name": "魔力肉",
+  "name": "Mana Flesh",
   "advancement": "magickcore:mana_material/mana_flesh",
   "icon": "magickcore:mana_flesh",
   "category": "magickcore:spell_material",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:mana_flesh",
-	  "text": "使用腐肉在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，将元素的状态转变为漫散。"
+	  "text": "Converted using rotten flesh at Magic Synthesis Matrix. Can be used in functional spell as a mana material, changing the state of an element to Diffusion."
     }
   ]
 }

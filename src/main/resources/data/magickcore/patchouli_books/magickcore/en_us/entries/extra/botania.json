@@ -1,24 +1,24 @@
 {
-  "name": "§a植物元素",
+  "name": "§aBotania Element",
   "advancement": "magickcore:learn/trigger_element_energy_botania",
   "icon": "magickcore:botania",
   "category": "magickcore:extra",
   "pages": [
     {
       "type": "text",
-      "text": "在使用植物魔力的途中，你发现植物魔力也能够以元素能量的方式存在，当成法术魔力所使用。这是全新的发现！$(br2)当魔力脉冲穿过生物时，会将生物的元素转换为植物元素。盖亚守护者召唤的怪物也会携带植物元素。"
+      "text": "During the use of Botania mana, you discovered that botania mana can also exist as elemental energy and be used as spell mana. This is a brand new discovery! $(br2)When the mana beam passes through a creature, it converts the creature's elements into botania elements. Monsters summoned by Gaia Guardians also carry botania elements."
     },
     {
       "type": "text",
-      "text": "$(#9bb010)攻击状态的植物元素$()：$(br)可以释放植物攻击魔法，对于携带寄生种子的生物伤害更高。$(br)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(br2)$(#9bb010)增益状态的植物元素$()：$(br)提供被动产魔效果，可以恢复石板内的魔力。$(br)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()"
+      "text": "$(#9bb010)Botania of the Attack$()：$(br)can use botania magic damage to attack the entity, and the effect on the entity in the leech seed state is more effective.$(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(br2)$(#9bb010)Botania of the Buff$()：$(br)It provides a passive magical effect that can restore the mana inside the Tablet.$(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()"
     },
     {
       "type": "text",
-      "text": "$(#9bb010)减益状态的植物元素$()：$(br)会给目标施加寄生种子效果，目标每秒扣除一定血量，并返还给施法者。$(br)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()$(br2)$(#9bb010)漫散状态的植物元素$()：$(br)消耗石板内魔力来补充元素魔力值$(br)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()"
+      "text": "$(#9bb010)Botania of the De-Buff$()：$(br)It applies leech seed effects to the target, causing them to lose a certain amount of health per second and returning it to the caster.$(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()$(br2)$(#9bb010)Botania of the Diffusion$()：$(br)It consumes mana in the Tablet to supplement the element mana value.$(br)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
     },
     {
       "type": "text",
-      "text": "$(#9bb010)凝聚状态的植物元素$()：$(br)拥有魔力池转化元素的功能，每次转化消耗一定元素魔力。$(br)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()$(br2)$(#9bb010)超能状态的植物元素$()：$(br)释放一场寄生风暴，范围32格内的生物都会被赋予寄生种子效果。"
+      "text": "$(#9bb010)Botania of the Agglomerate$()：$(br)Has the ability to convert mana materials from the magic pool, with each conversion consuming a certain amount of elemental mana.$(br)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()$(br2)$(#9bb010)Botania of the Super$()：$(br)Release a leech storm that bestows leech seed effects on all non-friendly creatures within a 32-grid range."
     }
   ]
 }

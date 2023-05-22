@@ -7,7 +7,6 @@ import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;
 import com.rogoshum.magickcore.common.entity.superentity.RadianceWellEntity;
-import com.rogoshum.magickcore.common.init.ModElements;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -76,7 +75,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, INNER_TYPE), CYLINDER_INNER
-                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight, true));
+                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element().secondaryColor(), RenderHelper.renderLight, true));
     }
 
     public void renderOuterLight(RenderParams params) {
@@ -86,7 +85,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         matrixStackIn.translate(0, -entity.getBbHeight() * 2, 0);
         matrixStackIn.scale(entity.getBbWidth() * 2.001f, entity.getBbHeight() * 2f, entity.getBbWidth() * 2.001f);
         RenderHelper.renderCylinderCache(BufferContext.create(matrixStackIn, bufferIn, OUTER_TYPE), CYLINDER_OUTER
-                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element.primaryColor(), RenderHelper.renderLight, true));
+                , new RenderHelper.RenderContext(alphaC, entity.spellContext().element().primaryColor(), RenderHelper.renderLight, true));
     }
 
     @Override
@@ -103,7 +102,7 @@ public class RadianceWellRenderer extends EasyRenderer<RadianceWellEntity> {
         alphaS = Math.min(1f, (float)entity.tickCount / 5f);
         alphaC = Math.min(1f, (float) entity.tickCount / 20f);
         RENDER_5 = new RenderHelper.RenderContext(0.5f * alphaS
-                , entity.spellContext().element.secondaryColor(), packedLightIn);
+                , entity.spellContext().element().secondaryColor(), packedLightIn);
     }
 
     @Override

@@ -1,12 +1,12 @@
 {
-  "name": "§6烈焰§7触碰实体",
+  "name": "§6Solar §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_solar_hit_entity",
   "icon": "magickcore:solar",
   "category": "magickcore:element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的烈焰能量可以使目标燃烧，收益魔力能量为存在时间。也可以烧炼掉落物。$(br2)$(t:提高功能的这些数值可以增加烧炼收益)$(li)$(#6C7B8B)烧炼收益属性：$(/t)$(t:提高功能的强度可以增加收益)$(li2)$(#00CED1)强度$(/t)$()"
+      "text": "Solar of the Hit can ignite target, mana duration makes it more useful. Hit can also smelting items. $(br2)$(t:Raising these attributes for functional spells increases the Smelting benefit)$(li)$(#6C7B8B)Smelting Benefit attributes：$(/t)$(t:Raising the Force can increase gains)$(li2)$(#00CED1)Force$(/t)$()"
     }
   ]
 }

@@ -98,7 +98,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
             this.playSound(ModSounds.wall_ambience.get(), 1.0F, 0.8F - this.random.nextFloat() / 4);
         }
 
-        if(this.tickCount == this.spellContext().tick - 5)
+        if(this.tickCount == this.spellContext().tick() - 5)
             this.playSound(ModSounds.wall_dissipate.get(), 2.0F, 1.0F + this.random.nextFloat());
     }
 
@@ -106,21 +106,21 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
     protected void applyParticle()
     {
         if(this.tickCount % 5 ==0) {
-            LitParticle cc = new LitParticle(this.level, this.spellContext().element.getRenderer().getRingTexture()
+            LitParticle cc = new LitParticle(this.level, this.spellContext().element().getRenderer().getRingTexture()
                     , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight()
                     , this.getZ())
-                    , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element.getRenderer());
+                    , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element().getRenderer());
             cc.setGlow();
             cc.setParticleGravity(0);
             MagickCore.addMagickParticle(cc);
         }
         for(int i = 0; i < 2; ++i) {
-            LitParticle par = new LitParticle(this.level, this.spellContext().element.getRenderer().getParticleTexture()
+            LitParticle par = new LitParticle(this.level, this.spellContext().element().getRenderer().getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , this.getY() + this.getBbHeight() / 5
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
-                    , 0.1f, 0.1f, this.random.nextFloat(), 60, this.spellContext().element.getRenderer());
+                    , 0.1f, 0.1f, this.random.nextFloat(), 60, this.spellContext().element().getRenderer());
             par.setGlow();
             par.setParticleGravity(-0.15f);
             par.addMotion(MagickCore.getNegativeToOne() * 0.01, MagickCore.getNegativeToOne() * 0.05, MagickCore.getNegativeToOne() * 0.01);
@@ -133,7 +133,7 @@ public class RadianceWellEntity extends ManaPointEntity implements ISuperEntity 
                     , new Vec3(this.getX()
                     , this.getY() + this.getBbHeight()
                     , this.getZ())
-                    , 0.2f, 0.2f, 1.0f, 18, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.2f, 0.2f, 1.0f, 18, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0.5f);
             par.setLimitScale();

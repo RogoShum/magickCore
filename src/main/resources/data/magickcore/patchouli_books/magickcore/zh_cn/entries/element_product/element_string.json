@@ -1,0 +1,28 @@
+{
+  "name": "元素线",
+  "advancement": "magickcore:element_product/element_string",
+  "icon": "magickcore:element_string",
+  "category": "magickcore:element_product",
+  "pages": [
+    {
+      "title": "元素线",
+      "type": "spotlight",
+      "item": "magickcore:element_string{ELEMENT:\"arc\"}",
+      "text": "吸收了元素魔力的线材，可以缠绕在工具和装备上，附加特殊效果。$(br2)这种元素效果是一种特殊的附魔机制，元素线会根据使用的程度不断消耗，直到损耗完毕。$(br2)可以通过把物品丢在水中来洗掉物品上的元素线。"
+    },
+    {
+      "type": "magickcore:element_recipe",
+      "item0": "magickcore:element_string{ELEMENT:\"wither\"},magickcore:element_string{ELEMENT:\"void\"}",
+      "item1": "magickcore:element_string{ELEMENT:\"wither\"},magickcore:element_string{ELEMENT:\"void\"}",
+      "item2": "magickcore:element_string{ELEMENT:\"wither\"},magickcore:element_string{ELEMENT:\"void\"}",
+      "item3": "minecraft:stone_sword,minecraft:iron_helmet",
+      "item4": "minecraft:air",
+      "item5": "minecraft:air",
+      "item6": "minecraft:air",
+      "item7": "minecraft:air",
+      "item8": "minecraft:air",
+      "output": "minecraft:stone_sword{tool_element:{wither:300}},minecraft:iron_helmet{tool_element:{void:300}}",
+      "text": "携带电弧能量的石剑和携带虚空能量的头盔。对于可穿戴装备和具有耐久度的装备来说都可以与元素线合成，但是同一个物品最多只能附着两种元素线，重复合成相同元素的元素线不会叠加，而是覆盖旧元素线的耐久度。"
+    }
+  ]
+}

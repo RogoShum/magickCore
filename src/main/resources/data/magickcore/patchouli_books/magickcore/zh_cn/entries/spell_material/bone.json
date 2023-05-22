@@ -1,0 +1,13 @@
+{
+  "name": "魔力骨头",
+  "advancement": "magickcore:mana_material/mana_bone",
+  "icon": "magickcore:mana_bone",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_bone",
+	  "text": "使用骨头在魔法合成阵转换而成。可以作为魔力材料在功能构造中使用，将元素的状态改变为凝聚。"
+    }
+  ]
+}

@@ -218,7 +218,7 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
                     if(needed > manaTrans) {
                         ManaElementOrbEntity elementOrb = ModEntities.ELEMENT_ORB.get().create(level);
                         elementOrb.setPos(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ());
-                        elementOrb.spellContext().element(spellContext().element);
+                        elementOrb.spellContext().element(spellContext().element());
                         elementOrb.spellContext().tick(200);
                         elementOrb.spellContext().addChild(TraceContext.create(getCaster()));
                         elementOrb.manaCapacity().setMana(manaCapacity().extractMana(5 * 20));
@@ -272,11 +272,11 @@ public class ManaCapacityEntity extends ManaPointEntity implements IManaCapacity
 
     @Override
     protected void applyParticle() {
-        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
-                , 0.1f, 0.1f, 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                , 0.1f, 0.1f, 0.8f, spellContext().element().getRenderer().getParticleRenderTick(), spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setLimitScale();

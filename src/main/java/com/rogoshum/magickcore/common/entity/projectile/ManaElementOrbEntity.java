@@ -112,7 +112,7 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     @OnlyIn(Dist.CLIENT)
     @Override
     public ResourceLocation getEntityIcon() {
-        return spellContext().element.getRenderer().getParticleTexture();
+        return spellContext().element().getRenderer().getParticleTexture();
     }
 
     @Override
@@ -124,11 +124,11 @@ public class ManaElementOrbEntity extends ManaProjectileEntity implements IManaC
     protected void applyParticle() {
         int count = (int) (20 * getBbWidth());
         for (int i = 0; i < count; ++i) {
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getMistTexture()
                     , new Vec3(this.getX() + 0.1 * MagickCore.getNegativeToOne()
                     , this.getY() + 0.1 * MagickCore.getNegativeToOne() + this.getBbHeight() / 2
                     , this.getZ() + 0.1 * MagickCore.getNegativeToOne())
-                    , 0.3f * getBbWidth(), 0.3f * getBbWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.3f * getBbWidth(), 0.3f * getBbWidth(), 1.0f, 2, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();

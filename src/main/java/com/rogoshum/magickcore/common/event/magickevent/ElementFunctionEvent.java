@@ -19,14 +19,14 @@ public class ElementFunctionEvent {
 
     @SubscribeEvent
     public void applyFunction(ElementEvent.ElementFunctionApply event) {
-        String elementFunction = event.getMagickContext().element.type() +"_"+event.getMagickContext().applyType.getLabel();
+        String elementFunction = event.getMagickContext().element().type() +"_"+ event.getMagickContext().applyType().getLabel();
         if(event.getMagickContext().doBlock)
             elementFunction = "block_"+elementFunction;
         if(CommonConfig.ELEMENT_BAN.get().contains(elementFunction)) {
             event.setCanceled(true);
             return;
         }
-        if(event.getMagickContext().victim instanceof ItemEntity && event.getMagickContext().applyType == ApplyType.ATTACK)
+        if(event.getMagickContext().victim instanceof ItemEntity && event.getMagickContext().applyType() == ApplyType.ATTACK)
             event.setCanceled(true);
 
         if(event.getMagickContext().doBlock) {
@@ -44,7 +44,7 @@ public class ElementFunctionEvent {
             }
             if(entityOnly.get())
                 event.setCanceled(true);
-        } else if(!event.getMagickContext().applyType.isForm()) {
+        } else if(!event.getMagickContext().applyType().isForm()) {
             Entity last = event.getMagickContext().projectile;
             AtomicBoolean blockOnly = new AtomicBoolean(false);
             if(last instanceof IManaEntity) {

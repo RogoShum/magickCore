@@ -1,58 +1,58 @@
 {
-  "name": "法术释放与HUD说明",
+  "name": "Spell Casting and HUD Description",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:magick_context",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",
-      "text": "通常来讲，法术的元素属性可以在制作时决定，如果没有指定法术的属性（即原生属性）那么法术的元素属性会被灵魂制品或施法者转化为与自身相符的元素，查看法术的元素也会是与自身相符的元素。$(br2)释放法术时也会优先使用灵魂制品内存储的魔力，当灵魂制品内的魔力不足时，会使用施法者自身的魔力。成型法术也可以通过铁砧来命名，灵魂制品在装备法术时会显示成型法术的名称。"
+      "text": "In the usual case, you can define the spell's element when crafting it. If the element of the spell is not specified(Origin Element), then the element of the spell will be transformed into an element that matches itself by the spirit product or the caster. $(br2)When casting spells, the mana stored in the spirit product will be used first, and when the mana in the spirit product is insufficient, the caster's own mana will be used. Molding Spell can also be named through the anvil, and the name of the Molding Spell will be displayed when the spirit product is equipped with the spell."
     },
     {
       "type": "text",
-      "text": "$(br2)生物的魔力值会自然恢复，可以通过吸收其他生物掉落的元素能量来提升魔力值上限，直到上限5000，而所有生命的魔力上限都为5000。随着生命魔力上限的提高，元素属性对相应伤害的抗性也会提高。$(br2)需要注意的是，玩家在死后会丢失少许的魔力值，请尽量避免自身的死亡。"
+      "text": "The mana value of a creature will naturally recover, and the mana value limit can be increased by absorbing the elemental energy dropped by other creatures until the limit reaches 5000. All life has a mana value limit of 5000. $(br2)It is worth noting that players will lose a small amount of mana upon death, so try to avoid death as much as possible. "
     },
     {
       "type": "text",
-      "text": "装备成型法术到工具上除去在工作台合成这种方式，也可以$(#0000FF)“记忆”$()成型法术，然后使用快捷键来切换工具上的成型法术。手持成型法术长按R键可以“记忆”，空手长按R键可以取出最后一个成型法术，潜行空手可以一次取出三个。$(br2)被记忆下来的成型法术可以直接手持“能够安装成型法术的灵魂制品”来切换灵魂制品上的成型法术。手持灵魂制品按下R键可以看到已经被记忆的成型法术，点击就可以切换。"
+      "text": "Equip Molding Spell to tools instead of synthesizing them at the workbench, you can also $(#0000FF)\"memorize\"$() Molding Spell, and then use the shortcut key to switch the Molding Spell on the tool. Hold the Molding Spell and press the R button for a long time to \"memorize\", hold the R button empty-handed to take out the last Molding Spell, and sneak empty-handed to take out three at a time. $(br2) The memorized Molding Spell can be directly held with the \"spirit product capable of installing Molding Spell\" to switch the Molding Spell on the spirit product. Hold the spirit product and press the R key to see the Molding Spell that have been memorized, and click to switch."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/memory.png"],
       "border": "true",
-      "text": "玩家身上的记忆槽位。"
+      "text": "The memory slot on the player."
     },
     {
       "type": "text",
-      "text": "默认情况下玩家可以记住三个成型法术，但是我们可以获取一些材料来提升可记忆的容量。$(br2)通过把$(#0000FF)灵魂水晶和钻石$()丢在一起来可以使自身最多记忆6个成型法术。$(br2)把$(#0000FF)灵魂水晶和岩浆膏$()丢在一起可以最多记忆9个成型法术。$(br2)把$(#0000FF)灵魂水晶和紫颂果$()丢在一起最多记忆12个。"
+      "text": "By default, the player can memorize three Molding Spells, but we can obtain some materials to increase the memory capacity. $(br2) can memorize up to 6 Molding Spells by throwing $(#0000FF)spirit crystal and diamond $() together. $(br2) Throwing $(#0000FF)spirit crystal and magma cream $() together can memorize up to 9 Molding Spell. $(br2) Throw $(#0000FF)spirit crystal and chorus fruit $() together to memorize up to 12."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/mana_value.png"],
       "border": "true",
-      "text": "F3开启Debug界面可以看到右下角的魔力值具体数值，魔力值上方的是元素护盾数值。但是请记住，合理的使用现有的魔力是最重要的，而不是过于在意魔力的数值。"
+      "text": "F3 to open the Debug interface, you can see the specific value of the mana value in the lower right corner, and the value above the mana value is the value of the elemental shield. But please keep in mind that the most important thing is to use the existing magic power reasonably, rather than paying too much attention to the value of the magic power."
     },
     {
       "type": "text",
-      "text": "$(br2)基于魔法产生的增益和减益效果不同于药水状态效果，魔法的增益减益会在屏幕边缘显示出来。相同的还有元素盾效果，也会在屏幕边缘显示出来。"
+      "text": "$(br2) Magic-based buffs and debuffs are different from potion status effects, and magic buffs and debuffs will be displayed on the edge of the screen. The same is true for the elemental shield effect, which will also be displayed on the edge of the screen."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/shield.png"],
       "border": "true",
-      "text": "对于拥有元素盾能量的玩家来说，他的屏幕边缘会显现出丝状的元素盾效果。"
+      "text": "For players with elemental shield energy, a silky elemental shield effect will appear on the edge of his screen."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/buff.png"],
       "border": "true",
-      "text": "对于获得增益效果的玩家来说，他的屏幕边缘会呈现出柔和的边框效果。"
+      "text": "For players with buffs, there will be a soft border around the edges of his screen."
     },
     {
       "type": "image",
       "images": ["magickcore:textures/book_image/debuff.png"],
       "border": "true",
-      "text": "对于获得减益效果的玩家来说，他的屏幕边缘会呈现出尖锐的边框效果。"
+      "text": "For the player receiving the debuff, there will be a sharp border effect around the edges of his screen."
     }
   ]
 }

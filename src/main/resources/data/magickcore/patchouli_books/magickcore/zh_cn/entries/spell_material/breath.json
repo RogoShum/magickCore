@@ -1,0 +1,13 @@
+{
+  "name": "探查能量",
+  "advancement": "magickcore:mana_material/mana_dragon_b",
+  "icon": "magickcore:mana_dragon_breath",
+  "category": "magickcore:spell_material",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:mana_dragon_breath",
+	  "text": "使用绿宝石、恶魂眼泪、龙息在魔法合成阵转换而成。可以作为魔力材料在形态构造中使用，对于任意的形态法术而言，可以以自身的方式来“追踪”确定好的目标。在法杖上使用的话需要瞄准目标。"
+    }
+  ]
+}

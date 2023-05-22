@@ -1,17 +1,17 @@
 {
-  "name": "超能发生器",
+  "name": "Super Spawner",
   "advancement": "magickcore:mana_material/ender_dragon_material",
   "icon": "magickcore:super_spawner",
   "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "超能发生器可以引出当前魔力属性的超级力量，蓄力后会直接释放，需要消耗当前所有魔力，而超能形态的持续时间则是根据当前魔力值来决定的。无法安装完备法术。并且超能法术形态是元素属性的最终形态，无法携带后续法术。"
+      "text": "The super spawner can draw out the super power of the current element, and all the current mana needs to be consumed. Unable to carry Molding Spell."
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:super_spawner",
-      "text": "在魔法合成阵处合成。"
+      "text": "Crafted at the Magick Synthesis Matrix"
     }
   ]
 }

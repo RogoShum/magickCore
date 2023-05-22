@@ -55,7 +55,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         if(spellContext().containChild(LibContext.TRACE)) {
             TraceContext traceContext = spellContext().getChild(LibContext.TRACE);
             if(traceContext.entity == null) {
-                List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range), Entity::isAlive);
+                List<Entity> entityList = this.level.getEntities(this, this.getBoundingBox().inflate(spellContext().range()), Entity::isAlive);
                 for(int i = 0; i < entityList.size(); ++i) {
                     Entity entity = entityList.get(i);
                     if(!suitableEntity(entity)) continue;
@@ -104,7 +104,7 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + x
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + y
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.3 + z)
-                , scale, scale * 1.2f, 0.8f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , scale, scale * 1.2f, 0.8f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         par.setParticleGravity(0f);
         par.addMotion(0, 0.1 * getBbWidth(), 0);
@@ -126,18 +126,18 @@ public class LampEntity extends ManaProjectileEntity implements IExistTick {
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext()).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext()).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
     }
 
     @Override
     public int getTickThatNeedExistingBeforeRemove() {
-        return spellContext().tick * 2;
+        return spellContext().tick() * 2;
     }
 }

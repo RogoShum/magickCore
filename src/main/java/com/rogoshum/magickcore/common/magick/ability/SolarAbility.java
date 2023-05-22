@@ -3,7 +3,6 @@ package com.rogoshum.magickcore.common.magick.ability;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.common.block.ItemExtractorBlock;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModBuffs;
@@ -31,7 +30,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.server.level.ServerLevel;
@@ -80,7 +78,7 @@ public class SolarAbility{
                 if (!itemstack.isEmpty()) {
                     ItemStack itemstack1 = itemstack.copy();
                     itemstack1.setCount(stack.getCount() * itemstack.getCount()); //Forge: Support smelting returning multiple
-                    if(context.force >= 7) {
+                    if(context.force() >= 7) {
                         ItemStack outputCopy = itemstack1.copy();
                         itemstack1 = ItemStackUtil.mergeStacks(itemstack1, outputCopy, 64);
                         if(!outputCopy.isEmpty()) {
@@ -96,23 +94,23 @@ public class SolarAbility{
             }
             return false;
         } else
-            context.victim.setSecondsOnFire(Math.max(context.tick / 10, 20));
+            context.victim.setSecondsOnFire(Math.max(context.tick() / 10, 20));
         return context.victim.getRemainingFireTicks() > 0;
     }
 
     public static boolean damageEntity(MagickContext context) {
         if(context.victim == null || context.victim instanceof ItemEntity) return false;
         if(context.victim.getRemainingFireTicks() > 0)
-            context.force *= 1.5;
+            context.force(context.force() * 1.5f);
 
         if(context.caster != null && context.projectile instanceof Projectile)
-            return context.victim.hurt(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyProjectileSolarDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.caster), context.force);
+            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.caster), context.force());
         else if(context.projectile != null)
-            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyEntitySolarDamage(context.projectile), context.force());
         else
-            return context.victim.hurt(ModDamages.getSolarDamage(), context.force);
+            return context.victim.hurt(ModDamages.getSolarDamage(), context.force());
     }
 
     public static boolean hitBlock(MagickContext context) {
@@ -138,13 +136,13 @@ public class SolarAbility{
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.RADIANCE_WELL, context.tick, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.RADIANCE_WELL, context.tick(), context.force(), true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(context.victim == null) return false;
         if(!context.victim.fireImmune()){
-            context.victim.setSecondsOnFire((int) (context.tick * (context.force + 1)));
+            context.victim.setSecondsOnFire((int) (context.tick() * (context.force() + 1)));
             return context.victim.getRemainingFireTicks() > 0;
         }
         return false;
@@ -165,19 +163,19 @@ public class SolarAbility{
             if(positionContext == null)
                 return false;
             BlockPos pos = new BlockPos(positionContext.pos);
-            Explosion explosion = context.world.explode(context.caster, pos.getX(), pos.getY(), pos.getZ(), Math.min(context.force*0.5f, 20), Explosion.BlockInteraction.NONE);
+            Explosion explosion = context.world.explode(context.caster, pos.getX(), pos.getY(), pos.getZ(), Math.min(context.force() *0.5f, 20), Explosion.BlockInteraction.NONE);
             boolean success = !explosion.getToBlow().isEmpty();
             if(success) {
-                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, Math.min(context.force*0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
+                ParticleUtil.spawnBlastParticle(context.world, positionContext.pos, Math.min(context.force() *0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
                 return true;
             } else
                 return false;
         }
         if(context.victim == null) return false;
-        Explosion explosion = context.world.explode(context.caster, context.victim.getX(), context.victim.getY(), context.victim.getZ(), Math.min(context.force*0.5f, 20), Explosion.BlockInteraction.NONE);
+        Explosion explosion = context.world.explode(context.caster, context.victim.getX(), context.victim.getY(), context.victim.getZ(), Math.min(context.force() *0.5f, 20), Explosion.BlockInteraction.NONE);
         boolean success = !explosion.getToBlow().isEmpty();
         if(success)
-            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), Math.min(context.force*0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
+            ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), Math.min(context.force() *0.5f, 20), ModElements.SOLAR, ParticleType.MIST);
         return success;
     }
 
@@ -199,9 +197,9 @@ public class SolarAbility{
 
         LivingEntity living = ((LivingEntity) context.victim);
         living.hurtTime = 0;
-        living.heal(context.force*0.75f);
+        living.heal(context.force() *0.75f);
         if(living.getHealth() == living.getMaxHealth() && living.getAbsorptionAmount() < living.getMaxHealth()) {
-            living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.02f * context.force, living.getMaxHealth()));
+            living.setAbsorptionAmount(Math.min(living.getAbsorptionAmount() + living.getMaxHealth() * 0.02f * context.force(), living.getMaxHealth()));
         }
 
         if(!(living instanceof Player)) {

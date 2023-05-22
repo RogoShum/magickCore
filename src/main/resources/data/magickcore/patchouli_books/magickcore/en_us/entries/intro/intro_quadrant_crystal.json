@@ -1,30 +1,30 @@
 {
-  "name": "魔法象限",
+  "name": "Magick Quadrant",
   "advancement": "magickcore:intro/quadrant_crystal",
   "icon": "magickcore:textures/entity/mana_eye.png",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "image",
-      "title": "魔法象限",
+      "title": "Magick Quadrant",
       "images": ["magickcore:textures/book_image/mana_quadrant.png"],
       "border": "true",
-      "text": "魔法象限是一种特殊的领域，可以增幅范围内的同元素魔法，削弱范围内的不同元素魔法。目前在自然界中，魔法象限会由象限水晶所展开。"
+      "text": "The magic quadrant is a special field, which can increase the magick of the same element within the range and weaken the magick of different elements within the range. Currently in nature, the Magick Quadrant will be unfolded by the Quadrant Crystal."
     },
 	{
       "type": "image",
-	  "title": "象限水晶",
+	  "title": "Quadrant Crystal",
 	  "images": ["magickcore:textures/book_image/quadrant_crystal.png"],
 	  "border": "true",
-	  "text": "象限水晶是魔法象限的核心部分，如果象限水晶被击杀，魔法象限也会随之消失。"
+	  "text": "The Quadrant Crystal is the core part of the Magick Quadrant. If the Quadrant Crystal is killed, the Magick Quadrant will also disappear."
     },
     {
       "type": "text",
-      "text": "象限水晶是一种魔法生物，它天生就拥有庞大的魔力，并且分化出了元素属性。$(br2)没有人知道它们从哪里来，也没有人知道它们的目的是什么，它们似乎是组成这个世界的一部分，拥有直接跟魔力沟通的能力。$(br2)它们通常悬挂在空中，严格而仔细的操纵着附近的魔力流动。"
+      "text": "Quadrant Crystals are extraordinary magical beings, innately endowed with immense mana and the ability to manifest elemental attributes. $(br2)Their origins remain shrouded in mystery, as does their purpose within the world. $(br2)Often suspended in mid-air. They appear to be an integral part of the fabric of existence, possessing a direct connection to the flow of mana."
     },
     {
       "type": "text",
-      "text": "象限水晶自身拥有高密度元素盾，并且会反击攻击者。在白天的时候它们会释放魔力叶来攻击，在夜间的时候它们会释放魔力零星来攻击，追求魔力运用的效率。$(br2)它们的攻击魔法也会是与自身相同元素的，会被魔法象限所增幅，所以要尽可能地与它们保持距离。$(br2)象限水晶在死亡之后，会掉落象限碎片，可以与元素水晶合成为辉耀水晶。"
+      "text": "The Quadrant Crystal itself has a high-density elemental shield and will counterattack the attacker. During the day, they will release magick leaves to attack, and at night they will release star magick to attack, pursuing the efficiency of using magic. $(br2) Their attack magic will also be of the same element as themselves, and will be amplified by the magick quadrant, so try to keep a distance from them as much as possible. $(br2) Quadrant crystals will drop quadrant fragments after death, which can be synthesized with elemental crystals into radiance crystals."
     }
   ]
 }

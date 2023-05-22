@@ -48,7 +48,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
     public void update() {
         super.update();
         if(Minecraft.getInstance().crosshairPickEntity != entity) return;
-        color = entity.spellContext().element.primaryColor();
+        color = entity.spellContext().element().primaryColor();
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         shapes.clear();
         posSet.clear();
@@ -94,7 +94,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(10.9f, 10.9f, 10.9f);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, SIDE), new RenderHelper.RenderContext(0.2f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderBlock(RenderParams params) {
@@ -118,7 +118,7 @@ public class ArtificialLifeEntityRenderer extends EasyRenderer<ArtificialLifeEnt
             matrixStackIn.scale(1, (float) (vector3d.z * 10), 1);
             RenderHelper.renderLaserParticle(
                     BufferContext.create(matrixStackIn, params.buffer, TYPE)
-                    , new RenderHelper.RenderContext(0.8f, this.entity.spellContext().element.primaryColor()));
+                    , new RenderHelper.RenderContext(0.8f, this.entity.spellContext().element().primaryColor()));
             matrixStackIn.popPose();
         }
     }

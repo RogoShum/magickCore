@@ -1,17 +1,17 @@
 {
-  "name": "运用魔法",
+  "name": "Use Magick",
   "advancement": "magickcore:learn/root",
   "icon": "magickcore:magick_context",
   "category": "magickcore:intro",
   "pages": [
     {
       "type": "text",
-      "text": "魔法的本质是利用道具引导出自身体内的魔力，不同元素的魔力也会表现出不同的特性。引导出自身魔力的关键就是灵魂水晶。获得一些灵魂水晶也是我们操作魔力的开始。"
+      "text": "The essence of magick is to use props to guide the mana in one's body, and the mana of different elements will also show different characteristics. The key to channeling one's own mana is the spirit crystal. Getting some spirit crystals is also the beginning of our manipulating magic."
     },
     {
       "type": "spotlight",
       "item": "magickcore:spirit_crystal",
-      "text": "灵魂水晶由灵魂矿挖掘掉落。"
+      "text": "Spirit crystals drop from spirit ores"
     },
 	{
       "type": "spotlight",
@@ -19,11 +19,11 @@
     },
 	{
       "type": "text",
-      "text": "灵魂水晶可以通过特殊的摆放方式，引导出小型法阵，我们可以称之为魔法合成阵，魔法合成阵就是我们后续操作的开始。或许应该先去挖一点灵魂水晶，然后再进行下一步操作。"
+      "text": "Spirit crystals can be placed in a special way to guide small magic circles, which we can call magic synthesis matrix, and magic synthesis matrix are the beginning of our follow-up operations. Maybe you should dig some Spirit crystals first, and then proceed to the next step."
     },
     {
       "type": "image",
-      "title": "合成阵摆放方式",
+      "title": "Synthetic Matrix Arrangement",
       "images": ["magickcore:textures/book_image/magick_crafting.png"],
       "border": "true"
     }

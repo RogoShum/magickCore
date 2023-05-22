@@ -62,7 +62,7 @@ public class BotaniaAbility {
         var receiver = IXplatAbstractions.INSTANCE.findManaReceiver(context.world, pos, state, tile, Direction.DOWN);
         if(receiver != null && !receiver.isFull()) {
             ParticleUtil.spawnBlastParticle(context.world, Vec3.atCenterOf(pos), 2, ModElements.BOTANIA, ParticleType.PARTICLE);
-            receiver.receiveMana(Math.max(1, (int) (context.force*10)));
+            receiver.receiveMana(Math.max(1, (int) (context.force() *10)));
             return true;
         }
         return false;
@@ -72,15 +72,15 @@ public class BotaniaAbility {
         if(context.victim == null || context.victim instanceof ItemEntity) return false;
 
         if(ModBuffs.hasBuff(context.victim, LibBuff.THORNS))
-            context.force *= 1.25f;
+            context.force(context.force() * 1.25f);
         if(context.caster != null && context.projectile instanceof Projectile)
-            return context.victim.hurt(ModDamages.applyProjectileBotaniaDamage(context.caster, context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyProjectileBotaniaDamage(context.caster, context.projectile), context.force());
         else if(context.caster != null)
-            return context.victim.hurt(ModDamages.applyEntityBotaniaDamage(context.caster), context.force);
+            return context.victim.hurt(ModDamages.applyEntityBotaniaDamage(context.caster), context.force());
         else if(context.projectile != null)
-            return context.victim.hurt(ModDamages.applyEntityBotaniaDamage(context.projectile), context.force);
+            return context.victim.hurt(ModDamages.applyEntityBotaniaDamage(context.projectile), context.force());
         else
-            return context.victim.hurt(ModDamages.getBotaniaDamage(), context.force);
+            return context.victim.hurt(ModDamages.getBotaniaDamage(), context.force());
     }
 
     public static boolean superEntity(MagickContext context) {
@@ -91,10 +91,10 @@ public class BotaniaAbility {
             if(living == context.caster || MagickReleaseHelper.sameLikeOwner(context.caster, living)) continue;
             LeechEntityData data = ExtraDataUtil.leechEntityData(living);
             if(!context.world.isClientSide()) {
-                data.setCount(context.tick/80);
+                data.setCount(context.tick() /80);
                 data.setForce(1.5f);
                 data.setOwner((LivingEntity) context.caster);
-                ModBuffs.applyBuff(living, LibBuff.THORNS, context.tick, context.force, false);
+                ModBuffs.applyBuff(living, LibBuff.THORNS, context.tick(), context.force(), false);
 
                 ParticleBuilder.create(context.world, ParticleType.PARTICLE, new Vec3(living.position().x
                         , living.position().y+living.getBbHeight()*0.5
@@ -127,7 +127,7 @@ public class BotaniaAbility {
 
             var receiver = IXplatAbstractions.INSTANCE.findManaReceiver(context.world, pos, state, tile, Direction.getNearest(dir.x, dir.y, dir.z).getOpposite());
             EntityManaBurst manaBurst = new EntityManaBurst(ModEntities.MANA_BURST, context.world);
-            manaBurst.setMana((int) (context.force * context.range * 10));
+            manaBurst.setMana((int) (context.force() * context.range() * 10));
             manaBurst.setStartingMana(manaBurst.getMana());
             boolean dead = false;
             if (receiver != null && receiver.canReceiveManaFromBursts() && onReceiverImpact(receiver, manaBurst)) {
@@ -174,26 +174,26 @@ public class BotaniaAbility {
 
     public static boolean applyBuff(MagickContext context) {
         if(context.victim == null) return false;
-        return ModBuffs.applyBuff(context.victim, LibBuff.BOTAN, context.tick, context.force, true);
+        return ModBuffs.applyBuff(context.victim, LibBuff.BOTAN, context.tick(), context.force(), true);
     }
 
     public static boolean applyDebuff(MagickContext context) {
         if(!(context.victim instanceof LivingEntity)) return false;
         LeechEntityData data = ExtraDataUtil.leechEntityData(context.victim);
         if(data != null) {
-            data.setCount(context.tick/20);
-            data.setForce(context.force);
+            data.setCount(context.tick() /20);
+            data.setForce(context.force());
             data.setOwner((LivingEntity) context.caster);
-            ModBuffs.applyBuff(context.victim, LibBuff.THORNS, context.tick, context.force, false);
+            ModBuffs.applyBuff(context.victim, LibBuff.THORNS, context.tick(), context.force(), false);
         }
         return data != null;
     }
 
     public static boolean diffusion(MagickContext context) {
         if(!(context.victim instanceof Player)) return false;
-        boolean success = ManaItemHandler.instance().requestManaExact(SAMPLE, (Player) context.victim, (int) (1000*context.force), true);
+        boolean success = ManaItemHandler.instance().requestManaExact(SAMPLE, (Player) context.victim, (int) (1000* context.force()), true);
         if(success) {
-            MagickReleaseHelper.addPlayerMana((LivingEntity) context.victim, (int) (100*context.force));
+            MagickReleaseHelper.addPlayerMana((LivingEntity) context.victim, (int) (100* context.force()));
             ParticleUtil.spawnBlastParticle(context.world, context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0), 4, ModElements.BOTANIA, ParticleType.MIST);
         }
         return success;

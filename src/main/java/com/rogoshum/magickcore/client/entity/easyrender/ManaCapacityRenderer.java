@@ -42,7 +42,7 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         baseOffset(matrixStackIn);
         BufferBuilder bufferIn = params.buffer;
         matrixStackIn.scale(scale, scale, scale);
-        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element.primaryColor(), lightmap));
+        RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_1), new RenderHelper.RenderContext(0.1f, entity.spellContext().element().primaryColor(), lightmap));
     }
 
     public void renderCapacity(RenderParams params) {
@@ -53,9 +53,9 @@ public class ManaCapacityRenderer extends EasyRenderer<ManaCapacityEntity> {
         float scale = entity.manaCapacity().getMana() / entity.manaCapacity().getMaxMana() * this.scale;
         matrixStackIn.scale(scale, scale, scale);
         if(entity.getMode())
-            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), lightmap));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), lightmap));
         else
-            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element.primaryColor(), lightmap));
+            RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, bufferIn, renderType_2), new RenderHelper.RenderContext(0.6f, entity.spellContext().element().primaryColor(), lightmap));
     }
 
     @Override

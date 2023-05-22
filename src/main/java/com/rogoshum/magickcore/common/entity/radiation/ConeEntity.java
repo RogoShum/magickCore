@@ -67,7 +67,7 @@ public class ConeEntity extends ManaRadiateEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 2.5f;
+        return spellContext().range() * 2.5f;
     }
 
     protected void applyParticle(int particleAge) {
@@ -79,7 +79,7 @@ public class ConeEntity extends ManaRadiateEntity {
             direction = getCaster().getLookAngle().normalize();
         }
         if(direction == null) return;
-        ParticleUtil.spawnImpactParticle(level, this.position(), range, direction, spellContext().element, ParticleType.PARTICLE);
+        ParticleUtil.spawnImpactParticle(level, this.position(), range, direction, spellContext().element(), ParticleType.PARTICLE);
     }
 
     @Override

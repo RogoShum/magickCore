@@ -32,7 +32,7 @@ public class QuadrantEntityRenderer extends EasyRenderer<QuadrantCrystalEntity> 
         model.translate(x, y+ entity.getBbHeight() * 0.5, z);
         RenderHelper.renderCubeDynamic(
                 BufferContext.create(model, params.buffer, TYPE)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight), scale);
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight), scale);
         model.popPose();
     }
 
@@ -40,24 +40,24 @@ public class QuadrantEntityRenderer extends EasyRenderer<QuadrantCrystalEntity> 
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        float scale = entity.spellContext().force*0.5f;
+        float scale = entity.spellContext().force() *0.5f;
         matrixStackIn.scale(scale, scale, scale);
         matrixStackIn.scale(entity.getBbWidth() * 0.5f, entity.getBbWidth(), entity.getBbWidth() * 0.5f);
         matrixStackIn.mulPose(Vector3f.XN.rotationDegrees(45));
         matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(45));
         RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
-                , new RenderHelper.RenderContext(0.8f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(0.8f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
         matrixStackIn.scale(0.8f, 0.8f, 0.8f);
         RenderHelper.renderCubeCache(BufferContext.create(matrixStackIn, buffer, CRYSTAL_TYPE)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
     }
 
     public void renderEye(RenderParams params) {
         baseOffset(params.matrixStack);
-        float scale = entity.spellContext().force*0.5f;
+        float scale = entity.spellContext().force() *0.5f;
         params.matrixStack.scale(scale, scale, scale);
         params.matrixStack.scale(entity.getBbWidth() * 0.2f, entity.getBbWidth() * 0.2f, entity.getBbWidth() * 0.2f);
-        RenderHelper.renderParticle(BufferContext.create(params.matrixStack, params.buffer, EYE_TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight));
+        RenderHelper.renderParticle(BufferContext.create(params.matrixStack, params.buffer, EYE_TYPE), new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight));
     }
 
     @Override

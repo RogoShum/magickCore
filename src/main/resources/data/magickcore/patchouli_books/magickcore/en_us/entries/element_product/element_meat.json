@@ -1,5 +1,5 @@
 {
-  "name": "元素肉",
+  "name": "Elemental Meat",
   "advancement": "magickcore:element_product/element_meat",
   "icon": "magickcore:element_meat",
   "category": "magickcore:element_product",
@@ -7,7 +7,7 @@
 	{
       "type": "spotlight",
 	  "item": "magickcore:element_meat",
-	  "text": "食用元素肉可以给玩家提供相应元素属性的增益效果。持续时间1分钟的时间，等级为3。"
+	  "text": "Consuming elemental meat grants the player a temporary boost in the corresponding elemental attribute. The effect lasts for one minute and is of level 3."
     }
   ]
 }

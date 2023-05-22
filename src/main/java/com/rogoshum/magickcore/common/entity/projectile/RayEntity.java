@@ -54,11 +54,11 @@ public class RayEntity extends ManaProjectileEntity {
     @Override
     protected void applyParticle() {
         for (int i = 0; i < 1; ++i) {
-            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getX()
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getY() + this.getBbHeight() / 2
                     , MagickCore.getNegativeToOne() * this.getBbWidth() / 2 + this.getZ())
-                    , (MagickCore.getRandFloat() * this.getBbWidth()), (MagickCore.getRandFloat() * this.getBbWidth()), 1.0f, 20, spellContext().element.getRenderer());
+                    , (MagickCore.getRandFloat() * this.getBbWidth()), (MagickCore.getRandFloat() * this.getBbWidth()), 1.0f, 20, spellContext().element().getRenderer());
             litPar.setGlow();
             litPar.setShakeLimit(5.0f);
             litPar.setLimitScale();

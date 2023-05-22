@@ -70,11 +70,11 @@ public class ChargeEntity extends ManaEntity {
 
     @Override
     protected void makeSound() {
-        if(spellContext().element == ModElements.SOLAR) {
+        if(spellContext().element() == ModElements.SOLAR) {
             if(this.tickCount == 1)
                 this.level.playSound(null, this, ModSounds.explosion.get(), this.getSoundSource(), 0.2f, 1.0f);
         } else if(tickCount % 20 == 0) {
-            float pitch = (float)tickCount / (float)spellContext().tick;
+            float pitch = (float)tickCount / (float) spellContext().tick();
             if(Float.isNaN(pitch))
                 pitch = 0.0f;
             pitch *=2;
@@ -84,7 +84,7 @@ public class ChargeEntity extends ManaEntity {
 
     @Override
     public boolean releaseMagick() {
-        if(this.spellContext().tick > 300)
+        if(this.spellContext().tick() > 300)
             this.spellContext().tick(300);
         if(level.isClientSide) {
             Vec3 former = getFormer();
@@ -105,7 +105,7 @@ public class ChargeEntity extends ManaEntity {
             }
         }
 
-        charge+=0.001f * spellContext().force;
+        charge+=0.003f * spellContext().force();
         if(level.isClientSide) {
             target = level.getEntity(entityData.get(TARGET));
         } else {
@@ -134,7 +134,7 @@ public class ChargeEntity extends ManaEntity {
                     pass = false;
             }
             if(pass) {
-                MagickContext context = MagickContext.create(this.level, spellContext().postContext)
+                MagickContext context = MagickContext.create(this.level, spellContext().postContext())
                         .<MagickContext>replenishChild(DirectionContext.create(getPostDirection(living)))
                         .caster(getCaster()).projectile(this)
                         .victim(living).noCost();
@@ -188,7 +188,7 @@ public class ChargeEntity extends ManaEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * width + this.getX()
                 , MagickCore.getNegativeToOne() * width + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * width + this.getZ())
-                , charge, charge, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , charge, charge, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         Vec3 direction = this.position().add(0, this.getBbHeight() * 0.5, 0).subtract(par.positionVec()).scale(0.1);
         par.addMotion(direction.x, direction.y, direction.z);
@@ -201,22 +201,22 @@ public class ChargeEntity extends ManaEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getX()
                 , MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getY() + target.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * target.getBbWidth() * 0.25 + target.getZ())
-                , charge * 0.5f, charge * 0.5f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , charge * 0.5f, charge * 0.5f, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(5f);
         litPar.addMotion(MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1, MagickCore.getNegativeToOne() * 0.1);
         MagickCore.addMagickParticle(litPar);
 
-        if(target != null && spellContext().tick - tickCount < 6) {
+        if(target != null && spellContext().tick() - tickCount < 6) {
             int distance = Math.max((int) (2 * target.position().distanceTo(this.position())), 1);
             Vec3 end = this.position().add(0, this.getBbHeight() * 0.5, 0);
             Vec3 start = target.position().add(0, target.getBbHeight() * 0.5, 0);
             for (int i = 0; i < distance; i++) {
                 double trailFactor = i / (distance - 1.0D);
                 Vec3 pos = ParticleUtil.drawLine(start, end, trailFactor);
-                par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                        , new Vec3(pos.x, pos.y, pos.z), charge * 0.5f, charge * 0.5f, 1.0f, 1, spellContext().element.getRenderer());
+                par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
+                        , new Vec3(pos.x, pos.y, pos.z), charge * 0.5f, charge * 0.5f, 1.0f, 1, spellContext().element().getRenderer());
                 par.setParticleGravity(0);
                 par.setLimitScale();
                 par.setGlow();

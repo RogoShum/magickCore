@@ -32,13 +32,13 @@ public class ManaForceUpgradeItem extends BaseItem implements IManaMaterial {
     @Override
     public boolean upgradeManaItem(ItemStack stack, ISpellContext data) {
         if(data instanceof IMaterialLimit) {
-            if(data.spellContext().force < ((IMaterialLimit) data).getMaterial().getForce()) {
-                data.spellContext().force(data.spellContext().force + 0.5f);
+            if(data.spellContext().force() < ((IMaterialLimit) data).getMaterial().getForce()) {
+                data.spellContext().force(data.spellContext().force() + 0.5f);
                 return true;
             } else
                 return false;
         } else {
-            data.spellContext().force(data.spellContext().force + 0.5f);
+            data.spellContext().force(data.spellContext().force() + 0.5f);
             return true;
         }
     }

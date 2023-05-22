@@ -88,7 +88,7 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                         pass = false;
                 }
                 if(pass) {
-                    MagickContext context = MagickContext.create(this.level, spellContext().postContext)
+                    MagickContext context = MagickContext.create(this.level, spellContext().postContext())
                             .replenishChild(DirectionContext.create(living.position().add(0, living.getBbHeight() * 0.5, 0).subtract(this.position())))
                             .<MagickContext>replenishChild(PositionContext.create(this.position()))
                             .caster(getCaster()).projectile(this)
@@ -114,17 +114,17 @@ public abstract class ManaRadiateEntity extends ManaEntity implements IExistTick
                     if(!posPredicate.test(pos)) continue;
                     if(condition != null && !condition.test(null, level.getBlockState(pos).getBlock()))
                         continue;
-                    MagickContext context = MagickContext.create(this.level, spellContext().postContext).doBlock()
+                    MagickContext context = MagickContext.create(this.level, spellContext().postContext()).doBlock()
                             .replenishChild(DirectionContext.create(this.position().subtract(Vec3.atCenterOf(pos))))
                             .<MagickContext>replenishChild(PositionContext.create(Vec3.atLowerCornerOf(pos)))
                             .caster(getCaster()).projectile(this).noCost();
-                    if (spellContext().postContext != null)
-                        context.addChild(ExtraApplyTypeContext.create(spellContext().postContext.applyType));
+                    if (spellContext().postContext() != null)
+                        context.addChild(ExtraApplyTypeContext.create(spellContext().postContext().applyType()));
                     boolean success = MagickReleaseHelper.releaseMagick(beforeCast(context));
                     if(success)
                         released = true;
                     if(i >= count) {
-                        spellContext().tick(spellContext().tick+1);
+                        spellContext().tick(spellContext().tick() +1);
                         break;
                     }
                 } else {

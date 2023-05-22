@@ -1,0 +1,13 @@
+{
+  "name": "魔弹法杖",
+  "advancement": "magickcore:spirit_product/orb_staff",
+  "icon": "magickcore:orb_staff",
+  "category": "magickcore:spirit_product",
+  "pages": [
+	{
+      "type": "spotlight",
+	  "item": "magickcore:orb_staff",
+	  "text": "魔弹法杖是一种魔法道具，无法合成，无法替换成型法术。可以在战利品箱内获取到。"
+    }
+  ]
+}

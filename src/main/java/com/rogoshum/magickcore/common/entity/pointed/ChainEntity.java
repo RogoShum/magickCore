@@ -131,8 +131,8 @@ public class ChainEntity extends ManaPointEntity {
             setPos(victimEntity.getX(), victimEntity.getY() + victimEntity.getBbHeight() * 0.5 - 0.25, victimEntity.getZ());
         }
         if(level.isClientSide && !(victimEntity instanceof Player)) return;
-        float range = spellContext().range;
-        float force = spellContext().force;
+        float range = spellContext().range();
+        float force = spellContext().force();
         if(victimEntity != null && postEntity != null) {
             if(victimEntity.distanceToSqr(postEntity) >= range * range) {
                 Entity slower = victimEntity;
@@ -209,16 +209,16 @@ public class ChainEntity extends ManaPointEntity {
         Vec3 end = self;
         Vec3 start = target;
 
-        LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getRuneTexture()
-                , self, 0.1f, 0.1f, 1.0f, 1, spellContext().element.getRenderer());
+        LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getRuneTexture()
+                , self, 0.1f, 0.1f, 1.0f, 1, spellContext().element().getRenderer());
         par.setParticleGravity(0);
         par.setLimitScale();
         par.setGlow();
         par.useShader(LibShaders.BITS);
         MagickCore.addMagickParticle(par);
 
-        par = new LitParticle(this.level, spellContext().element.getRenderer().getRuneTexture()
-                , end, 0.1f, 0.1f, 1.0f, 1, spellContext().element.getRenderer());
+        par = new LitParticle(this.level, spellContext().element().getRenderer().getRuneTexture()
+                , end, 0.1f, 0.1f, 1.0f, 1, spellContext().element().getRenderer());
         par.setParticleGravity(0);
         par.setLimitScale();
         par.setGlow();
@@ -230,8 +230,8 @@ public class ChainEntity extends ManaPointEntity {
         for (int i = 0; i < dis; i++) {
             double trailFactor = i / Math.max((dis - 1.0D), 1);
             Vec3 pos = ParticleUtil.drawLine(start, end, trailFactor);
-            par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
-                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, 0.5f, 5, spellContext().element.getRenderer());
+            par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
+                    , new Vec3(pos.x, pos.y, pos.z), scale, scale, 0.5f, 5, spellContext().element().getRenderer());
             par.setParticleGravity(0);
             par.setLimitScale();
             par.setGlow();
@@ -250,7 +250,7 @@ public class ChainEntity extends ManaPointEntity {
         victimEntity = context.victim;
         if(context.separator instanceof IManaEntity)
             victimEntity = context.separator;
-        MagickContext magickContext = MagickContext.create(level, spellContext().postContext)
+        MagickContext magickContext = MagickContext.create(level, spellContext().postContext())
                 .caster(getCaster()).projectile(this)
                 .victim(victimEntity).noCost();
         if(spellContext().containChild(LibContext.DIRECTION))

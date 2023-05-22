@@ -68,7 +68,7 @@ public class SpinEntity extends ManaPointEntity {
             vec = spellContext().<DirectionContext>getChild(LibContext.DIRECTION).direction;
         }
         Vec2 rotation = ParticleUtil.getRotationForVector(vec);
-        vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(14 - spellContext().range * 0.5f, 1f));
+        vec = ParticleUtil.getVectorForRotation(rotation.x, rotation.y + Math.max(14 - spellContext().range() * 0.5f, 1f));
         spellContext().addChild(DirectionContext.create(vec));
         hitPoint =  position().add(vec.scale(range * 2));
     }
@@ -80,7 +80,7 @@ public class SpinEntity extends ManaPointEntity {
 
     @Override
     public ManaFactor getManaFactor() {
-        return ManaFactor.create(Math.max(1 / (spellContext().range+1), 0.25f), 1.0f, 1.0f);
+        return ManaFactor.create(Math.max(1 / (spellContext().range() +1), 0.25f), 1.0f, 1.0f);
     }
 
     @Override
@@ -91,9 +91,9 @@ public class SpinEntity extends ManaPointEntity {
         List<Vec3> list = ParticleUtil.drawRectangle(hit, scale, width, width, width);
         for(int i = 0; i < list.size(); ++i) {
             Vec3 pos = list.get(i);
-            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+            LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , pos.add(MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f, MagickCore.getNegativeToOne() * 0.2f)
-                    , 0.05f, 0.05f, 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.05f, 0.05f, 1.0f, 1, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setLimitScale();
@@ -110,7 +110,7 @@ public class SpinEntity extends ManaPointEntity {
     }
 
     public float getRange() {
-        return spellContext().range * 0.25f;
+        return spellContext().range() * 0.25f;
     }
 
     @Override

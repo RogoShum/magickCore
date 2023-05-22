@@ -48,15 +48,15 @@ public class SpiritBowItem extends ManaItem implements IManaContextItem, ISpirit
         int tick = Math.min(20, (getUseDuration(stack) - timeLeft));
         magickContext.range(tick * 0.5f);
         magickContext.tick(tick * 8);
-        MagickElement element = data.spellContext().element;
+        MagickElement element = data.spellContext().element();
         MagickContext context = magickContext.caster(entityLiving).element(element);
         SpawnContext spawnContext = SpawnContext.create(ModEntities.ARROW.get());
         context.addChild(spawnContext);
         context.hand(entityLiving.getUsedItemHand());
         context.addReduceCost(MagickReleaseHelper.singleContextMana(context));
         context.post(data.spellContext().copy().element(element));
-        if(context.postContext.containChild(LibContext.TRACE)) {
-            TraceContext traceContext = context.postContext.getChild(LibContext.TRACE);
+        if(context.postContext().containChild(LibContext.TRACE)) {
+            TraceContext traceContext = context.postContext().getChild(LibContext.TRACE);
             traceContext.entity = MagickReleaseHelper.getEntityLookedAt(entityLiving);
             context.addChild(traceContext);
         }

@@ -2,15 +2,10 @@ package com.rogoshum.magickcore.common.init;
 
 import com.google.gson.JsonObject;
 import com.rogoshum.magickcore.MagickCore;
-import com.rogoshum.magickcore.client.item.MaterialJarItemRenderer;
 import com.rogoshum.magickcore.common.entity.living.QuadrantCrystalEntity;
-import com.rogoshum.magickcore.common.item.BaseItem;
-import com.rogoshum.magickcore.common.item.EntityRendererBlockItem;
-import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.common.util.LootUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -18,7 +13,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -76,10 +70,10 @@ public class ModLoots {
             if(context.hasParam(LootContextParams.THIS_ENTITY)) {
                 Entity entity = context.getParam(LootContextParams.THIS_ENTITY);
                 if(entity instanceof QuadrantCrystalEntity quadrant) {
-                    int count = Math.max(1, (int)(quadrant.spellContext().force));
+                    int count = Math.max(1, (int)(quadrant.spellContext().force()));
                     ItemStack quadrantFrag = new ItemStack(ModItems.QUADRANT_FRAGMENTS.get());
                     quadrantFrag.setCount(count);
-                    NBTTagHelper.setElement(quadrantFrag, quadrant.spellContext().element.type());
+                    NBTTagHelper.setElement(quadrantFrag, quadrant.spellContext().element().type());
                     generatedLoot.add(quadrantFrag);
                 }
             }

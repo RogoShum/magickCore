@@ -1,0 +1,9 @@
+{
+    "parent": "magickcore:item/mana_energy_layer",
+    "textures": {
+        "layer0": "magickcore:items/shell",
+        "layer1": "magickcore:items/energy_t",
+        "layer2": "magickcore:items/energy_f",
+        "layer3": "magickcore:items/energy_r"
+    }
+}

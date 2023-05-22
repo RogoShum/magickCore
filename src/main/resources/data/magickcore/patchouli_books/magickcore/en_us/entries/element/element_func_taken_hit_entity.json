@@ -1,12 +1,12 @@
 {
-  "name": "§8夺魂§7触碰实体",
+  "name": "§8Taken §7Hit Entity",
   "advancement": "magickcore:learn/trigger_element_func_taken_hit_entity",
   "icon": "magickcore:taken",
   "category": "magickcore:element",
   "pages": [
     {
       "type": "text",
-      "text": "触碰状态的夺魂元素可以给予目标蛊惑效果，使目标处于中立状态。对Boss效果减半。$(br2)$(t:提高功能的这些数值可以增加收益)$(li)$(#6C7B8B)收益属性：$(/t)$(t:提高功能的持续时间可以增加收益)$(li2)$(#FFB90F)持续时间$(/t)$()"
+      "text": "Taken of the Hit can inflict a bewitch effect on the target, make target neutral. $(br2)$(t:Raising these attributes for functional spells increases the benefit)$(li)$(#6C7B8B)Benefit attributes：$(/t)$(t:Raising the Duration can increase gains)$(li2)$(#FFB90F)Duration$(/t)$()"
     }
   ]
 }

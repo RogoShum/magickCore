@@ -87,7 +87,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
                     .replenishChild(SpawnContext.create(getType()))
                     .force(getHealth())
                     .applyType(ApplyType.SPAWN_ENTITY)
-                    .<MagickContext>tick(spellContext().tick)
+                    .<MagickContext>tick(spellContext().tick())
                     .caster(getCaster()).projectile(this).victim(getCaster())
                     .<MagickContext>replenishChild(TraceContext.create(getCaster()))
                     .noCost();
@@ -124,7 +124,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
 
     @Override
     public void beforeJoinWorld(MagickContext context) {
-        this.setHealth(context.force*0.2f);
+        this.setHealth(context.force() *0.2f);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class BloodBubbleEntity extends ManaProjectileEntity {
                     , new Vec3(this.xOld + (this.getX() - this.xOld) * partialTicks + motion.x
                     , this.yOld + (this.getY() - this.yOld) * partialTicks + this.getBbHeight() / 2 + motion.y
                     , this.zOld + (this.getZ() - this.zOld) * partialTicks + motion.z)
-                    , 0.3f * this.getBbWidth(), 0.3f * this.getBbWidth(), 1.0f, 13, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                    , 0.3f * this.getBbWidth(), 0.3f * this.getBbWidth(), 1.0f, 13, MagickCore.proxy.getElementRender(spellContext().element().type()));
             par.setGlow();
             par.setParticleGravity(0);
             par.setColor(Color.RED_COLOR);

@@ -16,11 +16,11 @@ public class ElementFunctions extends ElementMap<ApplyType, Function<MagickConte
     }
 
     public boolean applyElementFunction(MagickContext context) {
-        if(elementMap.containsKey(context.applyType)) {
+        if(elementMap.containsKey(context.applyType())) {
             ElementEvent.ElementFunctionApply event = new ElementEvent.ElementFunctionApply(context);
             MinecraftForge.EVENT_BUS.post(event);
             if(!event.isCanceled())
-                return elementMap.get(context.applyType).apply(event.getMagickContext());
+                return elementMap.get(context.applyType()).apply(event.getMagickContext());
         }
 
         return false;

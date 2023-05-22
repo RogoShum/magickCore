@@ -188,7 +188,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         if(spellContext().containChild(LibContext.TRACE) && this.getCaster() != null)
             shoot(getCaster());
         else {
-            double range = 8 + 4 * spellContext().range;
+            double range = 8 + 4 * spellContext().range();
             List<LivingEntity> livings = level.getEntitiesOfClass(LivingEntity.class, this.boundingBox().inflate(range), (entity -> entity.isAlive() && entity != this.getCaster()));
             Optional<LivingEntity> living = livings.stream().filter((entity) -> entity.hasLineOfSight(this)).min(Comparator.comparing((entity -> entity.distanceToSqr(this))));
             living.ifPresent(this::shoot);
@@ -197,7 +197,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     protected void shoot(Entity entity) {
         MagickContext context = MagickContext.create(level, spellContext()).caster(this.getCaster()).victim(entity).projectile(this).noCost()
-                .applyType(ApplyType.SPAWN_ENTITY).tick(spellContext().tick).force(spellContext().force * 0.2f).range(spellContext().range * 0.2f);
+                .applyType(ApplyType.SPAWN_ENTITY).tick(spellContext().tick()).force(spellContext().force() * 0.2f).range(spellContext().range() * 0.2f);
         context.removeChild(LibContext.SELF);
         context.addChild(PositionContext.create(this.positionVec()));
         context.addChild(ExtraManaFactorContext.create(ManaFactor.create(0.2f, 0.2f, 0.25f)));
@@ -227,7 +227,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
             }
 
             if(!level.isClientSide()) {
-                int force = Math.max(5, (80 - (int)spellContext().force*5));
+                int force = Math.max(5, (80 - (int) spellContext().force() *5));
                 if(this.tickCount == 1 || this.tickCount % force == 0) {
                     shootCount+=1;
                 }
@@ -243,7 +243,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.25 + this.getZ());
                 LitParticle par = new LitParticle(this.level, ModElements.ORIGIN.getRenderer().getParticleTexture()
                         , pos
-                        , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                        , scale, scale, 0.5f, 15, MagickCore.proxy.getElementRender(spellContext().element().type()));
                 par.setGlow();
                 par.setParticleGravity(0f);
                 par.setLimitScale();
@@ -294,10 +294,10 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
     }
 
     public void reSize() {
-        float height = getType().getHeight() + spellContext().range * 0.1f;
+        float height = getType().getHeight() + spellContext().range() * 0.1f;
         if(getBbHeight() != height)
             this.setHeight(height);
-        float width = getType().getWidth() + spellContext().range * 0.1f;
+        float width = getType().getWidth() + spellContext().range() * 0.1f;
         if(getBbWidth() != width)
             this.setWidth(width);
     }
@@ -355,7 +355,7 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     @Override
     public Color getColor() {
-        return this.spellContext().element.primaryColor();
+        return this.spellContext().element().primaryColor();
     }
 
     protected void makeSound() {
@@ -415,20 +415,20 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
 
     @OnlyIn(Dist.CLIENT)
     protected void applyParticle() {
-        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getParticleTexture()
+        LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
-                , 0.1f, 0.1f, 1.0f, 40, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.1f, 0.1f, 1.0f, 40, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.setGlow();
         MagickCore.addMagickParticle(par);
 
         if(tickCount % 5 != 0) return;
-        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element.type()).getMistTexture()
+        LitParticle litPar = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getMistTexture()
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
-                , 0.5f * this.getBbWidth(), 0.5f * this.getBbWidth(), 0.8f, spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                , 0.5f * this.getBbWidth(), 0.5f * this.getBbWidth(), 0.8f, spellContext().element().getRenderer().getParticleRenderTick(), spellContext().element().getRenderer());
         litPar.setGlow();
         litPar.setParticleGravity(0f);
         litPar.setShakeLimit(5.0f);
@@ -491,12 +491,12 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         }
         BlockState blockstate = this.level.getBlockState(p_230299_1_.getBlockPos());
         blockstate.onProjectileHit(this.level, blockstate, p_230299_1_, this);
-        MagickContext context = MagickContext.create(level, spellContext().postContext).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
+        MagickContext context = MagickContext.create(level, spellContext().postContext()).<MagickContext>applyType(ApplyType.HIT_BLOCK).noCost().caster(this.getCaster()).projectile(this);
         PositionContext positionContext = PositionContext.create(Vec3.atLowerCornerOf(p_230299_1_.getBlockPos()));
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
-        context = MagickContext.create(level, spellContext().postContext).doBlock().noCost().caster(this.getCaster()).projectile(this);
+        context = MagickContext.create(level, spellContext().postContext()).doBlock().noCost().caster(this.getCaster()).projectile(this);
         context.addChild(positionContext);
         MagickReleaseHelper.releaseMagick(beforeCast(context));
 
@@ -532,22 +532,22 @@ public abstract class ManaProjectileEntity extends ThrowableProjectile implement
         }
         if (this.level.isClientSide()) {
             for (int c = 0; c < 10; ++c) {
-                LitParticle par = new LitParticle(this.level, spellContext().element.getRenderer().getParticleTexture()
+                LitParticle par = new LitParticle(this.level, spellContext().element().getRenderer().getParticleTexture()
                         , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
-                        , 0.125f, 0.125f, MagickCore.rand.nextFloat(), 80, spellContext().element.getRenderer());
+                        , 0.125f, 0.125f, MagickCore.rand.nextFloat(), 80, spellContext().element().getRenderer());
                 par.setGlow();
                 par.setShakeLimit(5.0f);
                 par.addMotion(MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10, MagickCore.getNegativeToOne() / 10);
                 MagickCore.addMagickParticle(par);
             }
             for (int i = 0; i < 5; ++i) {
-                LitParticle litPar = new LitParticle(this.level, spellContext().element.getRenderer().getMistTexture()
+                LitParticle litPar = new LitParticle(this.level, spellContext().element().getRenderer().getMistTexture()
                         , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getX()
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getY() + this.getBbHeight() * 0.5
                         , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5 + this.getZ())
-                        , this.getBbWidth() * 0.5f, this.getBbWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element.getRenderer().getParticleRenderTick(), spellContext().element.getRenderer());
+                        , this.getBbWidth() * 0.5f, this.getBbWidth() * 0.5f, 0.5f * MagickCore.rand.nextFloat(), spellContext().element().getRenderer().getParticleRenderTick(), spellContext().element().getRenderer());
                 litPar.setGlow();
                 litPar.setParticleGravity(0f);
                 litPar.setShakeLimit(5.0f);

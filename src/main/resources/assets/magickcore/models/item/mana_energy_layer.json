@@ -1,0 +1,56 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "magickcore:empty"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "mana_energy_layer": 1
+            },
+            "model": "magickcore:item/mana_energy_core"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 3
+            },
+            "model": "magickcore:item/mana_energy_t"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 5
+            },
+            "model": "magickcore:item/mana_energy_f"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 7
+            },
+            "model": "magickcore:item/mana_energy_tf"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 9
+            },
+            "model": "magickcore:item/mana_energy_r"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 11
+            },
+            "model": "magickcore:item/mana_energy_tr"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 13
+            },
+            "model": "magickcore:item/mana_energy_fr"
+        },
+        {
+            "predicate": {
+                "mana_energy_layer": 15
+            },
+            "model": "magickcore:item/mana_energy_tfr"
+        }
+    ]
+}

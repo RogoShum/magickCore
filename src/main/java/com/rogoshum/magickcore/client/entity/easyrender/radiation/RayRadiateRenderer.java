@@ -58,7 +58,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserTop(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_TOP)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element().secondaryColor(), RenderHelper.renderLight)
         );
     }
 
@@ -66,7 +66,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserMid(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_MID)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element().secondaryColor(), RenderHelper.renderLight)
         );
     }
 
@@ -74,7 +74,7 @@ public class RayRadiateRenderer extends EasyRenderer<RayTraceEntity> {
         baseOffset(params.matrixStack);
         RenderHelper.renderLaserBottom(
                 BufferContext.create(params.matrixStack, params.buffer, RenderHelper.getTexturedQuadsGlow(LASER_BOTTOM)),
-                new RenderHelper.RenderContext(1.0f, entity.spellContext().element.secondaryColor(), RenderHelper.renderLight)
+                new RenderHelper.RenderContext(1.0f, entity.spellContext().element().secondaryColor(), RenderHelper.renderLight)
         );
     }
 

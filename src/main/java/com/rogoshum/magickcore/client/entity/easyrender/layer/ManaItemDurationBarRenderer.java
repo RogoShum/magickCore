@@ -45,7 +45,7 @@ public class ManaItemDurationBarRenderer extends EasyRenderer<ItemEntity> {
         if(entity.getItem().getItem() instanceof IManaData && entity.getItem().getItem().isBarVisible(entity.getItem())) {
             render = true;
             ItemManaData data = ExtraDataUtil.itemManaData(entity.getItem());
-            color = data.spellContext().element.primaryColor();
+            color = data.spellContext().element().primaryColor();
             percentage = data.manaCapacity().getMana() / data.manaCapacity().getMaxMana();
             if(RenderHelper.showDebug())
                 updateSpellContext();

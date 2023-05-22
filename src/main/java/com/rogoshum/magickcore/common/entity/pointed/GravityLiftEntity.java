@@ -101,7 +101,7 @@ public class GravityLiftEntity extends ManaPointEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + x
                 , MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + y + 1f
                 , MagickCore.getNegativeToOne() * 0.5f * this.getBbWidth() + z)
-                , getBbWidth() * 0.5f, getBbWidth() * 0.5f, 0.5f, (int) (liftHeight() * 1.5), MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , getBbWidth() * 0.5f, getBbWidth() * 0.5f, 0.5f, (int) (liftHeight() * 1.5), MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.addMotion(dir.x, dir.y, dir.z);
         par.setLimitScale();
         par.setShakeLimit(5);
@@ -113,7 +113,7 @@ public class GravityLiftEntity extends ManaPointEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + x
                 , MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + y + 1f
                 , MagickCore.getNegativeToOne() * 0.25f * this.getBbWidth() + z)
-                , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.3f, (int) liftHeight(), MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.3f, (int) liftHeight(), MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.addMotion(dir.x, dir.y, dir.z);
         par.setLimitScale();
         par.setCanCollide(false);
@@ -125,7 +125,7 @@ public class GravityLiftEntity extends ManaPointEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * 3f * this.getBbWidth() + x
                 , MagickCore.getNegativeToOne() * 3f + y + 1f
                 , MagickCore.getNegativeToOne() * 3f * this.getBbWidth() + z)
-                , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.2f, 7, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , getBbWidth() * 0.35f, getBbWidth() * 0.35f, 0.2f, 7, MagickCore.proxy.getElementRender(spellContext().element().type()));
         Vec3 direction = this.position().add(0, 1, 0).subtract(par.positionVec()).scale(0.2);
         par.addMotion(direction.x, direction.y, direction.z);
         par.setNoScale();
@@ -138,7 +138,7 @@ public class GravityLiftEntity extends ManaPointEntity {
                 , new Vec3(+ x
                 , y + 1f
                 , z)
-                , 0.15f, 0.15f, 1.0f, 5, MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.15f, 0.15f, 1.0f, 5, MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.addMotion(MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15, MagickCore.getNegativeToOne() * 0.15);
         par.setLimitScale();
         par.setGlow();
@@ -151,7 +151,7 @@ public class GravityLiftEntity extends ManaPointEntity {
                 , new Vec3(MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5f + x
                 , y + 1f
                 , MagickCore.getNegativeToOne() * this.getBbWidth() * 0.5f + z)
-                , 0.05f, 0.05f, 1.0f, (int) (spellContext().range * 4), MagickCore.proxy.getElementRender(spellContext().element.type()));
+                , 0.05f, 0.05f, 1.0f, (int) (spellContext().range() * 4), MagickCore.proxy.getElementRender(spellContext().element().type()));
         par.addMotion(dir.x, dir.y, dir.z);
         par.setLimitScale();
         par.setGlow();
@@ -167,7 +167,7 @@ public class GravityLiftEntity extends ManaPointEntity {
     }
 
     public float liftHeight() {
-        return getBbHeight() + spellContext().range * 3;
+        return getBbHeight() + spellContext().range() * 3;
     }
 
     public boolean rightDirection(Vec3 vec) {

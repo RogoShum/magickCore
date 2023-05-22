@@ -38,7 +38,7 @@ public class ConeRadiateRenderer extends EasyRenderer<ConeEntity> {
         if(!vector3dList.isEmpty())
             RenderHelper.renderPoint(
                 BufferContext.create(params.matrixStack, params.buffer, TYPE).useShader(RenderMode.ShaderList.SLIME_SHADER)
-                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element.primaryColor(), RenderHelper.renderLight)
+                , new RenderHelper.RenderContext(1.0f, entity.spellContext().element().primaryColor(), RenderHelper.renderLight)
                 , vector3dList);
     }
 

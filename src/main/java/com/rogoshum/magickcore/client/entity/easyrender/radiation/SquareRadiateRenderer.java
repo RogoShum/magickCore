@@ -23,7 +23,7 @@ public class SquareRadiateRenderer extends EasyRenderer<SquareEntity> {
     }
 
     public void render(RenderParams params) {
-        Color color = entity.spellContext().element.primaryColor();
+        Color color = entity.spellContext().element().primaryColor();
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         LevelRenderer.renderLineBox(params.matrixStack, params.buffer, entity.getBoundingBox().inflate(scale * 0.5).move(-cam.x, -cam.y, -cam.z), color.r(), color.g(), color.b(), 1.0F);
     }

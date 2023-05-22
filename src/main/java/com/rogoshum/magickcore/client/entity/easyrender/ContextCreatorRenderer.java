@@ -81,7 +81,7 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
         baseOffset(params.matrixStack);
         PoseStack matrixStackIn = params.matrixStack;
         float partialTicks = params.partialTicks;
-        Color color = entity.getInnerManaData().spellContext().element.primaryColor();
+        Color color = entity.getInnerManaData().spellContext().element().primaryColor();
         int packedLightIn = Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(entity, partialTicks);
 
         if(entity.getEntityType() == null)
@@ -98,7 +98,7 @@ public class ContextCreatorRenderer extends EasyRenderer<ContextCreatorEntity> {
     public void renderLaser(RenderParams params) {
         baseOffset(params.matrixStack);
         PoseStack matrixStackIn = params.matrixStack;
-        Color color = entity.getInnerManaData().spellContext().element.primaryColor();
+        Color color = entity.getInnerManaData().spellContext().element().primaryColor();
         matrixStackIn.scale(0.2f, 0.2f, 0.2f);
         BufferContext bufferContext = BufferContext.create(matrixStackIn, params.buffer, LINE);
         double space = 10;
