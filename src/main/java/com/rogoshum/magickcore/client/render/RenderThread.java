@@ -108,7 +108,7 @@ public class RenderThread extends Thread {
             try {
                 while (it.hasNext()) {
                     IEasyRender renderer = it.next();
-                    if(!shouldTick) {
+                    if(!shouldTick && !(renderer instanceof LitParticle)) {
                         renderer.updatePosition();
                         continue;
                     }

@@ -104,7 +104,7 @@ public class MagickCraftingRenderer extends EasyTileRenderer<MagickCraftingTileE
         Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         double dis = view.distanceTo(Vec3.atCenterOf(this.tile.getBlockPos()));
         if(dis > 5) return;
-        float baseAlpha = (float) ((5f - dis) * 0.1f);
+        float baseAlpha = (float) ((5f - dis) * 0.2f);
 
         MagickCraftingTileEntity.CraftingMatrix craftingMatrix = this.tile.getCraftingMatrix();
         int i = 1;

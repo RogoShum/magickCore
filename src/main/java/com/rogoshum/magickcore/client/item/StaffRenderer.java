@@ -51,8 +51,8 @@ public class StaffRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStack.pushPose();
             RenderType renderType = ItemBlockRenderTypes.getRenderType(stack, true);
             BakedModel bakedmodel = stack.getItem() instanceof SpiritCrystalStaffItem ?
-                    Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(new ModelResourceLocation(RenderHelper.getItemModelResource().get("staff_crystal"), "inventory")) :
-                    Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(new ModelResourceLocation(RenderHelper.getItemModelResource().get("staff"), "inventory"));
+                    Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(RenderHelper.getItemModelResource().get("staff_crystal")) :
+                    Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(RenderHelper.getItemModelResource().get("staff"));
             bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, bakedmodel, p_239207_2_, false);
             VertexConsumer vertexconsumer = ItemRenderer.getFoilBufferDirect(bufferIn, renderType, true, stack.hasFoil());
             Minecraft.getInstance().getItemRenderer().renderModelLists(bakedmodel, stack, combinedLight, combinedOverlay, matrixStack, vertexconsumer);
@@ -62,7 +62,7 @@ public class StaffRenderer extends BlockEntityWithoutLevelRenderer {
             matrixStack.translate(-0.525, -0.525, 0);
             //matrixStack.translate(0.185, 0.185, 0);
             //matrixStack.translate(0.185, 0.185, 0);
-            BakedModel bakedmodel1 = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(new ModelResourceLocation(RenderHelper.getItemModelResource().get("mana_energy"), "inventory"));
+            BakedModel bakedmodel1 = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager().getModel(RenderHelper.getItemModelResource().get("mana_energy"));
             bakedmodel1 = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, bakedmodel1, p_239207_2_, false);
             bakedmodel1 = bakedmodel1.getOverrides().resolve(bakedmodel1, stack, null, null, 0);
             Minecraft.getInstance().getItemRenderer().renderModelLists(bakedmodel1, stack, combinedLight, combinedOverlay, matrixStack, vertexconsumer);

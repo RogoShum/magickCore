@@ -124,10 +124,7 @@ public class OrbBottleItem extends ElementContainerItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        CompoundTag tag = NBTTagHelper.getStackTag(stack);
-        if(tag.contains("ELEMENT")) {
-            tooltip.add((new TranslatableComponent(LibItem.ELEMENT)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
-        }
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

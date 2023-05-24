@@ -48,4 +48,5 @@ public class LibEntities {
     public static final String CHARGE = "charge";
     public static final String QUADRANT_CRYSTAL = "quadrant_crystal";
     public static final String LIVING_ARGENT = "living_argent";
+    public static final String INTERACTIVE_ITEM = "interactive_item";
 }

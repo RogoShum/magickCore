@@ -21,7 +21,6 @@
   },
   "client": [
     "AccessorBufferBuilder",
-    "AccessorBufferSource",
     "AccessorRenderType",
     "AccessorShaderShard",
     "AccessorShaderState",

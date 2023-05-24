@@ -43,7 +43,7 @@ public class LootUtil {
            PotionUtils.setCustomEffects(stack, map.values());
            stack.setHoverName(new TranslatableComponent(effect.getDescriptionId()));
            return stack;
-       } else if(type < 5) {
+       } else if(type < 3) {
            if(tick > 600)
                tick = 600;
            ManaItem item;
@@ -81,7 +81,7 @@ public class LootUtil {
            return createRandomManaItem(item, entityType, force, tick, Math.min(mana, 50000), trace);
        } else if(type < 7) {
            ItemStack stack = new ItemStack(ModItems.SPIRIT_CRYSTAL.get());
-           stack.setCount(3 + MagickCore.rand.nextInt(8));
+           stack.setCount(2 + MagickCore.rand.nextInt(3));
            return stack;
        } else {
            return ModVillager.getEntityTypeItem(ModVillager.getRandomType());

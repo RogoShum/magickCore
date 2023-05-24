@@ -42,8 +42,8 @@ public class RadianceCrystalItem extends BlockItem {
         if(stack.hasTag()) {
             CompoundTag tag = stack.getTag();
             if(tag.contains("ELEMENT")) {
-                tooltip.add((new TranslatableComponent(LibItem.ELEMENT)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")))));
-                tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".description.radiance." + tag.getString("ELEMENT")))));
+                tooltip.add((new TranslatableComponent(LibItem.ELEMENT)).append(" ").append(ElementContainerItem.withElementColor(new TranslatableComponent(MagickCore.MOD_ID + ".description." + tag.getString("ELEMENT")), stack)));
+                tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append(ElementContainerItem.withElementColor(new TranslatableComponent(MagickCore.MOD_ID + ".description.radiance." + tag.getString("ELEMENT")), stack)));
             }
         }
     }

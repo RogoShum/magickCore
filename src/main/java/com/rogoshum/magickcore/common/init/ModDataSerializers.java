@@ -64,7 +64,7 @@ public class ModDataSerializers {
         }
     };
 
-    public static final EntityDataSerializer<Vec3> VECTOR3D = new EntityDataSerializer<Vec3>() {
+    public static final EntityDataSerializer<Vec3> VECTOR3D = new EntityDataSerializer<>() {
         @Override
         public void write(FriendlyByteBuf buf, Vec3 value) {
             buf.writeDouble(value.x);

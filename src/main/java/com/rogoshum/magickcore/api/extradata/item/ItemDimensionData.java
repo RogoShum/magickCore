@@ -2,14 +2,12 @@ package com.rogoshum.magickcore.api.extradata.item;
 
 import com.google.common.collect.ImmutableList;
 import com.rogoshum.magickcore.api.extradata.ItemExtraData;
-import com.rogoshum.magickcore.api.itemstack.IDimensionItem;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.item.IDimensionItem;
 import com.rogoshum.magickcore.common.recipe.ElementToolRecipe;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDimensionData extends ItemExtraData {
@@ -20,9 +18,10 @@ public class ItemDimensionData extends ItemExtraData {
         if(isItemSuitable(stack)) {
             slots = NonNullList.withSize(((IDimensionItem)stack.getItem()).slotSize(stack), ItemStack.EMPTY);
             read(stack.getOrCreateTag());
-        } else if(ElementToolRecipe.isTool(stack))
+        } else if(ElementToolRecipe.isTool(stack)) {
             slots = NonNullList.withSize(3, ItemStack.EMPTY);
-        else
+            read(stack.getOrCreateTag());
+        } else
             slots = ImmutableList.of();
     }
 
@@ -49,7 +48,8 @@ public class ItemDimensionData extends ItemExtraData {
                 CompoundTag dimension = nbt.getCompound(DIMENSION_ITEM);
                 for(String key : dimension.getAllKeys()) {
                     CompoundTag tag = dimension.getCompound(key);
-                    slots.add(ItemStack.of(tag));
+                    ItemStack stack = ItemStack.of(tag);
+                    slots.set(Integer.parseInt(key), stack);
                 }
             } catch (Exception ignored) {}
         }
@@ -63,7 +63,8 @@ public class ItemDimensionData extends ItemExtraData {
             CompoundTag tag = item.save(new CompoundTag());
             dimension.put(String.valueOf(i), tag);
         }
-        nbt.put(DIMENSION_ITEM, dimension);
+        if(!dimension.isEmpty())
+            nbt.put(DIMENSION_ITEM, dimension);
     }
 
     @Override

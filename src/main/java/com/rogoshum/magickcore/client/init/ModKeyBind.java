@@ -5,7 +5,9 @@ import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.item.MagickContextItem;
+import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.network.CSpellSwapPack;
+import com.rogoshum.magickcore.common.network.CTriggerAssemblyPack;
 import com.rogoshum.magickcore.common.network.Networking;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.client.Minecraft;
@@ -24,6 +26,7 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ModKeyBind {
     public static int press = 0;
+    public static int coolDown = 0;
     public static final KeyMapping SWAP_KEY = new KeyMapping(MagickCore.MOD_ID+".key.spell",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
@@ -38,6 +41,15 @@ public class ModKeyBind {
 
     @SubscribeEvent
     public static void onKeyboardInput(InputEvent.KeyInputEvent event) {
+        KeyMapping key = Minecraft.getInstance().options.keyJump;
+        boolean isKeyDown = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue());
+        if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.isOnGround())
+            coolDown = 0;
+        if(Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isOnGround() && coolDown < MagickCore.proxy.getRunTick() && isKeyDown) {
+            Networking.INSTANCE.send(
+                    PacketDistributor.SERVER.noArg(), CTriggerAssemblyPack.trigger(LibElements.VOID));
+            coolDown = MagickCore.proxy.getRunTick()+100;
+        }
         if (SWAP_KEY.consumeClick() && Minecraft.getInstance().player != null) {
             Player player = Minecraft.getInstance().player;
             if(press >= 0) {

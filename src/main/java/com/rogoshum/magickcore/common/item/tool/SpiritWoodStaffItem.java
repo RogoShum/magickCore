@@ -1,7 +1,7 @@
 package com.rogoshum.magickcore.common.item.tool;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
-import com.rogoshum.magickcore.api.itemstack.ISpiritDimension;
+import com.rogoshum.magickcore.api.item.ISpiritDimension;
 import com.rogoshum.magickcore.api.mana.IManaContextItem;
 import com.rogoshum.magickcore.client.item.StaffRenderer;
 import com.rogoshum.magickcore.common.item.ManaItem;

@@ -66,6 +66,11 @@ public class PlaceableItemEntity extends Entity implements IEntityAdditionalSpaw
         return getItemStack().getDisplayName();
     }
 
+    @Override
+    protected Component getTypeName() {
+        return getItemStack().getDisplayName();
+    }
+
     public Direction getDirection() {
         return this.entityData.get(DIRECTION);
     }

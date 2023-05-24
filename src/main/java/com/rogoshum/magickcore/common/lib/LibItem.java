@@ -8,6 +8,7 @@ public class LibItem {
     public static final String DEEP_SPIRIT_ORE = "deepslate_spirit_ore";
     public static final String ITEM_EXTRACTOR = "item_extractor";
     public static final String RADIANCE_CRYSTAL = "radiance_crystal";
+    public static final String DIMENSION_INFLATE = "dimension_inflate";
     public static final String LASER_STAFF = "laser_staff";
     public static final String RAY_STAFF = "ray_staff";
     public static final String SPIRIT_BOW = "spirit_bow";
@@ -38,6 +39,7 @@ public class LibItem {
     public static final String FUNCTION = MagickCore.MOD_ID + ".description.function";
     public static final String FORCE = MagickCore.MOD_ID + ".description.force";
     public static final String RANGE = MagickCore.MOD_ID + ".description.range";
+    public static final String ENHANCE = MagickCore.MOD_ID + ".description.enhance";
     public static final String MANA = MagickCore.MOD_ID + ".description.mana";
     public static final String MANA_TYPE = MagickCore.MOD_ID + ".description.mana_type";
     public static final String TICK = MagickCore.MOD_ID + ".description.tick";

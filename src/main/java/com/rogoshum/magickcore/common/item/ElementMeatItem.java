@@ -44,7 +44,7 @@ public class ElementMeatItem extends ElementContainerItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         if(NBTTagHelper.hasElement(stack) && !NBTTagHelper.getElement(stack).equals("origin")) {
-            tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append((new TranslatableComponent(MagickCore.MOD_ID + ".function." + NBTTagHelper.getElement(stack) + ".buff"))));
+            tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append(withElementColor((new TranslatableComponent(MagickCore.MOD_ID + ".function." + NBTTagHelper.getElement(stack) + ".buff")), stack)));
         }
     }
 

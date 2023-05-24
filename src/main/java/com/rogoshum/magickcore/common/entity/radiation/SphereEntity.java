@@ -77,7 +77,7 @@ public class SphereEntity extends ManaRadiateEntity {
     }
 
     protected void applyParticle(int particleAge) {
-        Vec3[] vec3s = ParticleUtil.drawSphere(12, 12);
+        Vec3[] vec3s = ParticleUtil.drawSphere((int) (3*spellContext().range()), (int) (3*spellContext().range()));
         for (Vec3 pos : vec3s) {
             LitParticle par = new LitParticle(this.level, MagickCore.proxy.getElementRender(spellContext().element().type()).getParticleTexture()
                     , pos.scale(getRange()).add(this.position())

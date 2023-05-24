@@ -1,6 +1,6 @@
 package com.rogoshum.magickcore.common.item;
 
-import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.item.IDimensionTooltip;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
@@ -15,9 +15,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ElementStringItem extends ElementContainerItem{
+public class ElementStringItem extends ElementContainerItem implements IDimensionTooltip {
     public ElementStringItem() {
         super(BaseItem.properties());
     }
@@ -26,7 +27,7 @@ public class ElementStringItem extends ElementContainerItem{
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if(NBTTagHelper.hasElement(stack)) {
-            tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append((new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + NBTTagHelper.getElement(stack)))));
+            tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append((withElementColor(new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + NBTTagHelper.getElement(stack)), stack))));
         }
     }
 
@@ -36,5 +37,12 @@ public class ElementStringItem extends ElementContainerItem{
         if(p_77663_3_ instanceof ServerPlayer) {
             AdvancementsEvent.STRING_TRIGGER.trigger((ServerPlayer) p_77663_3_, LibAdvancements.ELEMENT_STRING);
         }
+    }
+
+    @Override
+    public List<Component> dimensionToolTip(ItemStack stack) {
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add((new TranslatableComponent(LibItem.FUNCTION)).append(" ").append(ElementContainerItem.withElementColor(new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + NBTTagHelper.getElement(stack)), stack)));
+        return tooltip;
     }
 }

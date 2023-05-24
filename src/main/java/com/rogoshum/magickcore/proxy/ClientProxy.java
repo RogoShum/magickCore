@@ -4,6 +4,7 @@ import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.IEasyRender;
@@ -21,6 +22,7 @@ import com.rogoshum.magickcore.client.tileentity.*;
 import com.rogoshum.magickcore.client.event.RenderEvent;
 import com.rogoshum.magickcore.client.event.ShaderEvent;
 import com.rogoshum.magickcore.common.init.*;
+import com.rogoshum.magickcore.common.item.material.ElementItem;
 import com.rogoshum.magickcore.common.item.tool.WandItem;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
@@ -34,21 +36,21 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.color.item.ItemColor;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.ParticleStatus;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
@@ -221,6 +223,7 @@ public class ClientProxy implements IProxy {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerEntityRenderer);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(event::onModelRegistry);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelRegistry);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBakeEvent);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerItemColors);
 		putElementRenderer();
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBaked);
@@ -251,21 +254,26 @@ public class ClientProxy implements IProxy {
 		ManaBuffHUD.addBuffTexture(LibBuff.STASIS, new ResourceLocation(MagickCore.MOD_ID, "textures/items/stasis.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.BOTAN, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/botan.png"));
 		ManaBuffHUD.addBuffTexture(LibBuff.THORNS, new ResourceLocation(MagickCore.MOD_ID, "textures/mob_effect/thorns.png"));
+		RenderHelper.addItemModelResource("staff", MagickCore.fromId("staff_layer"));
+		RenderHelper.addItemModelResource("staff_crystal", MagickCore.fromId("staff_crystal_layer"));
+		RenderHelper.addItemModelResource("sword", MagickCore.fromId("sword_layer"));
+		RenderHelper.addItemModelResource("bow", MagickCore.fromId("bow_layer"));
+		RenderHelper.addItemModelResource("mana_energy", MagickCore.fromId("mana_energy_layer"));
 	}
 
 	public void registerEntityRenderer(FMLClientSetupEvent event) {
 		//net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntites.time_manager, TimeManagerRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_ORB.get(), ManaObjectRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_ORB.get(), ManaProjectileRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_SHIELD.get(), ManaEntityRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_STAR.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_LASER.get(), ManaObjectRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_STAR.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_LASER.get(), ManaProjectileRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_SPHERE.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.RADIANCE_WALL.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.CHAOS_REACH.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.THORNS_CARESS.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SILENCE_SQUALL.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ASCENDANT_REALM.get(), ManaEntityRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ELEMENT_ORB.get(), ManaObjectRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ELEMENT_ORB.get(), ManaProjectileRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.CONTEXT_CREATOR.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MANA_CAPACITY.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.CONTEXT_POINTER.get(), ManaEntityRenderer::new);
@@ -275,21 +283,21 @@ public class ClientProxy implements IProxy {
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SECTOR.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SPHERE.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SQUARE.get(), ManaEntityRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.RAY.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.BLOOD_BUBBLE.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LAMP.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ARROW.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.BUBBLE.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LEAF.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.RED_STONE.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SHADOW.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.WIND.get(), ManaObjectRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.JEWELRY_BAG.get(), ManaObjectRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.RAY.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.BLOOD_BUBBLE.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LAMP.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ARROW.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.BUBBLE.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LEAF.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.RED_STONE.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SHADOW.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.WIND.get(), ManaProjectileRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.JEWELRY_BAG.get(), ManaProjectileRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.REPEATER.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.GRAVITY_LIFT.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.PLACEABLE_ENTITY.get(), PlaceableItemEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MAGE.get(), MageRenderer::new);
-		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.PHANTOM.get(), ManaObjectRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.PHANTOM.get(), ManaProjectileRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.ARTIFICIAL_LIFE.get(), ArtificialLifeEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.CHAIN.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.SPIN.get(), ManaEntityRenderer::new);
@@ -297,6 +305,9 @@ public class ClientProxy implements IProxy {
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.MULTI_RELEASE.get(), ManaEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.QUADRANT_CRYSTAL.get(), ManaLivingEntityRenderer::new);
 		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LIVING_ARGENT.get(), ManaLivingEntityRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.INTERACTIVE_ITEM.get(), InteractiveItemEntityRenderer::new);
+		net.minecraft.client.renderer.entity.EntityRenderers.register(ModEntities.LIGHT.get(), EntityEmptyRenderer::new);
+
 	}
 
 	public float manaEnergy(ItemStack p_174676_, @Nullable ClientLevel p_174677_, @Nullable LivingEntity p_174678_, int p_174679_) {
@@ -313,18 +324,33 @@ public class ClientProxy implements IProxy {
 		return result;
 	}
 
+	public float crystalBox(ItemStack p_174676_, @Nullable ClientLevel p_174677_, @Nullable LivingEntity p_174678_, int p_174679_) {
+		float result = 0;
+		ItemDimensionData data = ExtraDataUtil.itemDimensionData(p_174676_);
+		for(ItemStack slot : data.getSlots()) {
+			if(slot.getItem() instanceof ElementItem)
+				result+=1;
+		}
+		return result;
+	}
+
 	public void onModelRegistry(ModelRegistryEvent event) {
 		ResourceLocation res = new ResourceLocation("mana_energy_layer");
 		ItemProperties.register(ModItems.SPIRIT_SWORD.get(), res, this::manaEnergy);
 		ItemProperties.register(ModItems.SPIRIT_BOW.get(), res, this::manaEnergy);
 		ItemProperties.register(ModItems.SPIRIT_CRYSTAL_STAFF.get(), res, this::manaEnergy);
 		ItemProperties.register(ModItems.STAFF.get(), res, this::manaEnergy);
+		ItemProperties.register(ModItems.CRYSTAL_BOX.get(), new ResourceLocation("crystal_box"), this::crystalBox);
+	}
+
+	public void onModelBakeEvent(ModelBakeEvent evt) {
+
 	}
 
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ItemColor color = (stack, p_getColor_2_) -> {
 			if(NBTTagHelper.hasElement(stack)) {
-				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().getDecimalColor();
+				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().decimalColor();
 			}
 			return 	16777215;
 		};
@@ -337,18 +363,35 @@ public class ClientProxy implements IProxy {
 		color = (stack, p_getColor_2_) -> {
 			CompoundTag tag = stack.getOrCreateTag();
 			if(tag.contains(WandItem.SET_KEY) && !tag.getCompound(WandItem.SET_KEY).isEmpty())
-				return RenderHelper.getRGB().getDecimalColor();
+				return RenderHelper.getRGB().decimalColor();
 			return 	16777215;
 		};
 		event.getItemColors().register(color, ModItems.WAND.get());
-		/*
+
 		color = (stack, p_getColor_2_) -> {
-			if(p_getColor_2_ == 0) {
-				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().getDecimalColor();
+			if(p_getColor_2_ > 0) {
+				List<ItemStack> slots = ExtraDataUtil.itemDimensionData(stack).getSlots();
+				if(slots.size() > p_getColor_2_-1) {
+					int count = 0;
+					for(ItemStack slot : slots) {
+						if(slot.getItem() instanceof ElementItem)
+							count++;
+						if(p_getColor_2_ == count)
+							return MagickCore.proxy.getElementRender(((ElementItem) slot.getItem()).getElementType()).getPrimaryColor().decimalColor();
+					}
+				}
 			}
 			return 	16777215;
 		};
-		 */
+		event.getItemColors().register(color, ModItems.CRYSTAL_BOX.get());
+		color = (stack, p_getColor_2_) -> {
+			if(p_getColor_2_ == 1) {
+				return MagickCore.proxy.getElementRender(NBTTagHelper.getElement(stack)).getPrimaryColor().decimalColor();
+			}
+			return 	16777215;
+		};
+		event.getItemColors().register(color, ModItems.ASSEMBLY_ESSENCE.get());
+		event.getItemColors().register((stack, index) -> index > 0 ? -1 : ((DyeableLeatherItem)stack.getItem()).getColor(stack), ModItems.COLORED_GLOW_DUST.get());
 	}
 
 	public void putElementRendererIn(String name, ElementRenderer renderer) {
@@ -362,11 +405,6 @@ public class ClientProxy implements IProxy {
 		RenderHelper.addTexture(res);
 		RenderHelper.addTexture(new ResourceLocation("textures/block/white_wool.png"));
 		RenderHelper.addTexture(new ResourceLocation("textures/item/ender_eye.png"));
-		RenderHelper.addItemModelResource("staff", MagickCore.fromId("staff_layer"));
-		RenderHelper.addItemModelResource("staff_crystal", MagickCore.fromId("staff_crystal_layer"));
-		RenderHelper.addItemModelResource("sword", MagickCore.fromId("sword_layer"));
-		RenderHelper.addItemModelResource("bow", MagickCore.fromId("bow_layer"));
-		RenderHelper.addItemModelResource("mana_energy", MagickCore.fromId("mana_energy_layer"));
 		res =  ResourcePackLoader.getPackFor(MagickCore.MOD_ID).get().getResources(PackType.CLIENT_RESOURCES, MagickCore.MOD_ID, "textures/element", Integer.MAX_VALUE, (s) -> s.endsWith(".png"));
 		LitParticle.addTexture(res);
 		res =  ResourcePackLoader.getPackFor(MagickCore.MOD_ID).get().getResources(PackType.CLIENT_RESOURCES, MagickCore.MOD_ID, "textures/particle", Integer.MAX_VALUE, (s) -> s.endsWith(".png"));
@@ -378,6 +416,8 @@ public class ClientProxy implements IProxy {
 		BlockEntityRenderers.register(ModTileEntities.MATERIAL_JAR_TILE_ENTITY.get(), MaterialJarRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.MATERIAL_JAR.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.RADIANCE_CRYSTAL.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(ModBlocks.DIMENSION_INFLATE.get(), RenderType.solid());
+		BlockEntityRenderers.register(ModTileEntities.DIMENSION_INFLATE_TILE_ENTITY.get(), DimensionInflateRenderer::new);
 		//BlockEntityRenderers.register(ModTileEntities.ELEMENT_CRYSTAL_TILE_ENTITY.get(), ElementCrystalRenderer::new);
 		ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEMENT_CRYSTAL.get(), RenderType.cutout());
 		BlockEntityRenderers.register(ModTileEntities.ITEM_EXTRACTOR_TILE_ENTITY.get(), ItemExtractorRenderer::new);

@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.api.extradata.item;
 
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.item.IManaData;
 import com.rogoshum.magickcore.common.lib.LibRegistry;
 import com.rogoshum.magickcore.api.magick.ManaCapacity;
 import com.rogoshum.magickcore.api.magick.context.TagSpellContext;

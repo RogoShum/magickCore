@@ -70,7 +70,7 @@ public class BotaniaLoader extends AdditionLoader {
     public void onManaDiscountEvent(ManaDiscountEvent event) {
         if(event.getEntityPlayer().level.isClientSide()) return;
         float discount = 0.0f;
-        for(ItemStack stack : event.getEntityPlayer().getArmorSlots()) {
+        for(ItemStack stack : event.getEntityPlayer().getAllSlots()) {
             if(NBTTagHelper.hasElementOnTool(stack, LibElements.BOTANIA)) {
                 discount += 0.1f;
                 NBTTagHelper.consumeElementOnTool(stack, LibElements.BOTANIA);

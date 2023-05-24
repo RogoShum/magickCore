@@ -3,14 +3,17 @@ package com.rogoshum.magickcore.common.magick.ability;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.api.magick.context.child.DimensionContext;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
 import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.item.AssemblyEssenceItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.magick.context.child.PositionContext;
 import com.rogoshum.magickcore.api.magick.context.child.SpawnContext;
+import com.rogoshum.magickcore.common.recipe.ElementToolRecipe;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.init.ModBuffs;
@@ -56,6 +59,30 @@ public class VoidAbility{
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
         return ModBuffs.applyBuff(context.victim, LibBuff.WEAKEN, context.tick(), context.force(), false);
+    }
+
+    public static boolean assembly(MagickContext context) {
+        if(context.caster == null) return false;
+        int count = 0;
+        for(ItemStack stack : context.caster.getAllSlots()) {
+            if(ElementToolRecipe.isTool(stack)) {
+                ItemDimensionData data = ExtraDataUtil.itemDimensionData(stack);
+                for(ItemStack slot : data.getSlots()) {
+                    if(slot.getItem() instanceof AssemblyEssenceItem && NBTTagHelper.getElement(slot).equals(LibElements.VOID))
+                        count++;
+                }
+            }
+        }
+        if(count > 0) {
+            Vec3 pos;
+            ParticleUtil.spawnBlastParticle(context.world, context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0), count, ModElements.VOID, ParticleType.PARTICLE);
+            pos = context.caster.getLookAngle().scale(count*10).add(context.caster.position());
+            context.caster.teleportTo(pos.x, pos.y, pos.z);
+            context.caster.level.playSound((Player)null, context.caster.getX(), context.caster.getY(), context.caster.getZ(), SoundEvents.ENDERMAN_TELEPORT, context.caster.getSoundSource(), 0.5f, 1.0f);
+            ParticleUtil.spawnBlastParticle(context.world, context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0), count*2, ModElements.VOID, ParticleType.PARTICLE);
+            return true;
+        }
+        return false;
     }
 
     public static boolean damageEntity(MagickContext context) {
@@ -143,7 +170,7 @@ public class VoidAbility{
         }
         if(target != null) {
             target.teleportTo(pos.x, pos.y, pos.z);
-            target.playSound(SoundEvents.ENDERMAN_TELEPORT, 0.5f, 1.0f);
+            target.level.playSound((Player)null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENDERMAN_TELEPORT, target.getSoundSource(), 0.5f, 1.0f);
             ParticleUtil.spawnBlastParticle(level, target.position().add(0, target.getBbHeight() * 0.5, 0), 2, ModElements.VOID, ParticleType.PARTICLE);
         }
         return true;

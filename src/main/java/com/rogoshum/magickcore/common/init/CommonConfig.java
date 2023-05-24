@@ -34,7 +34,7 @@ public class CommonConfig {
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.push("Element String durability");
-        ELEMENT_STRING_DURATION = COMMON_BUILDER.defineInRange("duration", 400, 0, 10000);
+        ELEMENT_STRING_DURATION = COMMON_BUILDER.defineInRange("duration", 275, 0, 10000);
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("Mana Material settings").push("Origin Material");

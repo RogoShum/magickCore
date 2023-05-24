@@ -2,8 +2,9 @@ package com.rogoshum.magickcore.common.item;
 
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.magick.MagickElement;
+import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.api.render.RenderHelper;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.item.IManaData;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
@@ -23,7 +24,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -63,7 +63,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
         if(color.equals(Color.ORIGIN_COLOR) && RenderHelper.getPlayer() != null) {
             color = ExtraDataUtil.entityStateData(RenderHelper.getPlayer()).getElement().primaryColor();
         }
-        return color.getDecimalColor();
+        return color.decimalColor();
     }
 
     @Override
@@ -95,7 +95,7 @@ public abstract class ManaItem extends BaseItem implements IManaData {
             if(!information.isEmpty()) {
                 String[] tips = information.split("\n");
                 for (String tip : tips) {
-                    tooltip.add(new TextComponent(tip));
+                    tooltip.add(SpellContext.fromColorText(tip));
                 }
             }
         });

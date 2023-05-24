@@ -17,6 +17,10 @@ public class ModTileEntities {
             , () -> BlockEntityType.Builder.of(RadianceCrystalTileEntity::new
                     , ModBlocks.RADIANCE_CRYSTAL.get()).build(null));
 
+    public static RegistryObject<BlockEntityType<DimensionInflateTileEntity>> DIMENSION_INFLATE_TILE_ENTITY = TILE_ENTITY.register("dimension_inflate_tile_entity"
+            , () -> BlockEntityType.Builder.of(DimensionInflateTileEntity::new
+                    , ModBlocks.DIMENSION_INFLATE.get()).build(null));
+
     public static RegistryObject<BlockEntityType<SpiritCrystalTileEntity>> SPIRIT_CRYSTAL_TILE_ENTITY = TILE_ENTITY.register("spirit_crystal_tile_entity"
             , () -> BlockEntityType.Builder.of(SpiritCrystalTileEntity::new
                     , ModBlocks.SPIRIT_CRYSTAL.get()).build(null));

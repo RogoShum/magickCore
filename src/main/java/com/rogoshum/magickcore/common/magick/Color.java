@@ -1,5 +1,7 @@
 package com.rogoshum.magickcore.common.magick;
 
+import net.minecraft.network.chat.TextColor;
+
 import java.util.Objects;
 
 public class Color {
@@ -20,6 +22,8 @@ public class Color {
     private final int decimal;
     private float[] hsbvals;
 
+    private final TextColor textColor;
+
     private Color(float r, float g, float b) {
         this.r = r;
         this.g = g;
@@ -28,6 +32,7 @@ public class Color {
                 (((int)(r * 255) & 0xFF) << 16) |
                 (((int)(g * 255) & 0xFF) << 8)  |
                 (((int)(b * 255) & 0xFF));
+        this.textColor = TextColor.fromRgb(decimal);
     }
 
     private Color(int decimal) {
@@ -35,6 +40,7 @@ public class Color {
         this.g = ((decimal >> 8) & 0xFF) / 255f;
         this.b = ((decimal) & 0xFF) / 255f;
         this.decimal = decimal;
+        this.textColor = TextColor.fromRgb(decimal);
     }
 
     public static Color create(float r, float g, float b) {
@@ -56,8 +62,12 @@ public class Color {
     public float b() {
         return b;
     }
-    public int getDecimalColor() {
+    public int decimalColor() {
         return decimal;
+    }
+
+    public TextColor textColor() {
+        return textColor;
     }
 
     public float[] getHSBColor() {
@@ -100,6 +110,10 @@ public class Color {
         hsbvals[1] = saturation;
         hsbvals[2] = brightness;
         return hsbvals;
+    }
+
+    public Color blend(Color other) {
+        return Color.create(this.r()*0.5f+other.r()*0.5f, this.g()*0.5f+other.g()*0.5f, this.b()*0.5f+other.b()*0.5f);
     }
 
     @Override

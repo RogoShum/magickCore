@@ -14,7 +14,8 @@ import com.mojang.math.Vector4f;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.event.RenderWorldEvent;
-import com.rogoshum.magickcore.api.render.IManaShader;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
+import com.rogoshum.magickcore.api.item.IDimensionTooltip;
 import com.rogoshum.magickcore.client.entity.easyrender.layer.WandSelectionRenderer;
 import com.rogoshum.magickcore.client.gui.ElementShieldHUD;
 import com.rogoshum.magickcore.client.gui.ManaBarHUD;
@@ -29,21 +30,24 @@ import com.rogoshum.magickcore.api.render.RenderHelper;
 import com.rogoshum.magickcore.api.render.ElementRenderer;
 import com.rogoshum.magickcore.client.particle.LitParticle;
 import com.rogoshum.magickcore.client.render.RenderParams;
+import com.rogoshum.magickcore.common.item.ElementContainerItem;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import com.mojang.math.Matrix4f;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -351,7 +355,39 @@ public class RenderEvent {
             while (keys.hasNext()) {
                 String element = keys.next();
                 int duration = tag.getInt(element);
-                event.getToolTip().add((new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + element)).append(" ").append((new TranslatableComponent(LibElementTool.TOOL_DURATION).append(" " + Integer.toString(duration)))));
+                event.getToolTip().add(((MutableComponent)ElementContainerItem.withElementColor(new TranslatableComponent(LibElementTool.TOOL_ATTRIBUTE + element), element)).append(" ").append((new TranslatableComponent(LibElementTool.TOOL_DURATION).append(" " + Integer.toString(duration)))));
+            }
+        }
+
+        if(event.getItemStack().hasTag() && event.getItemStack().getTag().contains(ItemDimensionData.DIMENSION_ITEM)) {
+            ItemDimensionData dimensionData = ExtraDataUtil.itemDimensionData(event.getItemStack());
+            List<ItemStack> slots = dimensionData.getSlots();
+            if(slots.size() > 0) {
+                event.getToolTip().add((new TextComponent("")));
+                event.getToolTip().add((new TranslatableComponent(LibElementTool.DIMENSION_DESCRIPTION)));
+            }
+
+            for (ItemStack stack : slots) {
+                if(!stack.isEmpty()) {
+                    Component name = stack.getDisplayName();
+                    if(name instanceof MutableComponent mutableName) {
+                        if(stack.getCount() > 1) {
+                            mutableName.append(new TextComponent(" x ")).append(String.valueOf(stack.getCount()));
+                        }
+                        if(name.getStyle().getColor() == null || name.getStyle().getColor().toString().equals("white")) {
+                            if(NBTTagHelper.hasElement(stack))
+                                name = ElementContainerItem.withElementColor(mutableName, stack);
+                        }
+                    }
+
+                    event.getToolTip().add(name);
+                    if(stack.getItem() instanceof IDimensionTooltip) {
+                        List<Component> itemTooltip = ((IDimensionTooltip) stack.getItem()).dimensionToolTip(stack);
+                        for (Component component : itemTooltip) {
+                            event.getToolTip().add(new TextComponent("  ").append(component));
+                        }
+                    }
+                }
             }
         }
     }

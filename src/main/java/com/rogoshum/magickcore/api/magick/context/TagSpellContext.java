@@ -1,7 +1,6 @@
 package com.rogoshum.magickcore.api.magick.context;
 
 import com.rogoshum.magickcore.api.enums.ApplyType;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.context.child.ChildContext;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;

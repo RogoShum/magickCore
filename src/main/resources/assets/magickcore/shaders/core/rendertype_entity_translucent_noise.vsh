@@ -19,6 +19,7 @@ uniform mat3 IViewRotMat;
 uniform mat4 TextureMat;
 uniform int FogShape;
 uniform vec3 CameraPos;
+uniform float GameTime;
 
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
@@ -41,5 +42,5 @@ void main() {
     overlayColor = texelFetch(Sampler1, UV1, 0);
     texCoord0 = (TextureMat * vec4(UV0, 0.0, 1.0)).xy;
     normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
-    noiseUV = UV0+vec2(pos.x*0.05, pos.z*0.05);
+    noiseUV = UV0+vec2(GameTime * 25.0);
 }

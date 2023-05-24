@@ -3,6 +3,7 @@ package com.rogoshum.magickcore.api.magick.context;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.item.ElementContainerItem;
 import com.rogoshum.magickcore.common.lib.LibContext;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibItem;
@@ -13,11 +14,15 @@ import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import com.rogoshum.magickcore.common.util.ToolTipHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
 public class SpellContext {
@@ -245,6 +250,27 @@ public class SpellContext {
         return ToolTipHelper.DEEP_GREY + new TranslatableComponent(MagickCore.MOD_ID + ".description.press_sneak").getString() + getString(true, playerElement);
     }
 
+    public static String appendColor(String text, String element) {
+        return "[elementColor:" + element + ":" + text + "]";
+    }
+
+    public static Component fromColorText(String ColorText) {
+        String patternString = "\\[(.*?)\\:(.*?)\\:(.*?)\\]";
+
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(ColorText);
+
+        if (matcher.find() && matcher.group(1).equals("elementColor")) {
+            String before = ColorText.substring(0, matcher.start());
+            String format = matcher.group(0);
+            String elementColor = matcher.group(2);
+            String text = matcher.group(3);
+            String after = ColorText.substring(matcher.end());
+            return new TextComponent(before).append(ElementContainerItem.withElementColor(new TextComponent(text), elementColor)).append(fromColorText(after));
+        } else
+            return new TextComponent(ColorText);
+    }
+
     public String getString(boolean simple, MagickElement playerElement) {
         MagickElement element = this.element();
         if(element == ModElements.ORIGIN)
@@ -264,16 +290,16 @@ public class SpellContext {
         }
 
         if(element != ModElements.ORIGIN && applyType() != ApplyType.NONE && !applyType().isForm()) {
-            toolTip.nextTrans(LibItem.FUNCTION, new TranslatableComponent(MagickCore.MOD_ID + ".function." + element.type() + "." + applyType()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+            toolTip.nextTrans(LibItem.FUNCTION, appendColor(new TranslatableComponent(MagickCore.MOD_ID + ".function." + element.type() + "." + applyType()).getString(), element.type()), ToolTipHelper.PINK, ToolTipHelper.RESET);
             toolTip.builder.append("§l <- ");
-            toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString());
+            toolTip.builder.append(appendColor(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), element.type()));
             if(applyType() != ApplyType.NONE && !applyType().isForm()) {
                 toolTip.builder.append(" ");
                 toolTip.builder.append(new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType()).getString());
             }
         } else {
             if(element != ModElements.ORIGIN)
-                toolTip.nextTrans(LibItem.ELEMENT, new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
+                toolTip.nextTrans(LibItem.ELEMENT, appendColor(new TranslatableComponent(MagickCore.MOD_ID + ".description." + element.type()).getString(), element.type()), ToolTipHelper.PINK, ToolTipHelper.RESET);
             if(applyType() != ApplyType.NONE && !applyType().isForm())
                 toolTip.nextTrans(LibItem.MANA_TYPE, new TranslatableComponent(MagickCore.MOD_ID + ".context." + applyType()).getString(), ToolTipHelper.PINK, ToolTipHelper.GREY);
         }

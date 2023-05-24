@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "magickcore:block/dimension_inflate"
+    }
+  }
+}

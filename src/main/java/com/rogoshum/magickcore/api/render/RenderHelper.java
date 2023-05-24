@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.profiling.InactiveProfiler;
@@ -68,7 +69,7 @@ public class RenderHelper {
     public static final ResourceLocation TEXTURE = MagickCore.fromId("entity_texture_atlas.png");
     public static final TextureAtlas TEXTURE_ATLAS = new TextureAtlas(TEXTURE);
     private static final HashMap<ResourceLocation, ResourceLocation> TEXTURE_MAP = new HashMap<>();
-    private static final HashMap<String, ResourceLocation> ITEM_MODEL_RESOURCE = new HashMap<>();
+    private static final HashMap<String, ModelResourceLocation> ITEM_MODEL_RESOURCE = new HashMap<>();
     public static final HashMap<Object, Queue<VertexAttribute>> VERTEX_CACHE = new HashMap<>();
     public static final HashMap<Object, ModelInstanceRenderer> INSTANCE_CACHE = new HashMap<>();
     public static final HashSet<ModelInstanceRenderer> UPDATE_INSTANCE = new HashSet<>();
@@ -1761,12 +1762,12 @@ public class RenderHelper {
         return vertexMatrix;
     }
 
-    public static HashMap<String, ResourceLocation> getItemModelResource() {
+    public static HashMap<String, ModelResourceLocation> getItemModelResource() {
         return ITEM_MODEL_RESOURCE;
     }
 
     public static void addItemModelResource(String s, ResourceLocation res) {
-        ITEM_MODEL_RESOURCE.put(s, res);
+        ITEM_MODEL_RESOURCE.put(s, new ModelResourceLocation(res, "inventory"));
     }
 
     public static void setProjectionMatrix4f(Matrix4f matrix4f) {

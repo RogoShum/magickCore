@@ -1,5 +1,6 @@
 package com.rogoshum.magickcore.mixin;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
 import com.rogoshum.magickcore.api.render.RenderHelper;
@@ -32,7 +33,12 @@ public abstract class MixinModelBakery {
     @Shadow protected abstract void loadTopLevel(ModelResourceLocation p_119307_);
 
     @Inject(method = "processLoading", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V", ordinal = 3))
-    public void onSetHealth(ProfilerFiller p_119249_, int p_119250_, CallbackInfo ci) {
-        RenderHelper.getItemModelResource().values().forEach((res)->this.loadTopLevel(new ModelResourceLocation(res, "inventory")));
+    public void onConstructor(ProfilerFiller p_119249_, int p_119250_, CallbackInfo ci) {
+        MagickCore.LOGGER.info("Loading MagickCore Item Model.");
+        RenderHelper.getItemModelResource().values().forEach((res)-> {
+            MagickCore.LOGGER.info("Load: {}", res);
+            this.loadTopLevel(res);
+        });
+        MagickCore.LOGGER.info("Loaded MagickCore Item Model.");
     }
 }

@@ -34,7 +34,6 @@ public class ModRecipes {
     public static final BlockConditionRecipe BLOCK_CONDITION_RECIPE = new BlockConditionRecipe(new ResourceLocation("block_condition_recipe"));
     public static final ManaItemMaterialRecipe MANA_ITEM_MATERIAL_RECIPE = new ManaItemMaterialRecipe(new ResourceLocation("mana_item_material_recipe"));
     public static final ElementToolRecipe ELEMENT_TOOL_RECIPE = new ElementToolRecipe(new ResourceLocation("element_tool_recipe"));
-
     @SubscribeEvent
     public static void registerRecipes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
         event.getRegistry().register(NBT_RECIPE);

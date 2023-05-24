@@ -1,4 +1,4 @@
-package com.rogoshum.magickcore.api.itemstack;
+package com.rogoshum.magickcore.api.item;
 
 import com.rogoshum.magickcore.api.extradata.ItemExtraData;
 

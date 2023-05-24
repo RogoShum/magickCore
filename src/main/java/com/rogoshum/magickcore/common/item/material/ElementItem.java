@@ -1,18 +1,28 @@
 package com.rogoshum.magickcore.common.item.material;
 
+import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.enums.ParticleType;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
+import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.BlockLinkLightEntity;
 import com.rogoshum.magickcore.common.event.AdvancementsEvent;
+import com.rogoshum.magickcore.common.init.ModElements;
+import com.rogoshum.magickcore.common.init.ModEntities;
+import com.rogoshum.magickcore.common.init.ModSounds;
 import com.rogoshum.magickcore.common.item.BaseItem;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.common.item.ElementContainerItem;
 import com.rogoshum.magickcore.common.lib.LibAdvancements;
+import com.rogoshum.magickcore.common.lib.LibElements;
 import com.rogoshum.magickcore.common.lib.LibItem;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.common.magick.Color;
 import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +33,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -70,6 +83,35 @@ public class ElementItem extends BaseItem implements IManaMaterial {
     }
 
     @Override
+    public InteractionResult useOn(UseOnContext p_41427_) {
+        BlockState state = p_41427_.getLevel().getBlockState(p_41427_.getClickedPos());
+        int intensity = state.getLightEmission(p_41427_.getLevel(), p_41427_.getClickedPos());
+        if(!state.isAir() && intensity > 0) {
+            if(p_41427_.getLevel().isClientSide()) {
+                MagickElement element1 = MagickRegistry.getElement(getElementType());
+                for(int i = 0; i < 10; ++i) {
+                    LitParticle litPar = new LitParticle(p_41427_.getLevel(), element1.getRenderer().getParticleTexture()
+                            , new Vec3(MagickCore.getNegativeToOne() * 0.5, MagickCore.getNegativeToOne() * 0.5, MagickCore.getNegativeToOne() * 0.5)
+                            .add(Vec3.atCenterOf(p_41427_.getClickedPos()))
+                            , 0.25f, 0.25f, 0.6f, 10, element1.getRenderer());
+                    litPar.setGlow();
+                    litPar.setParticleGravity(0f);
+                    litPar.setShakeLimit(5.0f);
+                    MagickCore.addMagickParticle(litPar);
+                }
+            } else {
+                BlockLinkLightEntity light = ModEntities.LIGHT.get().create(p_41427_.getLevel());
+                light.setPos(Vec3.atCenterOf(p_41427_.getClickedPos()));
+                light.setElement(getElementType());
+                light.setIntensity(intensity);
+                p_41427_.getLevel().addFreshEntity(light);
+                light.playSound(ModSounds.glitter.get(), 1.0f, 1.0f);
+            }
+        }
+        return super.useOn(p_41427_);
+    }
+
+    @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
     }
@@ -87,6 +129,11 @@ public class ElementItem extends BaseItem implements IManaMaterial {
     @Override
     public boolean elementMaterial() {
         return true;
+    }
+
+    @Override
+    public Component getName(ItemStack p_41458_) {
+        return ElementContainerItem.withElementColor(super.getName(p_41458_), element);
     }
 
     @Override

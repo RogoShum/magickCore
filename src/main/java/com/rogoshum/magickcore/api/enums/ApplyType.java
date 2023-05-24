@@ -6,31 +6,34 @@ import java.util.Objects;
 
 public class ApplyType {
     private static ApplyType[] values = {};
-    public static final ApplyType NONE = new ApplyType("none", Beneficial.HARMLESS, false, false);
+    public static final ApplyType NONE = new ApplyType("none", Beneficial.HARMLESS, false, false, false);
     public static final ApplyType ATTACK = new ApplyType("attack", Beneficial.HARMFUL, false, true);
     public static final ApplyType BUFF = new ApplyType("buff", Beneficial.BENEFICIAL, false, true);
     public static final ApplyType DE_BUFF = new ApplyType("de_buff", Beneficial.HARMFUL, false, true);
-    public static final ApplyType HIT_ENTITY = new ApplyType("hit_entity", Beneficial.HARMFUL, false, false);
-    public static final ApplyType HIT_BLOCK = new ApplyType("hit_block", Beneficial.HARMLESS, false, false);
-    public static final ApplyType SPAWN_ENTITY = new ApplyType("spawn_entity", Beneficial.HARMFUL, true, false);
-    public static final ApplyType ELEMENT_TOOL = new ApplyType("element_tool", Beneficial.BENEFICIAL, false, false);
+    public static final ApplyType HIT_ENTITY = new ApplyType("hit_entity", Beneficial.HARMFUL, false, false, false);
+    public static final ApplyType HIT_BLOCK = new ApplyType("hit_block", Beneficial.HARMLESS, false, false, false);
+    public static final ApplyType SPAWN_ENTITY = new ApplyType("spawn_entity", Beneficial.HARMFUL, true, false, false);
+    public static final ApplyType ELEMENT_TOOL = new ApplyType("element_tool", Beneficial.BENEFICIAL, false, false, false);
     public static final ApplyType DIFFUSION = new ApplyType("diffusion", Beneficial.HARMLESS, false, true);
     public static final ApplyType AGGLOMERATE = new ApplyType("agglomerate", Beneficial.HARMLESS, false, true);
-    public static final ApplyType SUPER = new ApplyType("super", Beneficial.BENEFICIAL, true, false);
-    public static final ApplyType POTION = new ApplyType("potion", Beneficial.HARMLESS, false, true);
-    public static final ApplyType CAST = new ApplyType("cast", Beneficial.HARMLESS, false, false);
-    public static final ApplyType RADIANCE = new ApplyType("radiance", Beneficial.HARMLESS, false, true);
+    public static final ApplyType SUPER = new ApplyType("super", Beneficial.BENEFICIAL, true, false, false);
+    public static final ApplyType POTION = new ApplyType("potion", Beneficial.HARMLESS, false, true, false);
+    public static final ApplyType CAST = new ApplyType("cast", Beneficial.HARMLESS, false, false, false);
+    public static final ApplyType RADIANCE = new ApplyType("radiance", Beneficial.HARMLESS, false, true, false);
+    public static final ApplyType ASSEMBLY = new ApplyType("assembly", Beneficial.BENEFICIAL, false, true, false);
 
     private final String label;
     private final Beneficial beneficial;
     private final boolean form;
     private final boolean continueCast;
+    private final boolean showInCreativeTab;
 
-    public ApplyType(String label, Beneficial beneficial, boolean isForm, boolean continueCast) {
+    public ApplyType(String label, Beneficial beneficial, boolean isForm, boolean continueCast, boolean showInCreativeTab) {
         this.label = label;
         this.beneficial = beneficial;
         this.form = isForm;
         this.continueCast = continueCast;
+        this.showInCreativeTab = showInCreativeTab;
         ApplyType[] values = new ApplyType[1 + ApplyType.values.length];
         int i = 0;
         for (ApplyType manaType : ApplyType.values) {
@@ -39,6 +42,10 @@ public class ApplyType {
         }
         values[i] = this;
         ApplyType.values = values;
+    }
+
+    public ApplyType(String label, Beneficial beneficial, boolean isForm, boolean continueCast) {
+        this(label, beneficial, isForm, continueCast, true);
     }
 
     @Override
@@ -52,6 +59,10 @@ public class ApplyType {
 
     public Beneficial getBeneficial() {
         return beneficial;
+    }
+
+    public boolean showInCreativeTab() {
+        return showInCreativeTab;
     }
 
     public boolean isForm() {

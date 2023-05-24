@@ -86,5 +86,11 @@ public class Networking {
                 .decoder(CSpellSwapPack::new)
                 .consumer(CSpellSwapPack::handler)
                 .add();
+
+        INSTANCE.messageBuilder(CTriggerAssemblyPack.class, nextID())
+                .encoder(CTriggerAssemblyPack::toBytes)
+                .decoder(CTriggerAssemblyPack::new)
+                .consumer(CTriggerAssemblyPack::handler)
+                .add();
     }
 }

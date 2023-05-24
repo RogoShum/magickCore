@@ -132,7 +132,8 @@ public class MagickReleaseHelper {
                     , MagickCore.getNegativeToOne() + entity.getY() + entity.getBbHeight() * 0.5
                     , MagickCore.getNegativeToOne() + entity.getZ(), MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02, MagickCore.getNegativeToOne() * 0.02);
         }
-        entity.level.playSound(null, entity, ModSounds.horror_effect.get(), SoundSource.PLAYERS, 0.5f, MagickCore.rand.nextFloat());
+        if(context.makeSound)
+            entity.level.playSound(null, entity, ModSounds.horror_effect.get(), SoundSource.PLAYERS, 0.5f, MagickCore.rand.nextFloat());
     }
 
     public static boolean releaseMagick(MagickContext context, ManaFactor manaFactor) {
@@ -144,13 +145,8 @@ public class MagickReleaseHelper {
             failed(context, preEvent.getEntity());
             return false;
         }
-        EntityEvents.MagickPreReleaseEvent releaseEvent = releaseMagickEvent(preEvent.getContext());
-        if(releaseEvent.isCanceled()) {
-            failed(context, releaseEvent.getEntity());
-            return false;
-        }
 
-        context = releaseEvent.getContext();
+        context = preEvent.getContext();
         boolean reverse = context.containChild(LibContext.REVERSE);
         if(reverse && context.containChild(LibContext.DIRECTION)) {
             context.addChild(DirectionContext.create(context.<DirectionContext>getChild(LibContext.DIRECTION).direction.scale(-1)));
@@ -212,8 +208,16 @@ public class MagickReleaseHelper {
                 }
             }
         }
+
+        EntityEvents.MagickPreReleaseEvent releaseEvent = releaseMagickEvent(context);
+        if(releaseEvent.isCanceled()) {
+            failed(context, releaseEvent.getEntity());
+            return false;
+        }
+        context = releaseEvent.getContext();
+
         boolean success = MagickRegistry.getElementFunctions(element.type()).applyElementFunction(context);
-        if(success && !context.applyType().isForm() && context.caster != null && context.projectile == null)
+        if(success && context.makeSound && !context.applyType().isForm() && context.caster != null && context.projectile == null)
             context.world.playSound(null, context.caster, ModSounds.cast.get(), SoundSource.PLAYERS, 0.15f, 0.5f+context.world.random.nextFloat());
         if(context.applyType().continueCast()) {
             SpellContext postContext = context.postContext();

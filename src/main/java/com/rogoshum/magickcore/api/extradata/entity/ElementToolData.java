@@ -42,6 +42,7 @@ public class ElementToolData extends EntityExtraData {
                             if(key != null && key.equals(LibElements.ORIGIN)) continue;
                             MagickContext context = new MagickContext(entity.level).element(MagickRegistry.getElement(key)).force(1).applyType(ApplyType.ELEMENT_TOOL);
                             context.addChild(ItemContext.create(stack));
+                            context.mute();
                             MagickReleaseHelper.releaseMagick(context.noCost());
                             //MagickReleaseHelper.releaseMagick(MagickContext.create(entity.world).entity(entity).force(1).applyType(Enum));
                             map.put(key, map.containsKey(key) ? map.get(key) + 1 : 1);
@@ -59,10 +60,9 @@ public class ElementToolData extends EntityExtraData {
             MagickReleaseHelper.releaseMagick(context.noCost());
         }
 
-        if(tick > 0 && map.containsKey(LibElements.SOLAR)) {
-            addtionDamage = (float) Math.pow(1.1, map.get(LibElements.SOLAR));
-        }
-        else
+        if(tick > 0) {
+            addtionDamage = (float) Math.pow(1.1, NBTTagHelper.getAssemblyCount(entity, LibElements.SOLAR));
+        } else
             addtionDamage = 1;
 
 

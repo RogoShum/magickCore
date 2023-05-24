@@ -68,6 +68,7 @@ public class SolarAbility{
         }
         return false;
     }
+
     public static boolean hitEntity(MagickContext context) {
         if(context.victim == null) return false;
         if(context.victim instanceof ItemEntity) {

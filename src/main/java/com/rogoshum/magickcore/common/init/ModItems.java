@@ -30,6 +30,8 @@ public class ModItems {
     public static final RegistryObject<Item> ITEM_EXTRACTOR = ITEMS.register(LibItem.ITEM_EXTRACTOR, () -> new EntityRendererBlockItem(ModBlocks.ITEM_EXTRACTOR.get()
             , BaseItem.properties(), () -> ItemExtractorRenderer::new));
     public static final RegistryObject<Item> RADIANCE_CRYSTAL = ITEMS.register(LibItem.RADIANCE_CRYSTAL, RadianceCrystalItem::new);
+    public static final RegistryObject<Item> DIMENSION_INFLATE = ITEMS.register(LibItem.DIMENSION_INFLATE, () -> new BlockItem(ModBlocks.DIMENSION_INFLATE.get()
+            , BaseItem.properties()));
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_CRYSTAL = ITEMS.register("spirit_crystal", SpiritCrystalItem::new);
     public static final RegistryObject<PlaceableEntityItem> SPIRIT_WOOD_STICK = ITEMS.register("spirit_wood_stick", () -> new PlaceableEntityItem(BaseItem.properties(), 0.4f, 0.4f));
     public static final RegistryObject<Item> MAGICK_CONTAINER = ITEMS.register("magick_container", ManaCapacityItem::new);
@@ -86,8 +88,9 @@ public class ModItems {
     public static final RegistryObject<Item> QUADRANT_FRAGMENTS = ITEMS.register("quadrant_fragments", () -> new QuadrantFragmentItem(BaseItem.properties()));
     public static final RegistryObject<Item> ELEMENT_WOOL = ITEMS.register("element_wool", ElementWoolItem::new);
     public static final RegistryObject<Item> ELEMENT_STRING = ITEMS.register("element_string", ElementStringItem::new);
-    //public static final RegistryObject<Item> ASSEMBLY_ESSENCE = ITEMS.register("assembly_essence", AssemblyEssenceItem::new);
-    //public static final RegistryObject<Item> CRYSTAL_BOX = ITEMS.register("crystal_box", CrystalBoxItem::new);
+    public static final RegistryObject<Item> ASSEMBLY_ESSENCE = ITEMS.register("assembly_essence", AssemblyEssenceItem::new);
+    public static final RegistryObject<Item> CRYSTAL_BOX = ITEMS.register("crystal_box", CrystalBoxItem::new);
+    public static final RegistryObject<Item> COLORED_GLOW_DUST = ITEMS.register("colored_glow_dust", ColoredGlowDustItem::new);
 
     //public static final RegistryObject<Item> origin_material = ITEMS.register("origin_material", () -> new ManaMaterialsItem(LibMaterial.ORIGIN));
     public static final RegistryObject<Item> NETHER_STAR_MATERIAL = ITEMS.register("nether_star_material", () -> new ManaMaterialItem(LibMaterial.NETHER_STAR));

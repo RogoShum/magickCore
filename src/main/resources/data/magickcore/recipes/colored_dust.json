@@ -1,0 +1,10 @@
+{
+  "type": "magickcore:magick_workbench",
+  "input":{
+    "item":"minecraft:torch"
+  },
+  "result":{
+    "item":"magickcore:colored_glow_dust",
+    "count":1
+  }
+}

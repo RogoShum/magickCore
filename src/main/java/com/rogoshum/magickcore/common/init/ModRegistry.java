@@ -59,6 +59,7 @@ public class ModRegistry {
                     functions.add(ApplyType.DIFFUSION, VoidAbility::diffusion);
                     functions.add(ApplyType.AGGLOMERATE, VoidAbility::agglomerate);
                     functions.add(ApplyType.RADIANCE, VoidAbility::radiance);
+                    functions.add(ApplyType.ASSEMBLY, VoidAbility::assembly);
                     break;
                 case LibElements.STASIS:
                     functions.add(ApplyType.ATTACK, StasisAbility::damageEntity);

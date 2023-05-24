@@ -84,7 +84,7 @@ vec3 hsv2rgb(vec3 c)
 
 vec4 boost(vec3 color) {
     vec3 hsv = rgb2hsv(color.rgb);
-    float alpha = max(hsv.y*hsv.y, 0.1);
+    float alpha = max(hsv.y, 0.1);
 
     return vec4(hsv2rgb(vec3(hsv.x, 1.0, hsv.z)), alpha);
 }

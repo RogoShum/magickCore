@@ -14,6 +14,7 @@ public class ToolTipHelper {
     public final static String BOLD = "§l";
     public final static String DELETE = "§m";
     public final static String ITALIC = "§o";
+    public final static String RESET = "§r";
     public final static String UNDERLINE = "§n";
 
     public final StringBuilder builder = new StringBuilder();

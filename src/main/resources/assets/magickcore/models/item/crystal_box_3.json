@@ -1,0 +1,9 @@
+{
+    "parent": "magickcore:item/crystal_box",
+    "textures": {
+        "layer0": "magickcore:items/crystal_box",
+        "layer1": "magickcore:items/element_1",
+        "layer2": "magickcore:items/element_2",
+        "layer3": "magickcore:items/element_3"
+    }
+}

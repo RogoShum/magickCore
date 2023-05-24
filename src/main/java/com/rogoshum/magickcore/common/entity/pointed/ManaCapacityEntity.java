@@ -2,7 +2,7 @@ package com.rogoshum.magickcore.common.entity.pointed;
 
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IRedStoneEntity;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.item.IManaData;
 import com.rogoshum.magickcore.api.mana.IManaCapacity;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.client.entity.easyrender.ManaCapacityRenderer;

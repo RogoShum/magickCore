@@ -1,0 +1,32 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "magickcore:items/crystal_box"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "crystal_box": 1
+            },
+            "model": "magickcore:item/crystal_box_1"
+        },
+        {
+            "predicate": {
+                "crystal_box": 2
+            },
+            "model": "magickcore:item/crystal_box_2"
+        },
+        {
+            "predicate": {
+                "crystal_box": 3
+            },
+            "model": "magickcore:item/crystal_box_3"
+        },
+        {
+            "predicate": {
+                "crystal_box": 4
+            },
+            "model": "magickcore:item/crystal_box_4"
+        }
+    ]
+}

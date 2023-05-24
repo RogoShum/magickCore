@@ -1,7 +1,10 @@
 package com.rogoshum.magickcore.common.util;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.common.init.CommonConfig;
+import com.rogoshum.magickcore.common.item.AssemblyEssenceItem;
 import com.rogoshum.magickcore.common.lib.LibElementTool;
 import com.rogoshum.magickcore.common.lib.LibElements;
 import net.minecraft.world.entity.Entity;
@@ -161,12 +164,47 @@ public class NBTTagHelper {
         return LibElements.ORIGIN;
     }
 
+    public static int getElementOnToolCount(Entity entity, String element) {
+        int count = 0;
+        for(ItemStack stack : entity.getAllSlots()) {
+            if(hasElementOnTool(stack, element))
+                count++;
+        }
+        return count;
+    }
+
     public static boolean hasElementOnTool(ItemStack stack, String element) {
         try {
             if (!stack.isEmpty() && stack.hasTag() && stack.getTag().contains(LibElementTool.TOOL_ELEMENT) && getToolElementTable(stack).contains(element))
                 return true;
         }
         catch (Exception exception) {
+            MagickCore.LOGGER.info(stack);
+            MagickCore.LOGGER.info(element);
+            exception.printStackTrace();
+        }
+        return false;
+    }
+
+    public static int getAssemblyCount(Entity entity, String element) {
+        int count = 0;
+        for(ItemStack stack : entity.getAllSlots()) {
+            if(hasAssemblyOnItem(stack, element))
+                count++;
+        }
+        return count;
+    }
+
+    public static boolean hasAssemblyOnItem(ItemStack stack, String element) {
+        try {
+            if(!stack.isEmpty() && stack.hasTag()) {
+                ItemDimensionData data = ExtraDataUtil.itemDimensionData(stack);
+                for (ItemStack slot : data.getSlots()) {
+                    if(slot.getItem() instanceof AssemblyEssenceItem && getElement(slot).equals(element))
+                        return true;
+                }
+            }
+        } catch (Exception exception) {
             MagickCore.LOGGER.info(stack);
             MagickCore.LOGGER.info(element);
             exception.printStackTrace();

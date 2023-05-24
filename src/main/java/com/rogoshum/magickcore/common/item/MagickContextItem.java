@@ -56,7 +56,7 @@ public class MagickContextItem extends ManaItem {
         if(group == ModGroups.MAGICK_CONTEXT_GROUP) {
             ItemStack sample = new ItemStack(this);
             for (ApplyType type : ApplyType.values()) {
-                if(type == ApplyType.NONE || type == ApplyType.SPAWN_ENTITY || type == ApplyType.POTION || type == ApplyType.HIT_BLOCK || type == ApplyType.HIT_ENTITY || type == ApplyType.ELEMENT_TOOL || type == ApplyType.SUPER)continue;
+                if(!type.showInCreativeTab())continue;
                 ExtraDataUtil.itemManaData(sample, (data) -> {
                     data.spellContext().applyType(type).force(7).range(7).tick(300);
                 });

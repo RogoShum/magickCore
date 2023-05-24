@@ -244,7 +244,7 @@ public class ArcAbility{
         else
             motion = context.victim.position().add(0, context.victim.getBbHeight() * 0.5, 0).subtract(context.caster.position().add(0, context.caster.getBbHeight() * 0.5, 0)).normalize();
 
-        motion = motion.scale(context.force() * 0.6);
+        motion = motion.scale(context.force() * 0.8);
         Vec3 originMotion = context.victim.getDeltaMovement();
         context.victim.setDeltaMovement(motion.scale(0.8).add(originMotion.scale(0.2)));
         context.victim.setOnGround(true);

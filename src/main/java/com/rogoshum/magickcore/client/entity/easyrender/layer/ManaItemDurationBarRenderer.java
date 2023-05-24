@@ -3,7 +3,7 @@ package com.rogoshum.magickcore.client.entity.easyrender.layer;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rogoshum.magickcore.api.render.RenderHelper;
-import com.rogoshum.magickcore.api.itemstack.IManaData;
+import com.rogoshum.magickcore.api.item.IManaData;
 import com.rogoshum.magickcore.api.render.easyrender.base.EasyRenderer;
 import com.rogoshum.magickcore.api.render.easyrender.RenderMode;
 import com.rogoshum.magickcore.client.render.RenderParams;

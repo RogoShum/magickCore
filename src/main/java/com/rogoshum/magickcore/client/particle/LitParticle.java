@@ -413,6 +413,7 @@ public class LitParticle implements ILightSourceEntity, IEasyRender {
         matrixStackIn.pushPose();
         Matrix4f matrix4f = renderParams.matrixStack.last().pose();
         int lightmap = renderContext.packedLightIn;
+        updatePosition();
         matrixStackIn.translate(renderX, renderY, renderZ);
         matrixStackIn.scale(getScale(scaleWidth), getScale(scaleHeight), getScale(scaleWidth));
         matrixStackIn.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());

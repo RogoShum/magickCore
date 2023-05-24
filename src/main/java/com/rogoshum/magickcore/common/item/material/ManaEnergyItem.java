@@ -1,6 +1,8 @@
 package com.rogoshum.magickcore.common.item.material;
 
 import com.rogoshum.magickcore.MagickCore;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.item.IDimensionTooltip;
 import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.IMaterialLimit;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
@@ -14,7 +16,9 @@ import com.rogoshum.magickcore.common.magick.materials.Material;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.magick.context.SpellContext;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.Entity;
@@ -30,10 +34,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.IItemRenderProperties;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ManaEnergyItem extends ManaItem implements IManaMaterial {
+public class ManaEnergyItem extends ManaItem implements IManaMaterial, IDimensionTooltip {
     public ManaEnergyItem() {
         super(properties());
     }
@@ -151,11 +156,48 @@ public class ManaEnergyItem extends ManaItem implements IManaMaterial {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(new TranslatableComponent(LibItem.CONTEXT_MATERIAL));
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        ItemManaData data = ExtraDataUtil.itemManaData(stack);
+        String information = data.spellContext().toString();
+        if(!information.isEmpty()) {
+            String[] tips = information.split("\n");
+            for (String tip : tips) {
+                tooltip.add(new TextComponent(tip));
+            }
+        }
     }
 
     @Override
     public boolean releaseMagick(LivingEntity playerIn, EntityStateData state, ItemStack stack, InteractionHand hand) {
         return false;
+    }
+
+    @Override
+    public List<Component> dimensionToolTip(ItemStack stack) {
+        List<Component> components = new ArrayList<>();
+        TextComponent component = new TextComponent("");
+        SpellContext data = ExtraDataUtil.itemManaData(stack).spellContext();
+        if(data.force() > 0 || data.range() > 0 || data.tick() > 0) {
+            component.append(new TextComponent("◇ ").withStyle(ChatFormatting.DARK_PURPLE));
+        }
+        boolean prefix = false;
+        if(data.force() > 0) {
+            prefix = true;
+            component.append(new TranslatableComponent(LibItem.FORCE).append(new TranslatableComponent(LibItem.ENHANCE)).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(String.format("%.1f",data.force()*0.1+1))).withStyle(ChatFormatting.GRAY));
+        }
+
+        if(data.range() > 0) {
+            if(!prefix) {
+                prefix = true;
+            } else
+                component.append(new TextComponent(""));
+            component.append(new TranslatableComponent(LibItem.RANGE).append(new TranslatableComponent(LibItem.ENHANCE)).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(String.format("%.1f",data.range()*0.1+1))).withStyle(ChatFormatting.GRAY));
+        }
+        if(data.tick() > 0) {
+            if(prefix)
+                component.append(new TextComponent(""));
+            component.append(new TranslatableComponent(LibItem.TICK).append(new TranslatableComponent(LibItem.ENHANCE)).withStyle(ChatFormatting.BLUE)).append(" ").append(new TextComponent(String.valueOf(String.format("%.1f",data.tick()*0.005+1))).withStyle(ChatFormatting.GRAY));
+        }
+        components.add(component);
+        return components;
     }
 }

@@ -2,6 +2,9 @@ package com.rogoshum.magickcore.api.extradata.entity;
 
 import com.rogoshum.magickcore.api.event.EntityEvents;
 import com.rogoshum.magickcore.api.extradata.EntityExtraData;
+import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
+import com.rogoshum.magickcore.api.extradata.item.ItemManaData;
+import com.rogoshum.magickcore.api.item.IManaData;
 import com.rogoshum.magickcore.common.buff.ManaBuff;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.common.init.ModBuffs;
@@ -9,10 +12,13 @@ import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.lib.LibBuff;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
+import com.rogoshum.magickcore.common.lib.LibElements;
+import com.rogoshum.magickcore.common.util.NBTTagHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;
@@ -173,7 +179,6 @@ public class EntityStateData extends EntityExtraData {
         if(shieldCoolDown > 0)
             shieldCoolDown-=updateRate;
 
-
         if(getElementShieldMana() < getMaxElementShieldMana() && shieldCoolDown <= 0) {
             float shieldRegen = updateRate;
             EntityEvents.ShieldRegenerationEvent event = new EntityEvents.ShieldRegenerationEvent((LivingEntity) entity, shieldRegen);
@@ -195,13 +200,35 @@ public class EntityStateData extends EntityExtraData {
         if(manaCoolDown > 0)
             manaCoolDown-=updateRate;
 
-        if(manaCoolDown <= 0 && this.getManaValue() < this.getMaxManaValue()) {
+        if(manaCoolDown <= 0) {
             float manaRegen = updateRate;
-            EntityEvents.ManaRegenerationEvent eventMana = new EntityEvents.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
-            MinecraftForge.EVENT_BUS.post(eventMana);
-            manaRegen = eventMana.getMana();
-
-            this.setManaValue(this.getManaValue() + manaRegen);
+            if(this.getManaValue() < this.getMaxManaValue()) {
+                EntityEvents.ManaRegenerationEvent eventMana = new EntityEvents.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
+                MinecraftForge.EVENT_BUS.post(eventMana);
+                manaRegen = eventMana.getMana();
+                this.setManaValue(this.getManaValue() + manaRegen);
+            } else if(entity instanceof Player player) {
+                int count = NBTTagHelper.getAssemblyCount(entity, LibElements.ARC);
+                if(count > 0) {
+                    for(int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+                        ItemStack stack = player.getInventory().getItem(i);
+                        if (stack.getItem() instanceof IManaData && stack.getItem().isBarVisible(stack)) {
+                            ItemManaData data = ExtraDataUtil.itemManaData(stack);
+                            if (data.manaCapacity().getMana() < data.manaCapacity().getMaxMana()) {
+                                EntityEvents.ManaRegenerationEvent eventMana = new EntityEvents.ManaRegenerationEvent((LivingEntity) entity, manaRegen);
+                                MinecraftForge.EVENT_BUS.post(eventMana);
+                                manaRegen = eventMana.getMana();
+                                float left = (this.getManaValue() + manaRegen) - this.getMaxManaValue();
+                                if (left > 0) {
+                                    float additionMana = count * 0.4f * left;
+                                    data.manaCapacity().receiveMana(additionMana);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         Iterator<String> i = buffList.keySet().iterator();

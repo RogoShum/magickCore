@@ -1,11 +1,13 @@
 package com.rogoshum.magickcore.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.rogoshum.magickcore.MagickCore;
 import com.rogoshum.magickcore.api.entity.IManaRefraction;
 import com.rogoshum.magickcore.api.enums.ApplyType;
 import com.rogoshum.magickcore.api.enums.ManaLimit;
 import com.rogoshum.magickcore.api.extradata.ExtraDataUtil;
 import com.rogoshum.magickcore.api.extradata.entity.EntityStateData;
+import com.rogoshum.magickcore.api.extradata.item.ItemDimensionData;
 import com.rogoshum.magickcore.api.magick.MagickElement;
 import com.rogoshum.magickcore.api.magick.MagickReleaseHelper;
 import com.rogoshum.magickcore.api.magick.context.MagickContext;
@@ -17,17 +19,22 @@ import com.rogoshum.magickcore.api.mana.IManaMaterial;
 import com.rogoshum.magickcore.api.mana.ISpellContext;
 import com.rogoshum.magickcore.api.registry.MagickRegistry;
 import com.rogoshum.magickcore.client.particle.LitParticle;
+import com.rogoshum.magickcore.common.entity.InteractiveItemEntity;
 import com.rogoshum.magickcore.common.entity.living.LivingAgentEntity;
 import com.rogoshum.magickcore.common.init.ModElements;
 import com.rogoshum.magickcore.common.init.ModEntities;
 import com.rogoshum.magickcore.common.init.ModItems;
 import com.rogoshum.magickcore.common.init.ModTileEntities;
 import com.rogoshum.magickcore.common.util.ItemStackUtil;
+import com.rogoshum.magickcore.common.util.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,18 +48,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DimensionInflateTileEntity extends BlockEntity implements ISpellContext {
-    public static final ConcurrentHashMap<ResourceKey<Level>, List<DimensionInflateTileEntity>> RADIANCE_CRYSTALS = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<Player, HashSet<DimensionInflateTileEntity>> RADIANCE_PLAYER = new ConcurrentHashMap<>();
-    private final SpellContext context = SpellContext.create();
-    private ApplyType applyType = ApplyType.RADIANCE;
+public class DimensionInflateTileEntity extends BlockEntity {
+    private final List<InteractiveItemEntity> interactiveItems = new ArrayList<>();
     private ItemStack item = ItemStack.EMPTY;
-    private MagickElement element = ModElements.ORIGIN;
-    public int tickCount;
-    private Entity capacity;
-    private LivingAgentEntity livingAgent;
     public DimensionInflateTileEntity(BlockPos blockPos, BlockState blockState) {
-        super(ModTileEntities.RADIANCE_CRYSTAL_TILE_ENTITY.get(), blockPos, blockState);
+        super(ModTileEntities.DIMENSION_INFLATE_TILE_ENTITY.get(), blockPos, blockState);
     }
 
     @Override
@@ -60,10 +60,6 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
         CompoundTag compoundNBT = super.getUpdateTag();
         storageTag(compoundNBT);
         return compoundNBT;
-    }
-
-    public static int workRange() {
-        return 10;
     }
 
     @Override
@@ -84,14 +80,10 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
 
     public void extractTag(CompoundTag compound) {
         item = ItemStack.of(compound.getCompound("stack"));
-        applyType = ApplyType.getEnum(compound.getString("apply_type"));
-        element = MagickRegistry.getElement(compound.getString("element"));
     }
 
     public void storageTag(CompoundTag compound) {
         compound.put("stack", item.save(new CompoundTag()));
-        compound.putString("apply_type", applyType.toString());
-        compound.putString("element", element.type());
     }
 
     protected void updateInfo() {
@@ -114,30 +106,16 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
     public void onLoad() {
         super.onLoad();
         //MagickCore.proxy.addRenderer(() -> new RadianceCrystalRenderer(this));
-        if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
-            RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
-        list.add(this);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
-            RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
-        list.remove(this);
-        removeFromPublicMap(new ArrayList<>());
     }
 
     @Override
     public void clearRemoved() {
         super.clearRemoved();
-        if(!RADIANCE_CRYSTALS.containsKey(this.level.dimension()))
-            RADIANCE_CRYSTALS.put(this.level.dimension(), new ArrayList<>());
-        List<DimensionInflateTileEntity> list = RADIANCE_CRYSTALS.get(this.level.dimension());
-        list.remove(this);
-        removeFromPublicMap(new ArrayList<>());
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState state, DimensionInflateTileEntity me) {
@@ -145,101 +123,29 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
     }
 
     public void tick(Level level, BlockPos blockPos) {
-        this.tickCount++;
-        if(level.isClientSide()) {
-            if(this.tickCount % 5 ==0) {
-                LitParticle cc = new LitParticle(this.level, this.spellContext().element().getRenderer().getRingTexture()
-                        , new Vec3(this.getBlockPos().getX()+0.5
-                        , this.getBlockPos().getY()+0.5
-                        , this.getBlockPos().getZ()+0.5)
-                        , 0.7f, 0.7f, 0.4f, 60, this.spellContext().element().getRenderer());
-                cc.setGlow();
-                cc.setParticleGravity(0);
-                MagickCore.addMagickParticle(cc);
-            }
-        }
-        if(this.livingAgent == null) {
-            this.livingAgent = ModEntities.LIVING_ARGENT.get().create(level);
-            this.livingAgent.setPos(Vec3.atCenterOf(blockPos));
-            this.livingAgent.level = level;
-        }
-
-        if(this.capacity == null) {
-            List<Entity> capacities = level.getEntities((Entity) null, new AABB(blockPos).inflate(5), e -> e instanceof IManaCapacity);
-            Optional<Entity> artificial = capacities.stream().min(Comparator.comparing((capacity -> capacity.distanceToSqr(Vec3.atCenterOf(blockPos)))));
-            artificial.ifPresent(capacity -> this.capacity = capacity);
-        } else if(!this.capacity.isAlive())
-            this.capacity = null;
-
-        if(this.capacity instanceof IManaCapacity capacity) {
-            float manaNeed = 0;
-            EntityStateData state = ExtraDataUtil.entityStateData(this.livingAgent);
-            state.setMaxManaValue(ManaLimit.MAX_MANA.getValue());
-            if(state.getManaValue() < state.getMaxManaValue()) {
-                manaNeed = state.getMaxManaValue() - state.getManaValue();
-            }
-            if(manaNeed > 0) {
-                float mana = capacity.manaCapacity().extractMana(manaNeed);
-                state.setManaValue(state.getManaValue() + mana);
-            }
-        }
-
-        releaseMagick(level, blockPos, applyType == ApplyType.RADIANCE);
-    }
-
-    public void releaseMagick(Level level, BlockPos blockPos, boolean noCost) {
-        if(this.tickCount % 10 == 0) {
-            SpellContext spell = SpellContext.create().applyType(this.applyType).force(1).range(1).tick(20).element(this.element);
-            List<Entity> entities = level.getEntities((Entity) null, new AABB(blockPos).inflate(workRange()), entity -> {
-                if(entity instanceof IManaRefraction && ((IManaRefraction) entity).refraction(spell))
-                    return false;
-                return entity != this.livingAgent;
-            });
-            float force = 1;
-            if(applyType == ApplyType.RADIANCE && entities.size() > 3)
-                force = 3f / entities.size();
-            removeFromPublicMap(entities);
-            for(Entity entity : entities) {
-                if(entity instanceof Player)
-                    addPlayerToPublicMap((Player) entity);
-                MagickContext context = MagickContext.create(level, spell).caster(this.livingAgent)
-                        .replenishChild(DirectionContext.create(entity.position().add(0, entity.getBbHeight()*0.5, 0).subtract(Vec3.atCenterOf(blockPos))))
-                        .<MagickContext>replenishChild(PositionContext.create(Vec3.atCenterOf(blockPos)))
-                        .victim(entity).force(force);
-                if(noCost)
-                    context.noCost();
-                MagickReleaseHelper.releaseMagick(context);
-            }
-        }
-    }
-
-    public void addPlayerToPublicMap(Player player) {
-        if(!RADIANCE_PLAYER.containsKey(player))
-            RADIANCE_PLAYER.put(player, new HashSet<>());
-        if(!RADIANCE_PLAYER.get(player).contains(this))
-            RADIANCE_PLAYER.get(player).add(this);
-    }
-
-    public void removeFromPublicMap(List<Entity> list) {
-        for(Player player : RADIANCE_PLAYER.keySet()) {
-            HashSet<DimensionInflateTileEntity> crystals = DimensionInflateTileEntity.RADIANCE_PLAYER.get(player);
-            if(!list.contains(player) && crystals.contains(this))
-                crystals.remove(this);
-        }
     }
 
     public void setItemStack(ItemStack stack) {
-        if(stack.getItem() instanceof IManaMaterial material) {
-            if (material.typeMaterial()) {
-                dropItem();
-                material.upgradeManaItem(stack, this);
-                this.setApplyType(spellContext().applyType());
-                this.item = stack.copy();
-                stack.shrink(1);
-                this.item.setCount(1);
+        if(!this.level.isClientSide) {
+            dropItem();
+            this.item = stack;
+            ItemDimensionData dimensionData = ExtraDataUtil.itemDimensionData(item);
+            ImmutableList<ItemStack> slots = dimensionData.getSlots();
+            if(slots.size() > 0) {
+                float part = 360f / slots.size();
+                for(int i = 0; i < slots.size(); ++i) {
+                    InteractiveItemEntity interactiveItem = ModEntities.INTERACTIVE_ITEM.get().create(this.level);
+                    interactiveItem.setDimensionBlock(this, i);
+                    Vec3 rotate = ParticleUtil.getVectorForRotation(0, i * part).scale(1.5);
+                    interactiveItem.setPos(Vec3.atCenterOf(this.getBlockPos()).add(rotate));
+                    interactiveItem.setItemStack(slots.get(i));
+                    if(this.level.addFreshEntity(interactiveItem))
+                        interactiveItems.add(interactiveItem);
+                }
+                this.level.playSound(null, this.getBlockPos(), SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 0.25f, 2.0f);
             }
+            updateInfo();
         }
-        updateInfo();
     }
 
     public ItemStack getItemStack() {
@@ -251,47 +157,23 @@ public class DimensionInflateTileEntity extends BlockEntity implements ISpellCon
             ItemStackUtil.dropItem(level, this.item, this.getBlockPos());
             this.item = ItemStack.EMPTY;
         }
-        this.applyType = ApplyType.RADIANCE;
+        interactiveItems.forEach(Entity::discard);
+        interactiveItems.clear();
         updateInfo();
     }
 
     public List<ItemStack> getDrops() {
         List<ItemStack> stacks = new ArrayList<>();
         stacks.add(this.item);
-        ItemStack stack = new ItemStack(ModItems.RADIANCE_CRYSTAL.get());
-        stack.getOrCreateTag().putString("ELEMENT", this.element.type());
-        stack.getOrCreateTag().putString("APPLY_TYPE", this.applyType.getLabel());
+        ItemStack stack = new ItemStack(ModItems.DIMENSION_INFLATE.get());
         ItemStackUtil.storeTEInStack(stack, this);
         stacks.add(stack);
         return stacks;
     }
 
     public void dropThis() {
-        ItemStack stack = new ItemStack(ModItems.RADIANCE_CRYSTAL.get());
-        stack.getOrCreateTag().putString("ELEMENT", this.element.type());
-        stack.getOrCreateTag().putString("APPLY_TYPE", this.applyType.getLabel());
+        ItemStack stack = new ItemStack(ModItems.DIMENSION_INFLATE.get());
         ItemStackUtil.storeTEInStack(stack, this);
         ItemStackUtil.dropItem(level, stack, this.getBlockPos());
-    }
-
-    public void setApplyType(ApplyType applyType) {
-        this.applyType = applyType;
-    }
-
-    public ApplyType getApplyType() {
-        return applyType;
-    }
-
-    public void setElement(MagickElement element) {
-        this.element = Objects.requireNonNullElse(element, ModElements.ORIGIN);
-    }
-
-    public MagickElement getElement() {
-        return this.element;
-    }
-
-    @Override
-    public SpellContext spellContext() {
-        return context;
     }
 }

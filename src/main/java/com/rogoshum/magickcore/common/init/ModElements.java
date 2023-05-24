@@ -16,7 +16,7 @@ public class ModElements {
     public static final Color ORIGIN_COLOR_SEC = Color.create(1.0f, 1.0f, 1.0f);
     public static final Color SOLAR_COLOR = Color.create(1.0f, 0.6f, 0.3f);
     public static final Color SOLAR_COLOR_SEC = Color.create(1.0f, 0.8f, 0.7f);
-    public static final Color VOID_COLOR = Color.create(0.25f, 0.0f, 1.0f);
+    public static final Color VOID_COLOR = Color.create(0.45f, 0.0f, 1.0f);
     public static final Color VOID_COLOR_SEC = Color.create(0.5f, 0.3f, 1.0f);
     public static final Color ARC_COLOR = Color.create(0.3f, 0.8f, 1.0f);
     public static final Color ARC_COLOR_SEC = Color.create(0.68f, 1.0f, 1.0f);

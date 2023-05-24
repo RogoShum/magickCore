@@ -35,12 +35,11 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
 
     @Override
     public void baseOffset(PoseStack matrixStackIn) {
-        Entity player = Minecraft.getInstance().player;
         Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 lookVec = (entity.position().add(0, entity.getBbHeight()*0.5, 0).subtract(cam)).normalize();
+        lookVec = lookVec.scale(-0.5*Math.max(entity.getBbWidth(), entity.getBbHeight()));
         double camX = cam.x, camY = cam.y, camZ = cam.z;
-        Vec3 offset = entity == player ? Vec3.ZERO : player.getEyePosition(Minecraft.getInstance().getFrameTime())
-                .subtract(new Vec3(x, y, z)).normalize().multiply(entity.getBbWidth() * 1.3d, entity.getBbHeight() * 0.5, entity.getBbWidth() * 1.3d);
-        matrixStackIn.translate(x - camX + offset.x, y - camY + entity.getBbHeight() * 0.5f + offset.y, z - camZ + offset.z);
+        matrixStackIn.translate(x - camX + lookVec.x, y - camY + entity.getBbHeight() * 0.5f + lookVec.y, z - camZ + lookVec.z);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     public void renderCircle(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.scale(entity.getBbWidth() * 1.7f, entity.getBbHeight() * 0.9f, entity.getBbWidth() * 1.7f);
+        matrixStackIn.scale(entity.getBbWidth() * 1.4f, entity.getBbHeight() * 0.7f, entity.getBbWidth() * 1.4f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, CIRCLE_TYPE)
                 , new RenderHelper.RenderContext(alpha, color, RenderHelper.halfLight));
@@ -78,7 +77,7 @@ public class ElementShieldRenderer extends EasyRenderer<LivingEntity> {
     public void renderBloom(RenderParams params) {
         PoseStack matrixStackIn = params.matrixStack;
         baseOffset(matrixStackIn);
-        matrixStackIn.scale(entity.getBbWidth() * 1.65f, entity.getBbHeight() * 0.85f, entity.getBbWidth() * 1.65f);
+        matrixStackIn.scale(entity.getBbWidth() * 1.35f, entity.getBbHeight() * 0.65f, entity.getBbWidth() * 1.35f);
         RenderHelper.renderParticle(
                 BufferContext.create(matrixStackIn, params.buffer, BLOOM_TYPE)
                 , new RenderHelper.RenderContext(alpha*0.7f, secColor, RenderHelper.renderLight));

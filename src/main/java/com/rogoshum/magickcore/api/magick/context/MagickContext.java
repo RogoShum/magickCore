@@ -15,6 +15,7 @@ public class MagickContext extends SpellContext {
     public boolean noCost = false;
     public float reduceCost = 0;
     public boolean doBlock = false;
+    public boolean makeSound = true;
 
     public MagickContext(Level world) {
         this.world = world;
@@ -75,6 +76,11 @@ public class MagickContext extends SpellContext {
 
     public MagickContext addReduceCost(float cost) {
         reduceCost+=cost;
+        return this;
+    }
+
+    public MagickContext mute() {
+        this.makeSound = false;
         return this;
     }
 

@@ -1,17 +1,17 @@
 {
-  "name": "灵魂木弓",
+  "name": "灵魂弓",
   "advancement": "magickcore:spell_learn/magick_core",
   "icon": "magickcore:spirit_bow",
   "category": "magickcore:spirit_product",
   "pages": [
     {
       "type": "text",
-      "text": "灵魂木弓的魔法以魔力箭形态为起式，魔力箭触发后应用后续法术，可以装备成型法术。用成型法术和灵魂木弓在工作台合成即可，携带成型法术的灵魂木弓单独作为合成材料可以取出成型法术。"
+      "text": "灵魂弓的魔法以魔力箭形态为起式，魔力箭触发后应用后续法术，可以装备成型法术。用成型法术和灵魂弓在工作台合成即可，携带成型法术的灵魂弓单独作为合成材料可以取出成型法术。"
     },
     {
       "type": "magickcore:magick_recipe",
       "magick_recipe": "magickcore:spirit_bow",
-      "text": "在魔法合成阵处合成，需要注意是材料要放置在合成阵中间，否则无法合成灵魂木弓。"
+      "text": "在魔法合成阵处合成，需要注意是材料要放置在合成阵中间，否则无法合成灵魂弓。"
     }
   ]
 }
